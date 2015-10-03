@@ -1,5 +1,6 @@
 // WebMatic
 // (c) Frank Epple
+// h-Diagrams by Goglo
 // ----------------------- Click function handlers ----------------------------
 
 // Variables to save last click:
@@ -22,7 +23,8 @@ function CheckRefreshPage()
   {
     if (t - lastTime > 60000)
     {
-      RefreshPage(0, true);
+      if (lastClickType != 4 && lastClickType != 7)
+        RefreshPage(0, true); // Kein Refresh bei GrafikIDs und Optionen.
       RefreshServiceMessages();
       lastTime = t;
     }
@@ -80,11 +82,16 @@ function RefreshPage(item, saveScrollPos)
         loadPrograms(oldScrollPos);
         break;
       case 4:
-        loadGraphicIDs(oldScrollPos);
+        loadGraphicIDs();
         break;
       case 5:
         loadData('debug.json', oldScrollPos);
         break;
+      case 6:
+        loadData('debug_cuxd.json', oldScrollPos);
+        break;
+      case 7:
+        loadOptions();
     }
   }
 }
@@ -123,41 +130,72 @@ function RefreshServiceMessages()
     }
     $('#serviceList').listview('refresh', true);
   });
+  //.error(function() {  $("#serviceList").append("<li>Fehler beim Laden</li>"); $("#serviceList").listview("refresh"); });
+}
+
+function RemoveMessages()
+{
+  $.getJSON('cgi/removemessages.cgi', function(data) {
+  });
 }
 
 $(".menuListItem").live("click", function(){
   lastClickType = 1;
   lastClickID   = $(this).attr("id");
+  $('.ui-input-search .ui-input-text').val("");
   RefreshPage($(this), false);
 });
 
 $(".menuItemVariables").live("click", function(){
   lastClickType = 2;
   lastClickID   = $(this).attr("id");
+  $('.ui-input-search .ui-input-text').val("");
   RefreshPage($(this), false);
 });
 
 $(".menuItemPrograms").live("click", function(){
   lastClickType = 3;
   lastClickID   = $(this).attr("id");
+  $('.ui-input-search .ui-input-text').val("");
   RefreshPage($(this), false);
 });
 
 $(".menuItemGraphicIDs").live("click", function(){
   lastClickType = 4;
   lastClickID   = $(this).attr("id");
+  $('.ui-input-search .ui-input-text').val("");
   RefreshPage($(this), false);
 });
 
 $(".menuItemDebug").live("click", function(){
   lastClickType = 5;
   lastClickID   = 0;
+  $('.ui-input-search .ui-input-text').val("");
+  RefreshPage($(this), false);
+});
+
+$(".menuItemDebugCUxD").live("click", function(){
+  lastClickType = 6;
+  lastClickID   = 0;
+  $('.ui-input-search .ui-input-text').val("");
+  RefreshPage($(this), false);
+});
+
+$(".menuItemOptions").live("click", function(){
+  lastClickType = 7;
+  lastClickID   = $(this).attr("id");
+  $('.ui-input-search .ui-input-text').val("");
   RefreshPage($(this), false);
 });
 
 $("#buttonRefresh").live("click", function(){
   RefreshPage(0, true);
-  RefreshServiceMessages()
+  RefreshServiceMessages();
+});
+
+$("#removeMessages").live("click", function(){
+  RemoveMessages();
+  RefreshServiceMessages();
 });
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
@@ -396,7 +434,9 @@ function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh)
 function AddSetText(valID, val, valUnit, vorDate)
 {
   html = "<div data-role='fieldcontain'>";
-  // Wichtig sind hier "" für die Strings, weil da keine " vorkommen können, aber ':
+  // Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
+  val = val.replace(/\"/g, "&quot;");
+
   html = html + "<input type='text' id='setValue_" + valID + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
   html = html + " " + valUnit + " <a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
   html = html + "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK'></span>";
@@ -472,7 +512,7 @@ function GetErrorMessage(errType, error, errValue, deviceHssType)
         else if (errValue == 4)
           txt = "Störungsposition angefahren, Batterien nahezu entladen";
       }
-      else if (deviceHssType == "DIMMER")
+      else if (deviceHssType == "DIMMER" || deviceHssType == "VIRTUAL_DIMMER")
       {
         if (errValue >= 1)
           txt = "Lastfehler";
@@ -495,6 +535,24 @@ function GetErrorMessage(errType, error, errValue, deviceHssType)
       {
         if (errValue >= 1)
           txt = "Sabotage ausgelöst";
+      }
+    }
+    else if (error == "STATE")
+    {
+      if (deviceHssType == "SMOKE_DETECTOR_TEAM")
+      {
+        if (errValue == "true")
+          txt = "Rauch erkannt";
+      }
+      else if (deviceHssType == "SENSOR_FOR_CARBON_DIOXIDE")
+      {
+        if (errValue == 1) txt = "CO<sub>2</sub> Konzentration erhöht";
+        if (errValue >= 2) txt = "CO<sub>2</sub> Konzentration stark erhöht";
+      }
+      else if (deviceHssType == "WATERDETECTIONSENSOR")
+      {
+        if (errValue == 1) txt = "Feucht";
+        if (errValue == 2) txt = "Nass";
       }
     }
     else if (error == "ERROR_REDUCED")
@@ -580,29 +638,19 @@ function loadData(url, oldScrollPos)
     systemDate = data['date'];
 
     $.each(data.entries, function(i, device) {
-      deviceHTML = "<li class='dataListItem' id='" + device['id'] + "'><h2 class='ui-li-heading'>" + device['name'] + "</h2>";
+      deviceHTML = "<li class='dataListItem' id='" + device['id'] + "'><h2 class='ui-li-heading'>" + unescape(device['name']) + "</h2>";
+      addDiagram = false;
+      diagramData = "";
+      diagramID = "";
+      diagramUnit = "";
+      varOptions = {};
+      varOptionsFirst = "";
       if (device['type'] == "CHANNEL")
       {
         deviceHssType = device['hssType'];
-        /*if (deviceHssType == "ROTARY_HANDLE_SENSOR")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/17_hm-sec-rhs.png' class='ui-li-thumbnail'/>";
-        else if (deviceHssType == "POWER")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/24_hm-cen-3-1.png' class='ui-li-thumbnail'/>";
-        else if (deviceHssType == "CLIMATECONTROL_VENT_DRIVE")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/43_hm-cc-vd.png' class='ui-li-thumbnail'/>";
-        else if (deviceHssType == "CLIMATECONTROL_REGULATOR")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/42_hm-cc-tc.png' class='ui-li-thumbnail'/>";
-        else if (deviceHssType == "WEATHER")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/TH_CS.png' class='ui-li-thumbnail'/>";
-        else if (deviceHssType == "SMOKE_DETECTOR_TEAM")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/52_hm-sec-sd-team.png' class='ui-li-thumbnail'/>";
-        else if (deviceHssType == "SMOKE_DETECTOR")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/51_hm-sec-sd.png' class='ui-li-thumbnail'/>";
-        else if (deviceHssType == "SWITCH")
-          deviceHTML = deviceHTML + "<img src='../../config/img/devices/250/3_hm-lc-sw4-sm.png' class='ui-li-thumbnail'/>";*/
-
-        //deviceHTML = deviceHTML + "<img src='img/types/" + deviceHssType + ".png' class='ui-li-thumbnail'>";
+        hasChannel = false;
         $.each(device.channels, function(j, channel) {
+          hasChannel = true;
           type = channel['type'];
 
           if (type == "HSSDP")
@@ -614,6 +662,11 @@ function loadData(url, oldScrollPos)
             valString = channel['value'];
             valFloat = parseFloat(channel['value']);
             valBool = (valString == "true");
+            valUnit = channel['valueUnit'];
+            if (typeof(valUnit) == "undefined")
+              valUnit = "";
+            else if (valUnit == "100%")
+              valUnit = "%";  // Manche Geräte haben als Einheit 100%. Würde zu seltsamen Darstellungen führen.
             if (hssType == "STATE")
             {
               canBeSet = false;
@@ -628,8 +681,14 @@ function loadData(url, oldScrollPos)
               }
               else if (deviceHssType == "SMOKE_DETECTOR_TEAM")
               {
-                if (valString == "true") stateText = "<span class='valueError'>Gefahr</span>";
-                else stateText = "<span class='valueOK'>O.K.</span>";
+                if (valString == "true") stateText = "<span class='valueError'>Rauch erkannt</span>";
+                else stateText = "<span class='valueOK'>Kein Rauch erkannt</span>";
+              }
+              else if (deviceHssType == "SENSOR_FOR_CARBON_DIOXIDE")
+              {
+                if (valFloat == 0) stateText = "<span class='valueOK'>CO<sub>2</sub> Konzentration normal</span>";
+                if (valFloat == 1) stateText = "<span class='valueWarning'>CO<sub>2</sub> Konzentration erhöht</span>";
+                if (valFloat >= 2) stateText = "<span class='valueError'>CO<sub>2</sub> Konzentration stark erhöht</span>";
               }
               else if (deviceHssType == "TILT_SENSOR")
               {
@@ -711,7 +770,7 @@ function loadData(url, oldScrollPos)
             }
             else if (hssType == "VALUE")
             {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valString + " </span> <span><i>" + vorDate + "</i></span></p>";
+              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valString + " " + valUnit + " </span> <span><i>" + vorDate + "</i></span></p>";
             }
             else if (hssType == "SENSOR" && deviceHssType == "SENSOR")
             {
@@ -734,7 +793,7 @@ function loadData(url, oldScrollPos)
             else if (hssType == "SETPOINT")
             {
               //deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/setpoint.png' style='max-height:20px'><input type='text' id='inputText_" + channel['id'] + "' data-id='" + channel['id'] + "' value='" + valFloat + "' style='width:5em; display:inline-block;'/><a href='#' id='setText_" + channel['id'] + "' data-id='" + channel['id'] + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a> <i>" + vorDate + "</i></p>";
-              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, "°", 6, 30, 0.5, 1.0, vorDate, false);
+              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
               lowTemp = valFloat - 3.0;
               highTemp = lowTemp + 6.0;
               if (lowTemp < 6.0)
@@ -749,24 +808,16 @@ function loadData(url, oldScrollPos)
               }
               deviceHTML = deviceHTML + "<div data-role='controlgroup' data-type='horizontal'>";
               for (i = lowTemp; i <= highTemp; i += 1.0)
-                deviceHTML = deviceHTML + AddSetButton(channelID, i + "°", i, vorDate, true, i == valFloat, false);
+                deviceHTML = deviceHTML + AddSetButton(channelID, i + valUnit, i, vorDate, true, i == valFloat, false);
               deviceHTML = deviceHTML + "</div>";
             }
-            else if (hssType == "TEMPERATURE")
+            else if (hssType == "RAINING")
             {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/temperature.png' style='max-height:20px'><span class='valueInfo'>" + valFloat + " ° </span>Temperatur | <span><i>" + vorDate + "</i></span></p>";
-            }
-            else if (hssType == "HUMIDITY")
-            {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/humidity.png' style='max-height:20px'><span class='valueInfo'>" + valFloat + " % </span>Luftfeuchtigkeit | <span><i>" + vorDate + "</i></span></p>";
-            }
-            else if (hssType == "VALVE_STATE")
-            {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/valvestate.png' style='max-height:20px'><span class='valueInfo'>" + valFloat + " % </span>Ventilöffnung | <span><i>" + vorDate + "</i></span></p>";
-            }
-            else if (hssType == "BRIGHTNESS")
-            {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat + " </span>Helligkeit | <span><i>" + vorDate + "</i></span></p>";
+              if (valString == "true")
+                s = "Regen";
+              else
+                s = "Kein Regen";
+              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + s + "</span> | <span><i>" + vorDate + "</i></span></p>";
             }
             else if (hssType == "MOTION")
             {
@@ -778,19 +829,19 @@ function loadData(url, oldScrollPos)
             }
             else if (hssType == "LEVEL" && deviceHssType == "BLIND")
             {
-              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, "%", 0.0, 1.0, 0.01, 100.0, vorDate + " | -0.005% = Verriegelt, 0% = Geschlossen, 100% = Offen", true);
+              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Geschlossen, 100% = Offen", false);
               deviceHTML = deviceHTML + "<div data-role='controlgroup' data-type='horizontal'>";
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat == 0.0, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat == 0.2, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat == 0.4, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat == 0.6, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat == 0.8, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat == 1.0, true);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat == 0.0, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat == 0.2, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat == 0.4, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat == 0.6, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat == 0.8, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat == 1.0, false);
               deviceHTML = deviceHTML + "</div>";
             }
             else if (hssType == "STOP" && deviceHssType == "BLIND")
             {
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Stop", true, vorDate, false, false, true);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Stop", true, vorDate, false, false, false);
             }
             else if (hssType == "OPEN" && deviceHssType == "KEYMATIC")
             {
@@ -798,35 +849,35 @@ function loadData(url, oldScrollPos)
             }
             else if (hssType == "LEVEL" && deviceHssType == "WINMATIC")
             {
-              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, "%", 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Geschlossen, 100% = Offen", true);
+              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100.0, vorDate + " | -0.5 = Verriegelt, 0% = Geschlossen, 100% = Offen", false);
               deviceHTML = deviceHTML + "<div data-role='controlgroup' data-type='horizontal'>";
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Verriegeln", -0.005, vorDate, true, valFloat == -0.005, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat == 0.0, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat == 0.2, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat == 0.4, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat == 0.6, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat == 0.8, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat == 1.0, true);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Verriegeln", -0.005, vorDate, true, valFloat == -0.005, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat == 0.0, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat == 0.2, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat == 0.4, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat == 0.6, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat == 0.8, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat == 1.0, false);
               deviceHTML = deviceHTML + "</div>";
             }
             else if (hssType == "STOP" && deviceHssType == "WINMATIC")
             {
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Stop", true, vorDate, false), true;
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Stop", true, vorDate, false, false, false);
             }
             else if (hssType == "LEVEL" && deviceHssType == "AKKU")
             {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat * 100.0 + " % </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
+              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
             }
-            else if (hssType == "LEVEL" && deviceHssType == "DIMMER")
+            else if (hssType == "LEVEL" && (deviceHssType == "DIMMER" || deviceHssType == "VIRTUAL_DIMMER"))
             {
-              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, "%", 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Aus, 100% = An", true);
+              deviceHTML = deviceHTML + AddSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Aus, 100% = An", false);
               deviceHTML = deviceHTML + "<div data-role='controlgroup' data-type='horizontal'>";
-              deviceHTML = deviceHTML + AddSetButton(channelID, "Aus", 0.0, vorDate, true, valFloat == 0.0, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat == 0.2, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat == 0.4, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat == 0.6, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat == 0.8, true);
-              deviceHTML = deviceHTML + AddSetButton(channelID, "An", 1.0, vorDate, true, valFloat == 1.0, true);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "Aus", 0.0, vorDate, true, valFloat == 0.0, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat == 0.2, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat == 0.4, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat == 0.6, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat == 0.8, false);
+              deviceHTML = deviceHTML + AddSetButton(channelID, "An", 1.0, vorDate, true, valFloat == 1.0, false);
               deviceHTML = deviceHTML + "</div>";
             }
             else if(hssType == "U_SOURCE_FAIL" && deviceHssType == "POWER")
@@ -855,7 +906,7 @@ function loadData(url, oldScrollPos)
             }
             else if(hssType == "BAT_LEVEL" && deviceHssType == "POWER")
             {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat * 100.0 + " % </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
+              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
             }
             else if (hssType == "STATUS" && deviceHssType == "AKKU")
             {
@@ -873,7 +924,25 @@ function loadData(url, oldScrollPos)
             {
               if (valString == "true") txt = "<span class='valueWarning'>Zustand unbestimmt</span>";
               else txt = "<span class='valueNoError'>Zustand OK</span>";
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:30px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+            }
+            else if (hssType == "LED_STATUS")
+            {
+              switch (valFloat)
+              {
+                case 0: // Off
+                  deviceHTML = deviceHTML + "<p><img src='img/channels/off_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                  break;
+                case 1: // Red
+                  deviceHTML = deviceHTML + "<p><img src='img/channels/red_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                  break;
+                case 2: // Green
+                  deviceHTML = deviceHTML + "<p><img src='img/channels/green_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                  break;
+                case 3: // Orange
+                  deviceHTML = deviceHTML + "<p><img src='img/channels/orange_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                  break;
+              }
             }
             else if (hssType == "ERROR" || hssType.substring(0, 6) == "ERROR_")
             {
@@ -894,15 +963,25 @@ function loadData(url, oldScrollPos)
             }
             else
             {
-              deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valString + " </span>" + channel['hssType'] + " | <span><i>" + vorDate + "</i></span></p>";
+              // Mapping auf lesbaren Text holen:
+              name = MapText(hssType);
+
+              // Prüfen ob Zahl, wenn ja, dann die Zahl nehmen, da es automatisch Nullen hinten abschneidet:
+              v = valString;
+              if (!isNaN(valString))
+                v = valFloat;
+
+              // Wenn dieser "-" ist, dann den Datenpunkt gar nicht anzeigen:
+              if (name != "-")
+                deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/" + MapImage(hssType) + "' style='max-height:20px'><span class='valueInfo'>" + v + " " + valUnit + " </span>" + name + " | <span><i>" + vorDate + "</i></span></p>";
             }
           }
           else if (type == "VARDP")
           {
-            valName  = channel['name'];
+            valName  = unescape(channel['name']);
             valID    = channel['id'];
-            valInfo  = channel['info'];
-            strValue = channel['value'];
+            valInfo  = unescape(channel['info']);
+            strValue = unescape(channel['value']);
             valType  = channel['valueType'];
             valUnit  = channel['valueUnit'];
             val0     = channel['valueName0'];
@@ -913,73 +992,102 @@ function loadData(url, oldScrollPos)
             channelDate = channel['date'];
             vorDate = GetTimeDiffString(channelDate, systemDate);
 
-            // <br> davor, weil es an der Stelle eine mit Gerät verknüpfte Variable ist:
-            deviceHTML = deviceHTML + "<br><h2 class='ui-li-heading'>" + channel['name'] + "</h2>";
-            // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten:
-            readOnly = false;
-            if (valInfo.length >= 3)
+            // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten,
+            // bei (d) / (dk) ist es ein Diagramm in den Favoriten,
+            // bei (g) eine Tankuhr,
+            // bei (nv) soll der Wert ausgeblendet werden (Sollwertscript). Nur bei Variablen in Geräten verknüpft.
+            // ( finden:
+            varOptionsFirst = "";
+            varOptions = [];
+            bracketOpen = valInfo.indexOf("(");
+            if (bracketOpen != -1)
             {
-              lastThree = valInfo.substring(valInfo.length - 3, valInfo.length);
-              if (lastThree == "(R)" || lastThree == "(r)")
+              // ) finden:
+              bracketClose = valInfo.indexOf(")", bracketOpen);
+              if (bracketClose != -1)
               {
-                readOnly = true;
-                //valInfo = valInfo.substring(0, valInfo.length - 3); // Für Anzeige dann gleich das (R) weg.
+                optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
+                varOptions = optionsString.split(",");
+
+                if (varOptions.length >= 1)
+                  varOptionsFirst = varOptions[0].toLowerCase();
               }
             }
 
-            deviceHTML = deviceHTML + "<p>" + valInfo + "</p>";
-            if (readOnly)
+            if (varOptionsFirst != "nv")
             {
-              // Bestimmen, wie der sichtbare Werte aussehen soll:
-              visVal = "";
-              if (valType == "2")
+              // <br> davor, weil es an der Stelle eine mit Gerät verknüpfte Variable ist:
+              deviceHTML = deviceHTML + "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
+              deviceHTML = deviceHTML + "<p>" + valInfo + "</p>";
+              if (varOptionsFirst == "r")
               {
-                // Bool.
-                if (strValue == "true")
-                  visVal = val1;
+                // Bestimmen, wie der sichtbare Werte aussehen soll:
+                visVal = "";
+                if (valType == "2")
+                {
+                  // Bool.
+                  if (strValue == "true")
+                    visVal = val1;
+                  else
+                    visVal = val0;
+                }
+                else if (valType == "4")
+                  // Float, Integer.
+                  visVal = parseFloat(strValue);
+                else if (valType == "16")
+                {
+                  // Liste.
+                  optionsArray = valList.split(";");
+                  visVal = optionsArray[parseInt(strValue)];
+                }
                 else
-                  visVal = val0;
-              }
-              else if (valType == "4")
-                // Float, Integer.
-                visVal = parseFloat(strValue);
-              else if (valType == "16")
-              {
-                // Liste.
-                optionsArray = valList.split(";");
-                visVal = optionsArray[parseInt(strValue)];
-              }
-              else
-                // String oder unbekannt.
-                visVal = strValue;
+                  // String oder unbekannt.
+                  visVal = strValue;
 
-              deviceHTML = deviceHTML + "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
-            }
-            else
-            {
-              if (valType == "2")
-                // Bool.
-                deviceHTML = deviceHTML + AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
-              else if (valType == "4")
-                // Float, Integer.
-                deviceHTML = deviceHTML + AddSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
-              else if (valType == "16")
-                // Liste.
-                deviceHTML = deviceHTML + AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
-              else if (valType == "20")
-                deviceHTML = deviceHTML + AddSetText(valID, strValue, valUnit, vorDate);
+                deviceHTML = deviceHTML + "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+              }
+              else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ) // Goglo
+              {
+                addDiagram = true;
+                if (varOptionsFirst == "dk")
+                  diagramData = channel['diagrams'];
+                else
+                  diagramData = strValue;
+                diagramID = "chart_" + valID;
+                diagramUnit = valUnit;
+                if (varOptionsFirst == "g")
+                  deviceHTML = deviceHTML + "<div id='" + diagramID + "' style='height:200px; width:300px;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+                else
+                  deviceHTML = deviceHTML + "<div id='" + diagramID + "' style='height:300px; width:90%;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+              }
               else
-                deviceHTML = deviceHTML + "Unbekannter Variablentyp!";
+              {
+                if (valType == "2")
+                  // Bool.
+                  deviceHTML = deviceHTML + AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+                else if (valType == "4")
+                  // Float, Integer.
+                  deviceHTML = deviceHTML + AddSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+                else if (valType == "16")
+                  // Liste.
+                  deviceHTML = deviceHTML + AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+                else if (valType == "20")
+                  deviceHTML = deviceHTML + AddSetText(valID, strValue, valUnit, vorDate);
+                else
+                  deviceHTML = deviceHTML + "Unbekannter Variablentyp!";
+              }
             }
           }
         });
+        if (!hasChannel)
+          deviceHTML = "";  // Nicht anzeigen, z.B. Raumthermostat:3, wenn kein Fensterkontakt vorhanden.
       }
       else if (device['type'] == "VARDP")
       {
-        valName  = device['name'];
+        valName  = unescape(device['name']);
         valID    = device['id'];
-        valInfo  = device['info'];
-        strValue = device['value'];
+        valInfo  = unescape(device['info']);
+        strValue = unescape(device['value']);
         valType  = device['valueType'];
         valUnit  = device['valueUnit'];
         val0     = device['valueName0'];
@@ -990,19 +1098,26 @@ function loadData(url, oldScrollPos)
         channelDate = device['date'];
         vorDate = GetTimeDiffString(channelDate, systemDate);
         // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten:
-        readOnly = false;
-        if (valInfo.length >= 3)
+        varOptionsFirst = "";
+        varOptions = [];
+        // ( finden:
+        bracketOpen= valInfo.indexOf("(");
+        if (bracketOpen != -1)
         {
-          lastThree = valInfo.substring(valInfo.length - 3, valInfo.length);
-          if (lastThree == "(R)" || lastThree == "(r)")
+          // ) finden:
+          bracketClose = valInfo.indexOf(")", bracketOpen);
+          if (bracketClose != -1)
           {
-            readOnly = true;
-            //valInfo = valInfo.substring(0, valInfo.length - 3); // Für Anzeige dann gleich das (R) weg.
+            optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
+            varOptions = optionsString.split(",");
+
+            if (varOptions.length >= 1)
+              varOptionsFirst = varOptions[0].toLowerCase();
           }
         }
 
         deviceHTML = deviceHTML + "<p>" + valInfo + "</p>";
-        if (readOnly)
+        if (varOptionsFirst == "r")
         {
           // Bestimmen, wie der sichtbare Werte aussehen soll:
           visVal = "";
@@ -1029,6 +1144,22 @@ function loadData(url, oldScrollPos)
 
           deviceHTML = deviceHTML + "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
         }
+        else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ) // Goglo
+        {
+          addDiagram = true;
+          if (varOptionsFirst == "dk")
+            diagramData = channel['diagrams'];
+          else
+            diagramData = strValue;
+          diagramID = "chart_" + valID;
+          diagramUnit = valUnit;
+          if (varOptionsFirst == "g")
+            deviceHTML = deviceHTML + "<div id='" + diagramID + "' style='height:200px; width:300px;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+          else
+            deviceHTML = deviceHTML + "<div id='" + diagramID + "' style='height:300px; width:90%;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+        }
+        else if (varOptionsFirst == "nv")
+          deviceHTML = "";  // Leeren.
         else
         {
           if (valType == "2")
@@ -1057,8 +1188,370 @@ function loadData(url, oldScrollPos)
         deviceHTML = deviceHTML + "<p>" + prgInfo + "</p>";
         deviceHTML = deviceHTML + AddStartProgramButton(prgID, "Ausführen", vorDate);
       }
-      deviceHTML = deviceHTML + "</li>";
-      $("#dataList").append(deviceHTML);
+      if (deviceHTML != "")
+      { // Ist leer, wenn (nv) oder ein leerer Channel.
+        deviceHTML = deviceHTML + "</li>";
+        $("#dataList").append(deviceHTML);
+      }
+
+      if (addDiagram)
+      {
+        $("#dataList").listview("refresh");
+        // Diagrammoptionen Defaults setzen:
+        dType  = "l"; // Typ = Line.
+        dColor = "69A5CF"; // Farbe.
+        dLow   = ""; // Kleinster Werte 10% unter Minimum.
+        dHigh  = ""; // Größter Wert 10% über Maximum.
+        dKomma = 1; // Eine Nachkommastellen.
+        dStart = "0/#008800"; // Startwert für Gauge.
+        dEnd = "30/#AA4400";  // Endwert für Gauge.
+        
+        // Diagrammoptionen prüfen:
+        for (i = 0; i < varOptions.length; i++)
+        {
+          dA = varOptions[i].split("=");
+          if (dA.length == 2)
+          {
+            if (dA[0] == "t")
+              dType = dA[1];
+            else if (dA[0] == "c")
+              dColor = dA[1];
+            else if (dA[0] == "l")
+              dLow = dA[1];
+            else if (dA[0] == "h")
+              dHigh = dA[1];
+            else if (dA[0] == "k")
+              dKomma = parseInt(dA[1]);
+            else if (dA[0] == "s")
+              dStart = dA[1];
+            else if (dA[0] == "e")
+              dEnd = dA[1];
+          }
+        }
+
+        if (varOptionsFirst == "g") // Gauge
+        {
+          // In Number Array verwandeln:
+          gaugeVal = parseFloat(diagramData);
+
+          // Start ermitteln:
+          startArr = dStart.split("/");
+          gaugeMin = parseFloat(startArr[0]);
+          gaugeMinCol = startArr[1];
+          if (gaugeVal < gaugeMin)
+            gaugeMin = gaugeVal;
+
+          // Ende ermitteln:
+          endArr = dEnd.split("/");
+          gaugeMax = parseFloat(endArr[0]);
+          gaugeMaxCol = endArr[1];
+          if (gaugeVal > gaugeMax)
+            gaugeMax = gaugeVal;
+
+          // Farben teilen:
+          rStart = parseInt(gaugeMinCol.substring(1,3) ,16);
+          gStart = parseInt(gaugeMinCol.substring(3,5) ,16);
+          bStart = parseInt(gaugeMinCol.substring(5,7) ,16);
+          rEnd = parseInt(gaugeMaxCol.substring(1,3) ,16);
+          gEnd = parseInt(gaugeMaxCol.substring(3,5) ,16);
+          bEnd = parseInt(gaugeMaxCol.substring(5,7) ,16);
+
+          // Farbinterpolation:
+          gValArr = [];
+          gColArr = [];
+          resolution = 10;
+          for (i = 1; i <= resolution; i++)
+          {
+            // Interpoliert von 1/4 bis 1:
+            f = i / resolution;
+            v = gaugeMin + f * (gaugeMax - gaugeMin);
+            gValArr.push(v);
+
+            // Interpoliert von 0/resolution bis 1:
+            f = (i - 1) / (resolution - 1);
+            cr = Math.floor(rStart + f * (rEnd - rStart)).toString(16);
+            if (cr.length < 2)
+              cr = "0" + cr;
+            cg = Math.floor(gStart + f * (gEnd - gStart)).toString(16);
+            if (cg.length < 2)
+              cg = "0" + cg;
+            cb = Math.floor(bStart + f * (bEnd - bStart)).toString(16);
+            if (cb.length < 2)
+              cb = "0" + cb;
+            c = "#" + cr + cg + cb;
+            gColArr.push(c);
+          }
+
+          // Gauge erstellen:
+          gData = [diagramData];
+          plotGauge = $.jqplot(diagramID, [gData],{
+            seriesDefaults: {
+                renderer: $.jqplot.MeterGaugeRenderer,
+                rendererOptions: {
+                    label: diagramData + " " + diagramUnit,
+                    labelPosition: 'bottom',
+                    labelHeightAdjust: -5,
+                    min: gaugeMin,
+                    max: gaugeMax,
+                    intervals: gValArr,
+                    intervalColors: gColArr
+                }
+             },
+            grid: {
+              backgroundColor: "transparent"
+            }
+          });
+        }
+        //------------------------------------ begin Goglo
+        else if(varOptionsFirst == "h")
+        {
+          //wir erwarten die Werte in der Form n;t1;t2;t3...
+          // mit t in der Form date,v1,v2,v3...
+          srcDiagArr = diagramData.split(";");
+          // Erstes Element muss weg, dann ist immer alle numValues wieder ein Datum
+          al = srcDiagArr[0];
+          if (al > 0)
+          {
+            // Felder: Datum, Soll-Temp, Ist-Temp, Luftfeucht, Stell1, Stell2
+            diagArr = new Array();  // Neues, n-dimensionales Array.
+            diagArr[0] = new Array();
+            diagArr[1] = new Array();
+            diagArr[2] = new Array();
+            diagArr[3] = new Array();
+            diagArr[4] = new Array();
+            j = 0;
+            if ( dLow == "")
+              lowVal = 15.0;
+            else
+              lowVal = parseFloat(dLow);
+            if(dHigh == "")
+              highVal = 23.0;
+            else
+              highVal = parseFloat(dHigh);
+            lowDate = "";
+            highDate = "";
+            // Werte in Array aus 2-dim Arrays umwandeln:
+            // i 0..al ist index von scrDiagArr, also ueber alle Tupel
+            // j  0.. ist index von diagArr, also alle Werte innerhalb des Tupels
+
+            for (i = 1; i <= al; i++)
+            {
+              t = srcDiagArr[i]; 
+              tArr = t.split(",");
+              v1 = tArr[0];
+              if (lowDate == "" || v1 < lowDate)
+                lowDate = v1;
+              if (highDate == "" || v1 > highDate)
+                highDate = v1;
+                
+              for (j = 1; j < tArr.length; j++)
+              {
+                vArr = new Array();
+                vArr[0] = v1;
+                v2 = tArr[j];
+                vArr[1] = v2;
+                diagArr[j-1][i-1] = vArr;
+              }
+            }
+          }
+        ////////////////////////////
+            //var plotDiagram = $.jqplot(diagramID, [diagArr0, diagArr1], {
+            var plotDiagram = $.jqplot(diagramID, [diagArr[0], diagArr[1], diagArr[2], diagArr[3], diagArr[4]], {
+              axes:{
+                  xaxis:{
+                      renderer:$.jqplot.DateAxisRenderer,
+                      tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                      tickOptions:{formatString:'%a, %#d %#H:%M', angle:20},
+                      min:lowDate,
+                      max:highDate
+                  },
+                  yaxis:{
+                      min: lowVal,
+                      max: highVal,
+                      showLabel: true,
+                      tickOptions:{
+	                formatString: '%.' + dKomma + 'f' + '&deg;C'
+                      }
+                  },
+                  y2axis:{
+                      min: 0.0,
+                      max: 100.0,
+                      showLabel: true,
+                      tickOptions:{
+                        formatString: '%d' + "%"
+                      }
+                  }
+              },
+              legend: {
+                show: false,
+                fontSize: 23,
+                placement: 'outside',
+                location: 'e'
+              },
+              seriesDefaults: {
+                  lineWidth:2,
+                  showMarker:false,
+                  fill: false,
+                  shadow: false,
+                   //rendererOptions: {
+                   //    smooth: true
+                   //}
+               },
+              series:[{
+                  label: "Soll",
+                  color: "#555555", //+ dColor,
+                  fill: true,
+                  fillAlpha: 0.1,
+                  },{
+                  label: "Ist",
+                  color: "#DD0000",// Farbe Ist-Temperatur
+                  },{
+                  label: "relF%",
+                  color: "#0174DF",// Farbe rel. Luftfeuchtigkeit
+                  yaxis:'y2axis',
+                  lineWidth: 1,
+                  },{
+                  label: "Ventil",
+                  color: "#777777",// Farbe Ventil 1
+                  yaxis:'y2axis',
+                  lineWidth: 1,
+                  },{
+                  label: "Ventil",
+                  color: "#777777",// Farbe Ventil 2
+                  yaxis:'y2axis',
+                }],
+              highlighter: {
+                show: true,
+                sizeAdjust: 5.5
+              },
+              cursor: {
+                zoom: true,
+                show: true
+              },
+              grid: {
+                backgroundColor: "#F4F4F4"
+              }
+             });
+        }
+        //------------------------------------ end Goglo
+        else if (dType == "l" || dType == "f")
+        {
+          srcDiagArr = diagramData.split(",");
+          // Erstes Element muss weg, dann immer zwei, also min = 3:
+          al = srcDiagArr.length;
+          if (al >= 3)
+          {
+            diagArr = new Array();  // Neues, zweidimensionales Array.
+            j = 0;
+            lowVal = 1e6;
+            highVal = -1e6;
+            lowDate = "";
+            highDate = "";
+            // Werte in Array aus 2-dim Arrays umwandeln:
+            for (i = 1; i < al; i = i + 2)
+            {
+              v1 = srcDiagArr[i];
+              v2 = srcDiagArr[i + 1];
+              smallArr = new Array();
+              smallArr[0] = v1;
+              if (v2 == "true")
+                v = 1;
+              else if (v2 == "false")
+                v = 0;
+              else
+                v = parseFloat(v2);
+              smallArr[1] = v
+
+              if (v < lowVal)
+                lowVal = v;
+              if (v > highVal)
+                highVal = v;
+
+              if (lowDate == "" || v1 < lowDate)
+                lowDate = v1;
+              if (highDate == "" || v1 > highDate)
+                highDate = v1;
+
+              diagArr[j] = smallArr;
+              j++;
+            }
+
+            // Low Values anpassen:
+            if (dLow == "")
+              lowVal = lowVal - 0.1 * (highVal - lowVal);
+            else if (dLow == "m")
+              ; // lowVal ist schon Minimum;
+            else
+            {
+              sugLowVal = parseFloat(dLow);
+              if (sugLowVal < lowVal)
+                lowVal = sugLowVal;
+            }
+            // High Values anpassen:
+            if (dHigh == "")
+              highVal = highVal + 0.1 * (highVal - lowVal);
+            else if (dHigh == "m")
+              ; // highVal ist schon Maximum;
+            else
+            {
+              sugHighVal = parseFloat(dHigh);
+              if (sugHighVal > highVal)
+                highVal = sugHighVal;
+            }
+
+            // Fill/Line:
+            if (dType == "l")
+              diagFill = false;
+            else
+              diagFill = true;
+
+            var plotDiagram = $.jqplot(diagramID, [diagArr], {
+              axes:{
+                  xaxis:{
+                      renderer:$.jqplot.DateAxisRenderer,
+                      tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                      tickOptions:{formatString:'%b %#d, %#H:%M', angle:20},
+                      min:lowDate,
+                      max:highDate
+                  },
+                  yaxis:{
+                      min: lowVal,
+                      max: highVal,
+                      tickOptions:{
+                        formatString: '%.' + dKomma + 'f' + diagramUnit
+                      }
+                  }
+              },
+              //legend: {
+              //  show: true,
+              //  placement: 'inside'
+              //},
+              seriesDefaults: {
+                    rendererOptions: {
+                        smooth: true
+                    }
+                },
+              series:[{
+                  color: "#" + dColor,
+                  //label: varName,
+                  lineWidth:2,
+                  showMarker:false,
+                  fill: diagFill
+                }],
+              highlighter: {
+                show: true,
+                sizeAdjust: 5.5
+              },
+              cursor: {
+                show: false
+              },
+              grid: {
+                backgroundColor: "#F4F4F4"
+              }
+             });
+           }
+        }   // if  dType...
+      }
     });
     // "Lade..." wieder entfernen und Überschrift anzeigen:
     $("#dataListHeader").empty();
@@ -1070,6 +1563,8 @@ function loadData(url, oldScrollPos)
 
     $("#dataList").listview("refresh");
     $("#dataList").trigger("create");
+    // Filter Update:
+    $(".ui-input-search .ui-input-text").trigger("change");
     $("[id^=button]").trigger("create");
     $("[id^=input]").trigger("create");
 
@@ -1097,9 +1592,9 @@ function loadVariables(oldScrollPos)
     systemDate = data['date'];
     $.each(data.entries, function(i, variable) {
       valID    = variable['id'];
-      valName  = variable['name'];
-      valInfo  = variable['info'];
-      strValue = variable['value'];
+      valName  = unescape(variable['name']);
+      valInfo  = unescape(variable['info']);
+      strValue = unescape(variable['value']);
       valType  = variable['valueType'];
       valUnit  = variable['valueUnit'];
       val0     = variable['valueName0'];
@@ -1147,6 +1642,9 @@ function loadVariables(oldScrollPos)
   $("#dataList").listview("refresh");
   $("#dataList").trigger("create");
 
+  // Filter Update:
+  $(".ui-input-search .ui-input-text").trigger("change");
+
     if (oldScrollPos == -1)
       ScrollToContentHeader();
     else
@@ -1192,6 +1690,8 @@ function loadPrograms(oldScrollPos)
 
     $("#dataList").listview("refresh");
     $("#dataList").trigger("create");
+    // Filter Update:
+    $(".ui-input-search .ui-input-text").trigger("change");
 
     if (oldScrollPos == -1)
       ScrollToContentHeader();
@@ -1200,11 +1700,8 @@ function loadPrograms(oldScrollPos)
   });
 }
 
-function loadGraphicIDs(oldScrollPos)
+function loadGraphicIDs()
 {
-  if (oldScrollPos == -1)
-    ScrollToContentHeader();
-
   $("#dataList").empty();
   $("#dataListHeader").empty();
   // "Lade..." anzeigen:
@@ -1254,13 +1751,86 @@ function loadGraphicIDs(oldScrollPos)
 
     $("#dataList").listview("refresh");
     $("#dataList").trigger("create");
-
-    if (oldScrollPos == -1)
-      ScrollToContentHeader();
-    else
-      ScrollToPosition(oldScrollPos);
   });
 }
+
+// ------------------------- Options -------------------
+
+function loadOptions()
+{
+  $("#dataList").empty();
+  $("#dataListHeader").empty();
+
+  $("#dataListHeader").append("<li data-role='list-divider' role='heading'>Optionen</li>");
+  html = "<li><h1>Größe der Menugrafiken</h1><p><div data-role='fieldcontain'>";
+  html = html + "<div data-role='controlgroup' data-type='horizontal'>";
+  gfxSize = localStorage.getItem("optionsMenuGfxSize");
+  if (!gfxSize || gfxSize == "" || gfxSize == "large")
+  {
+    theme1 = "";
+    theme2 = "data-theme='b'"
+  }
+  else
+  {
+    theme1 = "data-theme='b'";
+    theme2 = ""
+  }
+  html = html + "<a href='#' id='optionsMenuGfxSizeSmall' data-id='optionsMenuGfxSizeSmall' data-role='button' data-inline='true' " + theme1 + ">Klein</a>";
+  html = html + "<a href='#' id='optionsMenuGfxSizeLarge' data-id='optionsMenuGfxSizeLarge' data-role='button' data-inline='true' " + theme2 + ">Groß</a>";
+  html = html + "</div></li>";
+  $("#dataList").append(html);
+
+  html = "<li><h1>Testseiten anzeigen</h1><p><div data-role='fieldcontain'>";
+  showTestPages = localStorage.getItem("optionsMenuShowTestpages");
+  if (!showTestPages || showTestPages == "" || showTestPages == "false")
+  {
+    theme1 = "";
+    theme2 = "data-theme='b'"
+  }
+  else
+  {
+    theme1 = "data-theme='b'";
+    theme2 = ""
+  }
+  html = html + "<div data-role='controlgroup' data-type='horizontal'>";
+  html = html + "<a href='#' id='optionsMenuShowTestpages' data-id='optionsMenuShowTestpages' data-role='button' data-inline='true' " + theme1 + ">Anzeigen</a>";
+  html = html + "<a href='#' id='optionsMenuHideTestpages' data-id='optionsMenuHideTestpages' data-role='button' data-inline='true' " + theme2 + ">Verstecken</a>";
+  html = html + "</div></li>";
+  $("#dataList").append(html);
+
+  html = "<li><h1>WebMatic neu laden, damit alle Einstellungen wirksam werden</h1><p><div data-role='fieldcontain'>";
+  html = html + "<a href='#' id='reloadWebMatic' data-id='reloadWebMatic' data-role='button' data-inline='true'>Neu laden</a>";
+  html = html + "</li>";
+  $("#dataList").append(html);
+
+  $("#dataListHeader").listview("refresh");
+  $("#dataList").listview("refresh");
+  $("#dataList").trigger("create");
+}
+
+$("#optionsMenuGfxSizeSmall").live("click", function(){
+  localStorage.setItem("optionsMenuGfxSize", "small");
+  RefreshPage(0, true);
+});
+
+$("#optionsMenuGfxSizeLarge").live("click", function(){
+  localStorage.setItem("optionsMenuGfxSize", "large");
+  RefreshPage(0, true);
+});
+
+$("#optionsMenuShowTestpages").live("click", function(){
+  localStorage.setItem("optionsMenuShowTestpages", "true");
+  RefreshPage(0, true);
+});
+
+$("#optionsMenuHideTestpages").live("click", function(){
+  localStorage.setItem("optionsMenuShowTestpages", "false");
+  RefreshPage(0, true);
+});
+
+$("#reloadWebMatic").live("click", function(){
+  window.location.reload();
+});
 
 // ------------------------- Initial call after page loading ------------------------
 
@@ -1268,32 +1838,56 @@ $(document).ready(function() {
   // Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
   $.ajaxSetup({ cache: false });
 
+  // Größe der Grafiken aus localStorage holen:
+  gfxClass = localStorage.getItem("optionsMenuGfxSize");
+  if (!gfxClass || gfxClass == "" || gfxClass == "large")
+    gfxClass = "ui-li-thumbnail";
+  else
+    gfxClass = "ui-li-icon";
+
   $.getJSON('cgi/favorites.cgi', function(data) {
     $.each(data, function(key, val) {
-      $("#listFavorites").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyFavorites' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png' class='ui-li-thumbnail'><span class='breakText'>" + val + "</span></a></li>");
+      $("#listFavorites").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyFavorites " + gfxClass + "' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'><span class='breakText'>" + val + "</span></a></li>");
     });
     $("#listFavorites").listview("refresh");
     $("img.lazyFavorites").lazyload({event: "lazyLoadInstantly"});
     $("img").trigger("lazyLoadInstantly");
   });
+  //.error(function() {  $("#listFavorites").append("<li class='menuListItem'>Fehler beim Laden</li>"); $("#listRooms").listview("refresh"); });
 
   $.getJSON('cgi/rooms.cgi', function(data) {
     $.each(data, function(key, val) {
-      $("#listRooms").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyRooms' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png' class='ui-li-thumbnail'><span class='breakText'>" + val + "</span></a></li>");
+      $("#listRooms").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyRooms " + gfxClass + "' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'><span class='breakText'>" + val + "</span></a></li>");
     });
     $("#listRooms").listview("refresh");
     $("img.lazyRooms").lazyload({event: "lazyLoadInstantly"});
     $("img").trigger("lazyLoadInstantly");
   });
+  //.error(function() {  $("#listRooms").append("<li class='menuListItem'>Fehler beim Laden</li>"); $("#listRooms").listview("refresh"); });
 
   $.getJSON('cgi/functions.cgi', function(data) {
     $.each(data, function(key, val) {
-      $("#listFunctions").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyFunctions' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png' class='ui-li-thumbnail'><span class='breakText'>" + val + "</span></a></li>");
+      $("#listFunctions").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyFunctions " + gfxClass + "' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'><span class='breakText'>" + val + "</span></a></li>");
     });
     $("#listFunctions").listview("refresh");
     $("img.lazyFunctions").lazyload({event: "lazyLoadInstantly"});
     $("img").trigger("lazyLoadInstantly");
   });
+  //.error(function() {  $("#listFunctions").append("<li class='menuListItem'>Fehler beim Laden</li>"); $("#listRooms").listview("refresh"); });
+
+  $("#listOther").append("<li class='menuItemVariables'><a href='#'><img class='" + gfxClass + "' src='img/menu/variables.png'><span class='breakText'>Systemvariablen</span></a></li>");
+  $("#listOther").append("<li class='menuItemPrograms'><a href='#'><img class='" + gfxClass + "' src='img/menu/programs.png'><span class='breakText'>Programme</span></a></li>");
+  $("#listOther").append("<li class='menuItemOptions'><a href='#'><img class='" + gfxClass + "' src='img/menu/options.png'><span class='breakText'>Optionen</span></a></li>");
+  $("#listOther").append("<li class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + "' src='img/menu/graphics.png'><span class='breakText'>Grafik IDs</span></a></li>");
+
+  // Größe der Grafiken aus localStorage holen:
+  showTestPages = localStorage.getItem("optionsMenuShowTestpages");
+  if (showTestPages && showTestPages == "true")
+  {
+    $("#listOther").append("<li class='menuItemDebug'><a href='#'><img class='" + gfxClass + "' src='img/menu/debug.png'><span class='breakText'>Testseite</span></a></li>");
+    $("#listOther").append("<li class='menuItemDebugCUxD'><a href='#'><img class='" + gfxClass + "' src='img/menu/debug.png'><span class='breakText'>Testseite CUxD</span></a></li>");
+  }
+  $("#listOther").listview("refresh");
 
   RefreshServiceMessages();
 

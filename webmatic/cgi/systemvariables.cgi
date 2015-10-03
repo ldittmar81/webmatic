@@ -22,35 +22,36 @@ cgi_eval {
       foreach (id, obj.EnumUsedIDs())
       {
         var sysVar = dom.GetObject(id);
-        if (sysVar.Name().Substr(0, 5) == "Quick")
-          {;}
-        else
+        if (isFirst) { isFirst = false; } else { WriteLine (','); }
+        Write('{');
+        Write('"name":"');
+        WriteURL(sysVar.Name());
+        Write('"');
+        Write(',"id":"' # sysVar.ID() # '"');
+        Write(',"info":"');
+        WriteURL(sysVar.DPInfo());
+        Write('"');
+        Write(',"value":"')
+        WriteURL(sysVar.Value())
+        Write('"');
+        if (sysVar.ValueType() == 16)
         {
-          if (isFirst) { isFirst = false; } else { WriteLine (','); }
-          Write('{');
-          Write('"name":"' # sysVar.Name() # '"');
-          Write(',"id":"' # sysVar.ID() # '"');
-          Write(',"info":"' # sysVar.DPInfo() # '"');
-          Write(',"value":"' # sysVar.Value() # '"');
-          if (sysVar.ValueType() == 16)
-          {
-            Write(',"valueList":"' # sysVar.ValueList() # '"');
-          }
-          if (sysVar.ValueType() == 2)
-          {
-            Write(',"valueName0":"' # sysVar.ValueName0() # '"');
-            Write(',"valueName1":"' # sysVar.ValueName1() # '"');
-          }
-          if (sysVar.ValueType() == 4)
-          {
-            Write(',"valueMin":"' # sysVar.ValueMin() # '"');
-            Write(',"valueMax":"' # sysVar.ValueMax() # '"');
-          }
-          Write(',"valueType":"' # sysVar.ValueType() # '"');
-          Write(',"valueUnit":"' # sysVar.ValueUnit() # '"');
-          Write(',"date":"' # sysVar.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
-          Write ('}');
+          Write(',"valueList":"' # sysVar.ValueList() # '"');
         }
+        if (sysVar.ValueType() == 2)
+        {
+          Write(',"valueName0":"' # sysVar.ValueName0() # '"');
+          Write(',"valueName1":"' # sysVar.ValueName1() # '"');
+        }
+        if (sysVar.ValueType() == 4)
+        {
+          Write(',"valueMin":"' # sysVar.ValueMin() # '"');
+          Write(',"valueMax":"' # sysVar.ValueMax() # '"');
+        }
+        Write(',"valueType":"' # sysVar.ValueType() # '"');
+        Write(',"valueUnit":"' # sysVar.ValueUnit() # '"');
+        Write(',"date":"' # sysVar.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
+        Write ('}');
       }
 
   WriteLine ("");

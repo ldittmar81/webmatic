@@ -79,7 +79,8 @@ cgi_eval {
               if ((strObjType == "WATERDETECTIONSENSOR") ||(strObjType == "SMOKE_DETECTOR_TEAM") || (strObjType == "SENSOR_FOR_CARBON_DIOXIDE"))
               {
                 if (isFirst) { isFirst=false; } else { WriteLine(","); }
-                Write('  "' # objInner.Name() # '" : "' # strObjType # '"');
+                strDate = objDP.Timestamp().Format("%d.%m.%Y %H:%M:%S");
+                Write('{"name":"' # objInner.Name() # '", "type":"' # objDP.TypeName() # '", "device":"' # objInner.HssType() # '", "error":"' # strDpType # '", "value":"' # objDP.Value() # '", "date":"' # strDate # '"}');
               }
             } ! STATE
           } ! HSSDP

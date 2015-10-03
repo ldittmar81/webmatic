@@ -15,7 +15,7 @@
     {"id":"dbg_3043", "type":"HSSDP", "hssType":"MOTION", "value":"true", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 09:34:44"},
     {"id":"dbg_3020", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:27"}  ]
 },
-    {"name":"Philips Ambilight Lampe WZ:1", "type":"CHANNEL", "id":"3428", "address":"HEQ0353361:1", "hssType":"DIMMER", "channels": [
+    {"name":"Philips Ambilight Lampe WZ:1", "type":"CHANNEL", "id":"dbg_3428", "address":"HEQ0353361:1", "hssType":"DIMMER", "channels": [
     {"id":"dbg_3443", "type":"HSSDP", "hssType":"LEVEL", "value":"0.000000", "date":"07.11.2012 22:38:01"},
     {"id":"dbg_3444", "type":"HSSDP", "hssType":"OLD_LEVEL", "value":"", "date":"01.01.1970 01:00:00"},
     {"id":"dbg_3446", "type":"HSSDP", "hssType":"RAMP_TIME", "value":"", "date":"01.01.1970 01:00:00"},
@@ -25,6 +25,17 @@
     {"id":"dbg_3433", "type":"HSSDP", "hssType":"ERROR_OVERLOAD", "value":"true", "date":"07.11.2012 22:38:01"},
     {"id":"dbg_3429", "type":"HSSDP", "hssType":"ERROR_OVERHEAT", "value":"false", "date":"07.11.2012 22:38:01"},
     {"id":"dbg_16543", "type":"HSSDP", "hssType":"RAMP_STOP", "value":"", "date":"01.01.1970 01:00:00"}  ]
+},
+    {"name":"Virtual Dimmer", "type":"CHANNEL", "id":"dbg_9909", "address":"JEQ0200435:3", "hssType":"VIRTUAL_DIMMER", "channels": [
+    {"id":"9925", "type":"HSSDP", "hssType":"LEVEL", "value":"1.000000", "date":"13.02.2012 20:07:13"},
+    {"id":"9926", "type":"HSSDP", "hssType":"OLD_LEVEL", "value":"", "date":"01.01.1970 01:00:00"},
+    {"id":"9928", "type":"HSSDP", "hssType":"RAMP_TIME", "value":"", "date":"01.01.1970 01:00:00"},
+    {"id":"9927", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "date":"01.01.1970 01:00:00"},
+    {"id":"9923", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "date":"10.02.2012 12:23:19"},
+    {"id":"9919", "type":"HSSDP", "hssType":"ERROR_REDUCED", "value":"false", "date":"13.02.2012 20:07:13"},
+    {"id":"9915", "type":"HSSDP", "hssType":"ERROR_OVERLOAD", "value":"false", "date":"13.02.2012 20:07:13"},
+    {"id":"9911", "type":"HSSDP", "hssType":"ERROR_OVERHEAT", "value":"false", "date":"13.02.2012 20:07:13"},
+    {"id":"10208", "type":"HSSDP", "hssType":"RAMP_STOP", "value":"", "date":"01.01.1970 01:00:00"}  ]
 },
     {"name":"Briefschlitz-Kontakt:1", "type":"CHANNEL", "id":"dbg_13480", "address":"JEQ0079986:1", "hssType":"SHUTTER_CONTACT", "channels": [
     {"id":"dbg_13482", "type":"HSSDP", "hssType":"STATE", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 11:49:05"}  ]
@@ -173,10 +184,41 @@
 {"name":"RS485 Digital Analog Output", "type":"CHANNEL", "id":"dbg_29048", "address":"IEQ0458948:9", "hssType":"DIGITAL_ANALOG_OUTPUT", "channels": [
 {"id":"dbg_29049", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"11.10.2012 17:38:19"} ]
 },
-{"name":"Unbekanntes Geraet", "type":"CHANNEL", "id":"dbg_29043", "address":"IEQ0458446:1", "hssType":"UNKNOWN_TEST", "channels": [
+{"name":"Unbekanntes Gerät", "type":"CHANNEL", "id":"dbg_29043", "address":"IEQ0458446:1", "hssType":"UNKNOWN_TEST", "channels": [
 {"id":"dbg_29029", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"11.10.2012 17:38:19"},
 {"id":"dbg_29019", "type":"HSSDP", "hssType":"UQ_LONG", "value":"true", "date":"11.10.2012 17:38:19"},
 {"id":"dbg_11244", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"06.11.2012 15:40:29"} ]
-}
-]
+},
+{"name":"CO2 Sensor", "type":"CHANNEL", "id":"dbg_2591", "address":"GEQ0169495:1", "hssType":"SENSOR_FOR_CARBON_DIOXIDE", "channels": [
+{"id":"dbg_2593", "type":"HSSDP", "hssType":"STATE", "value":"0", "date":"11.10.2012 15:04:31"} ]
+},
+{"name":"CO2 Sensor", "type":"CHANNEL", "id":"dbg_2591", "address":"GEQ0169495:1", "hssType":"SENSOR_FOR_CARBON_DIOXIDE", "channels": [
+{"id":"dbg_2593", "type":"HSSDP", "hssType":"STATE", "value":"1", "date":"11.10.2012 15:04:31"} ]
+},
+{"name":"CO2 Sensor", "type":"CHANNEL", "id":"dbg_2591", "address":"GEQ0169495:1", "hssType":"SENSOR_FOR_CARBON_DIOXIDE", "channels": [
+{"id":"dbg_2593", "type":"HSSDP", "hssType":"STATE", "value":"2", "date":"11.10.2012 15:04:31"} ]
+},
+{"name":"LED16 Anzeige, Aus", "type":"CHANNEL", "id":"dbg_11084", "address":"JEQ0088xxx:1", "hssType":"KEY", "channels": [
+    {"id":"dbg_11088", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"dbg_11087", "type":"HSSDP", "hssType":"LED_STATUS", "value":"0", "valueUnit":"", "date":"24.09.2012 17:02:01"},
+    {"id":"dbg_11085", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
+},
+    {"name":"LED16 Anzeige, Rot", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
+    {"id":"dbg_11093", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"1", "valueUnit":"", "date":"24.07.2012 17:02:27"},
+    {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
+},
+    {"name":"LED16 Anzeige, Grün", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
+    {"id":"dbg_11093", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"2", "valueUnit":"", "date":"24.10.2012 17:02:27"},
+    {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
+},
+    {"name":"LED16 Anzeige, Orange", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
+    {"id":"dbg_11093", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"3", "valueUnit":"", "date":"24.08.2012 17:02:27"},
+    {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
+},
+{"name":"Füllstandsmesser", "type":"CHANNEL", "id":"dbg_13629", "address":"JEQ0652897:1", "hssType":"CAPACITIVE_FILLING_LEVEL_SENSOR", "channels": [
+    {"id":"dbg_13630", "type":"HSSDP", "hssType":"FILLING_LEVEL", "value":"9", "valueUnit":"%", "date":"03.11.2012 10:13:31"}  ]
+}]
 }

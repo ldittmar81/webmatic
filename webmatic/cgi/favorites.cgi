@@ -27,6 +27,10 @@ cgi_eval {
         {
           favNameUser = favName.Substr(0, 5);
         }
+        else
+        {
+          favNameUser = "";
+        }
         if ((id != "202") && (id != "203") && (id != "204") && (favNameUser != "_USER") && (fav.EnCopyID() == ID_ERROR))
         {
           if (i != 1)

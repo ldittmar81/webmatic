@@ -77,6 +77,7 @@ cgi_eval {
                 Write(', "type":"' # objDP.TypeName() # '"');
                 Write(', "hssType":"' # objDP.HssType() # '"');
                 Write(', "value":"' # objDP.Value() # '"');
+                Write(', "valueUnit":"' # objDP.ValueUnit() # '"');
                 Write(', "date":"' # objDP.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
                 Write('}');
               }
@@ -84,11 +85,17 @@ cgi_eval {
               {
                 ! Im Falle einer Variable die allgemeinen Werte setzen und Inhalt auslesen. Spaeter als Funktion, da unten nochmal selber Code:
                 Write('    {');
-                Write('"name":"' # objDP.Name() # '"');
+                Write('"name":"');
+                WriteURL(objDP.Name());
+                Write('"');
                 Write(', "type":"VARDP"');
                 Write(', "id":"' # objDP.ID() # '"');
-                Write(',"info":"' # objDP.DPInfo() # '"');
-                Write(', "value":"' # objDP.Value() # '"');
+                Write(',"info":"');
+                WriteURL(objDP.DPInfo());
+                Write('"');
+                Write(', "value":"');
+                WriteURL(objDP.Value());
+                Write('"');
 
                 if (objDP.ValueType() == 16)
                 {
@@ -116,7 +123,7 @@ cgi_eval {
           }
           else
           {
-            if (strType == "VARDP")
+            if ((strType == "VARDP") || (strType == "ALARMDP"))
             {
               ! Komma anhängen, wenn schon eine Zeile vorhanden:
               if (firstEntry != 0) { WriteLine(','); }
@@ -124,11 +131,17 @@ cgi_eval {
               
               ! Im Falle einer Variable die allgemeinen Werte setzen und Inhalt auslesen:
               Write('    {');
-              Write('"name":"' # objObject.Name() # '"');
+              Write('"name":"');
+              WriteURL(objObject.Name());
+              Write('"');
               Write(', "type":"VARDP"');
               Write(', "id":"' # objObject.ID() # '"');
-              Write(',"info":"' # objObject.DPInfo() # '"');
-              Write(', "value":"' # objObject.Value() # '"');
+              Write(',"info":"');
+              WriteURL(objObject.DPInfo());
+              Write('"');
+              Write(', "value":"');
+              WriteURL(objObject.Value());
+              Write('"');
 
               if (objObject.ValueType() == 16)
               {
@@ -148,6 +161,40 @@ cgi_eval {
               Write(', "valueType":"' # objObject.ValueType() # '"');
               Write(', "valueUnit":"' # objObject.ValueUnit() # '"');
               Write(', "date":"' # objObject.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
+
+              ! Prüfen ob Kombinationsdiagramm vorliegt. Fix notwendig -> objObject.DPInfo() liefert in manchen Fällen wohl ein obj?
+              string inf;
+              ! var v = objObject.DPInfo();
+              if (inf.Find("(dk") == -1)
+              {
+              }
+              else
+              {
+                ! Werte aller Diagramme auslesen, auf welche hier verwiesen wird:
+                WriteLine(', "diagrams": [');
+                string val = objObject.Value();
+                string strDkVar;
+                integer firstDiagram = 0;
+                foreach(strDkVar, val.Split(";"))
+                {
+                  ! Komma anhängen, wenn schon eine Zeile vorhanden:
+                  if (firstDiagram != 0) { WriteLine(','); }
+                  firstDiagram = 1;
+
+                  Write('  {');
+                  ! Das ist noch die Variable inklusive Optionen, nochmal am , teilen und ersten Teil nehmen:
+                  string strVarName = strDkVar.StrValueByIndex(",", 0);
+                  object objDkVar = dom.GetObject(strVarName);
+                  if (objDkVar)
+                  {
+                    Write('"name":"' # objDkVar.Name() # '"');
+                    Write(', "value":"' # objDkVar.Value() # '"');
+                  }
+                  Write('  }');
+                }
+                WriteLine('    ]');
+              }
+
               Write ('}');
             }
             else
