@@ -1,6 +1,47 @@
 #!/bin/sh
 
-mount /dev/mtdblock3
-cp -R ./webmatic /usr/local/etc/config/addons/www/
-cp ./webmatic-dlg /usr/local/etc/config/rc.d
-chmod +x /usr/local/etc/config/rc.d/webmatic-dlg
+ADDONNAME=webmatic
+WWWDIR=/mnt/etc/config/addons/www/$ADDONNAME
+RCDDIR=/mnt/etc/config/rc.d
+
+mkdir -p /mnt
+
+if [ "$1" == "" ]; then
+    echo "CCU1"
+    mount -t yaffs /dev/mtdblock3 /mnt
+elif [ "$1" == "CCU2" ]; then
+    echo "CCU2"
+    mount -t ubifs ubi1:user /mnt
+elif [ "$1" == "HM-RASPBERRYMATIC" ]; then
+    echo "HM-RASPBERRYMATIC"
+    mount /usr/local
+    mount --bind /usr/local /mnt
+fi
+
+mkdir -p $WWWDIR
+cp -R $ADDONNAME/* $WWWDIR/
+chmod 755 $WWWDIR
+
+cp webmatic-dlg $RCDDIR/
+chmod +x $RCDDIR/webmatic-dlg
+
+umount /mnt
+
+# sync filesystem to make sure all changes are written to disk
+sync
+
+if [ "$1" = "" ]; then
+        echo "CCU1"
+        lcdtool "Reboot...             "
+        lcdtool -a 0x40 -t bin 00
+        echo "x" > /dev/watchdog
+        reboot
+        while true ; do true ;  done
+elif [ "$1" = "CCU2" ]; then
+        echo "CCU2"
+        # CCU2 always reboots after Addon/Firmware Update
+elif [ "$1" = "HM-RASPBERRYMATIC" ]; then
+        echo "HM-RASPBERRYMATIC"
+        umount /usr/local
+        # RASPBERRYMATIC always reboots after Addon/Firmware Update
+fi
