@@ -1,0 +1,25 @@
+#!/bin/sh
+
+case "$1" in
+
+	""|start|restart|stop)
+		exit 0
+		;;
+
+	info)
+        echo "Info: <b>WebMatic</b><br>Alternative GUI<br>(c) 2012 Frank Epple"
+        echo "Name: WebMatic"
+        echo "Version: 1.1 beta1"
+        echo "Operations: uninstall"
+        ;;
+	uninstall)
+		rm -r /usr/local/etc/config/addons/www/webmatic
+		;;
+	*)
+        echo "Usage: webmatic {info|uninstall}" >&2
+        exit 1
+        ;; 
+
+esac 
+
+exit 0

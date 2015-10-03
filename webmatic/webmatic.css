@@ -1,0 +1,56 @@
+
+.longerFlip .ui-slider-switch { width: 50em }
+
+.valueNoError { color:#909090; font-size: 16px; font-style: italic; }
+.valueInfo { color:#000000; font-size: 16px; font-style: italic; }
+.valueWarning { color:#BB6600; font-size: 16px; font-weight: bold; font-style: italic; }
+.valueError { color:#CC0000; font-size: 16px; font-weight: bold; font-style: italic; }
+.valueOK { color:#008000; font-size: 16px; font-style: italic; }
+
+.breakText { white-space:normal; word-wrap:break-word; }
+
+/* the ':after' selector adds 'content' after the h1 tag */
+/*h1:before{
+  content: 'LI2:';
+}*/
+.content-secondary {
+  width: 30%;
+  float: left;
+  padding-right: 1%;
+}
+
+.content-primary {
+  width: 69%;
+  float: left;
+}
+
+/* We use CSS3 media queries to determine which CSS to use
+** There are no standards for the size of devices, you will have to determine YOUR best guess,
+** which won't be perfect, but will work in most cases.
+** if our width is 1024 or less assume and orientation portrait
+*/
+/*    @media screen and (max-width: 1050px)
+{
+  .content-secondary {
+    width: 30%;
+    float: left;
+    padding-right: 1%;
+  }
+
+  .content-primary {
+    width: 69%;
+    float: left;
+  }
+}*/
+
+@media screen and (max-width: 900px)
+{
+  .content-secondary {
+    width: 100%;
+  }
+
+  .content-primary {
+    width: 100%;
+    float: left;
+  }
+}

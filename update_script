@@ -1,0 +1,6 @@
+#!/bin/sh
+
+mount /dev/mtdblock3
+cp -R ./webmatic /usr/local/etc/config/addons/www/
+cp ./webmatic-dlg /usr/local/etc/config/rc.d
+chmod +x /usr/local/etc/config/rc.d/webmatic-dlg
