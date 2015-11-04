@@ -1,0 +1,9 @@
+{
+  "favorites": "true",
+  "rooms": "true",
+  "functions": "true",
+  "programs": "true",
+  "others": "true",
+  "collapsed": "rooms",
+  "systemvar_readonly": "true"
+}

@@ -11,14 +11,14 @@
   content: 'LI2:';
 }*/
 .content-secondary {
-  width: 30%;
-  float: left;
-  padding-right: 1%;
+	width: 30%;
+	float: left;
+	padding-right: 1%;
 }
 
 .content-primary {
-  width: 69%;
-  float: left;
+	width: 69%;
+	float: left;
 }
 
 /* We use CSS3 media queries to determine which CSS to use
@@ -42,12 +42,12 @@
 
 @media screen and (max-width: 900px)
 {
-  .content-secondary {
-    width: 100%;
-  }
+	.content-secondary {
+		width: 100%;
+	}
 
-  .content-primary {
-    width: 100%;
-    float: left;
-  }
+	.content-primary {
+		width: 100%;
+		float: left;
+	}
 }

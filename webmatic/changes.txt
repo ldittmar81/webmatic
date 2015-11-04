@@ -138,3 +138,13 @@ V1.1
 - Fix für iPhone 5 Bildschirmformat -> Keine schwarzen Balken mehr wenn über HomeScreen Button gestartet. Wichtig -> Homescreen Icon muss neu angelegt werden!
 - Englischer Text in Filtern ersetzt -> "Daten filtern...".
 - Fehlertexte bei Geräten anzeigen, dafür "Kein Fehler" nicht mehr anzeigen, braucht nur Platz und ist überflüssige Information. Ein paar Geräte fehlen noch (Rauchmeler, CO Melder, ...), dort wird Fehler anzeigt, aber nur mit Nummer.
+
+V1.4
+====
+- Codereview
+- Geräte die als nicht sichtbar deklariert wurde, werden nicht mehr angezeigt
+- Neue Ansicht "get.html" akzeptiert eine ID und zeigt nur den gewünschten Raum oder Gewerk an "get.html?id=12345"
+- Eingabe von HTML-Code in Textvariablen möglich, wenn als Einheit 'html' eingegeben wird. JavaScript wird auch ausgeführt.
+- Wenn eine Textvariable zu lang ist, erscheint eine Textarea anstatt eines Input-Feldes
+- Startparameter werden in der Datei init.json eingegeben
+- Nur ausführbare Programme anzeigen
