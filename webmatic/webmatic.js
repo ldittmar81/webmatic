@@ -1877,7 +1877,8 @@ $(document).ready(function() {
 
   $("#listOther").append("<li class='menuItemVariables'><a href='#'><img class='" + gfxClass + "' src='img/menu/variables.png'><span class='breakText'>Systemvariablen</span></a></li>");
   $("#listOther").append("<li class='menuItemPrograms'><a href='#'><img class='" + gfxClass + "' src='img/menu/programs.png'><span class='breakText'>Programme</span></a></li>");
-  $("#listOther").append("<li class='menuItemOptions'><a href='#'><img class='" + gfxClass + "' src='img/menu/options.png'><span class='breakText'>Optionen</span></a></li>");
+  //$("#listOther").append("<li class='menuItemOptions'><a href='#'><img class='" + gfxClass + "' src='img/menu/options.png'><span class='breakText'>Optionen</span></a></li>");
+  $("#listOther").append("<li class='menuItemOptions'><a href='#'><span class='breakText'>Optionen</span></a></li>");
   $("#listOther").append("<li class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + "' src='img/menu/graphics.png'><span class='breakText'>Grafik IDs</span></a></li>");
 
   // Größe der Grafiken aus localStorage holen:
