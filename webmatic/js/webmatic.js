@@ -9,7 +9,31 @@ var lastClickID   = -1;
 
 prevItem = 0;
 
+//Initialwerte
 var sysVarReadonly = false;
+var rooms = false;
+var functions = false;
+var favorites = false;
+var programs = false;
+var others = false;
+var collapsed = "";
+var theme_arr = [ "a", "b", "c", "d", "e" ];
+var theme = "a";
+
+//Initialwerte auslesen
+$.getJSON("init.json", function(data) {
+	sysVarReadonly = data["systemvar_readonly"] == "true";
+	rooms = data["rooms"] == "true";
+	functions = data["functions"] == "true";
+	favorites = data["favorites"] == "true";
+	others = data["others"] == "true";
+	programs = data["programs"] == "true";
+	collapsed = data["collapsed"];
+	theme = data["theme"];
+	if($.inArray(theme, theme_arr) == -1){
+		theme = "a";
+	}
+});
 
 // Initialize refresh timer:
 refreshTimer = setInterval(function() {CheckRefreshPage();}, 1000);
@@ -1616,9 +1640,19 @@ function loadOptions(){
 	$("#dataList").trigger("create");
 }
 
-$(function(){
+function changeTheme(){
 
-	// Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
+	$('.ui-overlay-a').removeClass('ui-overlay-a').addClass('ui-overlay-' + theme);
+	$('.ui-page-theme-a').removeClass('ui-page-theme-a').addClass('ui-page-theme-' + theme).attr('data-theme', theme);
+	$('.ui-bar-a').removeClass('ui-bar-a').addClass('ui-bar-' + theme).attr('data-theme', theme);
+	$('.ui-body-a').removeClass('ui-body-a').addClass('ui-body-' + theme).attr('data-theme', theme);
+	$('.ui-btn-a').removeClass('ui-btn-a').addClass('ui-btn-' + theme);	
+	$('.ui-group-theme-a').removeClass('ui-group-theme-a').addClass('ui-group-theme-' + theme).attr('data-theme', theme);
+}
+
+$(function(){
+    
+    // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 	$(document.body).on("click", "[id^=setButton]", function(){
 		dataID = $(this).data("id");    // Homematic Geräte ID.
 		refresh = $(this).data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.

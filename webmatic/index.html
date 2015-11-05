@@ -13,9 +13,11 @@
 		<link rel="apple-touch-icon" sizes="72x72" href="img/icons/webmatic_icon_72.png"/>
 		<link rel="apple-touch-icon" sizes="114x114" href="img/icons/webmatic_icon_114.png"/>
 		<link rel="apple-touch-icon" sizes="144x144" href="img/icons/webmatic_icon_144.png"/>
-		<link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css" />
-		<link rel="stylesheet" href="webmatic.css" />
+		<link rel="stylesheet" href="themes/webmatic-theme.min.css" />
+		<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+		<link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
 		<link rel="stylesheet" href="jqplot/jquery.jqplot.min.css" />
+		<link rel="stylesheet" href="webmatic.css" />
 		
 		<script type="text/javascript" src="jquery/jquery-2.1.4.min.js"></script>		
 		<script type="text/javascript">
@@ -40,14 +42,14 @@
 	</head> 
 	<body>
 		<div data-role="page" data-theme="a">		
-			<div data-role="popup" id="popupService" data-theme="e" data-overlay-theme="a">
+			<div data-role="popup" id="popupService" data-theme="a" data-overlay-theme="a">
 				<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
 				<div data-role="content" id="popupDiv">
 					<h3>Servicemeldungen</h3>
-					<ul id="serviceList" data-role="listview" data-inset="true" data-theme="d">
+					<ul id="serviceList" data-role="listview" data-inset="true" data-theme="a">
 						<li>Keine Servicemeldungen vorhanden</li>
 					</ul>
-					<a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="c" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
+					<a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="a" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
 				</div>
 			</div>
 
@@ -60,7 +62,7 @@
 				</div>
 			</div>
 
-			<div data-role="content" data-theme="c">
+			<div data-role="content" data-theme="a">
 			
 				<div class="content-secondary">
 					<div id="main_menu" data-role="collapsible-set" data-theme="a"></div>

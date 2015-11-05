@@ -148,3 +148,4 @@ V1.4
 - Wenn eine Textvariable zu lang ist, erscheint eine Textarea anstatt eines Input-Feldes
 - Startparameter werden in der Datei init.json eingegeben
 - Nur ausführbare Programme anzeigen
+- Verschiedene Styles auswählbar

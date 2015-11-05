@@ -26,4 +26,6 @@ $(document).ready(function() {
 
   // Update Timer loslaufen lassen:
   RestartTimer();
+  
+  changeTheme();
 });
