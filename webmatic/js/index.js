@@ -77,7 +77,7 @@ $(function(){
 	// Update Timer loslaufen lassen:
 	RestartTimer();
 	
-	changeTheme();
+	changeTheme(theme);
 	
 	$(document.body).on("click", ".menuListItem", function(){
 		lastClickType = 1;
@@ -137,7 +137,7 @@ $(function(){
 		RemoveMessages();
 		RefreshServiceMessages();
 	});
-
+	
 	$(document.body).on("click", "#optionsMenuGfxSizeSmall", function(){
 		localStorage.setItem("optionsMenuGfxSize", "small");
 		RefreshPage(0, true);
@@ -156,6 +156,12 @@ $(function(){
 	$(document.body).on("click", "#optionsMenuHideTestpages", function(){
 		localStorage.setItem("optionsMenuShowTestpages", "false");
 		RefreshPage(0, true);
+	});
+	
+	$(document.body).on("click", "[name='optionsMenuGfxThemeChooser']", function(){
+		$("[name='optionsMenuGfxThemeChooser']").removeClass("ui-btn-active");
+		$(this).addClass("ui-btn-active");
+		changeTheme($(this).data('value'));
 	});
 
 	$(document.body).on("click", "#reloadWebMatic", function(){

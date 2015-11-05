@@ -16,16 +16,16 @@ var getUrlParameter = function getUrlParameter(sParam) {
 };
 
 $(document).ready(function() {
-  // Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
-  $.ajaxSetup({ cache: false });
+	// Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
+	$.ajaxSetup({ cache: false });
 
-  lastClickType = 1;
-  lastClickID   = getUrlParameter('id');
-  $('.ui-input-search .ui-input-text').val("");
-  RefreshPage($(this), false);
+	lastClickType = 1;
+	lastClickID   = getUrlParameter('id');
+	$('.ui-input-search .ui-input-text').val("");
+	RefreshPage($(this), false);
 
-  // Update Timer loslaufen lassen:
-  RestartTimer();
+	// Update Timer loslaufen lassen:
+	RestartTimer();
   
-  changeTheme();
+	changeTheme(theme);
 });

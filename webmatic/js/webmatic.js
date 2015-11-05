@@ -17,8 +17,11 @@ var favorites = false;
 var programs = false;
 var others = false;
 var collapsed = "";
-var theme_arr = [ "a", "b", "c", "d", "e" ];
-var theme = "a";
+var theme_arr = [ "a", "b", "c", "d", "e", "f", "g", "h"];
+var theme = localStorage.getItem("optionsMenuGfxTheme");
+if($.inArray(theme, theme_arr) == -1){
+	theme = "a";
+}
 
 //Initialwerte auslesen
 $.getJSON("init.json", function(data) {
@@ -29,10 +32,6 @@ $.getJSON("init.json", function(data) {
 	others = data["others"] == "true";
 	programs = data["programs"] == "true";
 	collapsed = data["collapsed"];
-	theme = data["theme"];
-	if($.inArray(theme, theme_arr) == -1){
-		theme = "a";
-	}
 });
 
 // Initialize refresh timer:
@@ -72,15 +71,13 @@ function RefreshPage(item, saveScrollPos){
 	// Markieren von selektiertem Menueintrag:
 	if (item != 0){
 		if (prevItem != 0){
-			prevItem.removeClass("ui-btn-up-b");
-			prevItem.removeClass("ui-btn-hover-b");
-			prevItem.addClass("ui-btn-up-c");
-			prevItem.attr("data-theme", "c");
+			prevItem.removeClass("ui-btn-down-" + theme);
+			prevItem.addClass("ui-btn-up-" + theme);
+			prevItem.attr("data-theme", theme);
 		}
-		item.removeClass("ui-btn-up-c");
-		item.removeClass("ui-btn-hover-c");
-		item.addClass("ui-btn-up-b");
-		item.attr("data-theme", "b");
+		item.removeClass("ui-btn-up-" + theme);
+		item.addClass("ui-btn-down-" + theme);
+		item.attr("data-theme", theme);
 		prevItem = item;
 	}
 
@@ -146,11 +143,11 @@ function RefreshServiceMessages(){
 		});
 		$('#buttonService .ui-btn-text').text("(" + errNr + ")");
 		if (errNr == 0){
-			$('#buttonService').buttonMarkup({theme: 'b'});
+			$('#buttonService').buttonMarkup({theme: theme});
 			$('#headerButtonGroup').controlgroup('refresh', true);
 			$("#serviceList").append("<li><p>Keine Servicemeldungen vorhanden.</p></li>");
 		}else{
-			$('#buttonService').buttonMarkup({theme: 'e'});
+			$('#buttonService').buttonMarkup({theme: theme});
 			$('#headerButtonGroup').controlgroup('refresh', true);
 		}
 		$('#serviceList').listview().listview('refresh', true);
@@ -174,13 +171,13 @@ function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh){
 	}
 
 	if (noAction){
-		html += "<a href='#' data-value='" + value + "' data-role='button' data-inline='true' data-theme='b'>" + text + "</a>";
+		html += "<a href='#' data-value='" + value + "' data-role='button' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
 	}else{
 		html += "<a href='#' id='setButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
 	}
 
 	if (!onlyButton){
-		html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK'></span></p>";
+		html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
 	}
 
 	return html;
@@ -189,7 +186,7 @@ function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh){
 // Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
 function AddStartProgramButton(id, text, vorDate){
 	html = "<p class='ui-li-desc'><a href='#' id='startProgramButton_" + id + "' data-id='" + id + "' data-role='button' data-inline='true' data-icon='gear'>" + text + "</a></div>";
-	html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK'></span></p>";
+	html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme +"'></span></p>";
 	return html;
 }
 
@@ -200,10 +197,10 @@ function AddStartProgramButton(id, text, vorDate){
 // TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groß ist?
 function AddSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh){
 	html = "<div data-role='fieldcontain'>";
-	html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='d'/>";
+	html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
 	html += " (" + min * factor + " - " + max * factor + " " + unit + ") ";
 	html += "<a href='#' id='setNumberButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK'></span>";
+	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
 	html += "</div>";
 	return html;
 }
@@ -214,27 +211,23 @@ function AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, ref
 
 	// Leerstring heißt wohl auch false, z.B. bei Alarmzone.
 	if (strValue == "false" || strValue == ""){
-		theme = "data-theme = 'b'";
-		idString = "";
+		idString = "class='ui-btn-active'";
 	}else{
-		theme = "";
 		idString = "id='setButton_" + valID + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
 	}	
-	html += "<a href='#' " + idString + " data-value='false' data-role='button' data-inline='true' " + theme + ">" + val0 + "</a>";
+	html += "<a href='#' " + idString + " data-value='false' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val0 + "</a>";
 
 	if (strValue == "true"){
-		theme = "data-theme = 'b'";
-		idString = "";
+		idString = "class='ui-btn-active'";
 	}else{
-		theme = "";
 		idString = "id='setButton_" + valID + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
 	}
-	html += "<a href='#' " + idString + " data-value='true' data-role='button' data-inline='true'" + theme + ">" + val1 + "</a>";
+	html += "<a href='#' " + idString + " data-value='true' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val1 + "</a>";
 
 	html += "</div>";
 	html += "</div>";
 	html += " " + valUnit + " ";//<a href='#' id='setBoolButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK'></span>";
+	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
 
 	return html;
 }
@@ -249,7 +242,7 @@ function AddSetBoolComboBox(valID, strValue, val0, val1, valUnit, vorDate){
 	}
 	html += "</select>";
 	html += " " + valUnit + " <a href='#' id='setBoolButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK'></span>";
+	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
 	html += "</div>";
 
 	return html;
@@ -265,7 +258,7 @@ function AddSetBoolSwitch(valID, strValue, val0, val1, valUnit, vorDate){
 	}
 	html += "</select></div>";
 	html += " " + valUnit + " <a href='#' id='setBoolButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK'></span>";
+	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
 	html += "</div>";
 
 	return html;
@@ -278,7 +271,7 @@ function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh){
 	optionsArray = valList.split(";");
 	for (i = 0; i < optionsArray.length; i++){
 		if (selIndex == i){
-			html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' data-theme='b'>" + optionsArray[i] + "</a>";
+			html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' class='ui-btn-active' data-theme='" + theme + "'>" + optionsArray[i] + "</a>";
 		}else{
 			html += "<a href='#' id='setButton_" + valID + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' data-role='button' data-inline='true'>" + optionsArray[i] + "</a>";
 		}
@@ -286,7 +279,7 @@ function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh){
 	html += "</div>";
 	html += "</div>";
 	html += " " + valUnit + " "; //<a href='#' id='setValueListButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK'></span>";
+	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
 
 	return html;
 }
@@ -301,7 +294,7 @@ function AddSetText(valID, val, valUnit, vorDate){
 		html += "<input type='text' id='setValue_" + valID + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
 	}
 	html += " " + valUnit + " <a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK'></span>";
+	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
 	html += "</div>";
 	return html;
 }
@@ -311,7 +304,7 @@ function AddHTML(valID, val, vorDate){
 	html += "<div><textarea id='setValue_" + valID + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea></div>";
 	html += "<div>" + val + "</div>";
 	html += "<a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK'></span>";
+	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
 	html += "</div>";
 	return html;
 }
@@ -359,16 +352,16 @@ function GetErrorMessage(errType, error, errValue, deviceHssType){
 
 	if (errType == "ALARMDP"){
 		if (error == "CONFIG_PENDING"){
-			return "<span class='valueInfo'>Konfigurationsdaten werden &uuml;bertragen</span>";
+			return "<span class='valueInfo valueInfo-" + theme + "'>Konfigurationsdaten werden &uuml;bertragen</span>";
 		}
 		if (error == "LOWBAT"){
-			return "<span class='valueWarning'>Batteriestand niedrig</span>";
+			return "<span class='valueWarning valueWarning-" + theme + "'>Batteriestand niedrig</span>";
 		}
 		if (error == "STICKY_UNREACH"){
-			return "<span class='valueInfo'>Kommunikation war gest&ouml;rt</span>";
+			return "<span class='valueInfo valueInfo-" + theme + "'>Kommunikation war gest&ouml;rt</span>";
 		}
 		if (error == "UNREACH"){
-			return "<span class='valueError'>Kommunikation zur Zeit gest&ouml;rt</span>";
+			return "<span class='valueError valueError-" + theme + "'>Kommunikation zur Zeit gest&ouml;rt</span>";
 		}
 	}else if (errType == "HSSDP"){
 		if (error == "LOWBAT"){
@@ -433,7 +426,7 @@ function GetErrorMessage(errType, error, errValue, deviceHssType){
 			}
 		}else if (error == "ERROR_OVERLOAD"){
 			if (errValue){
-				txt = "Strom-&UUml;berlastung";
+				txt = "Strom-&Uuml;berlastung";
 			}else{
 				noError = true;
 			}
@@ -465,13 +458,13 @@ function GetErrorMessage(errType, error, errValue, deviceHssType){
 		}
 
 		if (txt != ""){
-			txt = "<span class='valueError'>" + txt + "</span>";
+			txt = "<span class='valueError valueError-" + theme + "'>" + txt + "</span>";
 		}      
 	}
   
 	// Konnte kein Text ermittelt werden, dann "Unbekannter Fehler" anzeigen:
 	if (txt == "" && !noError){
-		txt = "<span class='valueError'>Unbekannter Fehler: " + errValue + "</span>";
+		txt = "<span class='valueError valueError-" + theme + "'>Unbekannter Fehler: " + errValue + "</span>";
 	}
 	return txt;
 }
@@ -538,55 +531,52 @@ function loadData(url, oldScrollPos){
 								canBeSet = false;
 								stateText = "valFloat: " + valFloat + ", valString: " + valString;
 								if (deviceHssType == "SHUTTER_CONTACT"){
-									//if (valString == "true") deviceHTML += "<a href='#' data-role='button' data-inline='true' data-theme='b'>Offen</a>";
-									//else deviceHTML += "<a href='#' data-role='button' data-inline='true' data-theme='b'>Geschlossen</a>";
-				  
 									if (valString == "true"){
-										stateText = "<span class='valueError'>Offen</span>";
+										stateText = "<span class='valueError valueError-" + theme + "'>Offen</span>";
 									}else{
-										stateText = "<span class='valueOK'>Geschlossen</span>";
+										stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
 									}
 								}else if (deviceHssType == "SMOKE_DETECTOR_TEAM"){
 									if (valString == "true"){
-										stateText = "<span class='valueError'>Rauch erkannt</span>";
+										stateText = "<span class='valueError valueError-" + theme + "'>Rauch erkannt</span>";
 									}else{
-										stateText = "<span class='valueOK'>Kein Rauch erkannt</span>";
+										stateText = "<span class='valueOK valueOK-" + theme + "'>Kein Rauch erkannt</span>";
 									}
 								}else if (deviceHssType == "SENSOR_FOR_CARBON_DIOXIDE"){
 									if (valFloat == 0){
-										stateText = "<span class='valueOK'>CO<sub>2</sub> Konzentration normal</span>";
+										stateText = "<span class='valueOK valueOK-" + theme + "'>CO<sub>2</sub> Konzentration normal</span>";
 									}
 									if (valFloat == 1){
-										stateText = "<span class='valueWarning'>CO<sub>2</sub> Konzentration erh&ouml;ht</span>";
+										stateText = "<span class='valueWarning valueWarning-" + theme + "'>CO<sub>2</sub> Konzentration erh&ouml;ht</span>";
 									}
 									if (valFloat >= 2){
-										stateText = "<span class='valueError'>CO<sub>2</sub> Konzentration stark erh&ouml;ht</span>";
+										stateText = "<span class='valueError valueError-" + theme + "'>CO<sub>2</sub> Konzentration stark erh&ouml;ht</span>";
 									}
 								}else if (deviceHssType == "TILT_SENSOR"){
 									if (valString == "true"){
-										stateText = "<span class='valueWarning'>Offen</span>";
+										stateText = "<span class='valueWarning valueWarning-" + theme + "'>Offen</span>";
 									}else{
-										stateText = "<span class='valueOK'>Geschlossen</span>";
+										stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
 									}
 								}else if (deviceHssType == "WATERDETECTIONSENSOR"){
 									if (valFloat == 0){
-										stateText = "<span class='valueOK'>Trocken</span>";
+										stateText = "<span class='valueOK valueOK-" + theme + "'>Trocken</span>";
 									}
 									if (valFloat == 1){
-										stateText = "<span class='valueWarning'>Feucht</span>";
+										stateText = "<span class='valueWarning valueWarning-" + theme + "'>Feucht</span>";
 									}
 									if (valFloat == 2){
-										stateText = "<span class='valueError'>Nass</span>";
+										stateText = "<span class='valueError valueError-" + theme + "'>Nass</span>";
 									}
 								}else if (deviceHssType == "ROTARY_HANDLE_SENSOR"){
 									if (valFloat == 0){
-										stateText = "<span class='valueOK'>Geschlossen</span>";
+										stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
 									}
 									if (valFloat == 1){
-										stateText = "<span class='valueWarning'>Gekippt</span>";
+										stateText = "<span class='valueWarning valueWarning-" + theme + "'>Gekippt</span>";
 									}
 									if (valFloat == 2){
-										stateText = "<span class='valueError'>Offen</span>";
+										stateText = "<span class='valueError valueError-" + theme + "'>Offen</span>";
 									}
 								}else if (deviceHssType == "KEYMATIC"){
 									canBeSet = true;
@@ -623,40 +613,24 @@ function loadData(url, oldScrollPos){
 								}
 
 								if (canBeSet){
-									deviceHTML += AddSetBoolButtonList(channel['id'], valString, txtOff, txtOn, "", vorDate, true);
-									/* deviceHTML += "<div class='longerFlip'>";
-									deviceHTML += "<select id='slider_" + channel['id'] + "' data-role='slider'>";
-									if (valString == "true")
-									{
-									  deviceHTML += "<option value='off'>" + txtOff + "</option><option selected='on'>" + txtOn + "</option>";
-									}
-									else
-									{
-									  deviceHTML += "<option selected='off'>" + txtOff + "</option><option value='on'>" + txtOn + "</option>";
-									}
-									deviceHTML += "</select></div><br><i class='ui-li-desc'>" + vorDate + "</i>";*/
+									deviceHTML += AddSetBoolButtonList(channel['id'], valString, txtOff, txtOn, "", vorDate, true);									
 								}else{
-									deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
+									deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
 								}
 							}else if (hssType == "VALUE"){
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valString + " " + valUnit + " </span> <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valString + " " + valUnit + " </span> <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "SENSOR" && deviceHssType == "SENSOR"){
 								if (valString == "true"){
-									stateText = "<span class='valueError'>Offen</span>";
+									stateText = "<span class='valueError valueError-" + theme + "'>Offen</span>";
 								}else{
-									stateText = "<span class='valueOK'>Geschlossen</span>";
+									stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "PRESS_SHORT"){
 								deviceHTML += AddSetButton(channel['id'], "Kurzer Tastendruck", true, vorDate, false, false, true);
-								//deviceHTML += "<p class='ui-li-desc'><a href='#' id='buttonShort_" + channel['id'] + "' data-role='button' data-inline='true'>Kurzer Tastendruck</a></div>";
-								//deviceHTML += "<i>" + vorDate + "</i></p>";
 							}else if (hssType == "PRESS_LONG"){
 								deviceHTML += AddSetButton(channel['id'], "Langer Tastendruck", true, vorDate, false, false, true);
-								//deviceHTML += "<p class='ui-li-desc'><a href='#' id='buttonLong_" + channel['id'] + "' data-role='button' data-inline='true'>Langer Tastendruck</a>";
-								//deviceHTML += "<i>" + vorDate + "</i></p>";
 							}else if (hssType == "SETPOINT"){
-								//deviceHTML += "<p class='ui-li-desc'><img src='img/channels/setpoint.png' style='max-height:20px'><input type='text' id='inputText_" + channel['id'] + "' data-id='" + channel['id'] + "' value='" + valFloat + "' style='width:5em; display:inline-block;'/><a href='#' id='setText_" + channel['id'] + "' data-id='" + channel['id'] + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a> <i>" + vorDate + "</i></p>";
 								deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
 								lowTemp = valFloat - 3.0;
 								highTemp = lowTemp + 6.0;
@@ -679,12 +653,12 @@ function loadData(url, oldScrollPos){
 								}else{
 									s = "Kein Regen";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + s + "</span> | <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + s + "</span> | <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "MOTION"){
 								if (valString == "true"){
-									txt = "<span class='valueWarning'>Bewegung </span>";
+									txt = "<span class='valueWarning valueWarning-" + theme + "'>Bewegung </span>";
 								}else{
-									txt = "<span class='valueOK'>Keine Bewegung </span>";
+									txt = "<span class='valueOK valueOK-" + theme + "'>Keine Bewegung </span>";
 								}
 								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + "<span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "LEVEL" && deviceHssType == "BLIND"){
@@ -715,7 +689,7 @@ function loadData(url, oldScrollPos){
 							}else if (hssType == "STOP" && deviceHssType == "WINMATIC"){
 								deviceHTML += AddSetButton(channelID, "Stop", true, vorDate, false, false, false);
 							}else if (hssType == "LEVEL" && deviceHssType == "AKKU"){
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "LEVEL" && (deviceHssType == "DIMMER" || deviceHssType == "VIRTUAL_DIMMER")){
 								deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Aus, 100% = An", false);
 								deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -728,43 +702,43 @@ function loadData(url, oldScrollPos){
 								deviceHTML += "</div>";
 							}else if(hssType == "U_SOURCE_FAIL" && deviceHssType == "POWER"){
 								if (valString == "false"){
-									txt = "<span class='valueNoError'>Netzbetrieb</span>";
+									txt = "<span class='valueNoError valueNoError-" + theme + "'>Netzbetrieb</span>";
 								}else{
-									txt = "<span class='valueError'>Batteriebetrieb</span>";
+									txt = "<span class='valueError valueError-" + theme + "'>Batteriebetrieb</span>";
 								}
 								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if(hssType == "LOWBAT" && deviceHssType == "POWER"){
 								if (valString == "false"){
-									txt = "<span class='valueOK'>Batterie OK</span>";
+									txt = "<span class='valueOK valueOK-" + theme + "'>Batterie OK</span>";
 								}else{
-									txt = "<span class='valueError'>Batterie leer</span>";
+									txt = "<span class='valueError valueError-" + theme + "'>Batterie leer</span>";
 								}
 								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if(hssType == "U_USBD_OK" && deviceHssType == "POWER"){
 								if (valString == "false"){
-									txt = "<span class='valueNoError'>USB nicht aktiv</span>";
+									txt = "<span class='valueNoError valueNoError-" + theme + "'>USB nicht aktiv</span>";
 								}else{
-									txt = "<span class='valueOK'>USB aktiv</span>";
+									txt = "<span class='valueOK valueOK-" + theme + "'>USB aktiv</span>";
 								}
 								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if(hssType == "BAT_LEVEL" && deviceHssType == "POWER"){
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "STATUS" && deviceHssType == "AKKU"){
 								if (valFloat == 0){
-									txt = "<span class='valueNoError'>Erhaltungsladung</span>";
+									txt = "<span class='valueNoError valueNoError-" + theme + "'>Erhaltungsladung</span>";
 								}else if (valFloat == 1){
-									txt = "<span class='valueNoError'>Akku l&auml;dt</span>";
+									txt = "<span class='valueNoError valueNoError-" + theme + "'>Akku l&auml;dt</span>";
 								}else if (valFloat == 2){
-									txt = "<span class='valueNoError'>Versorgung durch Akku</span>";
+									txt = "<span class='valueNoError valueNoError-" + theme + "'>Versorgung durch Akku</span>";
 								}else{
-									txt = "<span class='valueWarning'>Status unbekannt</span>";
+									txt = "<span class='valueWarning valueWarning-" + theme + "'>Status unbekannt</span>";
 								}
 								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "STATE_UNCERTAIN"){
 								if (valString == "true"){
-									txt = "<span class='valueWarning'>Zustand unbestimmt</span>";
+									txt = "<span class='valueWarning valueWarning-" + theme + "'>Zustand unbestimmt</span>";
 								}else{
-									txt = "<span class='valueNoError'>Zustand OK</span>";
+									txt = "<span class='valueNoError valueNoError-" + theme + "'>Zustand OK</span>";
 								}
 								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:30px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "LED_STATUS"){
@@ -808,7 +782,7 @@ function loadData(url, oldScrollPos){
 
 								// Wenn dieser "-" ist, dann den Datenpunkt gar nicht anzeigen:
 								if (name != "-"){
-									deviceHTML += "<p class='ui-li-desc'><img src='img/channels/" + MapImage(hssType) + "' style='max-height:20px'><span class='valueInfo'>" + v + " " + valUnit + " </span>" + name + " | <span><i>" + vorDate + "</i></span></p>";
+									deviceHTML += "<p class='ui-li-desc'><img src='img/channels/" + MapImage(hssType) + "' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + v + " " + valUnit + " </span>" + name + " | <span><i>" + vorDate + "</i></span></p>";
 								}
 							}
 						}else if (type == "VARDP"){
@@ -873,7 +847,7 @@ function loadData(url, oldScrollPos){
 										visVal = strValue;
 									}
 
-									deviceHTML += "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+									deviceHTML += "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
 								}else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ){
 									// Goglo
 									addDiagram = true;
@@ -969,7 +943,7 @@ function loadData(url, oldScrollPos){
 							// String oder unbekannt.
 							visVal = strValue;
 						}
-						deviceHTML += "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+						deviceHTML += "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
 					}else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ){
 						// Goglo
 						addDiagram = true;
@@ -1446,7 +1420,7 @@ function loadVariables(oldScrollPos){
 
 			// In der Variablenliste editieren zulassen:
 			//if (valName.charAt(valName.length - 1) == "_")
-			//  contentString += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + strValue + " " + valUnit + " </span><span><i>" + vorDate + "</i></span></p>";
+			//  contentString += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + strValue + " " + valUnit + " </span><span><i>" + vorDate + "</i></span></p>";
 			//else
 			//{
 			if (valType == "2"){
@@ -1605,9 +1579,9 @@ function loadOptions(){
 	gfxSize = localStorage.getItem("optionsMenuGfxSize");
 	if (!gfxSize || gfxSize == "" || gfxSize == "large"){
 		theme1 = "";
-		theme2 = "data-theme='b'"
+		theme2 = "class='ui-btn-active'";
 	}else{
-		theme1 = "data-theme='b'";
+		theme1 = "class='ui-btn-active'";
 		theme2 = ""
 	}
 	html += "<a href='#' id='optionsMenuGfxSizeSmall' data-id='optionsMenuGfxSizeSmall' data-role='button' data-inline='true' " + theme1 + ">Klein</a>";
@@ -1619,14 +1593,27 @@ function loadOptions(){
 	showTestPages = localStorage.getItem("optionsMenuShowTestpages");
 	if (!showTestPages || showTestPages == "" || showTestPages == "false"){
 		theme1 = "";
-		theme2 = "data-theme='b'"
+		theme2 = "class='ui-btn-active'";
 	}else{
-		theme1 = "data-theme='b'";
+		theme1 = "class='ui-btn-active'";
 		theme2 = ""
 	}
 	html += "<div data-role='controlgroup' data-type='horizontal'>";
 	html += "<a href='#' id='optionsMenuShowTestpages' data-id='optionsMenuShowTestpages' data-role='button' data-inline='true' " + theme1 + ">Anzeigen</a>";
 	html += "<a href='#' id='optionsMenuHideTestpages' data-id='optionsMenuHideTestpages' data-role='button' data-inline='true' " + theme2 + ">Verstecken</a>";
+	html += "</div></li>";
+	$("#dataList").append(html);
+	
+	html = "<li><h1>Theme ausw&auml;hlen</h1><p><div data-role='fieldcontain'>";
+	html += "<div data-role='controlgroup' data-type='horizontal'>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='a' class='" + (theme == 'a'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Normal</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='b' class='" + (theme == 'b'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Schwarz</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='c' class='" + (theme == 'c'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Rosa</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='d' class='" + (theme == 'd'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Gr&uuml;n</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='e' class='" + (theme == 'e'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Gelb</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='f' class='" + (theme == 'f'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Grau</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='g' class='" + (theme == 'g'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Blau</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='h' class='" + (theme == 'h'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Rot</a>";
 	html += "</div></li>";
 	$("#dataList").append(html);
 
@@ -1640,14 +1627,62 @@ function loadOptions(){
 	$("#dataList").trigger("create");
 }
 
-function changeTheme(){
+function changeTheme(newTheme){
 
-	$('.ui-overlay-a').removeClass('ui-overlay-a').addClass('ui-overlay-' + theme);
-	$('.ui-page-theme-a').removeClass('ui-page-theme-a').addClass('ui-page-theme-' + theme).attr('data-theme', theme);
-	$('.ui-bar-a').removeClass('ui-bar-a').addClass('ui-bar-' + theme).attr('data-theme', theme);
-	$('.ui-body-a').removeClass('ui-body-a').addClass('ui-body-' + theme).attr('data-theme', theme);
-	$('.ui-btn-a').removeClass('ui-btn-a').addClass('ui-btn-' + theme);	
-	$('.ui-group-theme-a').removeClass('ui-group-theme-a').addClass('ui-group-theme-' + theme).attr('data-theme', theme);
+	$('body').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
+	}).addClass('ui-overlay-' + newTheme);
+	
+	$('.ui-page').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-page-theme-\S{1}/g) || []).join(' ');
+	}).addClass('ui-page-theme-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-header').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-bar-\S{1}/g) || []).join(' ');
+	}).addClass('ui-bar-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-content').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-body-\S{1}/g) || []).join(' ');
+	}).addClass('ui-body-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-popup-screen').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
+	}).addClass('ui-overlay-' + newTheme);
+	
+	$('.ui-collapsible-set').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
+	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-listview').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
+	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-btn').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-btn-\S{1}/g) || []).join(' ');
+	}).addClass('ui-btn-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.valueNoError').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueNoError-\S{1}/g) || []).join(' ');
+	}).addClass('valueNoError-' + newTheme);
+	
+	$('.valueInfo').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueInfo-\S{1}/g) || []).join(' ');
+	}).addClass('valueInfo-' + newTheme);
+	
+	$('.valueWarning').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueWarning-\S{1}/g) || []).join(' ');
+	}).addClass('valueWarning-' + newTheme);
+	
+	$('.valueError').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueError-\S{1}/g) || []).join(' ');
+	}).addClass('valueError-' + newTheme);
+	
+	$('.valueOK').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueOK-\S{1}/g) || []).join(' ');
+	}).addClass('valueOK-' + newTheme);
+	
+	theme = newTheme;
+	localStorage.setItem("optionsMenuGfxTheme", theme);
 }
 
 $(function(){
@@ -1659,7 +1694,7 @@ $(function(){
 		value  = $(this).data("value"); // Wert.
 		infoID = "info_" + dataID;      // Info Textfeld neben Button.
 
-		$("#" + infoID).text("&Uuml;bertrage...");
+		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value , function(data){
 			if (refresh){
 				$("#" + infoID).text("OK!");
@@ -1680,7 +1715,7 @@ $(function(){
 		factor  = $("#" + valueID).data("factor"); // Factor auslesen.
 
 		valueDivided = parseFloat(value) / factor;
-		$("#" + infoID).text("&Uuml;bertrage...");
+		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function(data) {
 			if (refresh){
 				$("#" + infoID).text("OK!");
@@ -1698,7 +1733,7 @@ $(function(){
 		infoID  = "info_" + dataID;  // Info Textfeld neben Button.
 		value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
-		$("#" + infoID).text("&Uuml;bertrage...");
+		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
 			$("#" + infoID).text("OK!");
 			RefreshPage(0, true);
@@ -1712,7 +1747,7 @@ $(function(){
 		infoID  = "info_" + dataID;  // Info Textfeld neben Button.
 		value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
-		$("#" + infoID).text("&Uuml;bertrage...");
+		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
 			$("#" + infoID).text("OK!");
 			RefreshPage(0, true);
@@ -1730,7 +1765,7 @@ $(function(){
 		// Dann noch enocden, damit alles übertragen wird:
 		value   = encodeURIComponent(value);
 
-		$("#" + infoID).text("&Uuml;bertrage...");
+		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
 			$("#" + infoID).text("OK!");
 			RefreshPage(0, true);
