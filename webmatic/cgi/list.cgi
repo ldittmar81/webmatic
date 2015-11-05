@@ -58,11 +58,11 @@ cgi_eval {
 				if (false == objObject.Internal()) {
 					Write(', "visible":"' # objObject.Visible() # '"');
 					Write(', "operate":');
-						if( objObject.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
-							Write('"true"');
-						} else {
-							Write('"false"');		
-						}
+					if( objObject.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
+						Write('"true"');
+					} else {
+						Write('"false"');		
+					}
 				} else {
 					Write(', "visible":""');
 					Write(', "operate":""');

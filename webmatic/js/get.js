@@ -28,4 +28,6 @@ $(document).ready(function() {
 	RestartTimer();
   
 	changeTheme(theme);
+	
+	readModus = true;
 });

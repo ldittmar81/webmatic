@@ -9,7 +9,7 @@ case "$1" in
 	info)
         echo "Info: <b>WebMatic</b><br>Alternative GUI<br>(c) 2012-2015 Frank Epple"
         echo "Name: WebMatic"
-        echo "Version: 1.3 beta"
+        echo "Version: 1.4"
         echo "Operations: uninstall"
         ;;
 	uninstall)

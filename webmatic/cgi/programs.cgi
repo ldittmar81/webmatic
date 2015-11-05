@@ -23,7 +23,20 @@ cgi_eval {
 			if (isFirst) { isFirst = false; } else { WriteLine (','); }
 
 			var program = dom.GetObject(id);
-			Write('{"id":"' # id # '","name":"' # program.Name() # '","info":"' # program.PrgInfo() # '","date":"' # program.ProgramLastExecuteTime().Format("%d.%m.%Y %H:%M:%S") # '"}');
+			Write('{');
+			Write('"id":"' # id # '"');
+			Write(',"name":"' # program.Name() # '"');
+			Write(',"info":"' # program.PrgInfo() # '"');
+			Write(',"date":"' # program.ProgramLastExecuteTime().Format("%d.%m.%Y %H:%M:%S") # '"');
+			Write(',"visible":"' # program.Visible() # '"');
+			Write(',"active":"' # program.Active() # '"');
+			Write(', "operate":');
+			if( program.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
+				Write('"true"');
+			} else {
+				Write('"false"');		
+			}		
+			Write('}');
 		}
     
 		WriteLine ("");

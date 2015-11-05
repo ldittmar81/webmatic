@@ -51,7 +51,8 @@ cgi_eval {
 			Write(',"valueType":"' # sysVar.ValueType() # '"');
 			Write(',"valueUnit":"' # sysVar.ValueUnit() # '"');
 			Write(',"date":"' # sysVar.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
-			Write ('}');
+			Write(',"visible":"' # sysVar.Visible() # '"');
+			Write('}');
 		}
 
 		WriteLine ("");

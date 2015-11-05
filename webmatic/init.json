@@ -2,9 +2,9 @@
   "favorites": "true",
   "rooms": "true",
   "functions": "true",
+  "variables": "true",
   "programs": "true",
   "others": "true",
   "collapsed": "rooms",
-  "systemvar_readonly": "true",
-  "theme": "c"
+  "systemvar_readonly": "true"
 }

@@ -6,33 +6,17 @@
 // Variables to save last click:
 var lastClickType = -1;
 var lastClickID   = -1;
+var readModus     = false;
 
 prevItem = 0;
 
 //Initialwerte
-var sysVarReadonly = false;
-var rooms = false;
-var functions = false;
-var favorites = false;
-var programs = false;
-var others = false;
-var collapsed = "";
+var sysVarReadonly = localStorage.getItem("optionsInitSetSysVarReadonly");
 var theme_arr = [ "a", "b", "c", "d", "e", "f", "g", "h"];
 var theme = localStorage.getItem("optionsMenuGfxTheme");
 if($.inArray(theme, theme_arr) == -1){
 	theme = "a";
 }
-
-//Initialwerte auslesen
-$.getJSON("init.json", function(data) {
-	sysVarReadonly = data["systemvar_readonly"] == "true";
-	rooms = data["rooms"] == "true";
-	functions = data["functions"] == "true";
-	favorites = data["favorites"] == "true";
-	others = data["others"] == "true";
-	programs = data["programs"] == "true";
-	collapsed = data["collapsed"];
-});
 
 // Initialize refresh timer:
 refreshTimer = setInterval(function() {CheckRefreshPage();}, 1000);
@@ -107,7 +91,7 @@ function RefreshPage(item, saveScrollPos){
 				loadData('debug_cuxd.json', oldScrollPos);
 				break;
 			case 7:
-				loadOptions();
+				loadOptions();			
 		}
 		
 		$("#prim").find("script").each(function(){
@@ -184,8 +168,8 @@ function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh){
 }
 
 // Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
-function AddStartProgramButton(id, text, vorDate){
-	html = "<p class='ui-li-desc'><a href='#' id='startProgramButton_" + id + "' data-id='" + id + "' data-role='button' data-inline='true' data-icon='gear'>" + text + "</a></div>";
+function AddStartProgramButton(id, text, vorDate, operate){
+	html = "<p class='ui-li-desc'><a href='#' class='" + (!operate?"ui-disabled":"") + "' id='startProgramButton_" + id + "' data-id='" + id + "' data-role='button' data-inline='true' data-icon='gear'>" + text + "</a></div>";
 	html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme +"'></span></p>";
 	return html;
 }
@@ -299,14 +283,45 @@ function AddSetText(valID, val, valUnit, vorDate){
 	return html;
 }
 
-function AddHTML(valID, val, vorDate){
-	html = "<div data-role='fieldcontain'>";	
-	html += "<div><textarea id='setValue_" + valID + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea></div>";
-	html += "<div>" + val + "</div>";
-	html += "<a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-	html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-	html += "</div>";
+function AddHTML(valID, val, vorDate, readonly){
+	html = "<div data-role='fieldcontain' class='" + (readonly?"":"ui-grid-a") + "'>";	
+	html += "<div class='" + (readonly?"":"ui-block-a") + "'>" + val + "</div>";
+	if(!readonly){
+		html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
+		html += "<a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
+		html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+		html += "</div>";
+		html += "</div>";
+	}
 	return html;
+}
+
+function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList){
+	// Bestimmen, wie der sichtbare Werte aussehen soll:
+	visVal = "";
+	if (valType == "2"){
+		// Bool.
+		if (strValue == "true"){
+			visVal = val1;
+		}else{
+			visVal = val0;
+		}
+	}else if (valType == "4"){
+		// Float, Integer.
+		visVal = parseFloat(strValue);
+	}else if (valType == "16"){
+		// Liste.
+		optionsArray = valList.split(";");
+		visVal = optionsArray[parseInt(strValue)];
+	}else{
+		// String oder unbekannt.
+		visVal = strValue;
+	}
+	if (valType == "20" && valUnit == "html"){
+		return AddHTML(valID, strValue, vorDate, true);
+	}else{
+		return "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+	}
 }
 
 // ----------------------- Helper functions ----------------------------
@@ -825,29 +840,8 @@ function loadData(url, oldScrollPos){
 								// <br> davor, weil es an der Stelle eine mit Gerät verknüpfte Variable ist:
 								deviceHTML += "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
 								deviceHTML += "<p>" + valInfo + "</p>";
-								if (varOptionsFirst == "r"){
-									// Bestimmen, wie der sichtbare Werte aussehen soll:
-									visVal = "";
-									if (valType == "2"){
-										// Bool.
-										if (strValue == "true"){
-											visVal = val1;
-										}else{
-											visVal = val0;
-										}
-									}else if (valType == "4"){
-										// Float, Integer.
-										visVal = parseFloat(strValue);
-									}else if (valType == "16"){
-										// Liste.
-										optionsArray = valList.split(";");
-										visVal = optionsArray[parseInt(strValue)];
-									}else{
-										// String oder unbekannt.
-										visVal = strValue;
-									}
-
-									deviceHTML += "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+								if (isReadOnly()){
+									deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
 								}else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ){
 									// Goglo
 									addDiagram = true;
@@ -874,7 +868,7 @@ function loadData(url, oldScrollPos){
 										// Liste.
 										deviceHTML += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
 									}else if (valType == "20" && valUnit == "html"){
-										deviceHTML += AddHTML(valID, strValue, vorDate);
+										deviceHTML += AddHTML(valID, strValue, vorDate, false);
 									}else if (valType == "20"){
 										deviceHTML += AddSetText(valID, strValue, valUnit, vorDate);
 									}else{
@@ -922,28 +916,8 @@ function loadData(url, oldScrollPos){
 					}
 
 					deviceHTML += "<p>" + valInfo + "</p>";
-					if (varOptionsFirst == "r"){
-						// Bestimmen, wie der sichtbare Werte aussehen soll:
-						visVal = "";
-						if (valType == "2"){
-							// Bool.
-							if (strValue == "true"){
-								visVal = val1;
-							}else{
-								visVal = val0;
-							}
-						}else if (valType == "4"){
-							// Float, Integer.
-							visVal = parseFloat(strValue);
-						}else if (valType == "16"){
-							// Liste.
-							optionsArray = valList.split(";");
-							visVal = optionsArray[parseInt(strValue)];
-						}else{
-							// String oder unbekannt.
-							visVal = strValue;
-						}
-						deviceHTML += "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+					if (isReadOnly()){
+						deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
 					}else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ){
 						// Goglo
 						addDiagram = true;
@@ -972,7 +946,7 @@ function loadData(url, oldScrollPos){
 							// Liste.
 							deviceHTML += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
 						}else if (valType == "20" && valUnit == "html"){
-							deviceHTML += AddHTML(valID, strValue, vorDate);
+							deviceHTML += AddHTML(valID, strValue, vorDate, false);
 						}else if (valType == "20"){
 							deviceHTML += AddSetText(valID, strValue, valUnit, vorDate);
 						}else{
@@ -1398,49 +1372,50 @@ function loadVariables(oldScrollPos){
 	// Icon Animation in Refresh Button:
 	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' width=12px height=12px>");
 
-	$.getJSON('cgi/systemvariables.cgi', function(data) {
+	$.getJSON('cgi/systemvariables.cgi', function(data) {		
 		systemDate = data['date'];
 		$.each(data.entries, function(i, variable) {
-			valID    = variable['id'];
-			valName  = unescape(variable['name']);
-			valInfo  = unescape(variable['info']);
-			strValue = unescape(variable['value']);
-			valType  = variable['valueType'];
-			valUnit  = variable['valueUnit'];
-			val0     = variable['valueName0'];
-			val1     = variable['valueName1'];
-			valMin   = variable['valueMin'];
-			valMax   = variable['valueMax'];
-			valList  = variable['valueList'];
-			channelDate = variable['date'];
-			vorDate = GetTimeDiffString(channelDate, systemDate);
-			contentString = "<li class='dataListItem' id='" + valID + "'><h2 class='ui-li-heading'>" + valName + "</h2>";
+			valVisible = variable['visible'] == "true";
+			if((readModus && valVisible) || !readModus){
+				valID    = variable['id'];
+				valName  = unescape(variable['name']);
+				valInfo  = unescape(variable['info']);
+				strValue = unescape(variable['value']);
+				valType  = variable['valueType'];
+				valUnit  = variable['valueUnit'];
+				val0     = variable['valueName0'];
+				val1     = variable['valueName1'];
+				valMin   = variable['valueMin'];
+				valMax   = variable['valueMax'];
+				valList  = variable['valueList'];
+				channelDate = variable['date'];
+				vorDate = GetTimeDiffString(channelDate, systemDate);
+				contentString = "<li class='dataListItem' id='" + valID + "'><h2 class='ui-li-heading'>" + valName + "</h2>";
 
-			contentString += "<p>" + valInfo + "</p>";
-
-			// In der Variablenliste editieren zulassen:
-			//if (valName.charAt(valName.length - 1) == "_")
-			//  contentString += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + strValue + " " + valUnit + " </span><span><i>" + vorDate + "</i></span></p>";
-			//else
-			//{
-			if (valType == "2"){
-				// Bool.
-				contentString += AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
-			}else if (valType == "4"){
-				// Float, Integer.
-				contentString += AddSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
-			}else if (valType == "16"){
-				// Liste.
-				contentString += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
-			}else if (valType == "20" && valUnit == "html"){
-				contentString += AddHTML(valID, strValue, vorDate);
-			}else if (valType == "20"){
-				contentString += AddSetText(valID, strValue, valUnit, vorDate);
-			}else{
-				contentString += "Unbekannter Variablentyp!";
+				contentString += "<p>" + valInfo + "</p>";
+				
+				// In der Variablenliste editieren zulassen:
+				if(isReadOnly()){
+					contentString += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
+				}else if (valType == "2"){
+					// Bool.
+					contentString += AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+				}else if (valType == "4"){
+					// Float, Integer.
+					contentString += AddSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+				}else if (valType == "16"){
+					// Liste.
+					contentString += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+				}else if (valType == "20" && valUnit == "html"){
+					contentString += AddHTML(valID, strValue, vorDate, false);
+				}else if (valType == "20"){
+					contentString += AddSetText(valID, strValue, valUnit, vorDate);
+				}else{
+					contentString += "Unbekannter Variablentyp!";
+				}
+				contentString += "</li>";
+				$("#dataList").append(contentString);
 			}
-			contentString += "</li>";
-			$("#dataList").append(contentString);
 		});
 
 		// "Lade..." wieder entfernen und Überschrift anzeigen:
@@ -1481,16 +1456,22 @@ function loadPrograms(oldScrollPos){
 	$.getJSON('cgi/programs.cgi', function(data) {
 	systemDate = data['date'];
 		$.each(data.entries, function(i, prog) {
-			prgID = prog['id'];
-			prgName = prog['name'];
-			prgInfo = prog['info'];
-			prgDate = prog['date'];
-			vorDate = GetTimeDiffString(prgDate, systemDate);
+			prgVisible = prog['visible'] == "true";
+			prgActive = prog['active'] == "true";			
+			
+			if((readModus && prgVisible && prgActive) || !readModus){
+				prgID = prog['id'];
+				prgName = prog['name'];
+				prgInfo = prog['info'];
+				prgDate = prog['date'];
+				prgOperate = prog['operate'] == "true";
+				vorDate = GetTimeDiffString(prgDate, systemDate);			
 
-			deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prgName + "</h2><p>" + prgInfo + "</p>";
-			deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", vorDate);
-			deviceHTML += "</li>";
-			$("#dataList").append(deviceHTML);
+				deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prgName + "</h2><p>" + prgInfo + "</p>";
+				deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", vorDate, prgOperate);
+				deviceHTML += "</li>";
+				$("#dataList").append(deviceHTML);
+			}
 		});
 
 		// "Lade..." wieder entfernen und Überschrift anzeigen:
@@ -1627,6 +1608,37 @@ function loadOptions(){
 	$("#dataList").trigger("create");
 }
 
+function isReadOnly(){
+	
+	if(!readModus){
+		return false;
+	}
+	
+	// Wenn die Variable hinten (r) hat, dann ist sie Read-Only:
+	// Wenn die Variable hinten (w) hat, dann ist sie nicht Read-Only:
+	varOptionsFirst = "";
+	varOptions = [];
+	// ( finden:
+	bracketOpen= valInfo.indexOf("(");
+	if (bracketOpen != -1){
+		// ) finden:
+		bracketClose = valInfo.indexOf(")", bracketOpen);
+		if (bracketClose != -1){
+			optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
+			varOptions = optionsString.split(",");
+
+			if (varOptions.length >= 1){
+				varOptionsFirst = varOptions[0].toLowerCase();
+			}
+		}
+	}
+	
+	if(sysVarReadonly && readModus){
+		return varOptionsFirst != "w";
+	}	
+	return varOptionsFirst == "r";
+}
+
 function changeTheme(newTheme){
 
 	$('body').removeClass(function(index, css){
@@ -1700,7 +1712,7 @@ $(function(){
 				$("#" + infoID).text("OK!");
 				RefreshPage(0, true);
 			}else{
-				$("#" + infoID).text("Wert wird noch an Ger&auml;t &uuml;bertragen und erst verz&ouml;gert hier dargestellt.");
+				$("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
 			}
 		});
 	});
@@ -1721,7 +1733,7 @@ $(function(){
 				$("#" + infoID).text("OK!");
 				RefreshPage(0, true);
 			}else{
-				$("#" + infoID).text("Wert wird noch an Ger&auml;t &uuml;bertragen und erst verz&ouml;gert hier dargestellt.");
+				$("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
 			}
 		});
 	});
