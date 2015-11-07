@@ -19,7 +19,7 @@ $(function(){
 	var others = true;
 	var collapsed = "";
 	
-	$.getJSON("init.json", function(data) {
+	$.getJSON("../webmatic_user/config.json", function(data) {
 		sysVarReadonly = data["systemvar_readonly"] == "true";
 		localStorage.setItem("optionsInitSetSysVarReadonly", sysVarReadonly);
 		rooms = data["rooms"] == "true";

@@ -1,13 +1,14 @@
 #!/bin/sh
 
-ADDONNAME=webmatic
-WWWDIR=/mnt/etc/config/addons/www/$ADDONNAME
+WWWDIR=/mnt/etc/config/addons/www/webmatic
 RCDDIR=/mnt/etc/config/rc.d
+USERDIR=/mnt/etc/config/addons/www/webmatic_user
 
 mkdir -p /mnt
 
 if [ "$1" == "" ]; then
     echo "CCU1"
+	lcdtool "installing WebMatic      "
     mount -t yaffs /dev/mtdblock3 /mnt
 elif [ "$1" == "CCU2" ]; then
     echo "CCU2"
@@ -19,9 +20,17 @@ elif [ "$1" == "HM-RASPBERRYMATIC" ]; then
 fi
 
 mkdir -p $WWWDIR
-cp -R $ADDONNAME/* $WWWDIR/
 chmod 755 $WWWDIR
+mkdir -p $RCD_DIR
+chmod 755 $RCD_DIR
+mkdir -p $USERDIR
+chmod 755 $USERDIR
 
+rm -f $WWWDIR/*
+
+cp -R webmatic/* $WWWDIR/
+cp VERSION $WWWDIR/
+cp -R -n webmatic_user/* $USERDIR/
 cp webmatic-dlg $RCDDIR/
 chmod +x $RCDDIR/webmatic-dlg
 
