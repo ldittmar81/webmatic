@@ -1,104 +1,91 @@
 <!DOCTYPE html>
 <html> 
-<head> 
-	<title>WebMatic</title> 
-  <!-- WebMatic, (c) Frank Epple -->
-  <meta name="viewport" content="initial-scale=1" />
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
-  <meta http-equiv="EXPIRES" content="0" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <link rel="apple-touch-icon" sizes="57x57" href="img/icons/webmatic_icon_57.png"/>
-  <link rel="apple-touch-icon" sizes="72x72" href="img/icons/webmatic_icon_72.png"/>
-  <link rel="apple-touch-icon" sizes="114x114" href="img/icons/webmatic_icon_114.png"/>
-  <link rel="apple-touch-icon" sizes="144x144" href="img/icons/webmatic_icon_144.png"/>
-	<link rel="stylesheet" href="jquery/jquery.mobile-1.2.0.min.css" />
-  <link rel="stylesheet" href="webmatic.css" />
-  <link rel="stylesheet" href="jqplot/jquery.jqplot.min.css" />
-	<script src="jquery/jquery-1.8.2.min.js"></script>
+	<head> 
+		<title>WebMatic 1.4</title> 
+		<!-- WebMatic, (c) Frank Epple -->
+		<meta name="viewport" content="initial-scale=1" />
+		<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-15" />
+		<meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+		<meta http-equiv="EXPIRES" content="0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		
+		<link rel="apple-touch-icon" sizes="57x57" href="img/icons/webmatic_icon_57.png"/>
+		<link rel="apple-touch-icon" sizes="72x72" href="img/icons/webmatic_icon_72.png"/>
+		<link rel="apple-touch-icon" sizes="114x114" href="img/icons/webmatic_icon_114.png"/>
+		<link rel="apple-touch-icon" sizes="144x144" href="img/icons/webmatic_icon_144.png"/>
+		<link rel="stylesheet" href="themes/webmatic-theme.min.css" />
+		<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+		<link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
+		<link rel="stylesheet" href="jqplot/jquery.jqplot.min.css" />
+		<link rel="stylesheet" href="webmatic.css" />
+		
+		<script type="text/javascript" src="jquery/jquery-2.1.4.min.js"></script>		
+		<script type="text/javascript">
+			$(document).bind("mobileinit", function(){
+				$.mobile.listview.prototype.options.filterPlaceholder = "Daten filtern...";
+			});
+		</script>
+		<script type="text/javascript" src="jquery/jquery.mobile-1.4.5.min.js"></script>		
+		<script type="text/javascript" src="jquery/jquery.lazyload.min.js"></script>		
+		
+		<script type="text/javascript" src="jqplot/jquery.jqplot.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.highlighter.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.cursor.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.meterGaugeRenderer.min.js"></script>
+		
+		<script type="text/javascript" src="js/wmmap.js"></script>
+		<script type="text/javascript" src="js/webmatic.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+	</head> 
+	<body>
+		<div data-role="page" data-theme="a">		
+			<div data-role="popup" id="popupService" data-theme="a" data-overlay-theme="a">
+				<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+				<div data-role="content" id="popupDiv">
+					<h3>Servicemeldungen</h3>
+					<ul id="serviceList" data-role="listview" data-inset="true" data-theme="a">
+						<li>Keine Servicemeldungen vorhanden</li>
+					</ul>
+					<a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="a" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
+				</div>
+			</div>
 
-  <script type="text/javascript">
-  $(document).bind("mobileinit", function(){
-    $.mobile.listview.prototype.options.filterPlaceholder = "Daten filtern...";
-  });
-  </script>
+			<div data-role="header" data-position="fixed" data-theme="a">
+				<h1 style="text-align: left;margin-left: 20px;">WebMatic V1.4</h1>
+				<div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">  
+					<a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert"> 
+						<span class="ui-btn-inner ui-btn-corner-all">
+							<span class="ui-btn-text">&nbsp;</span>
+						</span>
+					</a>
+					<a href="#" id="buttonRefresh" data-role="button" data-icon="refresh">
+						<span class="ui-btn-inner ui-btn-corner-all">
+							<span class="ui-btn-text">&nbsp;</span>
+						</span>
+					</a>
+					<a href="dlgAbout.html" data-transition="pop" data-role="button" data-icon="info" data-iconpos="notext">&Uuml;ber</a>
+				</div>
+			</div>
 
-	<script src="jquery/jquery.mobile-1.2.0.min.js"></script>
-  <script src="jquery/jquery.lazyload.min.js"></script>
-</head> 
-<body> 
+			<div data-role="content" data-theme="a">
+			
+				<div class="content-secondary">
+					<div id="main_menu" data-role="collapsible-set" data-theme="a"></div>
+				</div>
 
-<div data-role="page" data-theme="b">
-  <div data-role="popup" id="popupService" data-theme="e" data-overlay-theme="a">
-    <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
-    <div data-role="content" id="popupDiv">
-      <h3>Servicemeldungen</h3>
-      <ul id='serviceList' data-role='listview' data-inset='true' data-theme='d'>
-        <li>
-            Keine Servicemeldungen vorhanden
-        </li>
-      </ul>
-      <a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="c" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
-    </div>
-  </div>
-
-	<div data-role="header" data-position="fixed" data-theme="b">
-    <h1 style="text-align: left;margin-left: 20px;">WebMatic V1.3 beta</h1>
-    <div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">  
-      <a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert">&nbsp;</a>
-      <a href="#" id="buttonRefresh" data-role="button" data-icon="refresh">&nbsp;</a>
-      <a href="dlgAbout.html" data-transition="pop" data-role="button" data-icon="info" data-iconpos="notext">&Uuml;ber</a>
-    </div>
-	</div><!-- /header -->
-
-	<div data-role="content" data-theme="c">
-    <div class="content-secondary">
-      <div data-role="collapsible-set" data-theme="b">
-        <div data-role="collapsible" data-collapsed="false">
-          <h3>Favoriten</h3>
-          <ul id="listFavorites" data-role="listview" data-inset="true">
-          </ul>
-        </div>
-        <div data-role="collapsible" data-collapsed="true">
-          <h3>R&auml;ume</h3>
-          <ul id="listRooms" data-role="listview" data-inset="true">
-          </ul>
-        </div>
-        <div data-role="collapsible" data-collapsed="true">
-          <h3>Gewerke</h3>
-          <ul id="listFunctions" data-role="listview" data-inset="true">
-          </ul>
-        </div>
-        <div id="container" data-role="collapsible" data-collapsed="true">
-          <h3>Sonstiges</h3>
-          <ul id="listOther" data-role="listview" data-inset="true">
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div id="prim" class="content-primary">
-      <ul id="dataListHeader" data-role="listview" data-inset="true">
-      </ul>
-      <ul id="dataList" data-role="listview" data-inset="true" data-filter="true">
-      </ul>
-    </div>
-  </div>
-  
-  <div id="testcase"></div>
-
-  <script src="wmmap.js" type="text/javascript"></script>
-  <script src="webmatic.js" type="text/javascript"></script>
-</div>
-<!-- /page -->
-
-<script type="text/javascript" src="jqplot/jquery.jqplot.min.js"></script>
-<script type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
-<script type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-<script type="text/javascript" src="jqplot/plugins/jqplot.highlighter.min.js"></script>
-<script type="text/javascript" src="jqplot/plugins/jqplot.cursor.min.js"></script>
-<script type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-<script type="text/javascript" src="jqplot/plugins/jqplot.meterGaugeRenderer.min.js"></script>
-
-</body>
+				<div id="prim" class="content-primary">
+					<ul id="dataListHeader" data-role="listview" data-inset="true"></ul>
+					<ul id="dataList" data-role="listview" data-inset="true" data-filter="true"></ul>
+				</div>
+				
+			</div>
+	  
+			<div id="testcase"></div>
+			
+		</div>
+		
+	</body>
 </html>

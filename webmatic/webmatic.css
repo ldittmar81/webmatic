@@ -1,8 +1,61 @@
-.valueNoError { color:#909090; font-size: 16px; font-style: italic; }
-.valueInfo { color:#000000; font-size: 16px; font-style: italic; }
-.valueWarning { color:#BB6600; font-size: 16px; font-weight: bold; font-style: italic; }
-.valueError { color:#CC0000; font-size: 16px; font-weight: bold; font-style: italic; }
-.valueOK { color:#008000; font-size: 16px; font-style: italic; }
+.valueNoError { font-size: 16px; font-style: italic; }
+.valueInfo { font-size: 16px; font-style: italic; }
+.valueWarning { font-size: 16px; font-weight: bold; font-style: italic; }
+.valueError { font-size: 16px; font-weight: bold; font-style: italic; }
+.valueOK { font-size: 16px; font-style: italic; }
+
+.valueNoError-a { color:#909090; }
+.valueInfo-a { color:#000000; }
+.valueWarning-a { color:#BB6600; }
+.valueError-a { color:#CC0000; }
+.valueOK-a { color:#008000; }
+
+.valueNoError-b { color:#909090;}
+.valueInfo-b { color:#FFFFFF; }
+.valueWarning-b { color:#BB6600; }
+.valueError-b { color:#CC0000; }
+.valueOK-b { color:#008000; }
+
+.valueNoError-c { color:#909090;}
+.valueInfo-c { color:#FFFFFF; }
+.valueWarning-c { color:#BB6600; }
+.valueError-c { color:#CC0000; }
+.valueOK-c { color:#008000; }
+
+.valueNoError-d { color:#909090;}
+.valueInfo-d { color:#FFFFFF; }
+.valueWarning-d { color:#BB6600; }
+.valueError-d { color:#CC0000; }
+.valueOK-d { color:#008000; }
+
+.valueNoError-e { color:#909090;}
+.valueInfo-e { color:#FFFFFF; }
+.valueWarning-e { color:#BB6600; }
+.valueError-e { color:#CC0000; }
+.valueOK-e { color:#008000; }
+
+.valueNoError-f { color:#909090;}
+.valueInfo-f { color:#000000; }
+.valueWarning-f { color:#BB6600; }
+.valueError-f { color:#CC0000; }
+.valueOK-f { color:#008000; }
+
+.valueNoError-g { color:#909090;}
+.valueInfo-g { color:#FFFFFF; }
+.valueWarning-g { color:#BB6600; }
+.valueError-g { color:#CC0000; }
+.valueOK-g { color:#008000; }
+
+.valueNoError-h { color:#909090;}
+.valueInfo-h { color:#FFFFFF; }
+.valueWarning-h { color:#BB6600; }
+.valueError-h { color:#CC0000; }
+.valueOK-h { color:#008000; }
+
+img.ui-img-f{
+	-webkit-filter: grayscale(1);
+	filter: grayscale(1);
+}
 
 .breakText { white-space:normal; word-wrap:break-word; }
 
@@ -11,14 +64,14 @@
   content: 'LI2:';
 }*/
 .content-secondary {
-  width: 30%;
-  float: left;
-  padding-right: 1%;
+	width: 30%;
+	float: left;
+	padding-right: 1%;
 }
 
 .content-primary {
-  width: 69%;
-  float: left;
+	width: 69%;
+	float: left;
 }
 
 /* We use CSS3 media queries to determine which CSS to use
@@ -42,12 +95,12 @@
 
 @media screen and (max-width: 900px)
 {
-  .content-secondary {
-    width: 100%;
-  }
+	.content-secondary {
+		width: 100%;
+	}
 
-  .content-primary {
-    width: 100%;
-    float: left;
-  }
+	.content-primary {
+		width: 100%;
+		float: left;
+	}
 }
