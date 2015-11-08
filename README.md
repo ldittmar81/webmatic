@@ -16,6 +16,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Nur ausführbare Programme anzeigen
 * Verschiedene Styles auswählbar
 * Installtionsroutine angepasst (Userfreundlichkeit)
+* Bilder können jetzt per Browser hochgeladen werden
 
 1.1
 * Anzeige für Gerät: ALARMACTUATOR.

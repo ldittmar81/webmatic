@@ -35,7 +35,7 @@
 .valueOK-e { color:#008000; }
 
 .valueNoError-f { color:#909090;}
-.valueInfo-f { color:#FFFFFF; }
+.valueInfo-f { color:#000000; }
 .valueWarning-f { color:#BB6600; }
 .valueError-f { color:#CC0000; }
 .valueOK-f { color:#008000; }
@@ -51,6 +51,11 @@
 .valueWarning-h { color:#BB6600; }
 .valueError-h { color:#CC0000; }
 .valueOK-h { color:#008000; }
+
+img.ui-img-f{
+	-webkit-filter: grayscale(1);
+	filter: grayscale(1);
+}
 
 .breakText { white-space:normal; word-wrap:break-word; }
 

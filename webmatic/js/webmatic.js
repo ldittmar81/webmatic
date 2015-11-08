@@ -107,8 +107,7 @@ function RefreshPage(item, saveScrollPos){
 }
 
 function RefreshServiceMessages(){
-	$('#buttonService .ui-btn-text').html("<img src='img/misc/wait16.gif' width=12px height=12px>");
-	//$('#headerButtonGroup').controlgroup('refresh', true);
+	$('#buttonService .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
 	$.getJSON('cgi/service.cgi', function(data){
 		$("#serviceList").empty();
@@ -136,7 +135,6 @@ function RefreshServiceMessages(){
 		}
 		$('#serviceList').listview().listview('refresh', true);
 	});
-	//.error(function() {  $("#serviceList").append("<li>Fehler beim Laden</li>"); $("#serviceList").listview().listview("refresh"); });
 }
 
 function RemoveMessages(){
@@ -320,7 +318,7 @@ function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
 	if (valType == "20" && valUnit == "html"){
 		return AddHTML(valID, strValue, vorDate, true);
 	}else{
-		return "<p><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+		return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
 	}
 }
 
@@ -503,10 +501,10 @@ function loadData(url, oldScrollPos){
 	$("#dataList").empty();
 	$("#dataListHeader").empty();
 	// "Lade..." anzeigen:
-	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon'>Lade...</li>");
+	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
 	$("#dataListHeader").listview().listview("refresh");
 	// Icon Animation in Refresh Button:
-	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' width=12px height=12px>");
+	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' class='ui-img-" + theme + "' width=12px height=12px>");
 
 	$.getJSON(url, function(data) {
 		systemDate = data['date'];
@@ -630,17 +628,17 @@ function loadData(url, oldScrollPos){
 								if (canBeSet){
 									deviceHTML += AddSetBoolButtonList(channel['id'], valString, txtOff, txtOn, "", vorDate, true);									
 								}else{
-									deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
+									deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
 								}
 							}else if (hssType == "VALUE"){
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valString + " " + valUnit + " </span> <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valString + " " + valUnit + " </span> <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "SENSOR" && deviceHssType == "SENSOR"){
 								if (valString == "true"){
 									stateText = "<span class='valueError valueError-" + theme + "'>Offen</span>";
 								}else{
 									stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "PRESS_SHORT"){
 								deviceHTML += AddSetButton(channel['id'], "Kurzer Tastendruck", true, vorDate, false, false, true);
 							}else if (hssType == "PRESS_LONG"){
@@ -668,14 +666,14 @@ function loadData(url, oldScrollPos){
 								}else{
 									s = "Kein Regen";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + s + "</span> | <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + s + "</span> | <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "MOTION"){
 								if (valString == "true"){
 									txt = "<span class='valueWarning valueWarning-" + theme + "'>Bewegung </span>";
 								}else{
 									txt = "<span class='valueOK valueOK-" + theme + "'>Keine Bewegung </span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + "<span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + "<span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "LEVEL" && deviceHssType == "BLIND"){
 								deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Geschlossen, 100% = Offen", false);
 								deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -704,7 +702,7 @@ function loadData(url, oldScrollPos){
 							}else if (hssType == "STOP" && deviceHssType == "WINMATIC"){
 								deviceHTML += AddSetButton(channelID, "Stop", true, vorDate, false, false, false);
 							}else if (hssType == "LEVEL" && deviceHssType == "AKKU"){
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "LEVEL" && (deviceHssType == "DIMMER" || deviceHssType == "VIRTUAL_DIMMER")){
 								deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Aus, 100% = An", false);
 								deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -721,23 +719,23 @@ function loadData(url, oldScrollPos){
 								}else{
 									txt = "<span class='valueError valueError-" + theme + "'>Batteriebetrieb</span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if(hssType == "LOWBAT" && deviceHssType == "POWER"){
 								if (valString == "false"){
 									txt = "<span class='valueOK valueOK-" + theme + "'>Batterie OK</span>";
 								}else{
 									txt = "<span class='valueError valueError-" + theme + "'>Batterie leer</span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if(hssType == "U_USBD_OK" && deviceHssType == "POWER"){
 								if (valString == "false"){
 									txt = "<span class='valueNoError valueNoError-" + theme + "'>USB nicht aktiv</span>";
 								}else{
 									txt = "<span class='valueOK valueOK-" + theme + "'>USB aktiv</span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if(hssType == "BAT_LEVEL" && deviceHssType == "POWER"){
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "STATUS" && deviceHssType == "AKKU"){
 								if (valFloat == 0){
 									txt = "<span class='valueNoError valueNoError-" + theme + "'>Erhaltungsladung</span>";
@@ -748,27 +746,27 @@ function loadData(url, oldScrollPos){
 								}else{
 									txt = "<span class='valueWarning valueWarning-" + theme + "'>Status unbekannt</span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "STATE_UNCERTAIN"){
 								if (valString == "true"){
 									txt = "<span class='valueWarning valueWarning-" + theme + "'>Zustand unbestimmt</span>";
 								}else{
 									txt = "<span class='valueNoError valueNoError-" + theme + "'>Zustand OK</span>";
 								}
-								deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:30px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:30px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 							}else if (hssType == "LED_STATUS"){
 								switch (valFloat){
 									case 0: // Off
-										deviceHTML += "<p><img src='img/channels/off_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+										deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/off_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
 										break;
 									case 1: // Red
-										deviceHTML += "<p><img src='img/channels/red_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+										deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/red_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
 										break;
 									case 2: // Green
-										deviceHTML += "<p><img src='img/channels/green_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+										deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/green_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
 										break;
 									case 3: // Orange
-										deviceHTML += "<p><img src='img/channels/orange_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+										deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/orange_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
 										break;
 								}
 							}else if (hssType == "ERROR" || hssType.substring(0, 6) == "ERROR_"){
@@ -780,7 +778,7 @@ function loadData(url, oldScrollPos){
 									}
 									txt = GetErrorMessage("HSSDP", hssType, v, deviceHssType);
 									if (txt != ""){
-										deviceHTML += "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
+										deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
 									}
 								}
 							}else if (hssType == "ON_TIME" || hssType == "INHIBIT" || hssType == "ADJUSTING_COMMAND" || hssType == "ADJUSTING_DATA" || hssType == "RELOCK_DELAY" || hssType == "SPEED" || hssType == "LEVEL" || hssType == "RAMP_STOP" || hssType == "RAMP_TIME" || hssType == "OLD_LEVEL"){
@@ -797,7 +795,7 @@ function loadData(url, oldScrollPos){
 
 								// Wenn dieser "-" ist, dann den Datenpunkt gar nicht anzeigen:
 								if (name != "-"){
-									deviceHTML += "<p class='ui-li-desc'><img src='img/channels/" + MapImage(hssType) + "' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + v + " " + valUnit + " </span>" + name + " | <span><i>" + vorDate + "</i></span></p>";
+									deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/" + MapImage(hssType) + "' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + v + " " + valUnit + " </span>" + name + " | <span><i>" + vorDate + "</i></span></p>";
 								}
 							}
 						}else if (type == "VARDP"){
@@ -1367,10 +1365,10 @@ function loadVariables(oldScrollPos){
 	$("#dataList").empty();
 	$("#dataListHeader").empty();
 	// "Lade..." anzeigen:
-	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon'>Lade...</li>");
+	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
 	$("#dataListHeader").listview().listview("refresh");
 	// Icon Animation in Refresh Button:
-	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' width=12px height=12px>");
+	$('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
 	$.getJSON('cgi/systemvariables.cgi', function(data) {		
 		systemDate = data['date'];
@@ -1448,10 +1446,10 @@ function loadPrograms(oldScrollPos){
 	$("#dataList").empty();
 	$("#dataListHeader").empty();
 	// "Lade..." anzeigen:
-	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon'>Lade...</li>");
+	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
 	$("#dataListHeader").listview().listview("refresh");
 	// Icon Animation in Refresh Button:
-	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' width=12px height=12px>");
+	$('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
 	$.getJSON('cgi/programs.cgi', function(data) {
 	systemDate = data['date'];
@@ -1499,15 +1497,26 @@ function loadGraphicIDs(){
 	$("#dataList").empty();
 	$("#dataListHeader").empty();
 	// "Lade..." anzeigen:
-	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon'>Lade...</li>");
+	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
 	$("#dataListHeader").listview().listview("refresh");
 	// Icon Animation in Refresh Button:
-	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' width=12px height=12px>");
+	$('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
 	$.getJSON('cgi/favorites.cgi', function(data) {
 		$("#dataList").append("<li data-role='list-divider' role='heading'>Favoriten</li>");
 		$.each(data, function(key, val) {
-			$("#dataList").append("<li><img class='lazyFavoritesID' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png' class='ui-li-thumbnail'><h1>" + val + "</h1><p>ID = " + key + ", Pfad = webmatic_user/img/ids/favorites/" + key + ".png</p></li>");
+			var html = "<li>";			
+			html += "<img class='lazyFavoritesID ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'/>";
+			html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key +"'>";
+			html += "<div class='ui-grid-b'>"
+			html += "<div class='ui-block-a'><h1>" + val + "</h1></div>";
+			html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
+			html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='favorites' id='uploadPicture" + key + "' data-inline='true' disable='disabled' data-role='button' data-icon='check'>Speichern</a></div>";
+			html += "</div>";
+			html += "</form>";	
+			html += "<output id='filesInfo" + key + "'></output>"
+			html += "</li>";
+			$("#dataList").append(html);
 		});
 		$("#dataList").listview().listview("refresh");
 		$("img.lazyFavoritesID").lazyload({event: "lazyLoadInstantly"});
@@ -1516,7 +1525,18 @@ function loadGraphicIDs(){
 		$.getJSON('cgi/rooms.cgi', function(data) {
 			$("#dataList").append("<li data-role='list-divider' role='heading'>R&auml;ume</li>");
 			$.each(data, function(key, val) {
-				$("#dataList").append("<li><img class='lazyRoomsID' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png' class='ui-li-thumbnail'><h1>" + val + "</h1><p>ID = " + key + ", Pfad = webmatic_user/img/ids/rooms/" + key + ".png</p></li>");
+				var html = "<li>";			
+				html += "<img class='lazyRoomsID ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'/>";
+				html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key +"'>";
+				html += "<div class='ui-grid-b'>"
+				html += "<div class='ui-block-a'><h1>" + val + "</h1></div>";
+				html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
+				html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='rooms' id='uploadPicture" + key + "' data-inline='true' disable='disabled' data-role='button' data-icon='check'>Speichern</a></div>";
+				html += "</div>";
+				html += "</form>";	
+				html += "<output id='filesInfo" + key + "'></output>"
+				html += "</li>";
+				$("#dataList").append(html);
 			});
 			$("#dataList").listview().listview("refresh");
 			$("img.lazyRoomsID").lazyload({event: "lazyLoadInstantly"});
@@ -1525,7 +1545,18 @@ function loadGraphicIDs(){
 			$.getJSON('cgi/functions.cgi', function(data) {
 				$("#dataList").append("<li data-role='list-divider' role='heading'>Gewerke</li>");
 				$.each(data, function(key, val) {
-					$("#dataList").append("<li><img class='lazyFunctionsID' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png' class='ui-li-thumbnail'><h1>" + val + "</h1><p>ID = " + key + ", Pfad = webmatic_user/img/ids/functions/" + key + ".png</p></li>");
+					var html = "<li>";			
+					html += "<img class='lazyFunctionsID ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'/>";
+					html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key +"'>";
+					html += "<div class='ui-grid-b'>"
+					html += "<div class='ui-block-a'><h1>" + val + "</h1></div>";
+					html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
+					html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='functions' id='uploadPicture" + key + "' data-inline='true' disable='disabled' data-role='button' data-icon='check'>Speichern</a></div>";
+					html += "</div>";
+					html += "</form>";	
+					html += "<output id='filesInfo" + key + "'></output>"
+					html += "</li>";
+					$("#dataList").append(html);
 				});
 				$("#dataList").listview().listview("refresh");
 				$("img.lazyFunctionsID").lazyload({event: "lazyLoadInstantly"});
@@ -1693,6 +1724,10 @@ function changeTheme(newTheme){
 		return (css.match (/(^|\s)valueOK-\S{1}/g) || []).join(' ');
 	}).addClass('valueOK-' + newTheme);
 	
+	$('img').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-img-\S{1}/g) || []).join(' ');
+	}).addClass('ui-img-' + newTheme);
+	
 	theme = newTheme;
 	localStorage.setItem("optionsMenuGfxTheme", theme);
 }
@@ -1794,4 +1829,103 @@ $(function(){
 			$("#" + infoID).text("OK!");
 		});
 	});
+	
+	$(document.body).on("change", ":file", function(){
+		var file = this.files[0];
+		name = file.name;
+		size = file.size;
+		type = file.type;
+
+		if(file.name.length < 1) {
+		}
+		else if(file.type != 'image/png' && file.type != 'image/jpg' && !file.type != 'image/gif' && file.type != 'image/jpeg' ) {
+			alert("Es muss ein Bild sein!");
+		}
+		else { 
+			var id = $(this).attr('id');
+			var key = id.substr(4, id.length);
+			$("#uploadPicture" + key).button("enable");
+		}
+	});
+	
+	$(document.body).on("click", 'a[name=uploadPicture]', function(){
+		var id = $(this).attr('id');
+		var key = id.substr(13, id.length);	
+		var type = $(this).data('type');
+			
+		var formData = new FormData();
+		
+		var file = document.getElementById('file' + key).files[0];
+		var reader = new FileReader();
+		reader.onloadend = function() { 
+			var tempImg = new Image();
+			tempImg.src = reader.result;
+			tempImg.onload = function() { 
+				var MAX_WIDTH = 160;
+				var MAX_HEIGHT = 160;
+				var tempW = tempImg.width;
+				var tempH = tempImg.height;
+				if (tempW > tempH) {
+					if (tempW > MAX_WIDTH) {
+						tempH *= MAX_WIDTH / tempW;
+						tempW = MAX_WIDTH;
+					}
+				} else {
+					if (tempH > MAX_HEIGHT) {
+						tempW *= MAX_HEIGHT / tempH;
+						tempH = MAX_HEIGHT;
+					}
+				}
+	 
+				var canvas = document.createElement('canvas');
+				canvas.width = tempW;
+				canvas.height = tempH;
+				
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(this, 0, 0, tempW, tempH);
+				var dataURL = canvas.toDataURL("image/png");
+	 
+				var image_data = atob(dataURL.split(',')[1]);
+				var arraybuffer = new ArrayBuffer(image_data.length);
+				var view = new Uint8Array(arraybuffer);
+				for (var i=0; i<image_data.length; i++) {
+					view[i] = image_data.charCodeAt(i) & 0xff;
+				}				
+				try {
+					var blob = new Blob([arraybuffer], {type: 'image/png'});
+				} catch (e) {
+					var bb = new (window.WebKitBlobBuilder || window.MozBlobBuilder);
+					bb.append(arraybuffer);
+					var blob = bb.getBlob('image/png');
+				}
+	 
+				formData.append('file', blob, key + '.png');
+				formData.append('filename', key + '.png')
+				formData.append('path', '/usr/local/etc/config/addons/www/webmatic_user/img/ids/' + type + '/');
+				
+				$.ajax({
+					url: 'cgi/upload.cgi',  //server script to process data
+					type: 'POST',				
+					success: completeHandler = function(data) {
+						/*
+						* workaround for crome browser // delete the fakepath
+						*/
+						if(navigator.userAgent.indexOf('Chrome')) {
+							var catchFile = $(":file").val().replace(/C:\\fakepath\\/i, '');
+						}
+						else {
+							var catchFile = $(":file").val();
+						}
+					},
+					data: formData,
+					cache: false,
+					contentType: false,
+					processData: false
+				}, 'json');
+			
+			}
+		}
+		reader.readAsDataURL(file);
+	});
+				
 });
