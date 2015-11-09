@@ -3,30 +3,62 @@
 // h-Diagrams by Goglo
 // ----------------------- Click function handlers ----------------------------
 
-// Variables to save last click:
+// Globale variablen
+var oldType       = -1;
 var lastClickType = -1;
 var lastClickID   = -1;
 var readModus     = false;
+var prevItem      = 0;
 
-prevItem = 0;
+var programsMap;
+var functionsMap;
+var roomsMap;
+var favoritesMap;
+var variablesMap;
+var optionsMap;
 
-//Initialwerte
-var sysVarReadonly = localStorage.getItem("optionsInitSetSysVarReadonly");
-var theme_arr = [ "a", "b", "c", "d", "e", "f", "g", "h"];
-var theme = localStorage.getItem("optionsMenuGfxTheme");
-if($.inArray(theme, theme_arr) == -1){
+var theme;
+
+// Initialize refresh timer:
+var refreshTimer = setInterval(function() {CheckRefreshPage();}, 1000);
+var lastTime = -1;
+
+//Initialwerte einlesen
+if(localStorage.getItem("webmaticOptionsMap") === null){
+
+	$.ajax({
+		type: 'GET',
+		url: '../webmatic_user/config.json',
+		dataType: 'json',
+		success: function(data) {
+			optionsMap = data;
+			localStorage.setItem("webmaticOptionsMap", JSON.stringify(data));
+		},
+		async: false
+	});
+	
+}else{
+	optionsMap = JSON.parse(localStorage.getItem("webmaticOptionsMap"));
+}
+
+//Design setzen
+if(localStorage.getItem("optionsMenuGfxTheme") === null){
+	theme = optionsMap.getItem("default_theme");
+	localStorage.setItem("optionsMenuGfxTheme", theme);
+}else{
+	theme = localStorage.getItem("optionsMenuGfxTheme");
+}
+if(typeof theme === "undefined" || $.inArray(theme, [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) == -1){
 	theme = "a";
 }
 
-// Initialize refresh timer:
-refreshTimer = setInterval(function() {CheckRefreshPage();}, 1000);
-lastTime = -1;
+// --------------------- Funktionen --------------------------
 
 function CheckRefreshPage(){
   // Statt Timer auf 60 Sekunden hier eigener Vergleich alle Sekunde. Nur so geht es, dass nach einem iOS WakeUp
   // des Browsers sofort ein Reload passiert, wenn mehr als 60 Sekunden vorbei sind.
-	d = new Date();
-	t = d.getTime();
+	var d = new Date();
+	var t = d.getTime();
 	if (lastTime != -1)
 	{
 		if (t - lastTime > 60000)
@@ -42,16 +74,15 @@ function CheckRefreshPage(){
 
 function RestartTimer(){
 	// Zeit zurücksetzen, damit wieder neu gezählt wird:
-	d = new Date();
-	t = d.getTime();
-	lastTime = t;
+	var d = new Date();
+	lastTime = d.getTime();
 }
 
 function RefreshPage(item, saveScrollPos){
 	// Gleich mal den Timer neu starten, lieber vor dem Reload, damit sich die nicht in die Quere kommen.
 	// Später dann besser nur einen Refresh zur selben Zeit zulassen:
 	RestartTimer();
-
+	
 	// Markieren von selektiertem Menueintrag:
 	if (item != 0){
 		if (prevItem != 0){
@@ -62,24 +93,28 @@ function RefreshPage(item, saveScrollPos){
 		item.removeClass("ui-btn-up-" + theme);
 		item.addClass("ui-btn-down-" + theme);
 		item.attr("data-theme", theme);
+		
 		prevItem = item;
 	}
 
 	if (lastClickType != -1 && lastClickID != -1){
-		oldScrollPos = -1;
+		var oldScrollPos = -1;
 		if (saveScrollPos){
 			oldScrollPos = $(window).scrollTop();
 		}
+		
+		var restart = oldType != lastClickType;
+		oldType = lastClickType;
 
 		switch (lastClickType){
 			case 1:
 				loadData('cgi/list.cgi?list=' + lastClickID, oldScrollPos);
 				break;
 			case 2:
-				loadVariables(oldScrollPos);
+				loadVariables(restart);
 				break;
 			case 3:
-				loadPrograms(oldScrollPos);
+				loadPrograms(restart);
 				break;
 			case 4:
 				loadGraphicIDs();
@@ -111,18 +146,18 @@ function RefreshServiceMessages(){
 
 	$.getJSON('cgi/service.cgi', function(data){
 		$("#serviceList").empty();
-		errNr = 0;
+		var errNr = 0;
 		$.each(data.entries, function(i, msg){
-			msgName = msg['name'];
-			msgType = msg['type'];
-			msgDevice = msg['device'];
-			msgError = msg['error'];
-			msgValue = msg['value'];
-			msgDate = msg['date'];
-			msgReadable = GetErrorMessage(msgType, msgError, msgValue, msgDevice);
+			var msgName = msg['name'];
+			var msgType = msg['type'];
+			var msgDevice = msg['device'];
+			var msgError = msg['error'];
+			var msgValue = msg['value'];
+			var msgDate = msg['date'];
+			var msgReadable = GetErrorMessage(msgType, msgError, msgValue, msgDevice);
 
 			$("#serviceList").append("<li><p class='ui-li-desc' style='text-align:right;'>" + msgDate + "</p><h1>" + msgName + "</h1><p>" + msgReadable + "</p></li>");
-			errNr = errNr + 1;
+			errNr += 1;
 		});
 		$('#buttonService .ui-btn-text').text("(" + errNr + ")");
 		if (errNr == 0){
@@ -142,12 +177,74 @@ function RemoveMessages(){
 	});
 }
 
+function changeTheme(newTheme){
+
+	$('body').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
+	}).addClass('ui-overlay-' + newTheme);
+	
+	$('.ui-page').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-page-theme-\S{1}/g) || []).join(' ');
+	}).addClass('ui-page-theme-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-header').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-bar-\S{1}/g) || []).join(' ');
+	}).addClass('ui-bar-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-content').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-body-\S{1}/g) || []).join(' ');
+	}).addClass('ui-body-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-popup-screen').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
+	}).addClass('ui-overlay-' + newTheme);
+	
+	$('.ui-collapsible-set').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
+	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-listview').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
+	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.ui-btn').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-btn-\S{1}/g) || []).join(' ');
+	}).addClass('ui-btn-' + newTheme).attr('data-theme', newTheme);
+	
+	$('.valueNoError').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueNoError-\S{1}/g) || []).join(' ');
+	}).addClass('valueNoError-' + newTheme);
+	
+	$('.valueInfo').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueInfo-\S{1}/g) || []).join(' ');
+	}).addClass('valueInfo-' + newTheme);
+	
+	$('.valueWarning').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueWarning-\S{1}/g) || []).join(' ');
+	}).addClass('valueWarning-' + newTheme);
+	
+	$('.valueError').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueError-\S{1}/g) || []).join(' ');
+	}).addClass('valueError-' + newTheme);
+	
+	$('.valueOK').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueOK-\S{1}/g) || []).join(' ');
+	}).addClass('valueOK-' + newTheme);
+	
+	$('img').removeClass(function(index, css){
+		return (css.match (/(^|\s)ui-img-\S{1}/g) || []).join(' ');
+	}).addClass('ui-img-' + newTheme);
+	
+	theme = newTheme;
+	localStorage.setItem("optionsMenuGfxTheme", theme);
+}
+
 // ----------------------- HTML Creation Helper ------------------------------
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 // onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
 function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh){
-	html = "";
+	var html = "";
 	if (!onlyButton){
 		html += "<p class='ui-li-desc'>"
 	}
@@ -167,7 +264,7 @@ function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh){
 
 // Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
 function AddStartProgramButton(id, text, vorDate, operate){
-	html = "<p class='ui-li-desc'><a href='#' class='" + (!operate?"ui-disabled":"") + "' id='startProgramButton_" + id + "' data-id='" + id + "' data-role='button' data-inline='true' data-icon='gear'>" + text + "</a></div>";
+	var html = "<p class='ui-li-desc'><a href='#' " + (!operate?"class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'":"data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-id='" + id + "'>" + text + "</a></div>";
 	html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme +"'></span></p>";
 	return html;
 }
@@ -178,7 +275,7 @@ function AddStartProgramButton(id, text, vorDate, operate){
 //
 // TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groß ist?
 function AddSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh){
-	html = "<div data-role='fieldcontain'>";
+	var html = "<div data-role='fieldcontain'>";
 	html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
 	html += " (" + min * factor + " - " + max * factor + " " + unit + ") ";
 	html += "<a href='#' id='setNumberButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
@@ -188,9 +285,10 @@ function AddSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh)
 }
 
 function AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, refresh){
-	html = "<div data-role='fieldcontain'>";
+	var html = "<div data-role='fieldcontain'>";
 	html += "<div data-role='controlgroup' data-type='horizontal'>";
 
+	var idString = "";
 	// Leerstring heißt wohl auch false, z.B. bei Alarmzone.
 	if (strValue == "false" || strValue == ""){
 		idString = "class='ui-btn-active'";
@@ -215,7 +313,7 @@ function AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, ref
 }
 
 function AddSetBoolComboBox(valID, strValue, val0, val1, valUnit, vorDate){
-	html = "<div data-role='fieldcontain'>";
+	var html = "<div data-role='fieldcontain'>";
 	html += "<select id='setValue_" + valID + "' data-id='" + valID + "' data-native-menu='false' data-inline='true'>";
 	if (strValue == "true"){
 		html += "<option value='false'>" + val0 + "</option><option selected value='true'>" + val1 + "</option>";
@@ -231,7 +329,7 @@ function AddSetBoolComboBox(valID, strValue, val0, val1, valUnit, vorDate){
 }
 
 function AddSetBoolSwitch(valID, strValue, val0, val1, valUnit, vorDate){
-	html = "<div data-role='fieldcontain'>";
+	var html = "<div data-role='fieldcontain'>";
 	html += "<div class='longerFlip'><select id='setValue_" + valID + "' data-id='" + valID + "' data-role='slider'>";
 	if (strValue == "true"){
 		html += "<option value='false'>" + val0 + "</option><option selected value='true'>" + val1 + "</option>";
@@ -247,10 +345,10 @@ function AddSetBoolSwitch(valID, strValue, val0, val1, valUnit, vorDate){
 }
 
 function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh){
-	html = "<div data-role='fieldcontain'>";
+	var html = "<div data-role='fieldcontain'>";
 	html += "<div data-role='controlgroup' data-type='horizontal'>";
-	selIndex = parseInt(strValue);
-	optionsArray = valList.split(";");
+	var selIndex = parseInt(strValue);
+	var optionsArray = valList.split(";");
 	for (i = 0; i < optionsArray.length; i++){
 		if (selIndex == i){
 			html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' class='ui-btn-active' data-theme='" + theme + "'>" + optionsArray[i] + "</a>";
@@ -267,7 +365,7 @@ function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh){
 }
 
 function AddSetText(valID, val, valUnit, vorDate){
-	html = "<div data-role='fieldcontain'>";
+	var html = "<div data-role='fieldcontain'>";
 	// Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
 	val = val.replace(/\"/g, "&quot;");
 	if(val.length > 40){
@@ -282,7 +380,7 @@ function AddSetText(valID, val, valUnit, vorDate){
 }
 
 function AddHTML(valID, val, vorDate, readonly){
-	html = "<div data-role='fieldcontain' class='" + (readonly?"":"ui-grid-a") + "'>";	
+	var html = "<div data-role='fieldcontain' class='" + (readonly?"":"ui-grid-a") + "'>";	
 	html += "<div class='" + (readonly?"":"ui-block-a") + "'>" + val + "</div>";
 	if(!readonly){
 		html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
@@ -294,9 +392,9 @@ function AddHTML(valID, val, vorDate, readonly){
 	return html;
 }
 
-function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList){
+function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1){
 	// Bestimmen, wie der sichtbare Werte aussehen soll:
-	visVal = "";
+	var visVal = "";
 	if (valType == "2"){
 		// Bool.
 		if (strValue == "true"){
@@ -309,7 +407,7 @@ function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
 		visVal = parseFloat(strValue);
 	}else if (valType == "16"){
 		// Liste.
-		optionsArray = valList.split(";");
+		var optionsArray = valList.split(";");
 		visVal = optionsArray[parseInt(strValue)];
 	}else{
 		// String oder unbekannt.
@@ -320,6 +418,66 @@ function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
 	}else{
 		return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
 	}
+}
+
+function processVariable(variable, valID, systemDate){
+	var strValue = unescape(variable['value']);
+	var valType  = variable['valueType'];
+	var valUnit  = variable['valueUnit'];
+	var valList  = variable['valueList'];
+	var vorDate = GetTimeDiffString(variable['date'], systemDate);
+	var valInfo = unescape(variable['info']);
+	var val0 = variable['valueName0'];
+	var val1 = variable['valueName1'];
+	
+	var html = "<li class='dataListItem' id='" + valID + "'><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
+	html += "<p>" + valInfo + "</p>";
+
+	// In der Variablenliste editieren zulassen:
+	if(isReadOnly(valInfo)){
+		html += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
+	}else if (valType == "2"){
+		// Bool.
+		html += AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+	}else if (valType == "4"){
+		// Float, Integer.
+		html += AddSetNumber(valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.001, 1.0, vorDate, true);
+	}else if (valType == "16"){
+		// Liste.
+		html += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+	}else if (valType == "20" && valUnit == "html"){
+		html += AddHTML(valID, strValue, vorDate, false);
+	}else if (valType == "20"){
+		html += AddSetText(valID, strValue, valUnit, vorDate);
+	}else{
+		html += "Unbekannter Variablentyp!";
+	}
+	html += "</li>";
+	
+	return html;
+}
+
+function processProgram(prog, prgID, systemDate){	
+	var deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prog['name'] + "</h2><p>" +  prog['info'] + "</p>";
+	deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", GetTimeDiffString(prog['date'], systemDate), prog['operate'] == "true");
+	deviceHTML += "</li>";
+	return deviceHTML;
+}
+
+function processGraphicID(type, map){
+	$.each(map, function(key, val) {
+		var html = "<li>";			
+		html += "<img id='img" + key + "' class='lazyLoadImage ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/" + type + "/" + key + ".png' src='img/menu/" + type + ".png'/>";
+		html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key +"'>";
+		html += "<div class='ui-grid-b'>"
+		html += "<div class='ui-block-a'><h1>" + val + " (" + key + ")</h1></div>";
+		html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
+		html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>Speichern</a></div>";
+		html += "</div>";
+		html += "</form>";	
+		html += "</li>";
+		$("#dataList").append(html);
+	});		
 }
 
 // ----------------------- Helper functions ----------------------------
@@ -334,10 +492,38 @@ function GetDateFromString(strDate){
 	return new Date(yr, mn, dy, hr, mi, sc);
 }
 
+function isReadOnly(valInfo){	
+	if(!readModus){
+		return false;
+	}
+	
+	// Wenn die Variable hinten (r) hat, dann ist sie Read-Only:
+	// Wenn die Variable hinten (w) hat, dann ist sie nicht Read-Only:
+	var varOptionsFirst = "";
+	var varOptions = [];
+	// ( finden:
+	var bracketOpen = valInfo.indexOf("(");
+	if (bracketOpen != -1){
+		// ) finden:
+		var bracketClose = valInfo.indexOf(")", bracketOpen);
+		if (bracketClose != -1){
+			var optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
+			varOptions = optionsString.split(",");
+
+			if (varOptions.length >= 1){
+				varOptionsFirst = varOptions[0].toLowerCase();
+			}
+		}
+	}
+	
+	if(optionsMap["systemvar_readonly"] && readModus){
+		return varOptionsFirst != "w";
+	}	
+	return varOptionsFirst == "r";
+}
+
 function GetTimeDiffString(diffDate, systemDate){
-	dateTimeSystem = GetDateFromString(systemDate);
-	dateTimeDiff = GetDateFromString(diffDate);
-	timeDiff = (dateTimeSystem - dateTimeDiff) / 1000;  // In Sekunden konvertieren.
+	var timeDiff = (GetDateFromString(systemDate) - GetDateFromString(diffDate)) / 1000;  // In Sekunden konvertieren.
 
 	if (timeDiff < 60){
 		return "Vor " + Math.floor(timeDiff + 0.5) + " Sekunde/n";
@@ -350,7 +536,7 @@ function GetTimeDiffString(diffDate, systemDate){
 	}else if (timeDiff < 60*60*24*30.5*12){
 		return "Vor " + Math.floor(timeDiff / (60 * 60 * 24 * 30.5) + 0.5) + " Monat/en";
 	}else{
-		y = Math.floor(timeDiff / (60 * 60 * 24 * 30.5 * 12) + 0.5);
+		var y = Math.floor(timeDiff / (60 * 60 * 24 * 30.5 * 12) + 0.5);
 		if (y > 40){
 			return "Noch nicht ver&auml;ndert";
 		}else{
@@ -360,8 +546,8 @@ function GetTimeDiffString(diffDate, systemDate){
 }
 
 function GetErrorMessage(errType, error, errValue, deviceHssType){
-	noError = false;  // Wird verwendet, wenn "Unbekannter Fehler" nicht angezeigt werden soll.
-	txt = "";
+	var noError = false;  // Wird verwendet, wenn "Unbekannter Fehler" nicht angezeigt werden soll.
+	var txt = "";
 
 	if (errType == "ALARMDP"){
 		if (error == "CONFIG_PENDING"){
@@ -482,6 +668,13 @@ function GetErrorMessage(errType, error, errValue, deviceHssType){
 	return txt;
 }
 
+function reloadList(txt, systemDate){
+	$("#dataListHeader").empty();
+	$("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>").listview("refresh");			
+	$("#dataList").listview("refresh");		
+	$("#dataList").trigger("create");
+}
+
 function ScrollToContentHeader(){
 	$('html, body').animate({scrollTop: $('#prim').offset().top - 60}, 200);
 }
@@ -507,42 +700,47 @@ function loadData(url, oldScrollPos){
 	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' class='ui-img-" + theme + "' width=12px height=12px>");
 
 	$.getJSON(url, function(data) {
-		systemDate = data['date'];
+		var systemDate = data['date'];
 
 		$.each(data.entries, function(i, device) {
 			if(device['visible'] != "false"){
-				deviceHTML = "<li class='dataListItem' id='" + device['id'] + "'><h2 class='ui-li-heading'>" + unescape(device['name']) + "</h2>";
-				addDiagram = false;
-				diagramData = "";
-				diagramID = "";
-				diagramUnit = "";
-				varOptions = {};
-				varOptionsFirst = "";
+				var deviceHTML = "<li class='dataListItem' id='" + device['id'] + "'><h2 class='ui-li-heading'>" + unescape(device['name']) + "</h2>";
+				var addDiagram = false;
+				var diagramData = "";
+				var diagramID = "";
+				var diagramUnit = "";
+				var varOptions = {};
+				var varOptionsFirst = "";
 				if (device['type'] == "CHANNEL"){
-					deviceHssType = device['hssType'];
-					hasChannel = false;
+					var deviceHssType = device['hssType'];
+					var hasChannel = false;
 					$.each(device.channels, function(j, channel){
 						hasChannel = true;
-						type = channel['type'];
+						var type = channel['type'];
 
 						if (type == "HSSDP"){
-							channelID = channel['id'];
-							hssType = channel['hssType'];
-							channelDate = channel['date'];
-							vorDate = GetTimeDiffString(channelDate, systemDate);
-							valString = channel['value'];
-							valFloat = parseFloat(channel['value']);
-							valBool = (valString == "true");
-							valUnit = channel['valueUnit'];
+							var channelID = channel['id'];
+							var hssType = channel['hssType'];
+							var channelDate = channel['date'];
+							var vorDate = GetTimeDiffString(channelDate, systemDate);
+							var valString = channel['value'];
+							var valFloat = parseFloat(channel['value']);
+							var valBool = (valString == "true");
+							var valUnit = channel['valueUnit'];
+							
 							if (typeof(valUnit) == "undefined"){
 								valUnit = "";
 							}else if (valUnit == "100%"){
 								valUnit = "%";  // Manche Geräte haben als Einheit 100%. Würde zu seltsamen Darstellungen führen.
 							}
+							
 							if (hssType == "STATE")
 							{
-								canBeSet = false;
-								stateText = "valFloat: " + valFloat + ", valString: " + valString;
+								var txtOn = "";
+								var txtOff = "";
+								var txt = "";								
+								var canBeSet = false;
+								var stateText = "valFloat: " + valFloat + ", valString: " + valString;
 								if (deviceHssType == "SHUTTER_CONTACT"){
 									if (valString == "true"){
 										stateText = "<span class='valueError valueError-" + theme + "'>Offen</span>";
@@ -645,8 +843,8 @@ function loadData(url, oldScrollPos){
 								deviceHTML += AddSetButton(channel['id'], "Langer Tastendruck", true, vorDate, false, false, true);
 							}else if (hssType == "SETPOINT"){
 								deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
-								lowTemp = valFloat - 3.0;
-								highTemp = lowTemp + 6.0;
+								var lowTemp = valFloat - 3.0;
+								var highTemp = lowTemp + 6.0;
 								if (lowTemp < 6.0){
 									lowTemp = 6.0;
 									highTemp = 11.0;
@@ -661,13 +859,14 @@ function loadData(url, oldScrollPos){
 								}
 								deviceHTML += "</div>";
 							}else if (hssType == "RAINING"){
+								var s = "";
 								if (valString == "true"){
 									s = "Regen";
 								}else{
 									s = "Kein Regen";
 								}
 								deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + s + "</span> | <span><i>" + vorDate + "</i></span></p>";
-							}else if (hssType == "MOTION"){
+							}else if (hssType == "MOTION"){								
 								if (valString == "true"){
 									txt = "<span class='valueWarning valueWarning-" + theme + "'>Bewegung </span>";
 								}else{
@@ -771,6 +970,7 @@ function loadData(url, oldScrollPos){
 								}
 							}else if (hssType == "ERROR" || hssType.substring(0, 6) == "ERROR_"){
 								if ((hssType == "ERROR" && valFloat > 0) || hssType.substring(0, 6) == "ERROR_"){
+									var v;
 									if (hssType == "ERROR"){
 										v = valFloat;
 									}else{
@@ -785,7 +985,7 @@ function loadData(url, oldScrollPos){
 								// Don't show.
 							}else{
 								// Mapping auf lesbaren Text holen:
-								name = MapText(hssType);
+								var name = MapText(hssType);
 
 								// Prüfen ob Zahl, wenn ja, dann die Zahl nehmen, da es automatisch Nullen hinten abschneidet:
 								v = valString;
@@ -799,33 +999,33 @@ function loadData(url, oldScrollPos){
 								}
 							}
 						}else if (type == "VARDP"){
-							valName  = unescape(channel['name']);
-							valID    = channel['id'];
-							valInfo  = unescape(channel['info']);
-							strValue = unescape(channel['value']);
-							valType  = channel['valueType'];
-							valUnit  = channel['valueUnit'];
-							val0     = channel['valueName0'];
-							val1     = channel['valueName1'];
-							valMin   = channel['valueMin'];
-							valMax   = channel['valueMax'];
-							valList  = channel['valueList'];
-							channelDate = channel['date'];
-							vorDate = GetTimeDiffString(channelDate, systemDate);
+							var valName  = unescape(channel['name']);
+							var valID    = channel['id'];
+							var valInfo  = unescape(channel['info']);
+							var strValue = unescape(channel['value']);
+							var valType  = channel['valueType'];
+							var valUnit  = channel['valueUnit'];
+							var val0     = channel['valueName0'];
+							var val1     = channel['valueName1'];
+							var valMin   = channel['valueMin'];
+							var valMax   = channel['valueMax'];
+							var valList  = channel['valueList'];
+							var channelDate = channel['date'];
+							var vorDate = GetTimeDiffString(channelDate, systemDate);
 
 							// Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten,
 							// bei (d) / (dk) ist es ein Diagramm in den Favoriten,
 							// bei (g) eine Tankuhr,
 							// bei (nv) soll der Wert ausgeblendet werden (Sollwertscript). Nur bei Variablen in Geräten verknüpft.
 							// ( finden:
-							varOptionsFirst = "";
-							varOptions = [];
-							bracketOpen = valInfo.indexOf("(");
+							var varOptionsFirst = "";
+							var varOptions = [];
+							var bracketOpen = valInfo.indexOf("(");
 							if (bracketOpen != -1){
 								// ) finden:
-								bracketClose = valInfo.indexOf(")", bracketOpen);
+								var bracketClose = valInfo.indexOf(")", bracketOpen);
 								if (bracketClose != -1){
-									optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
+									var optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
 									varOptions = optionsString.split(",");
 
 									if (varOptions.length >= 1){
@@ -838,7 +1038,7 @@ function loadData(url, oldScrollPos){
 								// <br> davor, weil es an der Stelle eine mit Gerät verknüpfte Variable ist:
 								deviceHTML += "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
 								deviceHTML += "<p>" + valInfo + "</p>";
-								if (isReadOnly()){
+								if (isReadOnly(valInfo)){
 									deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
 								}else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ){
 									// Goglo
@@ -882,29 +1082,29 @@ function loadData(url, oldScrollPos){
 					}
 					
 				}else if (device['type'] == "VARDP"){
-					valName  = unescape(device['name']);
-					valID    = device['id'];
-					valInfo  = unescape(device['info']);
-					strValue = unescape(device['value']);
-					valType  = device['valueType'];
-					valUnit  = device['valueUnit'];
-					val0     = device['valueName0'];
-					val1     = device['valueName1'];
-					valMin   = device['valueMin'];
-					valMax   = device['valueMax'];
-					valList  = device['valueList'];
-					channelDate = device['date'];
-					vorDate = GetTimeDiffString(channelDate, systemDate);
+					var valName  = unescape(device['name']);
+					var valID    = device['id'];
+					var valInfo  = unescape(device['info']);
+					var strValue = unescape(device['value']);
+					var valType  = device['valueType'];
+					var valUnit  = device['valueUnit'];
+					var val0     = device['valueName0'];
+					var val1     = device['valueName1'];
+					var valMin   = device['valueMin'];
+					var valMax   = device['valueMax'];
+					var valList  = device['valueList'];
+					var channelDate = device['date'];
+					var vorDate = GetTimeDiffString(channelDate, systemDate);
 					// Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten:
-					varOptionsFirst = "";
-					varOptions = [];
+					var varOptionsFirst = "";
+					var varOptions = [];
 					// ( finden:
-					bracketOpen= valInfo.indexOf("(");
+					var bracketOpen= valInfo.indexOf("(");
 					if (bracketOpen != -1){
 						// ) finden:
-						bracketClose = valInfo.indexOf(")", bracketOpen);
+						var bracketClose = valInfo.indexOf(")", bracketOpen);
 						if (bracketClose != -1){
-							optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
+							var optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
 							varOptions = optionsString.split(",");
 
 							if (varOptions.length >= 1){
@@ -914,7 +1114,7 @@ function loadData(url, oldScrollPos){
 					}
 
 					deviceHTML += "<p>" + valInfo + "</p>";
-					if (isReadOnly()){
+					if (isReadOnly(valInfo)){
 						deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
 					}else if (varOptionsFirst == "d" || varOptionsFirst == "dk" || varOptionsFirst == "g" || varOptionsFirst == "h" ){
 						// Goglo
@@ -952,11 +1152,11 @@ function loadData(url, oldScrollPos){
 						}
 					}
 				}else if (device['type'] == "PROGRAM"){
-					prgID = device['id'];
-					prgName = device['name'];
-					prgInfo = device['info'];
-					prgDate = device['date'];
-					vorDate = GetTimeDiffString(prgDate, systemDate);
+					var prgID = device['id'];
+					var prgName = device['name'];
+					var prgInfo = device['info'];
+					var prgDate = device['date'];
+					var vorDate = GetTimeDiffString(prgDate, systemDate);
 
 					deviceHTML += "<p>" + prgInfo + "</p>";
 					deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", vorDate);
@@ -971,13 +1171,13 @@ function loadData(url, oldScrollPos){
 				if (addDiagram){
 					$("#dataList").listview().listview("refresh");
 					// Diagrammoptionen Defaults setzen:
-					dType  = "l"; // Typ = Line.
-					dColor = "69A5CF"; // Farbe.
-					dLow   = ""; // Kleinster Werte 10% unter Minimum.
-					dHigh  = ""; // Größter Wert 10% über Maximum.
-					dKomma = 1; // Eine Nachkommastellen.
-					dStart = "0/#008800"; // Startwert für Gauge.
-					dEnd = "30/#AA4400";  // Endwert für Gauge.
+					var dType  = "l"; // Typ = Line.
+					var dColor = "69A5CF"; // Farbe.
+					var dLow   = ""; // Kleinster Werte 10% unter Minimum.
+					var dHigh  = ""; // Größter Wert 10% über Maximum.
+					var dKomma = 1; // Eine Nachkommastellen.
+					var dStart = "0/#008800"; // Startwert für Gauge.
+					var dEnd = "30/#AA4400";  // Endwert für Gauge.
 					
 					// Diagrammoptionen prüfen:
 					for (i = 0; i < varOptions.length; i++){
@@ -1004,63 +1204,63 @@ function loadData(url, oldScrollPos){
 					if (varOptionsFirst == "g"){
 						// Gauge
 						// In Number Array verwandeln:
-						gaugeVal = parseFloat(diagramData);
+						var gaugeVal = parseFloat(diagramData);
 
 						// Start ermitteln:
-						startArr = dStart.split("/");
-						gaugeMin = parseFloat(startArr[0]);
-						gaugeMinCol = startArr[1];
+						var startArr = dStart.split("/");
+						var gaugeMin = parseFloat(startArr[0]);
+						var gaugeMinCol = startArr[1];
 						if (gaugeVal < gaugeMin){
 							gaugeMin = gaugeVal;
 						}
 				
 						// Ende ermitteln:
-						endArr = dEnd.split("/");
-						gaugeMax = parseFloat(endArr[0]);
-						gaugeMaxCol = endArr[1];
+						var endArr = dEnd.split("/");
+						var gaugeMax = parseFloat(endArr[0]);
+						var gaugeMaxCol = endArr[1];
 						if (gaugeVal > gaugeMax){
 							gaugeMax = gaugeVal;
 						}
 						
 						// Farben teilen:
-						rStart = parseInt(gaugeMinCol.substring(1,3) ,16);
-						gStart = parseInt(gaugeMinCol.substring(3,5) ,16);
-						bStart = parseInt(gaugeMinCol.substring(5,7) ,16);
-						rEnd = parseInt(gaugeMaxCol.substring(1,3) ,16);
-						gEnd = parseInt(gaugeMaxCol.substring(3,5) ,16);
-						bEnd = parseInt(gaugeMaxCol.substring(5,7) ,16);
+						var rStart = parseInt(gaugeMinCol.substring(1,3) ,16);
+						var gStart = parseInt(gaugeMinCol.substring(3,5) ,16);
+						var bStart = parseInt(gaugeMinCol.substring(5,7) ,16);
+						var rEnd = parseInt(gaugeMaxCol.substring(1,3) ,16);
+						var gEnd = parseInt(gaugeMaxCol.substring(3,5) ,16);
+						var vbEnd = parseInt(gaugeMaxCol.substring(5,7) ,16);
 
 						// Farbinterpolation:
-						gValArr = [];
-						gColArr = [];
-						resolution = 10;
+						var gValArr = [];
+						var gColArr = [];
+						var resolution = 10;
 						for (i = 1; i <= resolution; i++){
 							// Interpoliert von 1/4 bis 1:
-							f = i / resolution;
-							v = gaugeMin + f * (gaugeMax - gaugeMin);
+							var f = i / resolution;
+							var v = gaugeMin + f * (gaugeMax - gaugeMin);
 							gValArr.push(v);
 
 							// Interpoliert von 0/resolution bis 1:
 							f = (i - 1) / (resolution - 1);
-							cr = Math.floor(rStart + f * (rEnd - rStart)).toString(16);
+							var cr = Math.floor(rStart + f * (rEnd - rStart)).toString(16);
 							if (cr.length < 2){
 								cr = "0" + cr;
 							}
-							cg = Math.floor(gStart + f * (gEnd - gStart)).toString(16);
+							var cg = Math.floor(gStart + f * (gEnd - gStart)).toString(16);
 							if (cg.length < 2){
 								cg = "0" + cg;
 							}
-							cb = Math.floor(bStart + f * (bEnd - bStart)).toString(16);
+							var cb = Math.floor(bStart + f * (bEnd - bStart)).toString(16);
 							if (cb.length < 2){
 								cb = "0" + cb;
 							}
-							c = "#" + cr + cg + cb;
+							var c = "#" + cr + cg + cb;
 							gColArr.push(c);
 						}
 
 						// Gauge erstellen:
-						gData = [diagramData];
-						plotGauge = $.jqplot(diagramID, [gData],{
+						var gData = [diagramData];
+						var plotGauge = $.jqplot(diagramID, [gData],{
 							seriesDefaults: {
 								renderer: $.jqplot.MeterGaugeRenderer,
 								rendererOptions: {
@@ -1081,39 +1281,43 @@ function loadData(url, oldScrollPos){
 						//------------------------------------ begin Goglo
 						//wir erwarten die Werte in der Form n;t1;t2;t3...
 						// mit t in der Form date,v1,v2,v3...
-						srcDiagArr = diagramData.split(";");
+						var srcDiagArr = diagramData.split(";");
 						// Erstes Element muss weg, dann ist immer alle numValues wieder ein Datum
-						al = srcDiagArr[0];
+						var al = srcDiagArr[0];
 						if (al > 0){
 							// Felder: Datum, Soll-Temp, Ist-Temp, Luftfeucht, Stell1, Stell2
-							diagArr = new Array();  // Neues, n-dimensionales Array.
+							var diagArr = new Array();  // Neues, n-dimensionales Array.
 							diagArr[0] = new Array();
 							diagArr[1] = new Array();
 							diagArr[2] = new Array();
 							diagArr[3] = new Array();
 							diagArr[4] = new Array();
-							j = 0;
+							var j = 0;
+							
+							var lowVal;
 							if ( dLow == ""){
 								lowVal = 15.0;
 							}else{
 								lowVal = parseFloat(dLow);
 							}
+							
+							var highVal;
 							if(dHigh == ""){
 								highVal = 23.0;
 							}else{
 								highVal = parseFloat(dHigh);
 							}
-							lowDate = "";
-							highDate = "";
+							var lowDate = "";
+							var highDate = "";
 							// Werte in Array aus 2-dim Arrays umwandeln:
 							// i 0..al ist index von scrDiagArr, also ueber alle Tupel
 							// j  0.. ist index von diagArr, also alle Werte innerhalb des Tupels
 
 							for (i = 1; i <= al; i++)
 							{
-								t = srcDiagArr[i]; 
-								tArr = t.split(",");
-								v1 = tArr[0];
+								var t = srcDiagArr[i]; 
+								var tArr = t.split(",");
+								var v1 = tArr[0];
 								if (lowDate == "" || v1 < lowDate){
 									lowDate = v1;
 								}
@@ -1123,9 +1327,9 @@ function loadData(url, oldScrollPos){
 								
 								for (j = 1; j < tArr.length; j++)
 								{
-									vArr = new Array();
+									var vArr = new Array();
 									vArr[0] = v1;
-									v2 = tArr[j];
+									var v2 = tArr[j];
 									vArr[1] = v2;
 									diagArr[j-1][i-1] = vArr;
 								}
@@ -1211,23 +1415,24 @@ function loadData(url, oldScrollPos){
 						});	
 						//------------------------------------ end Goglo
 					}else if (dType == "l" || dType == "f"){
-						srcDiagArr = diagramData.split(",");
+						var srcDiagArr = diagramData.split(",");
 						// Erstes Element muss weg, dann immer zwei, also min = 3:
-						al = srcDiagArr.length;
+						var al = srcDiagArr.length;
 						if (al >= 3){
-							diagArr = new Array();  // Neues, zweidimensionales Array.
-							j = 0;
-							lowVal = 1e6;
-							highVal = -1e6;
-							lowDate = "";
-							highDate = "";
+							var diagArr = new Array();  // Neues, zweidimensionales Array.
+							var j = 0;
+							var lowVal = 1e6;
+							var highVal = -1e6;
+							var lowDate = "";
+							var highDate = "";
 							// Werte in Array aus 2-dim Arrays umwandeln:
 							for (i = 1; i < al; i = i + 2)
 							{
-								v1 = srcDiagArr[i];
-								v2 = srcDiagArr[i + 1];
-								smallArr = new Array();
+								var v1 = srcDiagArr[i];
+								var v2 = srcDiagArr[i + 1];
+								var smallArr = new Array();
 								smallArr[0] = v1;
+								var v;
 								if (v2 == "true"){
 									v = 1;
 								}else if (v2 == "false"){
@@ -1255,29 +1460,30 @@ function loadData(url, oldScrollPos){
 							}
 
 							// Low Values anpassen:
-							if (dLow == "")
-							  lowVal = lowVal - 0.1 * (highVal - lowVal);
-							else if (dLow == "m")
-							  ; // lowVal ist schon Minimum;
-							else
-							{
-							  sugLowVal = parseFloat(dLow);
-							  if (sugLowVal < lowVal)
-								lowVal = sugLowVal;
+							if (dLow == ""){
+								lowVal = lowVal - 0.1 * (highVal - lowVal);
+							}else if (dLow == "m"){
+								// lowVal ist schon Minimum;
+							}else{
+								var sugLowVal = parseFloat(dLow);
+								if (sugLowVal < lowVal){
+									lowVal = sugLowVal;
+								}
 							}
 							// High Values anpassen:
-							if (dHigh == "")
-							  highVal = highVal + 0.1 * (highVal - lowVal);
-							else if (dHigh == "m")
-							  ; // highVal ist schon Maximum;
-							else
-							{
-							  sugHighVal = parseFloat(dHigh);
-							  if (sugHighVal > highVal)
-								highVal = sugHighVal;
+							if (dHigh == ""){
+								highVal = highVal + 0.1 * (highVal - lowVal);
+							}else if (dHigh == "m"){
+								// highVal ist schon Maximum;
+							}else{
+								var sugHighVal = parseFloat(dHigh);
+								if (sugHighVal > highVal){
+									highVal = sugHighVal;
+								}
 							}
 
 							// Fill/Line:
+							var diagFill;
 							if (dType == "l"){
 								diagFill = false;
 							}else{
@@ -1301,10 +1507,6 @@ function loadData(url, oldScrollPos){
 										}
 									}
 								},
-								//legend: {
-								//  show: true,
-								//  placement: 'inside'
-								//},
 								seriesDefaults: {
 									rendererOptions: {
 										smooth: true
@@ -1312,7 +1514,6 @@ function loadData(url, oldScrollPos){
 								},
 								series:[{
 									color: "#" + dColor,
-									//label: varName,
 									lineWidth:2,
 									showMarker:false,
 									fill: diagFill
@@ -1357,226 +1558,226 @@ function loadData(url, oldScrollPos){
 	});
 }
 
-function loadVariables(oldScrollPos){
-	if (oldScrollPos == -1){
-		ScrollToContentHeader();
-	}
+function loadVariables(restart){	
 
-	$("#dataList").empty();
-	$("#dataListHeader").empty();
-	// "Lade..." anzeigen:
-	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
-	$("#dataListHeader").listview().listview("refresh");
 	// Icon Animation in Refresh Button:
-	$('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
+	$('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");	
+	var isActual = false;
+	if(restart){
+		$("#dataList").empty();
+		$("#dataListHeader").empty();
+		// "Lade..." anzeigen:
+		$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
+		
+		if(localStorage.getItem("webmaticVariablesMap") === null){
 
-	$.getJSON('cgi/systemvariables.cgi', function(data) {		
-		systemDate = data['date'];
-		$.each(data.entries, function(i, variable) {
-			valVisible = variable['visible'] == "true";
+			$.ajax({
+				type: 'GET',
+				url: 'cgi/systemvariables.cgi',
+				dataType: 'json',
+				success: function(data) {
+					variablesMap = data;
+					localStorage.setItem("webmaticVariablesMap", JSON.stringify(variablesMap));
+				},
+				async: false
+			});
+			isActual = true;
+			
+		}else{
+			variablesMap = JSON.parse(localStorage.getItem("webmaticVariablesMap"));
+		}
+		
+		var systemDate = variablesMap['date'];
+		$.each(variablesMap.entries, function(i, variable) {
+			var valVisible = variable['visible'] == "true";
+			var valID    = variable['id'];		
 			if((readModus && valVisible) || !readModus){
-				valID    = variable['id'];
-				valName  = unescape(variable['name']);
-				valInfo  = unescape(variable['info']);
-				strValue = unescape(variable['value']);
-				valType  = variable['valueType'];
-				valUnit  = variable['valueUnit'];
-				val0     = variable['valueName0'];
-				val1     = variable['valueName1'];
-				valMin   = variable['valueMin'];
-				valMax   = variable['valueMax'];
-				valList  = variable['valueList'];
-				channelDate = variable['date'];
-				vorDate = GetTimeDiffString(channelDate, systemDate);
-				contentString = "<li class='dataListItem' id='" + valID + "'><h2 class='ui-li-heading'>" + valName + "</h2>";
-
-				contentString += "<p>" + valInfo + "</p>";
-				
-				// In der Variablenliste editieren zulassen:
-				if(isReadOnly()){
-					contentString += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
-				}else if (valType == "2"){
-					// Bool.
-					contentString += AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
-				}else if (valType == "4"){
-					// Float, Integer.
-					contentString += AddSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
-				}else if (valType == "16"){
-					// Liste.
-					contentString += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
-				}else if (valType == "20" && valUnit == "html"){
-					contentString += AddHTML(valID, strValue, vorDate, false);
-				}else if (valType == "20"){
-					contentString += AddSetText(valID, strValue, valUnit, vorDate);
-				}else{
-					contentString += "Unbekannter Variablentyp!";
-				}
-				contentString += "</li>";
-				$("#dataList").append(contentString);
+				$("#dataList").append(processVariable(variable, valID, systemDate));
 			}
 		});
-
-		// "Lade..." wieder entfernen und Überschrift anzeigen:
-		$("#dataListHeader").empty();
-		$("#dataListHeader").append("<li data-role='list-divider' role='heading'>Systemvariablen<p style='float:right;'>" + systemDate + "</p></li>").listview().listview("refresh");
-		$("#dataListHeader").listview().listview("refresh");
-
-		// Animated Icon aus Refresh wieder entfernen:
-		$('#buttonRefresh .ui-btn-text').html("&nbsp;");
-
-		$("#dataList").listview().listview("refresh");
-		$("#dataList").trigger("create");
-
-		// Filter Update:
-		$(".ui-input-search .ui-input-text").trigger("change");
-
-		if (oldScrollPos == -1){
-			ScrollToContentHeader();
-		}else{
-			ScrollToPosition(oldScrollPos);
-		}
-	});
+		reloadList("Systemvariablen", systemDate);	
+	}
+	
+	if(!isActual){
+		$.getJSON('cgi/systemvariables.cgi', function(data) {		
+			var systemDate = data['date'];
+			$.each(data.entries, function(i, variable) {
+				var valVisible = variable['visible'] == "true";
+				var valID    = variable['id'];				
+				if($('#' + valID).length == 0 && ((readModus && valVisible) || !readModus)){
+					$("#dataList").append(processVariable(variable, valID, systemDate));
+				}else if((readModus && valVisible) || !readModus){					
+					$('#' + valID).replaceWith(processVariable(variable, valID, systemDate));
+				}else if($('#' + valID).length != 0){
+					$('#' + valID).hide();
+				}
+			});
+			localStorage.setItem("webmaticVariablesMap", JSON.stringify(data));
+			reloadList("Systemvariablen", systemDate);					
+		});
+	}
+	// Animated Icon aus Refresh wieder entfernen:
+	$('#buttonRefresh .ui-btn-text').html("&nbsp;");		
+	// Filter Update:
+	$(".ui-input-search .ui-input-text").trigger("change");	
 }
 
-function loadPrograms(oldScrollPos){
-	if (oldScrollPos == -1){
-		ScrollToContentHeader();
-	}
-  
-	$("#dataList").empty();
-	$("#dataListHeader").empty();
-	// "Lade..." anzeigen:
-	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
-	$("#dataListHeader").listview().listview("refresh");
+function loadPrograms(restart){
+	
 	// Icon Animation in Refresh Button:
 	$('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
-
-	$.getJSON('cgi/programs.cgi', function(data) {
-	systemDate = data['date'];
-		$.each(data.entries, function(i, prog) {
-			prgVisible = prog['visible'] == "true";
-			prgActive = prog['active'] == "true";			
-			
-			if((readModus && prgVisible && prgActive) || !readModus){
-				prgID = prog['id'];
-				prgName = prog['name'];
-				prgInfo = prog['info'];
-				prgDate = prog['date'];
-				prgOperate = prog['operate'] == "true";
-				vorDate = GetTimeDiffString(prgDate, systemDate);			
-
-				deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prgName + "</h2><p>" + prgInfo + "</p>";
-				deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", vorDate, prgOperate);
-				deviceHTML += "</li>";
-				$("#dataList").append(deviceHTML);
-			}
-		});
-
-		// "Lade..." wieder entfernen und Überschrift anzeigen:
+	var isActual = false;
+	if(restart){
+		$("#dataList").empty();
 		$("#dataListHeader").empty();
-		$("#dataListHeader").append("<li data-role='list-divider' role='heading'>Programme<p style='float:right;'>" + systemDate + "</p></li>").listview().listview("refresh");
-		$("#dataListHeader").listview().listview("refresh");
+		// "Lade..." anzeigen:
+		$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
+				
+		if(localStorage.getItem("webmaticProgramsMap") === null){
 
-		// Animated Icon aus Refresh wieder entfernen:
-		$('#buttonRefresh .ui-btn-text').html("&nbsp;");
-
-		$("#dataList").listview().listview("refresh");
-		$("#dataList").trigger("create");
-		// Filter Update:
-		$(".ui-input-search .ui-input-text").trigger("change");
-
-		if (oldScrollPos == -1){
-			ScrollToContentHeader();
+			$.ajax({
+				type: 'GET',
+				url: 'cgi/programs.cgi',
+				dataType: 'json',
+				success: function(data) {
+					programsMap = data;
+					localStorage.setItem("webmaticProgramsMap", JSON.stringify(programsMap));
+				},
+				async: false
+			});
+			isActual = true;
+			
 		}else{
-			ScrollToPosition(oldScrollPos);
+			programsMap = JSON.parse(localStorage.getItem("webmaticProgramsMap"));
 		}
-	});
+		
+		var systemDate = programsMap['date'];
+		$.each(programsMap.entries, function(i, prog) {
+			var prgVisible = prog['visible'] == "true";
+			var prgActive = prog['active'] == "true";
+			var prgID = prog['id'];		
+				
+			if((readModus && prgVisible && prgActive) || !readModus){			
+				$("#dataList").append(processProgram(prog, prgID, systemDate));
+			}
+		});		
+		reloadList("Programme", systemDate);
+		$("#dataList").find(".btnDisabled").button('disable');			
+	}
+	
+	if(!isActual){
+		$.getJSON('cgi/programs.cgi', function(data) {
+			var systemDate = data['date'];
+			$.each(data.entries, function(i, prog) {
+				var prgVisible = prog['visible'] == "true";
+				var prgActive = prog['active'] == "true";
+				var prgID = prog['id'];				
+				
+				if($('#' + prgID).length == 0 && ((readModus && prgVisible && prgActive) || !readModus)){
+					$("#dataList").append(processProgram(prog, prgID, systemDate));
+				}else if((readModus && prgVisible && prgActive) || !readModus){					
+					$('#' + prgID).replaceWith(processProgram(prog, prgID, systemDate));
+				}else if($('#' + prgID).length != 0){
+					$('#' + prgID).hide();
+				}
+			});
+			localStorage.setItem("webmaticProgramsMap", JSON.stringify(data));
+			reloadList("Programme", systemDate);
+			$("#dataList").find(".btnDisabled").button('disable');	
+		});
+	}	
+	// Animated Icon aus Refresh wieder entfernen:
+	$('#buttonRefresh .ui-btn-text').html("&nbsp;");		
+	// Filter Update:
+	$(".ui-input-search .ui-input-text").trigger("change");
 }
 
 function loadGraphicIDs(){
 	$("#dataList").empty();
 	$("#dataListHeader").empty();
 	// "Lade..." anzeigen:
-	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
-	$("#dataListHeader").listview().listview("refresh");
+	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
 	// Icon Animation in Refresh Button:
 	$('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
-	$.getJSON('cgi/favorites.cgi', function(data) {
-		$("#dataList").append("<li data-role='list-divider' role='heading'>Favoriten</li>");
-		$.each(data, function(key, val) {
-			var html = "<li>";			
-			html += "<img class='lazyFavoritesID ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'/>";
-			html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key +"'>";
-			html += "<div class='ui-grid-b'>"
-			html += "<div class='ui-block-a'><h1>" + val + "</h1></div>";
-			html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
-			html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='favorites' id='uploadPicture" + key + "' data-inline='true' disable='disabled' data-role='button' data-icon='check'>Speichern</a></div>";
-			html += "</div>";
-			html += "</form>";	
-			html += "<output id='filesInfo" + key + "'></output>"
-			html += "</li>";
-			$("#dataList").append(html);
+	if(localStorage.getItem("webmaticFavoritesMap") === null){
+		$.ajax({
+			type: 'GET',
+			url: 'cgi/favorites.cgi',
+			dataType: 'json',
+			success: function(data) {
+				favoritesMap = data;
+				localStorage.setItem("webmaticFavoritesMap", JSON.stringify(favoritesMap));
+			},
+			async: false
+		});			
+	}else{
+		favoritesMap = JSON.parse(localStorage.getItem("webmaticFavoritesMap"));
+		$.getJSON('cgi/favorites.cgi', function(data) {
+			localStorage.setItem("webmaticFavoritesMap", JSON.stringify(data));
 		});
-		$("#dataList").listview().listview("refresh");
-		$("img.lazyFavoritesID").lazyload({event: "lazyLoadInstantly"});
-		$("img").trigger("lazyLoadInstantly");
-
+	}
+	
+	$("#dataList").append("<li data-role='list-divider' role='heading'>Favoriten</li>");
+	processGraphicID('favorites', favoritesMap);
+	
+	if(localStorage.getItem("webmaticRoomsMap") === null){
+		$.ajax({
+			type: 'GET',
+			url: 'cgi/rooms.cgi',
+			dataType: 'json',
+			success: function(data) {
+				roomsMap = data;
+				localStorage.setItem("webmaticRoomsMap", JSON.stringify(roomsMap));
+			},
+			async: false
+		});			
+	}else{
+		roomsMap = JSON.parse(localStorage.getItem("webmaticRoomsMap"));
 		$.getJSON('cgi/rooms.cgi', function(data) {
-			$("#dataList").append("<li data-role='list-divider' role='heading'>R&auml;ume</li>");
-			$.each(data, function(key, val) {
-				var html = "<li>";			
-				html += "<img class='lazyRoomsID ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'/>";
-				html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key +"'>";
-				html += "<div class='ui-grid-b'>"
-				html += "<div class='ui-block-a'><h1>" + val + "</h1></div>";
-				html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
-				html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='rooms' id='uploadPicture" + key + "' data-inline='true' disable='disabled' data-role='button' data-icon='check'>Speichern</a></div>";
-				html += "</div>";
-				html += "</form>";	
-				html += "<output id='filesInfo" + key + "'></output>"
-				html += "</li>";
-				$("#dataList").append(html);
-			});
-			$("#dataList").listview().listview("refresh");
-			$("img.lazyRoomsID").lazyload({event: "lazyLoadInstantly"});
-			$("img").trigger("lazyLoadInstantly");
-
-			$.getJSON('cgi/functions.cgi', function(data) {
-				$("#dataList").append("<li data-role='list-divider' role='heading'>Gewerke</li>");
-				$.each(data, function(key, val) {
-					var html = "<li>";			
-					html += "<img class='lazyFunctionsID ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'/>";
-					html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key +"'>";
-					html += "<div class='ui-grid-b'>"
-					html += "<div class='ui-block-a'><h1>" + val + "</h1></div>";
-					html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
-					html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='functions' id='uploadPicture" + key + "' data-inline='true' disable='disabled' data-role='button' data-icon='check'>Speichern</a></div>";
-					html += "</div>";
-					html += "</form>";	
-					html += "<output id='filesInfo" + key + "'></output>"
-					html += "</li>";
-					$("#dataList").append(html);
-				});
-				$("#dataList").listview().listview("refresh");
-				$("img.lazyFunctionsID").lazyload({event: "lazyLoadInstantly"});
-				$("img").trigger("lazyLoadInstantly");
-
-			});
+			localStorage.setItem("webmaticRoomsMap", JSON.stringify(data));
 		});
+	}
+	
+	$("#dataList").append("<li data-role='list-divider' role='heading'>R&auml;ume</li>");
+	processGraphicID('rooms', roomsMap);
+		
+	if(localStorage.getItem("webmaticFunctionsMap") === null){
+		$.ajax({
+			type: 'GET',
+			url: 'cgi/functions.cgi',
+			dataType: 'json',
+			success: function(data) {
+				functionsMap = data;
+				localStorage.setItem("webmaticFunctionsMap", JSON.stringify(functionsMap));
+			},
+			async: false
+		});			
+	}else{
+		functionsMap = JSON.parse(localStorage.getItem("webmaticFunctionsMap"));
+		$.getJSON('cgi/functions.cgi', function(data) {
+			localStorage.setItem("webmaticFunctionsMap", JSON.stringify(data));
+		});
+	}
+	
+	$("#dataList").append("<li data-role='list-divider' role='heading'>Gewerke</li>");
+	processGraphicID('functions', functionsMap);
+		
+	$("#dataList").listview("refresh");
+	$("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
+	$("img").trigger("lazyLoadInstantly");
 
-		// "Lade..." wieder entfernen und Überschrift anzeigen:
-		$("#dataListHeader").empty();
-		$("#dataListHeader").append("<li data-role='list-divider' role='heading'>Grafik IDs</li>");
-		$("#dataListHeader").append("<li>Damit im Menu eigene Grafiken f&uuml;r R&auml;ume, Gewerke und Favoriten verwendet werden, m&uuml;ssen Grafiken mit der ID als Name in das Verzeichnis webmatic_user/img/ids eingespielt werden (z.B. <i>webmatic_user/img/ids/1436.png</i>). Die Grafiken sollten 80x80 Pixel gro&szlig; sein (bzw. 160x160 f&uuml;r das iPad mit Retina Display) und brauchen das Format PNG. Man kann also auch mit Transparenz arbeiten. In dieser Liste kann man die IDs ablesen und auch sehen, ob bereits Grafiken vergeben wurden.</li>");
-		$("#dataListHeader").listview().listview("refresh");
+	// "Lade..." wieder entfernen und Überschrift anzeigen:
+	$("#dataListHeader").empty();
+	$("#dataListHeader").append("<li data-role='list-divider' role='heading'>Grafik IDs</li>");
+	$("#dataListHeader").listview("refresh");
 
-		// Animated Icon aus Refresh wieder entfernen:
-		$('#buttonRefresh .ui-btn-text').html("&nbsp;");
+	// Animated Icon aus Refresh wieder entfernen:
+	$('#buttonRefresh .ui-btn-text').html("&nbsp;");
 
-		$("#dataList").listview().listview("refresh");
-		$("#dataList").trigger("create");
-	});
+	$("#dataList").listview("refresh");
+	$("#dataList").trigger("create");	
+	
 }
 
 // ------------------------- Options -------------------
@@ -1586,15 +1787,15 @@ function loadOptions(){
 	$("#dataListHeader").empty();
 
 	$("#dataListHeader").append("<li data-role='list-divider' role='heading'>Optionen</li>");
-	html = "<li><h1>Gr&ouml;&szlig;e der Menugrafiken</h1><p><div data-role='fieldcontain'>";
+	var html = "<li><h1>Gr&ouml;&szlig;e der Menugrafiken</h1><p><div data-role='fieldcontain'>";
 	html += "<div data-role='controlgroup' data-type='horizontal'>";
-	gfxSize = localStorage.getItem("optionsMenuGfxSize");
+	var gfxSize = localStorage.getItem("optionsMenuGfxSize");
+	var theme1 = "";
+	var theme2 = "";
 	if (!gfxSize || gfxSize == "" || gfxSize == "large"){
-		theme1 = "";
 		theme2 = "class='ui-btn-active'";
 	}else{
 		theme1 = "class='ui-btn-active'";
-		theme2 = ""
 	}
 	html += "<a href='#' id='optionsMenuGfxSizeSmall' data-id='optionsMenuGfxSizeSmall' data-role='button' data-inline='true' " + theme1 + ">Klein</a>";
 	html += "<a href='#' id='optionsMenuGfxSizeLarge' data-id='optionsMenuGfxSizeLarge' data-role='button' data-inline='true' " + theme2 + ">Gro&szlig;</a>";
@@ -1602,7 +1803,7 @@ function loadOptions(){
 	$("#dataList").append(html);
 
 	html = "<li><h1>Testseiten anzeigen</h1><p><div data-role='fieldcontain'>";
-	showTestPages = localStorage.getItem("optionsMenuShowTestpages");
+	var showTestPages = localStorage.getItem("optionsMenuShowTestpages");
 	if (!showTestPages || showTestPages == "" || showTestPages == "false"){
 		theme1 = "";
 		theme2 = "class='ui-btn-active'";
@@ -1626,6 +1827,10 @@ function loadOptions(){
 	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='f' class='" + (theme == 'f'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Grau</a>";
 	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='g' class='" + (theme == 'g'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Blau</a>";
 	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='h' class='" + (theme == 'h'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Rot</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='i' class='" + (theme == 'i'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Braun</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='j' class='" + (theme == 'j'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Wei&szlig;</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='k' class='" + (theme == 'k'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Brazil</a>";
+	html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='l' class='" + (theme == 'l'?'ui-btn-active':'') + "' data-role='button' data-inline='true'>Deutschland</a>";
 	html += "</div></li>";
 	$("#dataList").append(html);
 
@@ -1634,112 +1839,19 @@ function loadOptions(){
 	html += "</li>";
 	$("#dataList").append(html);
 
-	$("#dataListHeader").listview().listview("refresh");
-	$("#dataList").listview().listview("refresh");
+	$("#dataListHeader").listview("refresh");
+	$("#dataList").listview("refresh");
 	$("#dataList").trigger("create");
-}
-
-function isReadOnly(){
-	
-	if(!readModus){
-		return false;
-	}
-	
-	// Wenn die Variable hinten (r) hat, dann ist sie Read-Only:
-	// Wenn die Variable hinten (w) hat, dann ist sie nicht Read-Only:
-	varOptionsFirst = "";
-	varOptions = [];
-	// ( finden:
-	bracketOpen= valInfo.indexOf("(");
-	if (bracketOpen != -1){
-		// ) finden:
-		bracketClose = valInfo.indexOf(")", bracketOpen);
-		if (bracketClose != -1){
-			optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
-			varOptions = optionsString.split(",");
-
-			if (varOptions.length >= 1){
-				varOptionsFirst = varOptions[0].toLowerCase();
-			}
-		}
-	}
-	
-	if(sysVarReadonly && readModus){
-		return varOptionsFirst != "w";
-	}	
-	return varOptionsFirst == "r";
-}
-
-function changeTheme(newTheme){
-
-	$('body').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
-	}).addClass('ui-overlay-' + newTheme);
-	
-	$('.ui-page').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-page-theme-\S{1}/g) || []).join(' ');
-	}).addClass('ui-page-theme-' + newTheme).attr('data-theme', newTheme);
-	
-	$('.ui-header').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-bar-\S{1}/g) || []).join(' ');
-	}).addClass('ui-bar-' + newTheme).attr('data-theme', newTheme);
-	
-	$('.ui-content').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-body-\S{1}/g) || []).join(' ');
-	}).addClass('ui-body-' + newTheme).attr('data-theme', newTheme);
-	
-	$('.ui-popup-screen').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
-	}).addClass('ui-overlay-' + newTheme);
-	
-	$('.ui-collapsible-set').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
-	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
-	
-	$('.ui-listview').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
-	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
-	
-	$('.ui-btn').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-btn-\S{1}/g) || []).join(' ');
-	}).addClass('ui-btn-' + newTheme).attr('data-theme', newTheme);
-	
-	$('.valueNoError').removeClass(function(index, css){
-		return (css.match (/(^|\s)valueNoError-\S{1}/g) || []).join(' ');
-	}).addClass('valueNoError-' + newTheme);
-	
-	$('.valueInfo').removeClass(function(index, css){
-		return (css.match (/(^|\s)valueInfo-\S{1}/g) || []).join(' ');
-	}).addClass('valueInfo-' + newTheme);
-	
-	$('.valueWarning').removeClass(function(index, css){
-		return (css.match (/(^|\s)valueWarning-\S{1}/g) || []).join(' ');
-	}).addClass('valueWarning-' + newTheme);
-	
-	$('.valueError').removeClass(function(index, css){
-		return (css.match (/(^|\s)valueError-\S{1}/g) || []).join(' ');
-	}).addClass('valueError-' + newTheme);
-	
-	$('.valueOK').removeClass(function(index, css){
-		return (css.match (/(^|\s)valueOK-\S{1}/g) || []).join(' ');
-	}).addClass('valueOK-' + newTheme);
-	
-	$('img').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-img-\S{1}/g) || []).join(' ');
-	}).addClass('ui-img-' + newTheme);
-	
-	theme = newTheme;
-	localStorage.setItem("optionsMenuGfxTheme", theme);
 }
 
 $(function(){
     
     // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 	$(document.body).on("click", "[id^=setButton]", function(){
-		dataID = $(this).data("id");    // Homematic Geräte ID.
-		refresh = $(this).data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
-		value  = $(this).data("value"); // Wert.
-		infoID = "info_" + dataID;      // Info Textfeld neben Button.
+		var dataID = $(this).data("id");    // Homematic Geräte ID.
+		var refresh = $(this).data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
+		var value  = $(this).data("value"); // Wert.
+		var infoID = "info_" + dataID;      // Info Textfeld neben Button.
 
 		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value , function(data){
@@ -1754,14 +1866,14 @@ $(function(){
 
 	// Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 	$(document.body).on("click", "[id^=setNumberButton]", function(){
-		dataID  = $(this).data("id");  // Homematic Geräte ID.
-		refresh = $(this).data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
-		valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
-		infoID  = "info_" + dataID;  // Info Textfeld neben Button.
-		value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
-		factor  = $("#" + valueID).data("factor"); // Factor auslesen.
+		var dataID  = $(this).data("id");  // Homematic Geräte ID.
+		var refresh = $(this).data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
+		var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
+		var infoID  = "info_" + dataID;  // Info Textfeld neben Button.
+		var value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
+		var factor  = $("#" + valueID).data("factor"); // Factor auslesen.
 
-		valueDivided = parseFloat(value) / factor;
+		var valueDivided = parseFloat(value) / factor;
 		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function(data) {
 			if (refresh){
@@ -1775,10 +1887,10 @@ $(function(){
 
 	// Ein Button, bei dessen drücken ein Bool an die ID übertragen wird.
 	$(document.body).on("click", "[id^=setBoolButton]", function(){
-		dataID  = $(this).data("id");  // Homematic Geräte ID.
-		valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
-		infoID  = "info_" + dataID;  // Info Textfeld neben Button.
-		value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
+		var dataID  = $(this).data("id");  // Homematic Geräte ID.
+		var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
+		var infoID  = "info_" + dataID;  // Info Textfeld neben Button.
+		var value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
 		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
@@ -1789,10 +1901,10 @@ $(function(){
 
 	// Ein Button, bei dessen drücken ein ValueList Item an die ID übertragen wird.
 	$(document.body).on("click", "[id^=setValueListButton]", function(){
-		dataID  = $(this).data("id");  // Homematic Geräte ID.
-		valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
-		infoID  = "info_" + dataID;  // Info Textfeld neben Button.
-		value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
+		var dataID  = $(this).data("id");  // Homematic Geräte ID.
+		var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
+		var infoID  = "info_" + dataID;  // Info Textfeld neben Button.
+		var value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
 		$("#" + infoID).text("Übertrage...");
 		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
@@ -1803,10 +1915,10 @@ $(function(){
 
 	// Ein Button, bei dessen drücken ein Bool an die ID übertragen wird.
 	$(document.body).on("click", "[id^=setTextButton]", function(){
-		dataID  = $(this).data("id");  // Homematic Geräte ID.
-		valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
-		infoID  = "info_" + dataID;  // Info Textfeld neben Button.
-		value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
+		var dataID  = $(this).data("id");  // Homematic Geräte ID.
+		var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
+		var infoID  = "info_" + dataID;  // Info Textfeld neben Button.
+		var value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 		// Alle " durch ' ersetzen, da sonst Probleme an verschiedenen Stellen:
 		value   = value.replace(/\"/g, "'");
 		// Dann noch enocden, damit alles übertragen wird:
@@ -1821,8 +1933,8 @@ $(function(){
 
 	// Ein Button, bei dessen drücken ein "true" an die ID übertragen wird.
 	$(document.body).on("click", "[id^=startProgramButton]", function(){
-		dataID = $(this).data("id");  // Homematic Geräte ID.
-		infoID = "info_" + dataID;  // Info Textfeld neben Button.
+		var dataID = $(this).data("id");  // Homematic Geräte ID.
+		var infoID = "info_" + dataID;  // Info Textfeld neben Button.
 
 		$("#" + infoID).text("Starte...");
 		$.getJSON('cgi/startprogram.cgi?id=' + dataID, function(data) {
@@ -1832,14 +1944,15 @@ $(function(){
 	
 	$(document.body).on("change", ":file", function(){
 		var file = this.files[0];
-		name = file.name;
-		size = file.size;
-		type = file.type;
+		var name = file.name;
+		var size = file.size;
+		var type = file.type;
 
 		if(file.name.length < 1) {
 		}
 		else if(file.type != 'image/png' && file.type != 'image/jpg' && !file.type != 'image/gif' && file.type != 'image/jpeg' ) {
-			alert("Es muss ein Bild sein!");
+			//TODO alert ist nicht schön... muss noch ersetzt werden
+			alert("Es können nur JPG, GIF oder PNG hochgeladen werden!");
 		}
 		else { 
 			var id = $(this).attr('id');
@@ -1898,7 +2011,11 @@ $(function(){
 					bb.append(arraybuffer);
 					var blob = bb.getBlob('image/png');
 				}
-	 
+				
+				$("#img" + key).fadeOut(500, function() {
+					$("#img" + key).attr("src", dataURL).fadeIn(1000);;
+				});
+				
 				formData.append('file', blob, key + '.png');
 				formData.append('filename', key + '.png')
 				formData.append('path', '/usr/local/etc/config/addons/www/webmatic_user/img/ids/' + type + '/');

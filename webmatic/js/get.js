@@ -25,9 +25,7 @@ $(document).ready(function() {
 	RefreshPage($(this), false);
 
 	// Update Timer loslaufen lassen:
-	RestartTimer();
-  
-	changeTheme(theme);
-	
+	RestartTimer();  
+	changeTheme(theme);	
 	readModus = true;
 });

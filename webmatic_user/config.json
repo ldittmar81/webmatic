@@ -1,10 +1,11 @@
 {
-  "favorites": "true",
-  "rooms": "true",
-  "functions": "true",
-  "variables": "true",
-  "programs": "true",
-  "others": "true",
+  "favorites": true,
+  "rooms": true,
+  "functions": true,
+  "variables": true,
+  "programs": true,
+  "others": true,
   "collapsed": "rooms",
-  "systemvar_readonly": "true"
+  "systemvar_readonly": true,
+  "default_theme": "a"
 }

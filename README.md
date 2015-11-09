@@ -17,6 +17,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Verschiedene Styles auswählbar
 * Installtionsroutine angepasst (Userfreundlichkeit)
 * Bilder können jetzt per Browser hochgeladen werden
+* Optimierung der Geschwindigkeit
 
 1.1
 * Anzeige für Gerät: ALARMACTUATOR.
