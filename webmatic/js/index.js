@@ -40,7 +40,7 @@ $(function(){
 		}
 		
 		$.each(favoritesMap, function(key, val) {
-			$("#listFavorites").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyFavorites " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'><span class='breakText'>" + val + "</span></a></li>");
+			$("#listFavorites").append("<li class='menuListItem' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyFavorites " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'><span class='breakText'>" + val + "</span></a></li>");
 		});
 		$("#listFavorites").listview().listview("refresh");
 		$("img.lazyFavorites").lazyload({event: "lazyLoadInstantly"});
@@ -70,7 +70,7 @@ $(function(){
 		}
 		
 		$.each(roomsMap, function(key, val) {
-			$("#listRooms").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyRooms " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'><span class='breakText'>" + val + "</span></a></li>");
+			$("#listRooms").append("<li class='menuListItem' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyRooms " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'><span class='breakText'>" + val + "</span></a></li>");
 		});
 		$("#listRooms").listview().listview("refresh");
 		$("img.lazyRooms").lazyload({event: "lazyLoadInstantly"});
@@ -100,7 +100,7 @@ $(function(){
 		}
 		
 		$.each(functionsMap, function(key, val) {
-			$("#listFunctions").append("<li class='menuListItem' id='" + key + "'><a href='#'><img class='lazyFunctions " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'><span class='breakText'>" + val + "</span></a></li>");
+			$("#listFunctions").append("<li class='menuListItem' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyFunctions " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'><span class='breakText'>" + val + "</span></a></li>");
 		});
 		$("#listFunctions").listview().listview("refresh");
 		$("img.lazyFunctions").lazyload({event: "lazyLoadInstantly"});

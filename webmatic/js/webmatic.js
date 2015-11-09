@@ -1957,7 +1957,7 @@ $(function(){
 		else { 
 			var id = $(this).attr('id');
 			var key = id.substr(4, id.length);
-			$("#uploadPicture" + key).button("enable");
+			$("#uploadPicture" + key).removeClass("ui-state-disabled");
 		}
 	});
 	
@@ -2013,7 +2013,11 @@ $(function(){
 				}
 				
 				$("#img" + key).fadeOut(500, function() {
-					$("#img" + key).attr("src", dataURL).fadeIn(1000);;
+					$("#img" + key).attr("src", dataURL).fadeIn(1000);					
+				});
+				
+				$("#menuImg" + key).fadeOut(500, function() {
+					$("#menuImg" + key).attr("src", dataURL).fadeIn(1000);				
 				});
 				
 				formData.append('file', blob, key + '.png');
@@ -2041,6 +2045,7 @@ $(function(){
 				}, 'json');
 			
 			}
+			$("#uploadPicture" + key).addClass("ui-state-disabled");
 		}
 		reader.readAsDataURL(file);
 	});
