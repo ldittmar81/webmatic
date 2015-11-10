@@ -1,9 +1,5 @@
 // ------------------------- Initial call after page loading ------------------------
 $(function(){
-	$(document).bind("mobileinit", function(){
-		$.mobile.listview.prototype.options.filterPlaceholder = "Daten filtern...";		
-	});
-	
 	// Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
 	$.ajaxSetup({ cache: false });
 	
@@ -19,7 +15,7 @@ $(function(){
 	
 	//Menüpunkt Favoriten
 	if(optionsMap["favorites"]){
-		$("#main_menu").append("<div class='menuListRow' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] == "favorites") + "'><h3>Favoriten</h3><ul id='listFavorites' data-role='listview' data-inset='true'></ul></div>");
+		$("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] == "favorites") + "'><h3>Favoriten</h3><ul id='listFavorites' data-role='listview' data-inset='true'></ul></div>");
 		
 		if(localStorage.getItem("webmaticFavoritesMap") === null){
 			$.ajax({
@@ -40,7 +36,7 @@ $(function(){
 		}
 		
 		$.each(favoritesMap, function(key, val) {
-			$("#listFavorites").append("<li class='menuListItem' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyFavorites " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'><span class='breakText'>" + val + "</span></a></li>");
+			$("#listFavorites").append("<li class='menuListItem scrollToList' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyFavorites " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'><span class='breakText'>" + val + "</span></a></li>");
 		});
 		$("#listFavorites").listview().listview("refresh");
 		$("img.lazyFavorites").lazyload({event: "lazyLoadInstantly"});
@@ -49,7 +45,7 @@ $(function(){
 
 	//Menüpunkt Räume
 	if(optionsMap["rooms"]){
-		$("#main_menu").append("<div class='menuListRow' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] == "rooms") + "'><h3>R&auml;ume</h3><ul id='listRooms' data-role='listview' data-inset='true'></ul></div>");
+		$("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] == "rooms") + "'><h3>R&auml;ume</h3><ul id='listRooms' data-role='listview' data-inset='true'></ul></div>");
 		
 		if(localStorage.getItem("webmaticRoomsMap") === null){
 			$.ajax({
@@ -70,7 +66,7 @@ $(function(){
 		}
 		
 		$.each(roomsMap, function(key, val) {
-			$("#listRooms").append("<li class='menuListItem' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyRooms " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'><span class='breakText'>" + val + "</span></a></li>");
+			$("#listRooms").append("<li class='menuListItem scrollToList' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyRooms " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'><span class='breakText'>" + val + "</span></a></li>");
 		});
 		$("#listRooms").listview().listview("refresh");
 		$("img.lazyRooms").lazyload({event: "lazyLoadInstantly"});
@@ -79,7 +75,7 @@ $(function(){
 
 	//Menüpunkt Gewerke
 	if(optionsMap["functions"]){
-		$("#main_menu").append("<div class='menuListRow' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] == "functions") + "'><h3>Gewerke</h3><ul id='listFunctions' data-role='listview' data-inset='true'></ul></div>");
+		$("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] == "functions") + "'><h3>Gewerke</h3><ul id='listFunctions' data-role='listview' data-inset='true'></ul></div>");
 		
 		if(localStorage.getItem("webmaticFunctionsMap") === null){
 			$.ajax({
@@ -100,7 +96,7 @@ $(function(){
 		}
 		
 		$.each(functionsMap, function(key, val) {
-			$("#listFunctions").append("<li class='menuListItem' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyFunctions " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'><span class='breakText'>" + val + "</span></a></li>");
+			$("#listFunctions").append("<li class='menuListItem scrollToList' id='" + key + "'><a href='#'><img id='menuImg" + key +"' class='lazyFunctions " + gfxClass + " ui-img-" + theme +"' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'><span class='breakText'>" + val + "</span></a></li>");
 		});
 		$("#listFunctions").listview().listview("refresh");
 		$("img.lazyFunctions").lazyload({event: "lazyLoadInstantly"});
@@ -109,12 +105,12 @@ $(function(){
 	
 	//Menüpunkt Variablen
 	if(optionsMap["variables"]){
-		$("#main_menu").append("<div id='listVariables' class='menuListRow' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] == "variables") + "'><h3>Systemvariablen</h3></div>");
+		$("#main_menu").append("<div id='listVariables' class='scrollToList' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] == "variables") + "'><h3>Systemvariablen</h3></div>");
 	}
 	
 	//Menüpunkt Programme
 	if(optionsMap["programs"]){
-		$("#main_menu").append("<div id='listPrograms' class='menuListRow' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] == "programs") + "'><h3>Programme</h3></div>");
+		$("#main_menu").append("<div id='listPrograms' class='scrollToList' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] == "programs") + "'><h3>Programme</h3></div>");
 	}
 
 	//Menüpunkt Sonstiges
@@ -126,7 +122,7 @@ $(function(){
 		$("#listOther").append("<li class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + " ui-img-" + theme +"' src='img/menu/graphics.png'><span class='breakText'>Grafik IDs</span></a></li>");
 
 		// Größe der Grafiken aus localStorage holen:
-		showTestPages = localStorage.getItem("optionsMenuShowTestpages");
+		var showTestPages = localStorage.getItem("optionsMenuShowTestpages");
 		if (showTestPages && showTestPages == "true"){
 			$("#listOther").append("<li class='menuItemDebug'><a href='#'><img class='" + gfxClass + " ui-img-" + theme +"' src='img/menu/debug.png'><span class='breakText'>Testseite</span></a></li>");
 			$("#listOther").append("<li class='menuItemDebugCUxD'><a href='#'><img class='" + gfxClass + " ui-img-" + theme +"' src='img/menu/debug.png'><span class='breakText'>Testseite CUxD</span></a></li>");
@@ -142,13 +138,18 @@ $(function(){
 	
 	$( "#main_menu" ).children("div[data-collapsed='true']").collapsible("expand");
 	
-	$(document.body).on("collapsibleexpand", ".menuListRow", function( event, ui ) {
+	$(document.body).on("click", ".scrollToList", function() {
 		$('html, body').animate({scrollTop: $('#prim').offset().top - 60}, 200);
+	});
+
+	$(document.body).on("collapsibleexpand", ".scrollToTop", function() {
+		$('html, body').animate({scrollTop: $('#main_menu').offset().top - 60}, 200);
 	});	
+	
 	
 	// ----------------------- Buttons -----------------------
 	
-	$(document.body).on("collapsibleexpand", "#listVariables", function( event, ui ) {
+	$(document.body).on("collapsibleexpand", "#listVariables", function() {
 		$(this).children(".ui-collapsible-content").hide();
 		lastClickType = 2;
 		lastClickID   = $(this).attr("id");
@@ -157,7 +158,7 @@ $(function(){
 		RefreshPage($(this), false);
 	});
 	
-	$(document.body).on("collapsibleexpand", "#listPrograms", function( event, ui ) {
+	$(document.body).on("collapsibleexpand", "#listPrograms", function() {
 		$(this).children(".ui-collapsible-content").hide();
 		lastClickType = 3;
 		lastClickID   = $(this).attr("id");

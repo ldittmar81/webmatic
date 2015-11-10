@@ -1,6 +1,7 @@
 // WebMatic
 // (c) Frank Epple
 // h-Diagrams by Goglo
+// Ab Version 1.4 by ldittmar
 // ----------------------- Click function handlers ----------------------------
 
 // Globale variablen
@@ -10,12 +11,12 @@ var lastClickID   = -1;
 var readModus     = false;
 var prevItem      = 0;
 
-var programsMap;
-var functionsMap;
-var roomsMap;
-var favoritesMap;
-var variablesMap;
-var optionsMap;
+var programsMap 	= {};
+var functionsMap 	= {};
+var roomsMap 		= {};
+var favoritesMap 	= {};
+var variablesMap 	= {};
+var optionsMap 		= {};
 
 var theme;
 
@@ -48,7 +49,7 @@ if(localStorage.getItem("optionsMenuGfxTheme") === null){
 }else{
 	theme = localStorage.getItem("optionsMenuGfxTheme");
 }
-if(typeof theme === "undefined" || $.inArray(theme, [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) == -1){
+if(theme == "undefined" || $.inArray(theme, [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) == -1){
 	theme = "a";
 }
 
@@ -63,7 +64,9 @@ function CheckRefreshPage(){
 	{
 		if (t - lastTime > 60000)
 		{
-			if (lastClickType != 4 && lastClickType != 7) RefreshPage(0, true); // Kein Refresh bei GrafikIDs und Optionen.
+			if (lastClickType != 4 && lastClickType != 7){
+				RefreshPage(0, true); // Kein Refresh bei GrafikIDs und Optionen.
+			}
 			RefreshServiceMessages();
 			lastTime = t;
 		}
@@ -120,10 +123,10 @@ function RefreshPage(item, saveScrollPos){
 				loadGraphicIDs();
 				break;
 			case 5:
-				loadData('debug.json', oldScrollPos);
+				loadData('debug/debug.json', oldScrollPos);
 				break;
 			case 6:
-				loadData('debug_cuxd.json', oldScrollPos);
+				loadData('debug/debug_cuxd.json', oldScrollPos);
 				break;
 			case 7:
 				loadOptions();			
@@ -161,11 +164,13 @@ function RefreshServiceMessages(){
 		});
 		$('#buttonService .ui-btn-text').text("(" + errNr + ")");
 		if (errNr == 0){
-			$('#buttonService').buttonMarkup({theme: theme});
+			$('#buttonService, #popupDiv').removeClass(function(index, css){
+				return (css.match (/(^|\s)valueService-\S{1}/g) || []).join(' ');
+			});
 			$('#headerButtonGroup').controlgroup('refresh', true);
 			$("#serviceList").append("<li><p>Keine Servicemeldungen vorhanden.</p></li>");
 		}else{
-			$('#buttonService').buttonMarkup({theme: theme});
+			$('#buttonService, #popupDiv').addClass('valueService-' + theme);
 			$('#headerButtonGroup').controlgroup('refresh', true);
 		}
 		$('#serviceList').listview().listview('refresh', true);
@@ -173,13 +178,13 @@ function RefreshServiceMessages(){
 }
 
 function RemoveMessages(){
-	$.getJSON('cgi/removemessages.cgi', function(data){
+	$.getJSON('cgi/removemessages.cgi', function(){
 	});
 }
 
 function changeTheme(newTheme){
 
-	$('body').removeClass(function(index, css){
+	$('body, .ui-popup-screen').removeClass(function(index, css){
 		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
 	}).addClass('ui-overlay-' + newTheme);
 	
@@ -195,18 +200,10 @@ function changeTheme(newTheme){
 		return (css.match (/(^|\s)ui-body-\S{1}/g) || []).join(' ');
 	}).addClass('ui-body-' + newTheme).attr('data-theme', newTheme);
 	
-	$('.ui-popup-screen').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
-	}).addClass('ui-overlay-' + newTheme);
-	
-	$('.ui-collapsible-set').removeClass(function(index, css){
+	$('.ui-collapsible-set, .ui-listview').removeClass(function(index, css){
 		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
 	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
-	
-	$('.ui-listview').removeClass(function(index, css){
-		return (css.match (/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
-	}).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
-	
+
 	$('.ui-btn').removeClass(function(index, css){
 		return (css.match (/(^|\s)ui-btn-\S{1}/g) || []).join(' ');
 	}).addClass('ui-btn-' + newTheme).attr('data-theme', newTheme);
@@ -230,6 +227,10 @@ function changeTheme(newTheme){
 	$('.valueOK').removeClass(function(index, css){
 		return (css.match (/(^|\s)valueOK-\S{1}/g) || []).join(' ');
 	}).addClass('valueOK-' + newTheme);
+	
+	$('#buttonService, #popupDiv').removeClass(function(index, css){
+		return (css.match (/(^|\s)valueService-\S{1}/g) || []).join(' ');
+	}).addClass('valueService-' + newTheme);
 	
 	$('img').removeClass(function(index, css){
 		return (css.match (/(^|\s)ui-img-\S{1}/g) || []).join(' ');
@@ -349,7 +350,7 @@ function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh){
 	html += "<div data-role='controlgroup' data-type='horizontal'>";
 	var selIndex = parseInt(strValue);
 	var optionsArray = valList.split(";");
-	for (i = 0; i < optionsArray.length; i++){
+	for (var i = 0; i < optionsArray.length; i++){
 		if (selIndex == i){
 			html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' class='ui-btn-active' data-theme='" + theme + "'>" + optionsArray[i] + "</a>";
 		}else{
@@ -689,13 +690,12 @@ function loadData(url, oldScrollPos){
 	if (oldScrollPos == -1){
 		ScrollToContentHeader();
 	}
-
 	// Listen leeren:
 	$("#dataList").empty();
 	$("#dataListHeader").empty();
 	// "Lade..." anzeigen:
 	$("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>");
-	$("#dataListHeader").listview().listview("refresh");
+	$("#dataListHeader").listview("refresh");
 	// Icon Animation in Refresh Button:
 	$('#buttonRefresh .ui-btn-text').html("<img src='img/misc/wait16.gif' class='ui-img-" + theme + "' width=12px height=12px>");
 
@@ -999,27 +999,26 @@ function loadData(url, oldScrollPos){
 								}
 							}
 						}else if (type == "VARDP"){
-							var valName  = unescape(channel['name']);
 							var valID    = channel['id'];
 							var valInfo  = unescape(channel['info']);
 							var strValue = unescape(channel['value']);
 							var valType  = channel['valueType'];
-							var valUnit  = channel['valueUnit'];
+							valUnit  = channel['valueUnit'];
 							var val0     = channel['valueName0'];
 							var val1     = channel['valueName1'];
 							var valMin   = channel['valueMin'];
 							var valMax   = channel['valueMax'];
 							var valList  = channel['valueList'];
-							var channelDate = channel['date'];
-							var vorDate = GetTimeDiffString(channelDate, systemDate);
+							channelDate = channel['date'];
+							vorDate = GetTimeDiffString(channelDate, systemDate);
 
 							// Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten,
 							// bei (d) / (dk) ist es ein Diagramm in den Favoriten,
 							// bei (g) eine Tankuhr,
 							// bei (nv) soll der Wert ausgeblendet werden (Sollwertscript). Nur bei Variablen in Geräten verknüpft.
 							// ( finden:
-							var varOptionsFirst = "";
-							var varOptions = [];
+							varOptionsFirst = "";
+							varOptions = [];
 							var bracketOpen = valInfo.indexOf("(");
 							if (bracketOpen != -1){
 								// ) finden:
@@ -1082,7 +1081,6 @@ function loadData(url, oldScrollPos){
 					}
 					
 				}else if (device['type'] == "VARDP"){
-					var valName  = unescape(device['name']);
 					var valID    = device['id'];
 					var valInfo  = unescape(device['info']);
 					var strValue = unescape(device['value']);
@@ -1096,10 +1094,10 @@ function loadData(url, oldScrollPos){
 					var channelDate = device['date'];
 					var vorDate = GetTimeDiffString(channelDate, systemDate);
 					// Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten:
-					var varOptionsFirst = "";
-					var varOptions = [];
+					varOptionsFirst = "";
+					varOptions = [];
 					// ( finden:
-					var bracketOpen= valInfo.indexOf("(");
+					var bracketOpen = valInfo.indexOf("(");
 					if (bracketOpen != -1){
 						// ) finden:
 						var bracketClose = valInfo.indexOf(")", bracketOpen);
@@ -1120,6 +1118,7 @@ function loadData(url, oldScrollPos){
 						// Goglo
 						addDiagram = true;
 						if (varOptionsFirst == "dk"){
+							//TODO channel existiert hier nicht muss noch überprüfen
 							diagramData = channel['diagrams'];
 						}else{
 							diagramData = strValue;
@@ -1153,10 +1152,9 @@ function loadData(url, oldScrollPos){
 					}
 				}else if (device['type'] == "PROGRAM"){
 					var prgID = device['id'];
-					var prgName = device['name'];
 					var prgInfo = device['info'];
 					var prgDate = device['date'];
-					var vorDate = GetTimeDiffString(prgDate, systemDate);
+					vorDate = GetTimeDiffString(prgDate, systemDate);
 
 					deviceHTML += "<p>" + prgInfo + "</p>";
 					deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", vorDate);
@@ -1169,7 +1167,7 @@ function loadData(url, oldScrollPos){
 				}
 
 				if (addDiagram){
-					$("#dataList").listview().listview("refresh");
+					$("#dataList").listview("refresh");
 					// Diagrammoptionen Defaults setzen:
 					var dType  = "l"; // Typ = Line.
 					var dColor = "69A5CF"; // Farbe.
@@ -1181,7 +1179,7 @@ function loadData(url, oldScrollPos){
 					
 					// Diagrammoptionen prüfen:
 					for (i = 0; i < varOptions.length; i++){
-						dA = varOptions[i].split("=");
+						var dA = varOptions[i].split("=");
 						if (dA.length == 2){
 							if (dA[0] == "t"){
 								dType = dA[1];
@@ -1228,7 +1226,7 @@ function loadData(url, oldScrollPos){
 						var bStart = parseInt(gaugeMinCol.substring(5,7) ,16);
 						var rEnd = parseInt(gaugeMaxCol.substring(1,3) ,16);
 						var gEnd = parseInt(gaugeMaxCol.substring(3,5) ,16);
-						var vbEnd = parseInt(gaugeMaxCol.substring(5,7) ,16);
+						var bEnd = parseInt(gaugeMaxCol.substring(5,7) ,16);
 
 						// Farbinterpolation:
 						var gValArr = [];
@@ -1260,7 +1258,7 @@ function loadData(url, oldScrollPos){
 
 						// Gauge erstellen:
 						var gData = [diagramData];
-						var plotGauge = $.jqplot(diagramID, [gData],{
+						$.jqplot(diagramID, [gData],{
 							seriesDefaults: {
 								renderer: $.jqplot.MeterGaugeRenderer,
 								rendererOptions: {
@@ -1373,33 +1371,30 @@ function loadData(url, oldScrollPos){
 								lineWidth:2,
 								showMarker:false,
 								fill: false,
-								shadow: false,
-								//rendererOptions: {
-								//    smooth: true
-								//}
+								shadow: false
 							},
 							series:[{
 									label: "Soll",
 									color: "#555555", //+ dColor,
 									fill: true,
-									fillAlpha: 0.1,
+									fillAlpha: 0.1
 								},{
 									label: "Ist",
-									color: "#DD0000",// Farbe Ist-Temperatur
+									color: "#DD0000"// Farbe Ist-Temperatur
 								},{
 									label: "relF%",
 									color: "#0174DF",// Farbe rel. Luftfeuchtigkeit
 									yaxis:'y2axis',
-									lineWidth: 1,
+									lineWidth: 1
 								},{
 									label: "Ventil",
 									color: "#777777",// Farbe Ventil 1
 									yaxis:'y2axis',
-									lineWidth: 1,
+									lineWidth: 1
 								},{
 									label: "Ventil",
 									color: "#777777",// Farbe Ventil 2
-									yaxis:'y2axis',
+									yaxis:'y2axis'
 							}],
 							highlighter: {
 								show: true,
@@ -1415,24 +1410,24 @@ function loadData(url, oldScrollPos){
 						});	
 						//------------------------------------ end Goglo
 					}else if (dType == "l" || dType == "f"){
-						var srcDiagArr = diagramData.split(",");
+						srcDiagArr = diagramData.split(",");
 						// Erstes Element muss weg, dann immer zwei, also min = 3:
-						var al = srcDiagArr.length;
+						al = srcDiagArr.length;
 						if (al >= 3){
-							var diagArr = new Array();  // Neues, zweidimensionales Array.
-							var j = 0;
-							var lowVal = 1e6;
-							var highVal = -1e6;
-							var lowDate = "";
-							var highDate = "";
+							diagArr = new Array();  // Neues, zweidimensionales Array.
+							j = 0;
+							lowVal = 1e6;
+							highVal = -1e6;
+							lowDate = "";
+							highDate = "";
 							// Werte in Array aus 2-dim Arrays umwandeln:
 							for (i = 1; i < al; i = i + 2)
 							{
-								var v1 = srcDiagArr[i];
-								var v2 = srcDiagArr[i + 1];
+								v1 = srcDiagArr[i];
+								v2 = srcDiagArr[i + 1];
 								var smallArr = new Array();
 								smallArr[0] = v1;
-								var v;
+								v;
 								if (v2 == "true"){
 									v = 1;
 								}else if (v2 == "false"){
@@ -1490,7 +1485,7 @@ function loadData(url, oldScrollPos){
 								diagFill = true;
 							}
 							
-							var plotDiagram = $.jqplot(diagramID, [diagArr], {
+							plotDiagram = $.jqplot(diagramID, [diagArr], {
 								axes:{
 									xaxis:{
 										renderer:$.jqplot.DateAxisRenderer,
@@ -1549,12 +1544,13 @@ function loadData(url, oldScrollPos){
 		$(".ui-input-search .ui-input-text").trigger("change");
 		$("[id^=button]").trigger("create");
 		$("[id^=input]").trigger("create");
-
+		
 		if (oldScrollPos == -1){
 			ScrollToContentHeader();
 		}else{
 			ScrollToPosition(oldScrollPos);
 		}
+		
 	});
 }
 
@@ -1845,6 +1841,10 @@ function loadOptions(){
 }
 
 $(function(){
+
+	$(document).bind("mobileinit", function(){
+		$.mobile.listview.prototype.options.filterPlaceholder = "Daten filtern...";
+	});
     
     // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 	$(document.body).on("click", "[id^=setButton]", function(){
@@ -1854,7 +1854,7 @@ $(function(){
 		var infoID = "info_" + dataID;      // Info Textfeld neben Button.
 
 		$("#" + infoID).text("Übertrage...");
-		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value , function(data){
+		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value , function(){
 			if (refresh){
 				$("#" + infoID).text("OK!");
 				RefreshPage(0, true);
@@ -1875,7 +1875,7 @@ $(function(){
 
 		var valueDivided = parseFloat(value) / factor;
 		$("#" + infoID).text("Übertrage...");
-		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function(data) {
+		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function() {
 			if (refresh){
 				$("#" + infoID).text("OK!");
 				RefreshPage(0, true);
@@ -1893,7 +1893,7 @@ $(function(){
 		var value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
 		$("#" + infoID).text("Übertrage...");
-		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
+		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function() {
 			$("#" + infoID).text("OK!");
 			RefreshPage(0, true);
 		});
@@ -1907,7 +1907,7 @@ $(function(){
 		var value   = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
 		$("#" + infoID).text("Übertrage...");
-		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
+		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function() {
 			$("#" + infoID).text("OK!");
 			RefreshPage(0, true);
 		});
@@ -1925,7 +1925,7 @@ $(function(){
 		value   = encodeURIComponent(value);
 
 		$("#" + infoID).text("Übertrage...");
-		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function(data) {
+		$.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function() {
 			$("#" + infoID).text("OK!");
 			RefreshPage(0, true);
 		});
@@ -1937,17 +1937,14 @@ $(function(){
 		var infoID = "info_" + dataID;  // Info Textfeld neben Button.
 
 		$("#" + infoID).text("Starte...");
-		$.getJSON('cgi/startprogram.cgi?id=' + dataID, function(data) {
+		$.getJSON('cgi/startprogram.cgi?id=' + dataID, function() {
 			$("#" + infoID).text("OK!");
 		});
 	});
 	
 	$(document.body).on("change", ":file", function(){
 		var file = this.files[0];
-		var name = file.name;
-		var size = file.size;
-		var type = file.type;
-
+		
 		if(file.name.length < 1) {
 		}
 		else if(file.type != 'image/png' && file.type != 'image/jpg' && !file.type != 'image/gif' && file.type != 'image/jpeg' ) {
@@ -2003,13 +2000,14 @@ $(function(){
 				var view = new Uint8Array(arraybuffer);
 				for (var i=0; i<image_data.length; i++) {
 					view[i] = image_data.charCodeAt(i) & 0xff;
-				}				
+				}	
+				var blob;				
 				try {
-					var blob = new Blob([arraybuffer], {type: 'image/png'});
+					blob = new Blob([arraybuffer], {type: 'image/png'});
 				} catch (e) {
 					var bb = new (window.WebKitBlobBuilder || window.MozBlobBuilder);
 					bb.append(arraybuffer);
-					var blob = bb.getBlob('image/png');
+					blob = bb.getBlob('image/png');
 				}
 				
 				$("#img" + key).fadeOut(500, function() {
@@ -2026,18 +2024,7 @@ $(function(){
 				
 				$.ajax({
 					url: 'cgi/upload.cgi',  //server script to process data
-					type: 'POST',				
-					success: completeHandler = function(data) {
-						/*
-						* workaround for crome browser // delete the fakepath
-						*/
-						if(navigator.userAgent.indexOf('Chrome')) {
-							var catchFile = $(":file").val().replace(/C:\\fakepath\\/i, '');
-						}
-						else {
-							var catchFile = $(":file").val();
-						}
-					},
+					type: 'POST',
 					data: formData,
 					cache: false,
 					contentType: false,

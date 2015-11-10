@@ -35,7 +35,7 @@ var imageMap = {
 
 // Funktion zum mappen der IDs auf Texte.
 function MapText(text){
-	newText = "";
+	var newText = "";
 	newText = textMap[text];
 
 	// Wenn nichts gefunden, dann Originaltext zurück:
@@ -48,7 +48,7 @@ function MapText(text){
 
 // Funktion zum mappen von IDs auf Grafiken:
 function MapImage(text){
-	gfx = "";
+	var gfx = "";
 	gfx = imageMap[text];
 
 	// Wenn keines gefunden, dann unknown.png zurück:
