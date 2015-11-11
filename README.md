@@ -12,7 +12,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Neue Ansicht "get.html" akzeptiert eine ID und zeigt nur den gewünschten Raum oder Gewerk an "get.html?id=12345"
 * Eingabe von HTML-Code in Textvariablen möglich, wenn als Einheit 'html' eingegeben wird. JavaScript wird auch ausgeführt.
 * Wenn eine Textvariable zu lang ist, erscheint eine Textarea anstatt eines Input-Feldes
-* Startparameter werden in der Datei init.json eingegeben
+* Startparameter werden in der Datei webmatic_user/config.json eingegeben
 * Nur ausführbare Programme anzeigen
 * Verschiedene Styles auswählbar
 * Installtionsroutine angepasst (Userfreundlichkeit)
@@ -78,7 +78,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Manchmal doppelte Favoriten -> HomeMatic legt manchmal Referenzen zwischen Favoriten intern an, diese werden jetzt übersprungen.
 * Bool und Wertelisten über Buttongroups -> Noch nicht ganz fertig, geht noch nicht für Wertelisten und Alarmzone hat keinen Zustand.
 
-V0.3
+0.3
 * Neue hochauflösende Grafiken für Retina Display (160x160).
 * HomeMatic Forum wird im About Dialog verlinkt.
 * Shutter Kontakt Offen = rot, Geschlossen = grün.
