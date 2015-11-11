@@ -1,87 +1,100 @@
 <!DOCTYPE html>
 <html> 
-	<head> 
-		<title>WebMatic 1.4</title> 
-		<!-- WebMatic, (c) Frank Epple -->
-		<meta name="viewport" content="initial-scale=1" />
-		<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-15" />
-		<meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
-		<meta http-equiv="EXPIRES" content="0" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		
-		<link rel="apple-touch-icon" sizes="57x57" href="img/icons/webmatic_icon_57.png"/>
-		<link rel="apple-touch-icon" sizes="72x72" href="img/icons/webmatic_icon_72.png"/>
-		<link rel="apple-touch-icon" sizes="114x114" href="img/icons/webmatic_icon_114.png"/>
-		<link rel="apple-touch-icon" sizes="144x144" href="img/icons/webmatic_icon_144.png"/>
-		<link rel="stylesheet" href="themes/webmatic-theme.min.css" />
-		<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
-		<link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
-		<link rel="stylesheet" href="jqplot/jquery.jqplot.min.css" />
-		<link rel="stylesheet" href="themes/webmatic.min.css" />
-		
-		<script type="text/javascript" src="jquery/jquery-2.1.4.min.js"></script>		
-		<script type="text/javascript" src="jquery/jquery.mobile-1.4.5.min.js"></script>		
-		<script type="text/javascript" src="jquery/jquery.lazyload.min.js"></script>	
+    <head> 
+        <title>WebMatic 1.4</title> 
+        <meta name="viewport" content="initial-scale=1" />
+        <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-15" />
+        <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+        <meta http-equiv="EXPIRES" content="0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
+        <meta name="msapplication-TileImage" content="img/icons/ms-icon-144x144.png" />
+        <meta name="theme-color" content="#ffffff" />
 
-		<script type="text/javascript" src="js/wmmap.min.js"></script>
-		<script type="text/javascript" src="js/webmatic.min.js"></script>
-		<script type="text/javascript" src="js/index.min.js"></script>		
-		
-		<script type="text/javascript" src="jqplot/jquery.jqplot.min.js" async></script>
-		<script type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js" async></script>
-		<script type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js" async></script>
-		<script type="text/javascript" src="jqplot/plugins/jqplot.highlighter.min.js" async></script>
-		<script type="text/javascript" src="jqplot/plugins/jqplot.cursor.min.js" async></script>
-		<script type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js" async></script>
-		<script type="text/javascript" src="jqplot/plugins/jqplot.meterGaugeRenderer.min.js" async></script>		
-	
-	</head> 
-	<body>
-		<div data-role="page" data-theme="a">		
-			<div data-role="popup" id="popupService" data-theme="a" data-overlay-theme="a">
-				<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
-				<div data-role="content" id="popupDiv">
-					<h3>Servicemeldungen</h3>
-					<ul id="serviceList" data-role="listview" data-inset="true" data-theme="a">
-						<li>Keine Servicemeldungen vorhanden</li>
-					</ul>
-					<a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="a" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
-				</div>
-			</div>
+        <link rel="apple-touch-icon" sizes="57x57" href="img/icons/apple-icon-57x57.png"/>
+        <link rel="apple-touch-icon" sizes="60x60" href="img/icons/apple-icon-60x60.png"/>
+        <link rel="apple-touch-icon" sizes="72x72" href="img/icons/apple-icon-72x72.png"/>
+        <link rel="apple-touch-icon" sizes="76x76" href="img/icons/apple-icon-76x76.png"/>
+        <link rel="apple-touch-icon" sizes="114x114" href="img/icons/apple-icon-114x114.png"/>
+        <link rel="apple-touch-icon" sizes="120x120" href="img/icons/apple-icon-120x120.png"/>
+        <link rel="apple-touch-icon" sizes="144x144" href="img/icons/apple-icon-144x144.png"/>
+        <link rel="apple-touch-icon" sizes="152x152" href="img/icons/apple-icon-152x152.png"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="img/icons/apple-icon-180x180.png"/>
+        <link rel="icon" type="image/png" sizes="192x192" href="img/icons/android-icon-192x192.png"/>
+        <link rel="icon" type="image/png" sizes="32x32" href="img/icons/favicon-32x32.png"/>
+        <link rel="icon" type="image/png" sizes="96x96" href="img/icons/favicon-96x96.png"/>
+        <link rel="icon" type="image/png" sizes="16x16" href="img/icons/favicon-16x16.png"/>
+        <link rel="manifest" href="img/icons/manifest.json"/>
+        
+        <link rel="stylesheet" href="themes/webmatic-theme.min.css" />
+        <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+        <link rel="stylesheet" href="jquery/jquery.mobile.structure-1.4.5.min.css" />
+        <link rel="stylesheet" href="jqplot/jquery.jqplot.min.css" />
+        <link rel="stylesheet" href="themes/webmatic.min.css" />
 
-			<div data-role="header" data-position="fixed" data-theme="a">
-				<h1 style="text-align: left;margin-left: 20px;">WebMatic V1.4</h1>
-				<div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">  
-					<a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert"> 
-						<span class="ui-btn-inner ui-btn-corner-all">
-							<span class="ui-btn-text">&nbsp;</span>
-						</span>
-					</a>
-					<a href="#" id="buttonRefresh" data-role="button" data-icon="refresh">
-						<span class="ui-btn-inner ui-btn-corner-all">
-							<span class="ui-btn-text">&nbsp;</span>
-						</span>
-					</a>
-					<a href="dlgAbout.html" data-transition="pop" data-role="button" data-icon="info" data-iconpos="notext">&Uuml;ber</a>
-				</div>
-			</div>
+        <script type="text/javascript" src="jquery/jquery-2.1.4.min.js"></script>		
+        <script type="text/javascript" src="jquery/jquery.mobile-1.4.5.min.js"></script>		
+        <script type="text/javascript" src="jquery/jquery.lazyload.min.js"></script>	
 
-			<div data-role="content" data-theme="a">
-			
-				<div class="content-secondary">
-					<div id="main_menu" data-role="collapsible-set" data-theme="a"></div>
-				</div>
+        <script type="text/javascript" src="js/wmmap.min.js"></script>
+        <script type="text/javascript" src="js/webmatic.min.js"></script>
+        <script type="text/javascript" src="js/index.min.js"></script>		
 
-				<div id="prim" class="content-primary">
-					<ul id="dataListHeader" data-role="listview" data-inset="true"></ul>
-					<ul id="dataList" data-role="listview" data-inset="true" data-filter="true"></ul>
-				</div>
-				
-			</div>
-	  
-			<div id="testcase"></div>
-			
-		</div>
-		
-	</body>
+        <script type="text/javascript" src="jqplot/jquery.jqplot.min.js" async></script>
+        <script type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js" async></script>
+        <script type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js" async></script>
+        <script type="text/javascript" src="jqplot/plugins/jqplot.highlighter.min.js" async></script>
+        <script type="text/javascript" src="jqplot/plugins/jqplot.cursor.min.js" async></script>
+        <script type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js" async></script>
+        <script type="text/javascript" src="jqplot/plugins/jqplot.meterGaugeRenderer.min.js" async></script>		
+
+    </head> 
+    <body>
+        <div data-role="page" data-theme="a">		
+            <div data-role="popup" id="popupService" data-theme="a" data-overlay-theme="a">
+                <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+                <div data-role="content" id="popupDiv">
+                    <h3>Servicemeldungen</h3>
+                    <ul id="serviceList" data-role="listview" data-inset="true" data-theme="a">
+                        <li>Keine Servicemeldungen vorhanden</li>
+                    </ul>
+                    <a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="a" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
+                </div>
+            </div>
+
+            <div data-role="header" data-position="fixed" data-theme="a">
+                <h1 style="text-align: left;margin-left: 20px;">WebMatic V1.4</h1>
+                <div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">  
+                    <a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert"> 
+                        <span class="ui-btn-inner ui-btn-corner-all">
+                            <span class="ui-btn-text">&nbsp;</span>
+                        </span>
+                    </a>
+                    <a href="#" id="buttonRefresh" data-role="button" data-icon="refresh">
+                        <span class="ui-btn-inner ui-btn-corner-all">
+                            <span class="ui-btn-text">&nbsp;</span>
+                        </span>
+                    </a>
+                    <a href="dlgAbout.html" data-transition="pop" data-role="button" data-icon="info" data-iconpos="notext">&Uuml;ber</a>
+                </div>
+            </div>
+
+            <div data-role="content" data-theme="a">
+
+                <div class="content-secondary">
+                    <div id="main_menu" data-role="collapsible-set" data-theme="a"></div>
+                </div>
+
+                <div id="prim" class="content-primary">
+                    <ul id="dataListHeader" data-role="listview" data-inset="true"></ul>
+                    <ul id="dataList" data-role="listview" data-inset="true" data-filter="true"></ul>
+                </div>
+
+            </div>
+
+            <div id="testcase"></div>
+
+        </div>
+
+    </body>
 </html>

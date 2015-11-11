@@ -31,8 +31,8 @@
 .valueError-d { color:#c00; }
 .valueOK-d { color:green; }
 .valueService-d{ 
-	background-color:#fdd017 !important;
-	color: #3d5a20 !important;
+    background-color:#fdd017 !important;
+    color: #3d5a20 !important;
 }
 
 .valueNoError-e { color:#909090;}
@@ -41,8 +41,8 @@
 .valueError-e { color:#c00; }
 .valueOK-e { color:green; }
 .valueService-e{ 
-	background-color:#fdd017 !important;
-	color: #000 !important;
+    background-color:#fdd017 !important;
+    color: #000 !important;
 }
 
 .valueNoError-f { color:#909090;}
@@ -51,8 +51,8 @@
 .valueError-f { color:#c00; }
 .valueOK-f { color:green; }
 .valueService-f{ 
-	background-color:#e0e0e0 !important;
-	color: gray !important;
+    background-color:#e0e0e0 !important;
+    color: gray !important;
 }
 
 .valueNoError-g { color:#909090;}
@@ -98,54 +98,31 @@
 .valueService-l{ background-color:#ff8c00 !important;}
 
 img.ui-img-f{
-	-webkit-filter: grayscale(1);
-	filter: grayscale(1);
+    -webkit-filter: grayscale(1);
+    filter: grayscale(1);
 }
 
 .breakText { white-space:normal; word-wrap:break-word; }
 
-/* the ':after' selector adds 'content' after the h1 tag */
-/*h1:before{
-  content: 'LI2:';
-}*/
 .content-secondary {
-	width: 30%;
-	float: left;
-	padding-right: 1%;
-}
-
-.content-primary {
-	width: 69%;
-	float: left;
-}
-
-/* We use CSS3 media queries to determine which CSS to use
-** There are no standards for the size of devices, you will have to determine YOUR best guess,
-** which won't be perfect, but will work in most cases.
-** if our width is 1024 or less assume and orientation portrait
-*/
-/*    @media screen and (max-width: 1050px)
-{
-  .content-secondary {
     width: 30%;
     float: left;
     padding-right: 1%;
-  }
+}
 
-  .content-primary {
+.content-primary {
     width: 69%;
     float: left;
-  }
-}*/
+}
 
 @media screen and (max-width: 900px)
 {
-	.content-secondary {
-		width: 100%;
-	}
+    .content-secondary {
+        width: 100%;
+    }
 
-	.content-primary {
-		width: 100%;
-		float: left;
-	}
+    .content-primary {
+        width: 100%;
+        float: left;
+    }
 }

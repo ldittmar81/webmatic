@@ -184,7 +184,7 @@
 {"name":"RS485 Digital Analog Output", "type":"CHANNEL", "id":"dbg_29048", "address":"IEQ0458948:9", "hssType":"DIGITAL_ANALOG_OUTPUT", "channels": [
 {"id":"dbg_29049", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"11.10.2012 17:38:19"} ]
 },
-{"name":"Unbekanntes Gerät", "type":"CHANNEL", "id":"dbg_29043", "address":"IEQ0458446:1", "hssType":"UNKNOWN_TEST", "channels": [
+{"name":"Unbekanntes GerÃ¤t", "type":"CHANNEL", "id":"dbg_29043", "address":"IEQ0458446:1", "hssType":"UNKNOWN_TEST", "channels": [
 {"id":"dbg_29029", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"11.10.2012 17:38:19"},
 {"id":"dbg_29019", "type":"HSSDP", "hssType":"UQ_LONG", "value":"true", "date":"11.10.2012 17:38:19"},
 {"id":"dbg_11244", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"06.11.2012 15:40:29"} ]
@@ -208,7 +208,7 @@
     {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"1", "valueUnit":"", "date":"24.07.2012 17:02:27"},
     {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
 },
-    {"name":"LED16 Anzeige, Grün", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
+    {"name":"LED16 Anzeige, GrÃ¼n", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
     {"id":"dbg_11093", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
     {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"2", "valueUnit":"", "date":"24.10.2012 17:02:27"},
     {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
@@ -218,7 +218,7 @@
     {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"3", "valueUnit":"", "date":"24.08.2012 17:02:27"},
     {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
 },
-{"name":"Füllstandsmesser", "type":"CHANNEL", "id":"dbg_13629", "address":"JEQ0652897:1", "hssType":"CAPACITIVE_FILLING_LEVEL_SENSOR", "channels": [
+{"name":"FÃ¼llstandsmesser", "type":"CHANNEL", "id":"dbg_13629", "address":"JEQ0652897:1", "hssType":"CAPACITIVE_FILLING_LEVEL_SENSOR", "channels": [
     {"id":"dbg_13630", "type":"HSSDP", "hssType":"FILLING_LEVEL", "value":"9", "valueUnit":"%", "date":"03.11.2012 10:13:31"}  ]
 }]
 }
