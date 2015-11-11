@@ -4,28 +4,30 @@ CONFIG_URL=/addons/webmatic/index.html
 
 case "$1" in
 
-	""|start|restart|stop)
-		exit 0
-	;;
-	
-	info)
-		VER=`cat ${WEBMATICDIR}/VERSION`
-		echo "Info: <center><b>WebMatic $VER</b><br><img src="../addons/webmatic/img/misc/webmatic.png"></center>"
-		echo "Name: WebMatic"
-		echo "Version: $VER"
-		echo "Operations: uninstall"
-		echo "Config-Url: $CONFIG_URL"
-		echo "Update: /addons/webmatic/cgi/update-check.cgi"
-	;;
-	
-	uninstall)
-		rm -r /usr/local/etc/config/addons/www/webmatic
-	;;
-	
-	*)
-        echo "Usage: webmatic {info|uninstall}" >&2
-        exit 1
-	;; 
+  ""|start|restart|stop)
+    exit 0
+  ;;
+
+  info)
+    VER=$(cat ${WEBMATICDIR}/VERSION)
+    echo "Info: <b>WebMatic ${VER} CCU Addon</b><br>"
+    echo "Info: <img src='/addons/webmatic/img/misc/webmatic.png'>"
+    echo "Info: <a href='https://github.com/jens-maus/webmatic'>https://github.com/jens-maus/webmatic</a>"
+    echo "Name: WebMatic"
+    echo "Version: ${VER}"
+    echo "Operations: uninstall"
+    echo "Config-Url: ${CONFIG_URL}"
+    echo "Update: /addons/webmatic/cgi/update-check.cgi"
+  ;;
+
+  uninstall)
+    rm -rf /usr/local/etc/config/addons/www/webmatic
+  ;;
+
+  *)
+    echo "Usage: webmatic {info|uninstall}" >&2
+    exit 1
+  ;;
 
 esac 
 
