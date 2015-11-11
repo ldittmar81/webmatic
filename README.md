@@ -8,7 +8,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 ## Changelog
 1.4
 * Codereview
-* Geräte die als nicht sichtbar deklariert wurde, werden nicht mehr angezeigt
+* Geräte, Programme und Variablen die als nicht sichtbar deklariert wurden, werden nicht mehr angezeigt
 * Neue Ansicht "get.html" akzeptiert eine ID und zeigt nur den gewünschten Raum oder Gewerk an "get.html?id=12345"
 * Eingabe von HTML-Code in Textvariablen möglich, wenn als Einheit 'html' eingegeben wird. JavaScript wird auch ausgeführt.
 * Wenn eine Textvariable zu lang ist, erscheint eine Textarea anstatt eines Input-Feldes
