@@ -13,7 +13,8 @@ var prevItem = 0;
 
 var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap;
 
-var theme;
+var theme, font;
+var loadedFont = [];
 
 // Initialize refresh timer:
 var refreshTimer = setInterval(function () {
@@ -48,6 +49,15 @@ if (localStorage.getItem("optionsMenuGfxTheme") === null) {
 }
 if (theme === "undefined" || $.inArray(theme, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     theme = "a";
+}
+if (localStorage.getItem("optionsMenuGfxFont") === null) {
+    font = optionsMap["default_font"];
+    localStorage.setItem("optionsMenuGfxFont", font);
+} else {
+    font = localStorage.getItem("optionsMenuGfxFont");
+}
+if (font === "undefined" || $.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]) === -1) {
+    font = "a";
 }
 
 // --------------------- Funktionen --------------------------
@@ -235,6 +245,78 @@ function changeTheme(newTheme) {
 
     theme = newTheme;
     localStorage.setItem("optionsMenuGfxTheme", theme);
+}
+
+function changeFont(code){
+        
+    var src = "";
+    var fontFamily = "";
+    var size = "14px";
+    
+    switch(code){
+        case "a":
+            fontFamily = "sans-serif";
+            break;
+        case "b":
+            fontFamily = "1942";
+            src = "themes/fonts/1942/1942.ttf";
+            break;
+        case "c":
+            fontFamily = "3Dumb";
+            src = "themes/fonts/3Dumb/3Dumb.ttf";
+            break;
+        case "d":
+            fontFamily = "ActionMan";
+            src = "themes/fonts/Action_Man/Action_Man.ttf";
+            break;
+        case "e":
+            fontFamily = "Amadeus";
+            src = "themes/fonts/Amadeus/Amadeus.ttf";
+            break;
+        case "f":
+            fontFamily = "FingerPaint";
+            src = "themes/fonts/Finger_Paint/FingerPaint-Regular.ttf";
+            break;
+        case "g":
+            fontFamily = "HennyPenny";
+            src = "themes/fonts/HennyPenny/HennyPenny-Regular.otf";
+            break;
+        case "h":
+            fontFamily = "Kavoon";
+            src = "themes/fonts/Kavoon/Kavoon-Regular.otf";
+            break;
+        case "i":
+            fontFamily = "Nosifer";
+            src = "themes/fonts/Nosifer/NosiferCaps-Regular.ttf";
+            break;
+        case "j":
+            fontFamily = "Pacifico";
+            src = "themes/fonts/Pacifico/Pacifico.ttf";
+            size = "20px";
+            break;
+            
+    }
+    
+    setFont = function(fam, s){
+        $("body, input, select, textarea, button, .ui-btn").css("font-family", fam);
+    }
+    
+    if($.inArray(code, loadedFont) === -1){
+        var fontObj = new Font();
+        fontObj.onload = function() {
+            setFont(fontFamily, size);
+        };
+
+        fontObj.fontFamily = fontFamily;
+        fontObj.src = src;
+    }else{        
+        setFont(fontFamily, size);
+    }
+    
+    loadedFont.push(code);
+    font = code;
+    
+    localStorage.setItem("optionsMenuGfxFont", font);
 }
 
 // ----------------------- HTML Creation Helper ------------------------------
@@ -1331,7 +1413,7 @@ function loadData(url, oldScrollPos) {
                         }
                         ////////////////////////////
                         //var plotDiagram = $.jqplot(diagramID, [diagArr0, diagArr1], {
-                        var plotDiagram = $.jqplot(diagramID, [diagArr[0], diagArr[1], diagArr[2], diagArr[3], diagArr[4]], {
+                        $.jqplot(diagramID, [diagArr[0], diagArr[1], diagArr[2], diagArr[3], diagArr[4]], {
                             axes: {
                                 xaxis: {
                                     renderer: $.jqplot.DateAxisRenderer,
@@ -1823,6 +1905,16 @@ function loadOptions() {
     html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='j' class='" + (theme === 'j' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Wei&szlig;</a>";
     html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='k' class='" + (theme === 'k' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Brazil</a>";
     html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='l' class='" + (theme === 'l' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Deutschland</a>";
+    html += "</div><br/><br/><br/>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='a' class='" + (font === 'a' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Normal</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='d' class='" + (font === 'd' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Action Man</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='e' class='" + (font === 'e' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Amadeus</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='f' class='" + (font === 'f' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Finger Paint</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='g' class='" + (font === 'g' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>HennyPenny</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='h' class='" + (font === 'h' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Kavoon</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='i' class='" + (font === 'i' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Nosifer</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='j' class='" + (font === 'j' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Pacifico</a>";
     html += "</div></li>";
     $("#dataList").append(html);
 

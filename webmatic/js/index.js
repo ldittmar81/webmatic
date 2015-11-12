@@ -1,4 +1,4 @@
-/* global optionsMap, theme */
+/* global optionsMap, theme, font */
 
 // ------------------------- Initial call after page loading ------------------------
 $(function () {
@@ -137,6 +137,7 @@ $(function () {
     RefreshServiceMessages();
     RestartTimer();
     changeTheme(theme);
+    changeFont(font);
 
     $("#main_menu").children("div[data-collapsed='true']").collapsible("expand");
 
@@ -259,6 +260,12 @@ $(function () {
         $("[name='optionsMenuGfxThemeChooser']").removeClass("ui-btn-active");
         $(this).addClass("ui-btn-active");
         changeTheme($(this).data('value'));
+    });
+    
+    $(document.body).on("click", "[name='optionsMenuGfxFontChooser']", function () {
+        $("[name='optionsMenuGfxFontChooser']").removeClass("ui-btn-active");
+        $(this).addClass("ui-btn-active");
+        changeFont($(this).data('value'));
     });
 
     $(document.body).on("click", "#reloadWebMatic", function () {
