@@ -561,7 +561,7 @@ function processGraphicID(type, map) {
         html += "</div>";
         html += "</form>";
         html += "</li>";
-        return html;
+        $("#dataList").append(html);
     });
 }
 
@@ -1798,7 +1798,7 @@ function loadGraphicIDs() {
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>Favoriten</li>");
-    $("#dataList").append(processGraphicID('favorites', favoritesMap));
+    processGraphicID('favorites', favoritesMap);
 
     if (localStorage.getItem("webmaticRoomsMap") === null) {
         $.ajax({
@@ -1819,7 +1819,7 @@ function loadGraphicIDs() {
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>R&auml;ume</li>");
-    $("#dataList").append(processGraphicID('rooms', roomsMap));
+    processGraphicID('rooms', roomsMap);
 
     if (localStorage.getItem("webmaticFunctionsMap") === null) {
         $.ajax({
@@ -1840,7 +1840,7 @@ function loadGraphicIDs() {
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>Gewerke</li>");
-    $("#dataList").append(processGraphicID('functions', functionsMap));
+    processGraphicID('functions', functionsMap);
 
     $("#dataList").listview("refresh");
     $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});

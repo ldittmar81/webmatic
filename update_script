@@ -22,7 +22,9 @@ mkdir -p ${WWWDIR}
 chmod 755 ${WWWDIR}
 mkdir -p ${RCDDIR}
 chmod 755 ${RCDDIR}
-mkdir -p ${USERDIR}
+mkdir -p ${USERDIR}/img/ids/favorites
+mkdir -p ${USERDIR}/img/ids/functions
+mkdir -p ${USERDIR}/img/ids/rooms
 chmod 755 ${USERDIR}
 
 # cleanup wwwdir
