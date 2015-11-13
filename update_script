@@ -3,7 +3,7 @@
 ADDONNAME=webmatic
 WWWDIR=/usr/local/etc/config/addons/www/${ADDONNAME}
 RCDDIR=/usr/local/etc/config/rc.d
-USERDIR=/mnt/etc/config/addons/www/${ADDONNAME}_user
+USERDIR=/usr/local/etc/config/addons/www/${ADDONNAME}_user
 
 if [ "$1" == "" ]; then
   echo "CCU1"
@@ -31,7 +31,7 @@ rm -rf ${WWWDIR}/*
 # copy
 cp -R ${ADDONNAME}/* ${WWWDIR}/
 cp VERSION ${WWWDIR}/
-cp -R ${ADDONNAME}_user/* ${USERDIR}/
+cp -R -n ${ADDONNAME}_user/* ${USERDIR}/
 cp webmatic-dlg ${RCDDIR}/
 chmod +x ${RCDDIR}/webmatic-dlg
 
