@@ -247,12 +247,12 @@ function changeTheme(newTheme) {
     localStorage.setItem("optionsMenuGfxTheme", theme);
 }
 
-function changeFont(code){
-        
+function changeFont(code) {
+
     var src = "";
     var fontFamily = "";
-    
-    switch(code){
+
+    switch (code) {
         case "a":
             fontFamily = "sans-serif";
             break;
@@ -299,28 +299,28 @@ function changeFont(code){
         case "l":
             fontFamily = "Crackman";
             src = "themes/fonts/Crackman/CRACKMAN.ttf";
-            break;    
+            break;
     }
-    
-    setFont = function(fam){
+
+    setFont = function (fam) {
         $("body, input, select, textarea, button, .ui-btn").css("font-family", fam);
     };
-    
-    if($.inArray(code, loadedFont) === -1){
+
+    if ($.inArray(code, loadedFont) === -1) {
         var fontObj = new Font();
-        fontObj.onload = function() {
+        fontObj.onload = function () {
             setFont(fontFamily);
         };
 
         fontObj.fontFamily = fontFamily;
         fontObj.src = src;
-    }else{        
+    } else {
         setFont(fontFamily);
     }
-    
+
     loadedFont.push(code);
     font = code;
-    
+
     localStorage.setItem("optionsMenuGfxFont", font);
 }
 
@@ -798,6 +798,8 @@ function loadData(url, oldScrollPos) {
                 if (device['type'] === "CHANNEL") {
                     var deviceHssType = device['hssType'];
                     var hasChannel = false;
+                    var deviceHTMLPostChannelGroup = "";
+                    var deviceHTMLPostChannelGroupMode = 0;
                     $.each(device.channels, function (j, channel) {
                         hasChannel = true;
                         var type = channel['type'];
@@ -921,11 +923,31 @@ function loadData(url, oldScrollPos) {
                                     stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
                                 }
                                 deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
+                            } else if (hssType === "CONTROL_MODE")
+                            {
+                                // save control_mode 
+                                deviceHTMLPostChannelGroupMode = valFloat;
+                            } else if (hssType === "AUTO_MODE")
+                            {
+                                // collect post buttons
+                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 0, true);
+                            } else if (hssType === "MANU_MODE")
+                            {
+                                // collect post buttons
+                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 1, true);
+                            } else if (hssType === "BOOST_MODE")
+                            {
+                                // collect post buttons
+                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 3, true);
+                            } else if (hssType === "LOWERING_MODE" || hssType === "COMFORT_MODE")
+                            {
+                                // collect post buttons
+                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, false, true);
                             } else if (hssType === "PRESS_SHORT") {
                                 deviceHTML += AddSetButton(channel['id'], "Kurzer Tastendruck", true, vorDate, false, false, true);
                             } else if (hssType === "PRESS_LONG") {
                                 deviceHTML += AddSetButton(channel['id'], "Langer Tastendruck", true, vorDate, false, false, true);
-                            } else if (hssType === "SETPOINT") {
+                            } else if (hssType === "SETPOINT" || hssType === "SET_TEMPERATURE") {
                                 deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
                                 var lowTemp = valFloat - 3.0;
                                 var highTemp = lowTemp + 6.0;
@@ -1019,6 +1041,8 @@ function loadData(url, oldScrollPos) {
                                 deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
                             } else if (hssType === "BAT_LEVEL" && deviceHssType === "POWER") {
                                 deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
+                            } else if (hssType === "BATTERY_STATE") {
+                                deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
                             } else if (hssType === "STATUS" && deviceHssType === "AKKU") {
                                 if (valFloat === 0) {
                                     txt = "<span class='valueNoError valueNoError-" + theme + "'>Erhaltungsladung</span>";
@@ -1052,7 +1076,7 @@ function loadData(url, oldScrollPos) {
                                         deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/orange_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
                                         break;
                                 }
-                            } else if (hssType === "ERROR" || hssType.substring(0, 6) === "ERROR_") {
+                            } else if (hssType === "ERROR" || hssType.substring(0, 6) === "ERROR_" || hssType === "FAULT_REPORTING") {
                                 if ((hssType === "ERROR" && valFloat > 0) || hssType.substring(0, 6) === "ERROR_") {
                                     var v;
                                     if (hssType === "ERROR") {
@@ -1159,7 +1183,11 @@ function loadData(url, oldScrollPos) {
                             }
                         }
                     });
-
+                    if (deviceHTMLPostChannelGroup !== "") {
+                        deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
+                        deviceHTML += deviceHTMLPostChannelGroup;
+                        deviceHTML += "</div>";
+                    }
                     if (!hasChannel) {
                         deviceHTML = "";  // Nicht anzeigen, z.B. Raumthermostat:3, wenn kein Fensterkontakt vorhanden.
                     }

@@ -220,5 +220,35 @@
 },
 {"name":"Füllstandsmesser", "type":"CHANNEL", "id":"dbg_13629", "address":"JEQ0652897:1", "hssType":"CAPACITIVE_FILLING_LEVEL_SENSOR", "channels": [
     {"id":"dbg_13630", "type":"HSSDP", "hssType":"FILLING_LEVEL", "value":"9", "valueUnit":"%", "date":"03.11.2012 10:13:31"}  ]
+},
+{"name":"Bad EG Heizung", "type":"CHANNEL", "id":"31751", "address":"KEQ0575468:4", "hssType":"CLIMATECONTROL_RT_TRANSCEIVER", "visible":"true", "operate":"true", "channels": [
+{"id":"31758", "type":"HSSDP", "hssType":"CONTROL_MODE", "value":"0", "valueUnit":"", "date":"13.11.2015 23:10:35"},
+{"id":"31759", "type":"HSSDP", "hssType":"FAULT_REPORTING", "value":"0", "valueUnit":"", "date":"13.11.2015 23:10:35"},
+{"id":"31754", "type":"HSSDP", "hssType":"BATTERY_STATE", "value":"2.900000", "valueUnit":"V", "date":"13.11.2015 23:10:35"},
+{"id":"31784", "type":"HSSDP", "hssType":"VALVE_STATE", "value":"0", "valueUnit":"%", "date":"13.11.2015 23:10:35"},
+{"id":"31756", "type":"HSSDP", "hssType":"BOOST_STATE", "value":"0", "valueUnit":"min", "date":"13.11.2015 23:10:35"},
+{"id":"31752", "type":"HSSDP", "hssType":"ACTUAL_TEMPERATURE", "value":"21.000000", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
+{"id":"31783", "type":"HSSDP", "hssType":"SET_TEMPERATURE", "value":"18.000000", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
+{"id":"31753", "type":"HSSDP", "hssType":"AUTO_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+{"id":"31782", "type":"HSSDP", "hssType":"MANU_MODE", "value":"", "valueUnit":"°C", "date":"01.01.1970 01:00:00"},
+{"id":"31755", "type":"HSSDP", "hssType":"BOOST_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+{"id":"31757", "type":"HSSDP", "hssType":"COMFORT_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+{"id":"31781", "type":"HSSDP", "hssType":"LOWERING_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+{"id":"55124", "type":"HSSDP", "hssType":"PARTY_MODE_SUBMIT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+{"id":"55133", "type":"HSSDP", "hssType":"PARTY_TEMPERATURE", "value":"5.000000", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
+{"id":"55127", "type":"HSSDP", "hssType":"PARTY_START_TIME", "value":"0", "valueUnit":"minutes", "date":"13.11.2015 23:10:35"},
+{"id":"55125", "type":"HSSDP", "hssType":"PARTY_START_DAY", "value":"1", "valueUnit":"day", "date":"13.11.2015 23:10:35"},
+{"id":"55126", "type":"HSSDP", "hssType":"PARTY_START_MONTH", "value":"1", "valueUnit":"month", "date":"13.11.2015 23:10:35"},
+{"id":"55128", "type":"HSSDP", "hssType":"PARTY_START_YEAR", "value":"0", "valueUnit":"year", "date":"13.11.2015 23:10:35"},
+{"id":"55131", "type":"HSSDP", "hssType":"PARTY_STOP_TIME", "value":"0", "valueUnit":"minutes", "date":"13.11.2015 23:10:35"},
+{"id":"55129", "type":"HSSDP", "hssType":"PARTY_STOP_DAY", "value":"1", "valueUnit":"day", "date":"13.11.2015 23:10:35"},
+{"id":"55130", "type":"HSSDP", "hssType":"PARTY_STOP_MONTH", "value":"1", "valueUnit":"month", "date":"13.11.2015 23:10:35"},
+{"id":"55132", "type":"HSSDP", "hssType":"PARTY_STOP_YEAR", "value":"0", "valueUnit":"year", "date":"13.11.2015 23:10:35"} ]
+},
+{"name":"Bad EG Klima", "type":"CHANNEL", "id":"62201", "address":"CUX0100109:1", "hssType":"WEATHER", "visible":"true", "operate":"true", "channels": [
+{"id":"62206", "type":"HSSDP", "hssType":"TEMPERATURE", "value":"20.600000", "valueUnit":"&#176;C", "date":"13.11.2015 23:10:45"},
+{"id":"62204", "type":"HSSDP", "hssType":"HUMIDITY", "value":"58", "valueUnit":"%", "date":"13.11.2015 23:11:43"},
+{"id":"62203", "type":"HSSDP", "hssType":"DEW_POINT", "value":"12.100000", "valueUnit":"&#176;C", "date":"13.11.2015 23:11:43"},
+{"id":"62202", "type":"HSSDP", "hssType":"ABS_HUMIDITY", "value":"10.400000", "valueUnit":"g/m&#179;", "date":"13.11.2015 23:11:43"} ]
 }]
 }
