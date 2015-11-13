@@ -1,0 +1,297 @@
+======================================================================================
+==================RikY PreSeNTs ======================================================
+======================================================================================
+
+    **********          *****      *****            *****
+    ************        *****      *****            *****
+    **************      *****      *****            *****
+    *****    *****                 *****    *****   *****   *****
+    *****    *****     ******      *****    *****   *****   *****
+    *****    *****     ******      *****    *****   *****   *****
+    **************     ******      **************   *************
+    ************        *****      ************       *********
+    **********          *****      **********           *****
+    *****  *****        *****      *****  *****         *****
+    *****    *****      *****      *****    *****       *****
+    *****    *****     *******     *****    *****       *****
+    *****    *****     *******     *****    *****       *****
+    *****    *****     *******     *****    *****       *****
+
+===========================
+==RIKY VAMPDATOR (fuente)==
+===========================
+Riky Vampdator Normal v1.0 - 26/05/2011
+Fuentes Riky Copyright (C) 2001-2011 creado por Riky Vampdator. Todos los derechos reservados.
+
+e-mail:	   riky@alcoy.com o riky.vampdator@gmail.com
+web:       http://riky.webcindario.com/
+Facebook:  Riky Vampdator
+
+CONTENIDO
+---------
+ 1. Contenido del Zip
+ 2. Información de la Fuente
+ 3. Información del Diseñador
+ 4. Descripción de la fuente
+    4.1. Enlaces de interes
+    4.2. Como se escribe el titulo del clan
+ 5. Historia de las Versiones
+ 6. Requisitos del sistema
+ 7. Instalación
+ 8. Desinstalación
+
+
+
+ 1. Contenido del Zip
+---------------------
+ LEAME YA MISMO.txt    - Este archivo que estas leyendo ahora mismo.
+ sshot-1.jpg           - Captura de todos los caracteres de la fuente.
+ teclado-tecla-alt.gif - Imagen con la tecla Alt y los numeros en el teclado.
+ RIKY2vamp.ttf         - El archivo de la fuente.
+
+
+ 2. Información de la Fuente
+----------------------------
+ Nombre del Archivo de la Fuente:  RIKY2vamp.ttf
+ Nombre del tipo de letra:         Riky Vampdator
+ Estilo del tipo de letra:         Normal
+ Versión:                          1.0 - 26/05/2011
+ Fecha de actualización:           26 de mayo del 2011
+ Sistema: 	                   Windows 9x/ME/NT/2000/XP/Vista/7
+ Tipo de Distribución:	           Freeware, gratuito (excepto para su uso comercial) 
+
+
+ 3. Información del Diseñador
+-----------------------------
+ Nombre del Diseñador:    Riky Vampdator
+ E-mail del Diseñador:    riky@alcoy.com o riky.vampdator@gmail.com
+ Web del diseñador:       http://riky.webcindario.com/
+ Facebook del Diseñador:  Riky Vampdator
+
+
+ 4. Descripción de la fuente
+----------------------------
+  La Fuente RIKY VAMPDATOR es una tipografia ya existente pero esta modificada
+ y adaptada. Pertenece a la gran familia  de las fuentes decorativas. Su uso es ideal
+ para los diseñadores que utilizan Photoshop o algún otro programa de retoque o
+ edición de imagen, ya que esta fuente da un toque muy llamativo a los documentos.
+  Su nombre original es Evil Dead 3 DEMO y la versión desde la que se ha creado
+ es 1.0  DEMO y esta creada por Thomas W. Otto para Norfok Inc.
+  Es más legible con grandes tamaños debido a su complicado contorno (tamaños
+ superiores a los 18 puntos).
+  Principalmente fue utilizada para crear el titulo de un clan de vampiros que
+ funde en el Bitefight Español server 6 (alrededor del 2006), actualmente ese 
+ jugador esta bloqueado y me cree una cuenta en Mostergame (un juego de
+ caraceristicas similares, alrededor del 2007).
+   Ahora he adaptado y modificado la fuente para su facil uso en la creacion del
+ titulo del clan.
+
+
+ 4.1. Enlaces de interes
+------------------------
+  Jugador con el que funde el clan (actualmente bloqueado)
+http://s6.bitefight.es/profile/player/42923
+  Tema q escribi en el foro del clan explicando los motivos de mi bloqueo en el juego
+http://vampdators.mforos.com/1120834/6059216-fuera-el-terrorismo/
+  Jugador con el que actualmente juego en Mostergame
+http://world5.monstersgame.es/index.php?ac=showuser&showuserid=58051980
+
+
+ 4.2. Como se escribe el titulo del clan
+----------------------------------------
+   		-T mayúscula, H minúscula, E minúscula
+   		-V especial - Alt+0188
+   		-a minúscula
+   		-m especial - Alt+0189
+   		-p minúscula
+   		-d minúscula
+   		-a especial - Alt+0194
+   		-t especial - Alt+0190
+   		-o minúscula
+   		-r especial - Alt+0197
+   		-S especial - Alt+0198
+
+
+ 5. Historia de las Versiones
+-----------------------------
+
+	Leyenda: 
+	+ Lo nuevo 
+	* Lo cambiado, modificado o mejorado
+
+
+
+ Versión: 1.0 - 26/05/2011
+ Fecha: 26 de mayo del 2011
+            + Añadidos signos ortograficos, simbolos economicos, numeros, letras adicionales del alfabeto, acentos y letras especiales. 
+            + Signos ortograficos:
+   		-Exclamación de apertura - Alt+0161
+   		-Exclamación de cierre - mays+1 o Alt+33
+   		-Interrogación de apertura - Alt+0191
+   		-Interrogación de cierre - Alt+63
+   		-Paréntesis izquierdo - Alt+40
+   		-Paréntesis derecho - Alt+41
+   		-Abrir corchete (izquierdo) - Alt+91
+   		-Cerrar corchete (derecho) - Alt+93
+   		-Abrir llave (izquierda) - Alt+123
+   		-Cerrar llave (derecha) - Alt+125
+   		-Menor que - Alt+60
+   		-Mayor que - Alt+62
+   		-Acento circunflejo - Alt+94
+   		-Barra de división - Alt+47
+   		-Barra de división inversa - Alt+92
+   		-Barra vertical - Alt+124
+   		-Comillas dobles - mays+2 o Alt+34
+   		-Apóstrofe - Alt+39
+   		-Coma - Alt+44
+   		-Punto - Alt+46
+   		-Dos puntos - Alt+58
+   		-Punto y coma - Alt+59
+   		-Puntos suspensivos - Alt+0133
+   		-No (símbolo lógico) - AltGr+6 o Alt+0172
+   		-Signo de número - Alt+35
+   		-Arroba - Alt+64
+   		-Tanto por ciento - Alt+37
+   		-Amspersand - Alt+38
+   		-Símbolo de marca - Alt+0153
+   		-Género femenino - Alt+0170
+   		-Género masculino - Alt+0186
+   		-Copyright - Alt+0169
+   		-Registrado - Alt+0174
+   		-Asterisco - Alt+42
+   		-Signo más - Alt+43
+   		-Más menos - Alt+0177
+   		-Subrayado - Alt+95
+   		-Signo menos - Alt+45
+   		-Dividido por - Alt+0759
+   		-Igual a - Alt+61
+            + Simbolos economicos:
+   		-Dolar - mays+4 o Alt+36
+   		-Euro - AltGr+e o Alt+0128
+   		-Libra esterlina - Alt+0163
+   		-Yen Japones - Alt+0165
+            + letras adicionales del alfabeto:
+   		-ç, con tecla propia en teclado español - Alt+135
+   		-Ç, con tecla propia en teclado español - Alt+128
+   		-ñ, con tecla propia en teclado español - Alt+164
+   		-Ñ, con tecla propia en teclado español - Alt+165
+            + Acentos:
+   		-Acento agudo - Alt+0180 O Alt+239
+   		-Acento grave - Alt+96
+   		-Diéresis - Alt+0168
+   		-A mayúscula, Acento agudo - Alt+0193
+   		-A mayúscula, Acento grave - Alt+0192
+   		-A mayúscula, diéresis - Alt+0196
+   		-E mayúscula, acento agudo - Alt+0201
+   		-E mayúscula, acento grave - Alt+0200
+   		-E mayúscula, diéresis - Alt+0203
+   		-I mayúscula, Acento agudo - Alt+0205
+   		-I mayúscula, Acento grave - Alt+0204
+   		-I mayúscula, diéresis - Alt+0207
+   		-O mayúscula, acento agudo - Alt+0211
+   		-O mayúscula, acento grave - Alt+0210
+   		-O mayúscula, diéresis - Alt+0214
+   		-U mayúscula, acento agudo - Alt+0218
+   		-U mayúscula, acento grave - Alt+0217
+   		-U mayúscula, diéresis - Alt+0220
+   		-Y mayúscula, diéresis - 
+   		-A minúscula, Acento agudo - Alt+0225
+   		-A minúscula, Acento grave - Alt+0224
+   		-A minúscula, diéresis - Alt+0228
+   		-E minúscula, acento agudo - Alt+0233
+   		-E minúscula, acento grave - Alt+0232
+   		-E minúscula, diéresis - Alt+0235
+   		-I minúscula, Acento agudo - Alt+0237
+   		-I minúscula, Acento grave - Alt+0236
+   		-I minúscula, diéresis - Alt+0239
+   		-O minúscula, acento agudo - Alt+0243
+   		-O minúscula, acento grave - Alt+0242
+   		-O minúscula, diéresis - Alt+0246
+   		-U minúscula, acento agudo - Alt+0249
+   		-U minúscula, acento grave - Alt+0250
+   		-U minúscula, diéresis - Alt+0252
+   		-Y minúscula, diéresis - Alt+0255
+            + Letras especiales:
+   		-a especial - Alt+0194
+   		-m especial - Alt+0189
+   		-r especial - Alt+0197
+   		-S especial - Alt+0198
+   		-t especial - Alt+0190
+   		-V especial - Alt+0188
+            * Modificado el formato identificador del nombre de la fuente
+
+
+ Versión: 1.0  DEMO
+ Fecha: 2001
+            + fuente original creada por Thomas W. Otto para Norfok Inc.
+
+
+
+ 6. Requisitos del sistema
+--------------------------
+ Un ordenador y un teclado;
+ Microsoft Windows 9x/ME/NT/2000/XP/Vista/7; 
+ Un dispositivo compatible con Windows llamado el ratón (o cualquier cosa similar); 
+
+
+ 7. Instalación
+---------------
+ MODO 1:
+ Copiar el archivo de la fuente "RIKY2vamp.ttf" en el directorio C:\WINDOWS\FONTS
+
+ MODO 2:
+ Hacer click en en el "Menu de Inicio" y seleccionar "Configuración/Panel de control"...
+ Hacer doble click en FUENTES...
+ Abrir el menú archivo y seleccionar la opción "Instalar nueva fuente".....
+ Buscar la carpeta donde tienes la fuente (Ej. C:\Mis documentos) y la fuente aparecerá
+ en la lista de encima.... seleccionarla y hacer click en Aceptar.... 
+
+ NOTA:
+ Para actualizar una fuente ya instalada solo sirve el modo 2 o elimnar la fuente anterior
+
+
+ 8. Desinstalación
+------------------
+ MODO 1:
+ Eliminar el archivo "Riky Vampdator Normal" del directorio C:\WINDOWS\FONTS
+
+ MODO 2:
+ Hacer click en en el "Menu de Inicio" y seleccionar "Configuración/Panel de control"...
+ Hacer doble click en FUENTES...
+ Seleccionar la fuente "Riky Vampdator Normal" y abrir el menú archivo para escoger
+ la opción "Eliminar"..... Confirmar la eliminación....
+
+``````````````````hh`````````````````````hh``````````````````
+``````````````hhhhhhh```````````````````hhhhhhh``````````````
+````````````hhhhhhhhh```````````````````hhhhhhhhh````````````
+`````````hhhhhhhhhhhhh`````````````````hhhhhhhhhhhhh`````````
+```````hhhhhhhhhhhhhhhh```````````````hhhhhhhhhhhhhhhh```````
+````hhhhhhhhhhhhhhhhhhhhh```````````hhhhhhhhhhhhhhhhhhhhh````
+``hh```````hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh```````hh``
+````````````hhh```hhhhhhhhhhhhhhhhhhhhhhhhh```hhh````````````
+````````````hh`````hhhhhhhhhhhhhhhhhhhhhhh`````hh````````````
+````````````h``````h```hhhhhhhhhhhhhhh```h``````h````````````
+`````````````````````````hhhhhhhhhhh`````````````````````````
+```````````````````````````hhhhhhh```````````````````````````
+`````````````````````````````hhhh````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+``````````````````````````````h``````````````````````````````
+`````````````````````````````````````````````````````````````
+
+============================================================================================
+
+           Dudas, reclamaciones, recomendaciones y fotos de chicas guapas a
+
+                                       riky@alcoy.com o riky.vampdator@gmail.com
+
+============================================================================================
+
+ 

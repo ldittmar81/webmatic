@@ -14,7 +14,7 @@ var prevItem = 0;
 var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap;
 
 var theme, font;
-var loadedFont = [];
+var loadedFont = ["a"];
 
 // Initialize refresh timer:
 var refreshTimer = setInterval(function () {
@@ -56,7 +56,7 @@ if (localStorage.getItem("optionsMenuGfxFont") === null) {
 } else {
     font = localStorage.getItem("optionsMenuGfxFont");
 }
-if (font === "undefined" || $.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]) === -1) {
+if (font === "undefined" || $.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     font = "a";
 }
 
@@ -251,19 +251,18 @@ function changeFont(code){
         
     var src = "";
     var fontFamily = "";
-    var size = "14px";
     
     switch(code){
         case "a":
             fontFamily = "sans-serif";
             break;
         case "b":
-            fontFamily = "1942";
-            src = "themes/fonts/1942/1942.ttf";
+            fontFamily = "KochFraktur";
+            src = "themes/fonts/KochFraktur/KochFraktur.ttf";
             break;
         case "c":
-            fontFamily = "3Dumb";
-            src = "themes/fonts/3Dumb/3Dumb.ttf";
+            fontFamily = "PlanetBenson";
+            src = "themes/fonts/Planet_benson/planetbe.ttf";
             break;
         case "d":
             fontFamily = "ActionMan";
@@ -274,8 +273,8 @@ function changeFont(code){
             src = "themes/fonts/Amadeus/Amadeus.ttf";
             break;
         case "f":
-            fontFamily = "FingerPaint";
-            src = "themes/fonts/Finger_Paint/FingerPaint-Regular.ttf";
+            fontFamily = "Vamp";
+            src = "themes/fonts/Vamp/RIKY2vamp.ttf";
             break;
         case "g":
             fontFamily = "HennyPenny";
@@ -283,7 +282,7 @@ function changeFont(code){
             break;
         case "h":
             fontFamily = "Kavoon";
-            src = "themes/fonts/Kavoon/Kavoon-Regular.otf";
+            src = "themes/fonts/Anglican/AnglicanText.ttf";
             break;
         case "i":
             fontFamily = "Nosifer";
@@ -292,25 +291,31 @@ function changeFont(code){
         case "j":
             fontFamily = "Pacifico";
             src = "themes/fonts/Pacifico/Pacifico.ttf";
-            size = "20px";
             break;
-            
+        case "k":
+            fontFamily = "Sixties";
+            src = "themes/fonts/Sixties/Sixties.ttf";
+            break;
+        case "l":
+            fontFamily = "Crackman";
+            src = "themes/fonts/Crackman/CRACKMAN.ttf";
+            break;    
     }
     
-    setFont = function(fam, s){
+    setFont = function(fam){
         $("body, input, select, textarea, button, .ui-btn").css("font-family", fam);
-    }
+    };
     
     if($.inArray(code, loadedFont) === -1){
         var fontObj = new Font();
         fontObj.onload = function() {
-            setFont(fontFamily, size);
+            setFont(fontFamily);
         };
 
         fontObj.fontFamily = fontFamily;
         fontObj.src = src;
     }else{        
-        setFont(fontFamily, size);
+        setFont(fontFamily);
     }
     
     loadedFont.push(code);
@@ -556,7 +561,7 @@ function processGraphicID(type, map) {
         html += "</div>";
         html += "</form>";
         html += "</li>";
-        $("#dataList").append(html);
+        return html;
     });
 }
 
@@ -1117,7 +1122,7 @@ function loadData(url, oldScrollPos) {
                                 deviceHTML += "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
                                 deviceHTML += "<p>" + valInfo + "</p>";
                                 if (isReadOnly(valInfo)) {
-                                    deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
+                                    deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                                 } else if (varOptionsFirst === "d" || varOptionsFirst === "dk" || varOptionsFirst === "g" || varOptionsFirst === "h") {
                                     // Goglo
                                     addDiagram = true;
@@ -1192,7 +1197,7 @@ function loadData(url, oldScrollPos) {
 
                     deviceHTML += "<p>" + valInfo + "</p>";
                     if (isReadOnly(valInfo)) {
-                        deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList);
+                        deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                     } else if (varOptionsFirst === "d" || varOptionsFirst === "dk" || varOptionsFirst === "g" || varOptionsFirst === "h") {
                         // Goglo
                         addDiagram = true;
@@ -1793,7 +1798,7 @@ function loadGraphicIDs() {
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>Favoriten</li>");
-    processGraphicID('favorites', favoritesMap);
+    $("#dataList").append(processGraphicID('favorites', favoritesMap));
 
     if (localStorage.getItem("webmaticRoomsMap") === null) {
         $.ajax({
@@ -1814,7 +1819,7 @@ function loadGraphicIDs() {
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>R&auml;ume</li>");
-    processGraphicID('rooms', roomsMap);
+    $("#dataList").append(processGraphicID('rooms', roomsMap));
 
     if (localStorage.getItem("webmaticFunctionsMap") === null) {
         $.ajax({
@@ -1835,7 +1840,7 @@ function loadGraphicIDs() {
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>Gewerke</li>");
-    processGraphicID('functions', functionsMap);
+    $("#dataList").append(processGraphicID('functions', functionsMap));
 
     $("#dataList").listview("refresh");
     $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
@@ -1908,13 +1913,17 @@ function loadOptions() {
     html += "</div><br/><br/><br/>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='a' class='" + (font === 'a' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Normal</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='b' class='" + (font === 'b' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Koch Fraktur</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='c' class='" + (font === 'c' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Planet Benson</a>";
     html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='d' class='" + (font === 'd' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Action Man</a>";
     html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='e' class='" + (font === 'e' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Amadeus</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='f' class='" + (font === 'f' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Finger Paint</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='f' class='" + (font === 'f' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Vamp</a>";
     html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='g' class='" + (font === 'g' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>HennyPenny</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='h' class='" + (font === 'h' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Kavoon</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='h' class='" + (font === 'h' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Anglican</a>";
     html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='i' class='" + (font === 'i' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Nosifer</a>";
     html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='j' class='" + (font === 'j' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Pacifico</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='k' class='" + (font === 'k' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Sixties</a>";
+    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='l' class='" + (font === 'l' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Crackman</a>";
     html += "</div></li>";
     $("#dataList").append(html);
 
