@@ -335,7 +335,7 @@ function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh) {
     }
 
     if (noAction) {
-        html += "<a href='#' data-value='" + value + "' data-role='button' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
+        html += "<a href='#' data-value='" + value + "' data-role='button' class='ui-btn-active' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
     } else {
         html += "<a href='#' id='setButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
     }
@@ -840,39 +840,39 @@ function loadData(url, oldScrollPos) {
                                         stateText = "<span class='valueOK valueOK-" + theme + "'>Kein Rauch erkannt</span>";
                                     }
                                 } else if (deviceHssType === "SENSOR_FOR_CARBON_DIOXIDE") {
-                                    if (valFloat === 0) {
+                                    if (valFloat === 0.0) {
                                         stateText = "<span class='valueOK valueOK-" + theme + "'>CO<sub>2</sub> Konzentration normal</span>";
                                     }
-                                    if (valFloat === 1) {
+                                    if (valFloat === 1.0) {
                                         stateText = "<span class='valueWarning valueWarning-" + theme + "'>CO<sub>2</sub> Konzentration erh&ouml;ht</span>";
                                     }
-                                    if (valFloat >= 2) {
+                                    if (valFloat >= 2.0) {
                                         stateText = "<span class='valueError valueError-" + theme + "'>CO<sub>2</sub> Konzentration stark erh&ouml;ht</span>";
                                     }
                                 } else if (deviceHssType === "TILT_SENSOR") {
-                                    if (valString === "true") {
+                                    if (valBool) {
                                         stateText = "<span class='valueWarning valueWarning-" + theme + "'>Offen</span>";
                                     } else {
                                         stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
                                     }
                                 } else if (deviceHssType === "WATERDETECTIONSENSOR") {
-                                    if (valFloat === 0) {
+                                    if (valFloat === 0.0) {
                                         stateText = "<span class='valueOK valueOK-" + theme + "'>Trocken</span>";
                                     }
-                                    if (valFloat === 1) {
+                                    if (valFloat === 1.0) {
                                         stateText = "<span class='valueWarning valueWarning-" + theme + "'>Feucht</span>";
                                     }
-                                    if (valFloat === 2) {
+                                    if (valFloat === 2.0) {
                                         stateText = "<span class='valueError valueError-" + theme + "'>Nass</span>";
                                     }
                                 } else if (deviceHssType === "ROTARY_HANDLE_SENSOR") {
-                                    if (valFloat === 0) {
+                                    if (valFloat === 0.0) {
                                         stateText = "<span class='valueOK valueOK-" + theme + "'>Geschlossen</span>";
                                     }
-                                    if (valFloat === 1) {
+                                    if (valFloat === 1.0) {
                                         stateText = "<span class='valueWarning valueWarning-" + theme + "'>Gekippt</span>";
                                     }
-                                    if (valFloat === 2) {
+                                    if (valFloat === 2.0) {
                                         stateText = "<span class='valueError valueError-" + theme + "'>Offen</span>";
                                     }
                                 } else if (deviceHssType === "KEYMATIC") {
@@ -896,13 +896,13 @@ function loadData(url, oldScrollPos) {
                                     txtOn = "Ein";
                                     txtOff = "Aus";
                                 } else if (deviceHssType === "DIGITAL_INPUT") {
-                                    if (valFloat === "true") {
+                                    if (valBool) {
                                         stateText = "Ein";
                                     } else {
                                         stateText = "Aus";
                                     }
                                 } else {
-                                    if (valFloat === "true") {
+                                    if (valBool) {
                                         stateText = "Aus";
                                     } else {
                                         stateText = "Ein";
@@ -930,15 +930,15 @@ function loadData(url, oldScrollPos) {
                             } else if (hssType === "AUTO_MODE")
                             {
                                 // collect post buttons
-                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 0, true);
+                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 0.0, true);
                             } else if (hssType === "MANU_MODE")
                             {
                                 // collect post buttons
-                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 1, true);
+                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 1.0, true);
                             } else if (hssType === "BOOST_MODE")
                             {
                                 // collect post buttons
-                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 3, true);
+                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 3.0, true);
                             } else if (hssType === "LOWERING_MODE" || hssType === "COMFORT_MODE")
                             {
                                 // collect post buttons
@@ -1044,11 +1044,11 @@ function loadData(url, oldScrollPos) {
                             } else if (hssType === "BATTERY_STATE") {
                                 deviceHTML = deviceHTML + "<p class='ui-li-desc'><img src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo'>" + valFloat + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
                             } else if (hssType === "STATUS" && deviceHssType === "AKKU") {
-                                if (valFloat === 0) {
+                                if (valFloat === 0.0) {
                                     txt = "<span class='valueNoError valueNoError-" + theme + "'>Erhaltungsladung</span>";
-                                } else if (valFloat === 1) {
+                                } else if (valFloat === 1.0) {
                                     txt = "<span class='valueNoError valueNoError-" + theme + "'>Akku l&auml;dt</span>";
-                                } else if (valFloat === 2) {
+                                } else if (valFloat === 2.0) {
                                     txt = "<span class='valueNoError valueNoError-" + theme + "'>Versorgung durch Akku</span>";
                                 } else {
                                     txt = "<span class='valueWarning valueWarning-" + theme + "'>Status unbekannt</span>";
@@ -1077,7 +1077,7 @@ function loadData(url, oldScrollPos) {
                                         break;
                                 }
                             } else if (hssType === "ERROR" || hssType.substring(0, 6) === "ERROR_" || hssType === "FAULT_REPORTING") {
-                                if ((hssType === "ERROR" && valFloat > 0) || hssType.substring(0, 6) === "ERROR_") {
+                                if ((hssType === "ERROR" && valFloat > 0.0) || hssType.substring(0, 6) === "ERROR_") {
                                     var v;
                                     if (hssType === "ERROR") {
                                         v = valFloat;

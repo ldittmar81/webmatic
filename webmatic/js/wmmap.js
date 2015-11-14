@@ -48,7 +48,8 @@ var textMap = {
     PARTY_STOP_TIME: "-",
     PARTY_STOP_DAY: "-",
     PARTY_STOP_MONTH: "-",
-    PARTY_STOP_YEAR: "-"
+    PARTY_STOP_YEAR: "-",
+    UNREACH_CTR: "Fehlversuche"
 };
 
 var imageMap = {
