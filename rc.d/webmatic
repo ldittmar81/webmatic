@@ -21,7 +21,8 @@ case "$1" in
   ;;
 
   uninstall)
-    rm -rf /usr/local/etc/config/addons/www/webmatic
+    ${WEBMATICDIR}/update_addon webmatic
+    rm -rf ${WEBMATICDIR}
   ;;
 
   *)
