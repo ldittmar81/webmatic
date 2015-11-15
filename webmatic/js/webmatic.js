@@ -1,7 +1,7 @@
 // WebMatic
 // (c) Frank Epple
 // h-Diagrams by Goglo
-// Ab Version 1.4 by ldittmar
+// Ab Version 2.0 by ldittmar
 // ----------------------- Click function handlers ----------------------------
 
 // Globale variablen

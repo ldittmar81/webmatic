@@ -6,7 +6,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 
 
 ## Changelog
-1.4
+2.0
 * Codereview
 * Geräte, Programme und Variablen die als nicht sichtbar deklariert wurden, werden nicht mehr angezeigt
 * Neue Ansicht "get.html" akzeptiert eine ID und zeigt nur den gewünschten Raum oder Gewerk an "get.html?id=12345"
@@ -18,6 +18,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Installtionsroutine angepasst (Userfreundlichkeit)
 * Bilder können jetzt per Browser hochgeladen werden
 * Optimierung der Geschwindigkeit
+* Unterstützung für HM-CC-RT-DN
 
 1.1
 * Anzeige für Gerät: ALARMACTUATOR.
