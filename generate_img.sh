@@ -18,15 +18,17 @@ cd webmatic
 sed -i "s/BETAVERSION/${VERSION}/g" index.html
 sed -i "s/BETAVERSION/${VERSION}/g" get.html
 sed -i "s/BETAVERSION/${VERSION}/g" dlgAbout.html
-
-sed -i "s/wmmap.min.js/wmmap.min.js?${HASHDATE}/" index.html
-sed -i "s/wmmap.min.js/wmmap.min.js?${HASHDATE}/" get.html
-sed -i "s/webmatic.min.js/webmatic.min.js?${HASHDATE}/" index.html
-sed -i "s/webmatic.min.js/webmatic.min.js?${HASHDATE}/" get.html
-sed -i "s/index.min.js/index.min.js?${HASHDATE}/" index.html
-sed -i "s/get.min.js/get.min.js?${HASHDATE}/" get.html
-
 sed -i "s/RELEASEDATE/${GERDATE}/g" dlgAbout.html
+
+sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" index.html
+sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" get.html
+
+sed -i "s/wmmap.js/wmmap.min.js?${HASHDATE}/" index.html
+sed -i "s/wmmap.js/wmmap.min.js?${HASHDATE}/" get.html
+sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" index.html
+sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" get.html
+sed -i "s/index.js/index.min.js?${HASHDATE}/" index.html
+sed -i "s/get.js/get.min.js?${HASHDATE}/" get.html
 cd ..
 
 tar --owner=root --group=root -czvf ../webmatic-${VERSION}.tar.gz *

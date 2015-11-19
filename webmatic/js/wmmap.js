@@ -49,7 +49,13 @@ var textMap = {
     PARTY_STOP_DAY: "-",
     PARTY_STOP_MONTH: "-",
     PARTY_STOP_YEAR: "-",
-    UNREACH_CTR: "Fehlversuche"
+    UNREACH_CTR: "Fehlversuche",
+    //mrlee HM-LC-RGBW-WM
+    SEND_CMD: "-",    
+    RCVS: "-",
+    RCVL: "-",
+    USER_COLOR: "-",
+    USER_PROGRAM: "-"
 };
 
 var imageMap = {

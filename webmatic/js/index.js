@@ -20,21 +20,10 @@ $(function () {
         $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "favorites") + "'><h3>Favoriten</h3><ul id='listFavorites' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticFavoritesMap") === null) {
-            $.ajax({
-                type: 'GET',
-                url: 'cgi/favorites.cgi',
-                dataType: 'json',
-                success: function (data) {
-                    favoritesMap = data;
-                    localStorage.setItem("webmaticFavoritesMap", JSON.stringify(favoritesMap));
-                },
-                async: false
-            });
+            loadConfigData(false, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
         } else {
             favoritesMap = JSON.parse(localStorage.getItem("webmaticFavoritesMap"));
-            $.getJSON('cgi/favorites.cgi', function (data) {
-                localStorage.setItem("webmaticFavoritesMap", JSON.stringify(data));
-            });
+            loadConfigData(true, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
         }
 
         $.each(favoritesMap, function (key, val) {
@@ -50,21 +39,10 @@ $(function () {
         $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "rooms") + "'><h3>R&auml;ume</h3><ul id='listRooms' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticRoomsMap") === null) {
-            $.ajax({
-                type: 'GET',
-                url: 'cgi/rooms.cgi',
-                dataType: 'json',
-                success: function (data) {
-                    roomsMap = data;
-                    localStorage.setItem("webmaticRoomsMap", JSON.stringify(roomsMap));
-                },
-                async: false
-            });
+            loadConfigData(false, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap'); 
         } else {
             roomsMap = JSON.parse(localStorage.getItem("webmaticRoomsMap"));
-            $.getJSON('cgi/rooms.cgi', function (data) {
-                localStorage.setItem("webmaticRoomsMap", JSON.stringify(data));
-            });
+            loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap'); 
         }
 
         $.each(roomsMap, function (key, val) {
@@ -80,21 +58,10 @@ $(function () {
         $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "functions") + "'><h3>Gewerke</h3><ul id='listFunctions' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticFunctionsMap") === null) {
-            $.ajax({
-                type: 'GET',
-                url: 'cgi/functions.cgi',
-                dataType: 'json',
-                success: function (data) {
-                    functionsMap = data;
-                    localStorage.setItem("webmaticFunctionsMap", JSON.stringify(functionsMap));
-                },
-                async: false
-            });
+            loadConfigData(false, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
         } else {
             functionsMap = JSON.parse(localStorage.getItem("webmaticFunctionsMap"));
-            $.getJSON('cgi/functions.cgi', function (data) {
-                localStorage.setItem("webmaticFunctionsMap", JSON.stringify(data));
-            });
+            loadConfigData(true, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
         }
 
         $.each(functionsMap, function (key, val) {
@@ -134,8 +101,8 @@ $(function () {
 
     $("#main_menu").collapsibleset("refresh");
 
-    RefreshServiceMessages();
-    RestartTimer();
+    refreshServiceMessages();
+    restartTimer();
     changeTheme(theme);
     changeFont(font);
 
@@ -158,7 +125,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("collapsibleexpand", "#listPrograms", function () {
@@ -167,7 +134,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", ".menuListItem", function () {
@@ -175,7 +142,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", ".menuItemVariables", function () {
@@ -183,7 +150,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = false;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", ".menuItemPrograms", function () {
@@ -191,7 +158,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = false;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", ".menuItemGraphicIDs", function () {
@@ -199,7 +166,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", ".menuItemDebug", function () {
@@ -207,7 +174,7 @@ $(function () {
         lastClickID = 0;
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", ".menuItemDebugCUxD", function () {
@@ -215,7 +182,7 @@ $(function () {
         lastClickID = 0;
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", ".menuItemOptions", function () {
@@ -223,37 +190,37 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        RefreshPage($(this), false);
+        refreshPage($(this), false);
     });
 
     $(document.body).on("click", "#buttonRefresh", function () {
-        RefreshPage(0, true);
-        RefreshServiceMessages();
+        refreshPage(0, true);
+        refreshServiceMessages();
     });
 
     $(document.body).on("click", "#removeMessages", function () {
-        RemoveMessages();
-        RefreshServiceMessages();
+        removeMessages();
+        refreshServiceMessages();
     });
 
     $(document.body).on("click", "#optionsMenuGfxSizeSmall", function () {
         localStorage.setItem("optionsMenuGfxSize", "small");
-        RefreshPage(0, true);
+        refreshPage(0, true);
     });
 
     $(document.body).on("click", "#optionsMenuGfxSizeLarge", function () {
         localStorage.setItem("optionsMenuGfxSize", "large");
-        RefreshPage(0, true);
+        refreshPage(0, true);
     });
 
     $(document.body).on("click", "#optionsMenuShowTestpages", function () {
         localStorage.setItem("optionsMenuShowTestpages", "true");
-        RefreshPage(0, true);
+        refreshPage(0, true);
     });
 
     $(document.body).on("click", "#optionsMenuHideTestpages", function () {
         localStorage.setItem("optionsMenuShowTestpages", "false");
-        RefreshPage(0, true);
+        refreshPage(0, true);
     });
 
     $(document.body).on("click", "[name='optionsMenuGfxThemeChooser']", function () {

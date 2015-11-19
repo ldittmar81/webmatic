@@ -18,26 +18,16 @@ var loadedFont = ["a"];
 
 // Initialize refresh timer:
 var refreshTimer = setInterval(function () {
-    CheckRefreshPage();
+    checkrefreshPage();
 }, 1000);
 var lastTime = -1;
 
 //Initialwerte einlesen
 if (localStorage.getItem("webmaticOptionsMap") === null) {
-
-    $.ajax({
-        type: 'GET',
-        url: '../webmatic_user/config.json',
-        dataType: 'json',
-        success: function (data) {
-            optionsMap = data;
-            localStorage.setItem("webmaticOptionsMap", JSON.stringify(data));
-        },
-        async: false
-    });
-
+    loadConfigData(true, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
 } else {
     optionsMap = JSON.parse(localStorage.getItem("webmaticOptionsMap"));
+    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
 }
 
 //Design setzen
@@ -62,7 +52,7 @@ if (font === "undefined" || $.inArray(font, ["a", "b", "c", "d", "e", "f", "g", 
 
 // --------------------- Funktionen --------------------------
 
-function CheckRefreshPage() {
+function checkrefreshPage() {
     // Statt Timer auf 60 Sekunden hier eigener Vergleich alle Sekunde. Nur so geht es, dass nach einem iOS WakeUp
     // des Browsers sofort ein Reload passiert, wenn mehr als 60 Sekunden vorbei sind.
     var d = new Date();
@@ -72,9 +62,9 @@ function CheckRefreshPage() {
         if (t - lastTime > 60000)
         {
             if (lastClickType !== 4 && lastClickType !== 7) {
-                RefreshPage(0, true); // Kein Refresh bei GrafikIDs und Optionen.
+                refreshPage(0, true); // Kein Refresh bei GrafikIDs und Optionen.
             }
-            RefreshServiceMessages();
+            refreshServiceMessages();
             lastTime = t;
         }
     } else {
@@ -82,16 +72,16 @@ function CheckRefreshPage() {
     }
 }
 
-function RestartTimer() {
+function restartTimer() {
     // Zeit zurücksetzen, damit wieder neu gezählt wird:
     var d = new Date();
     lastTime = d.getTime();
 }
 
-function RefreshPage(item, saveScrollPos) {
+function refreshPage(item, saveScrollPos) {
     // Gleich mal den Timer neu starten, lieber vor dem Reload, damit sich die nicht in die Quere kommen.
     // Später dann besser nur einen Refresh zur selben Zeit zulassen:
-    RestartTimer();
+    restartTimer();
 
     // Markieren von selektiertem Menueintrag:
     if (item !== 0) {
@@ -139,7 +129,7 @@ function RefreshPage(item, saveScrollPos) {
                 loadOptions();
         }
 
-        $("#prim").find("script").each(function () {
+        $(".evalScript").find("script").each(function () {
             var src = $(this).attr('src');
             if (src) {
                 $.getScript(src);
@@ -151,7 +141,7 @@ function RefreshPage(item, saveScrollPos) {
     }
 }
 
-function RefreshServiceMessages() {
+function refreshServiceMessages() {
     $('#buttonService .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
     $.getJSON('cgi/service.cgi', function (data) {
@@ -164,7 +154,7 @@ function RefreshServiceMessages() {
             var msgError = msg['error'];
             var msgValue = msg['value'];
             var msgDate = msg['date'];
-            var msgReadable = GetErrorMessage(msgType, msgError, msgValue, msgDevice);
+            var msgReadable = getErrorMessage(msgType, msgError, msgValue, msgDevice);
 
             $("#serviceList").append("<li><p class='ui-li-desc' style='text-align:right;'>" + msgDate + "</p><h1>" + msgName + "</h1><p>" + msgReadable + "</p></li>");
             errNr += 1;
@@ -184,9 +174,8 @@ function RefreshServiceMessages() {
     });
 }
 
-function RemoveMessages() {
-    $.getJSON('cgi/removemessages.cgi', function () {
-    });
+function removeMessages() {
+    $.ajax('cgi/removemessages.cgi');
 }
 
 function changeTheme(newTheme) {
@@ -328,7 +317,7 @@ function changeFont(code) {
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 // onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
-function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh) {
+function addSetButton(id, text, value, vorDate, onlyButton, noAction, refresh) {
     var html = "";
     if (!onlyButton) {
         html += "<p class='ui-li-desc'>";
@@ -348,7 +337,7 @@ function AddSetButton(id, text, value, vorDate, onlyButton, noAction, refresh) {
 }
 
 // Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
-function AddStartProgramButton(id, text, vorDate, operate) {
+function addStartProgramButton(id, text, vorDate, operate) {
     var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-id='" + id + "'>" + text + "</a></div>";
     html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
     return html;
@@ -359,8 +348,8 @@ function AddStartProgramButton(id, text, vorDate, operate) {
 // ist aber 0 - 100 schöner.
 //
 // TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groß ist?
-function AddSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh) {
-    var html = "<div data-role='fieldcontain'>";
+function addSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh) {
+    var html = "<div class='ui-field-contain'>";
     html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
     html += " (" + min * factor + " - " + max * factor + " " + unit + ") ";
     html += "<a href='#' id='setNumberButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
@@ -369,7 +358,7 @@ function AddSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh)
     return html;
 }
 
-function AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, refresh) {
+function addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, refresh) {
     var html = "<div data-role='fieldcontain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
 
@@ -397,39 +386,7 @@ function AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, ref
     return html;
 }
 
-function AddSetBoolComboBox(valID, strValue, val0, val1, valUnit, vorDate) {
-    var html = "<div data-role='fieldcontain'>";
-    html += "<select id='setValue_" + valID + "' data-id='" + valID + "' data-native-menu='false' data-inline='true'>";
-    if (strValue === "true") {
-        html += "<option value='false'>" + val0 + "</option><option selected value='true'>" + val1 + "</option>";
-    } else {
-        html += "<option selected value='false'>" + val0 + "</option><option value='true'>" + val1 + "</option>";
-    }
-    html += "</select>";
-    html += " " + valUnit + " <a href='#' id='setBoolButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-    html += "</div>";
-
-    return html;
-}
-
-function AddSetBoolSwitch(valID, strValue, val0, val1, valUnit, vorDate) {
-    var html = "<div data-role='fieldcontain'>";
-    html += "<div class='longerFlip'><select id='setValue_" + valID + "' data-id='" + valID + "' data-role='slider'>";
-    if (strValue === "true") {
-        html += "<option value='false'>" + val0 + "</option><option selected value='true'>" + val1 + "</option>";
-    } else {
-        html += "<option selected value='false'>" + val0 + "</option><option value='true'>" + val1 + "</option>";
-    }
-    html += "</select></div>";
-    html += " " + valUnit + " <a href='#' id='setBoolButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-    html += "</div>";
-
-    return html;
-}
-
-function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh) {
+function addSetValueList(valID, strValue, valList, valUnit, vorDate, refresh) {
     var html = "<div data-role='fieldcontain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     var selIndex = parseInt(strValue);
@@ -449,7 +406,7 @@ function AddSetValueList(valID, strValue, valList, valUnit, vorDate, refresh) {
     return html;
 }
 
-function AddSetText(valID, val, valUnit, vorDate) {
+function addSetText(valID, val, valUnit, vorDate) {
     var html = "<div data-role='fieldcontain'>";
     // Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
     val = val.replace(/\"/g, "&quot;");
@@ -464,9 +421,9 @@ function AddSetText(valID, val, valUnit, vorDate) {
     return html;
 }
 
-function AddHTML(valID, val, vorDate, readonly) {
+function addHTML(valID, val, vorDate, readonly) {
     var html = "<div data-role='fieldcontain' class='" + (readonly ? "" : "ui-grid-a") + "'>";
-    html += "<div class='" + (readonly ? "" : "ui-block-a") + "'>" + val + "</div>";
+    html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "'>" + val + "</div>";
     if (!readonly) {
         html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
         html += "<a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
@@ -477,7 +434,7 @@ function AddHTML(valID, val, vorDate, readonly) {
     return html;
 }
 
-function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1) {
+function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1) {
     // Bestimmen, wie der sichtbare Werte aussehen soll:
     var visVal = "";
     if (valType === "2") {
@@ -499,7 +456,7 @@ function AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
         visVal = strValue;
     }
     if (valType === "20" && valUnit === "html") {
-        return AddHTML(valID, strValue, vorDate, true);
+        return addHTML(valID, strValue, vorDate, true);
     } else {
         return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
     }
@@ -510,7 +467,7 @@ function processVariable(variable, valID, systemDate) {
     var valType = variable['valueType'];
     var valUnit = variable['valueUnit'];
     var valList = variable['valueList'];
-    var vorDate = GetTimeDiffString(variable['date'], systemDate);
+    var vorDate = getTimeDiffString(variable['date'], systemDate);
     var valInfo = unescape(variable['info']);
     var val0 = variable['valueName0'];
     var val1 = variable['valueName1'];
@@ -520,20 +477,20 @@ function processVariable(variable, valID, systemDate) {
 
     // In der Variablenliste editieren zulassen:
     if (isReadOnly(valInfo)) {
-        html += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
+        html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
     } else if (valType === "2") {
         // Bool.
-        html += AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+        html += addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
     } else if (valType === "4") {
         // Float, Integer.
-        html += AddSetNumber(valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.001, 1.0, vorDate, true);
+        html += addSetNumber(valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.001, 1.0, vorDate, true);
     } else if (valType === "16") {
         // Liste.
-        html += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+        html += addSetValueList(valID, strValue, valList, valUnit, vorDate, true);
     } else if (valType === "20" && valUnit === "html") {
-        html += AddHTML(valID, strValue, vorDate, false);
+        html += addHTML(valID, strValue, vorDate, false);
     } else if (valType === "20") {
-        html += AddSetText(valID, strValue, valUnit, vorDate);
+        html += addSetText(valID, strValue, valUnit, vorDate);
     } else {
         html += "Unbekannter Variablentyp!";
     }
@@ -544,7 +501,7 @@ function processVariable(variable, valID, systemDate) {
 
 function processProgram(prog, prgID, systemDate) {
     var deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prog['name'] + "</h2><p>" + prog['info'] + "</p>";
-    deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", GetTimeDiffString(prog['date'], systemDate), prog['operate'] === "true");
+    deviceHTML += addStartProgramButton(prgID, "Ausf&uuml;hren", getTimeDiffString(prog['date'], systemDate), prog['operate'] === "true");
     deviceHTML += "</li>";
     return deviceHTML;
 }
@@ -567,7 +524,7 @@ function processGraphicID(type, map) {
 
 // ----------------------- Helper functions ----------------------------
 
-function GetDateFromString(strDate) {
+function getDateFromString(strDate) {
     var dy = strDate.substring(0, 2);
     var mn = strDate.substring(3, 5) - 1; // -1, da 0 basiert.
     var yr = strDate.substring(6, 10);
@@ -575,6 +532,42 @@ function GetDateFromString(strDate) {
     var mi = strDate.substring(14, 16);
     var sc = strDate.substring(17, 19);
     return new Date(yr, mn, dy, hr, mi, sc);
+}
+
+function loadConfigData(sync, url, type, map, callback){
+    $.ajax({
+        type: 'GET',
+        url: url,
+        dataType: 'json',
+        success: function (data) {
+            switch (type){
+                case "config":
+                    optionsMap = data;
+                    break;
+                case "variables":
+                    variablesMap = data;
+                    break;
+                case "programs":
+                    programsMap = data;
+                    break
+                case "favorites":
+                    favoritesMap = data;
+                    break
+                case "rooms":
+                    roomsMap = data;
+                    break
+                case "functions":
+                    functionsMap = data;
+                    break
+            }
+            
+            localStorage.setItem(map, JSON.stringify(data));
+            if(typeof callback === "function"){
+                callback(data);
+            }
+        },
+        async: sync
+    });
 }
 
 function isReadOnly(valInfo) {
@@ -607,8 +600,8 @@ function isReadOnly(valInfo) {
     return varOptionsFirst === "r";
 }
 
-function GetTimeDiffString(diffDate, systemDate) {
-    var timeDiff = (GetDateFromString(systemDate) - GetDateFromString(diffDate)) / 1000;  // In Sekunden konvertieren.
+function getTimeDiffString(diffDate, systemDate) {
+    var timeDiff = (getDateFromString(systemDate) - getDateFromString(diffDate)) / 1000;  // In Sekunden konvertieren.
 
     if (timeDiff < 60) {
         return "Vor " + Math.floor(timeDiff + 0.5) + " Sekunde/n";
@@ -630,7 +623,7 @@ function GetTimeDiffString(diffDate, systemDate) {
     }
 }
 
-function GetErrorMessage(errType, error, errValue, deviceHssType) {
+function getErrorMessage(errType, error, errValue, deviceHssType) {
     var noError = false;  // Wird verwendet, wenn "Unbekannter Fehler" nicht angezeigt werden soll.
     var txt = "";
 
@@ -760,11 +753,11 @@ function reloadList(txt, systemDate) {
     $("#dataList").trigger("create");
 }
 
-function ScrollToContentHeader() {
+function scrollToContentHeader() {
     $('html, body').animate({scrollTop: $('#prim').offset().top - 60}, 200);
 }
 
-function ScrollToPosition(pos) {
+function scrollToPosition(pos) {
     $('html, body').animate({scrollTop: pos}, 200);
 }
 
@@ -772,7 +765,7 @@ function ScrollToPosition(pos) {
 
 function loadData(url, oldScrollPos) {
     if (oldScrollPos === -1) {
-        ScrollToContentHeader();
+        scrollToContentHeader();
     }
     // Listen leeren:
     $("#dataList").empty();
@@ -808,7 +801,7 @@ function loadData(url, oldScrollPos) {
                             var channelID = channel['id'];
                             var hssType = channel['hssType'];
                             var channelDate = channel['date'];
-                            var vorDate = GetTimeDiffString(channelDate, systemDate);
+                            var vorDate = getTimeDiffString(channelDate, systemDate);
                             var valString = channel['value'];
                             var valFloat = parseFloat(channel['value']);
                             var valBool = (valString === "true");
@@ -910,7 +903,7 @@ function loadData(url, oldScrollPos) {
                                 }
 
                                 if (canBeSet) {
-                                    deviceHTML += AddSetBoolButtonList(channel['id'], valString, txtOff, txtOn, "", vorDate, true);
+                                    deviceHTML += addSetBoolButtonList(channel['id'], valString, txtOff, txtOn, "", vorDate, true);
                                 } else {
                                     deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span><span><i>" + vorDate + "</i></span></p>";
                                 }
@@ -930,25 +923,25 @@ function loadData(url, oldScrollPos) {
                             } else if (hssType === "AUTO_MODE")
                             {
                                 // collect post buttons
-                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 0.0, true);
+                                deviceHTMLPostChannelGroup += addSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 0.0, true);
                             } else if (hssType === "MANU_MODE")
                             {
                                 // collect post buttons
-                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 1.0, true);
+                                deviceHTMLPostChannelGroup += addSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 1.0, true);
                             } else if (hssType === "BOOST_MODE")
                             {
                                 // collect post buttons
-                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 3.0, true);
+                                deviceHTMLPostChannelGroup += addSetButton(channel['id'], MapText(hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 3.0, true);
                             } else if (hssType === "LOWERING_MODE" || hssType === "COMFORT_MODE")
                             {
                                 // collect post buttons
-                                deviceHTMLPostChannelGroup += AddSetButton(channel['id'], MapText(hssType), true, vorDate, true, false, true);
+                                deviceHTMLPostChannelGroup += addSetButton(channel['id'], MapText(hssType), true, vorDate, true, false, true);
                             } else if (hssType === "PRESS_SHORT") {
-                                deviceHTML += AddSetButton(channel['id'], "Kurzer Tastendruck", true, vorDate, false, false, true);
+                                deviceHTML += addSetButton(channel['id'], "Kurzer Tastendruck", true, vorDate, false, false, true);
                             } else if (hssType === "PRESS_LONG") {
-                                deviceHTML += AddSetButton(channel['id'], "Langer Tastendruck", true, vorDate, false, false, true);
+                                deviceHTML += addSetButton(channel['id'], "Langer Tastendruck", true, vorDate, false, false, true);
                             } else if (hssType === "SETPOINT" || hssType === "SET_TEMPERATURE") {
-                                deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
+                                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
                                 var lowTemp = valFloat - 3.0;
                                 var highTemp = lowTemp + 6.0;
                                 if (lowTemp < 6.0) {
@@ -961,7 +954,7 @@ function loadData(url, oldScrollPos) {
                                 }
                                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
                                 for (i = lowTemp; i <= highTemp; i += 1.0) {
-                                    deviceHTML += AddSetButton(channelID, i + valUnit, i, vorDate, true, i === valFloat, false);
+                                    deviceHTML += addSetButton(channelID, i + valUnit, i, vorDate, true, i === valFloat, false);
                                 }
                                 deviceHTML += "</div>";
                             } else if (hssType === "RAINING") {
@@ -980,45 +973,61 @@ function loadData(url, oldScrollPos) {
                                 }
                                 deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + "<span><i>" + vorDate + "</i></span></p>";
                             } else if (hssType === "LEVEL" && deviceHssType === "BLIND") {
-                                deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Geschlossen, 100% = Offen", false);
+                                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Geschlossen, 100% = Offen", false);
                                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                                deviceHTML += AddSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat === 0.0, false);
-                                deviceHTML += AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
-                                deviceHTML += AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
-                                deviceHTML += AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
-                                deviceHTML += AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
-                                deviceHTML += AddSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat === 1.0, false);
+                                deviceHTML += addSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat === 0.0, false);
+                                deviceHTML += addSetButton(channelID, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
+                                deviceHTML += addSetButton(channelID, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
+                                deviceHTML += addSetButton(channelID, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
+                                deviceHTML += addSetButton(channelID, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
+                                deviceHTML += addSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat === 1.0, false);
                                 deviceHTML += "</div>";
                             } else if (hssType === "STOP" && deviceHssType === "BLIND") {
-                                deviceHTML += AddSetButton(channelID, "Stop", true, vorDate, false, false, false);
+                                deviceHTML += addSetButton(channelID, "Stop", true, vorDate, false, false, false);
                             } else if (hssType === "OPEN" && deviceHssType === "KEYMATIC") {
-                                deviceHTML += AddSetButton(channelID, "&Ouml;ffnen", true, vorDate, false, false, true);
+                                deviceHTML += addSetButton(channelID, "&Ouml;ffnen", true, vorDate, false, false, true);
                             } else if (hssType === "LEVEL" && deviceHssType === "WINMATIC") {
-                                deviceHTML += AddSetNumber(channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100.0, vorDate + " | -0.5 = Verriegelt, 0% = Geschlossen, 100% = Offen", false);
+                                deviceHTML += addSetNumber(channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100.0, vorDate + " | -0.5 = Verriegelt, 0% = Geschlossen, 100% = Offen", false);
                                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                                deviceHTML += AddSetButton(channelID, "Verriegeln", -0.005, vorDate, true, valFloat === -0.005, false);
-                                deviceHTML += AddSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat === 0.0, false);
-                                deviceHTML += AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
-                                deviceHTML += AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
-                                deviceHTML += AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
-                                deviceHTML += AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
-                                deviceHTML += AddSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat === 1.0, false);
+                                deviceHTML += addSetButton(channelID, "Verriegeln", -0.005, vorDate, true, valFloat === -0.005, false);
+                                deviceHTML += addSetButton(channelID, "Zu", 0.0, vorDate, true, valFloat === 0.0, false);
+                                deviceHTML += addSetButton(channelID, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
+                                deviceHTML += addSetButton(channelID, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
+                                deviceHTML += addSetButton(channelID, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
+                                deviceHTML += addSetButton(channelID, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
+                                deviceHTML += addSetButton(channelID, "Auf", 1.0, vorDate, true, valFloat === 1.0, false);
                                 deviceHTML += "</div>";
                             } else if (hssType === "STOP" && deviceHssType === "WINMATIC") {
-                                deviceHTML += AddSetButton(channelID, "Stop", true, vorDate, false, false, false);
+                                deviceHTML += addSetButton(channelID, "Stop", true, vorDate, false, false, false);
                             } else if (hssType === "LEVEL" && deviceHssType === "AKKU") {
                                 deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + valFloat * 100.0 + " " + valUnit + " </span>Batterieladung | <span><i>" + vorDate + "</i></span></p>";
                             } else if (hssType === "LEVEL" && (deviceHssType === "DIMMER" || deviceHssType === "VIRTUAL_DIMMER")) {
-                                deviceHTML += AddSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Aus, 100% = An", false);
+                                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = Aus, 100% = An", false);
                                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                                deviceHTML += AddSetButton(channelID, "Aus", 0.0, vorDate, true, valFloat === 0.0, false);
-                                deviceHTML += AddSetButton(channelID, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
-                                deviceHTML += AddSetButton(channelID, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
-                                deviceHTML += AddSetButton(channelID, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
-                                deviceHTML += AddSetButton(channelID, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
-                                deviceHTML += AddSetButton(channelID, "An", 1.0, vorDate, true, valFloat === 1.0, false);
+                                deviceHTML += addSetButton(channelID, "Aus", 0.0, vorDate, true, valFloat === 0.0, false);
+                                deviceHTML += addSetButton(channelID, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
+                                deviceHTML += addSetButton(channelID, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
+                                deviceHTML += addSetButton(channelID, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
+                                deviceHTML += addSetButton(channelID, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
+                                deviceHTML += addSetButton(channelID, "An", 1.0, vorDate, true, valFloat === 1.0, false);
                                 deviceHTML += "</div>";
-                            } else if (hssType === "U_SOURCE_FAIL" && deviceHssType === "POWER") {
+                            } else if (hssType === "PROGRAM" && deviceHssType === "RGBW_AUTOMATIC") {
+                                //mrlee HM-LC-RGBW-WM
+                                deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
+                                deviceHTML += addSetButton(channelID, "Aus", 0, vorDate, true, valFloat === 0.0, true);
+                                deviceHTML += addSetButton(channelID, "langsam", 1, vorDate, true, valFloat === 1.0, true);
+                                deviceHTML += addSetButton(channelID, "normal", 2, vorDate, true, valFloat === 2.0, true);
+                                deviceHTML += addSetButton(channelID, "schnell", 3, vorDate, true, valFloat === 3.0, true);
+                                deviceHTML += addSetButton(channelID, "Lagerfeuer", 4, vorDate, true, valFloat === 4.0, true);
+                                deviceHTML += addSetButton(channelID, "Wasserfall", 5, vorDate, true, valFloat === 5.0, true);
+				deviceHTML += addSetButton(channelID, "TV", 6, vorDate, true, valFloat === 6.0, true);
+                                deviceHTML += "</div>";
+                            } else if (hssType === "COLOR" && deviceHssType === "RGBW_COLOR") {
+                                //mrlee HM-LC-RGBW-WM
+                                deviceHTML += "<span class='RGBW-Color'>";
+                                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 200.0, 1, 1, vorDate, true);
+                                deviceHTML += "</span>";
+                            } else if (hssType === "U_SOURCE_FAIL" && deviceHssType === "POWER") {                                
                                 if (valString === "false") {
                                     txt = "<span class='valueNoError valueNoError-" + theme + "'>Netzbetrieb</span>";
                                 } else {
@@ -1084,7 +1093,7 @@ function loadData(url, oldScrollPos) {
                                     } else {
                                         v = valBool;
                                     }
-                                    txt = GetErrorMessage("HSSDP", hssType, v, deviceHssType);
+                                    txt = getErrorMessage("HSSDP", hssType, v, deviceHssType);
                                     if (txt !== "") {
                                         deviceHTML += "<p class='ui-li-desc'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'>" + txt + " <span><i>" + vorDate + "</i></span></p>";
                                     }
@@ -1118,7 +1127,7 @@ function loadData(url, oldScrollPos) {
                             var valMax = channel['valueMax'];
                             var valList = channel['valueList'];
                             channelDate = channel['date'];
-                            vorDate = GetTimeDiffString(channelDate, systemDate);
+                            vorDate = getTimeDiffString(channelDate, systemDate);
 
                             // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten,
                             // bei (d) / (dk) ist es ein Diagramm in den Favoriten,
@@ -1146,7 +1155,7 @@ function loadData(url, oldScrollPos) {
                                 deviceHTML += "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
                                 deviceHTML += "<p>" + valInfo + "</p>";
                                 if (isReadOnly(valInfo)) {
-                                    deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
+                                    deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                                 } else if (varOptionsFirst === "d" || varOptionsFirst === "dk" || varOptionsFirst === "g" || varOptionsFirst === "h") {
                                     // Goglo
                                     addDiagram = true;
@@ -1165,17 +1174,17 @@ function loadData(url, oldScrollPos) {
                                 } else {
                                     if (valType === "2") {
                                         // Bool.
-                                        deviceHTML += AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+                                        deviceHTML += addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
                                     } else if (valType === "4") {
                                         // Float, Integer.
-                                        deviceHTML += AddSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+                                        deviceHTML += addSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
                                     } else if (valType === "16") {
                                         // Liste.
-                                        deviceHTML += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+                                        deviceHTML += addSetValueList(valID, strValue, valList, valUnit, vorDate, true);
                                     } else if (valType === "20" && valUnit === "html") {
-                                        deviceHTML += AddHTML(valID, strValue, vorDate, false);
+                                        deviceHTML += addHTML(valID, strValue, vorDate, false);
                                     } else if (valType === "20") {
-                                        deviceHTML += AddSetText(valID, strValue, valUnit, vorDate);
+                                        deviceHTML += addSetText(valID, strValue, valUnit, vorDate);
                                     } else {
                                         deviceHTML += "Unbekannter Variablentyp!";
                                     }
@@ -1204,7 +1213,7 @@ function loadData(url, oldScrollPos) {
                     var valMax = device['valueMax'];
                     var valList = device['valueList'];
                     var channelDate = device['date'];
-                    var vorDate = GetTimeDiffString(channelDate, systemDate);
+                    var vorDate = getTimeDiffString(channelDate, systemDate);
                     // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten:
                     varOptionsFirst = "";
                     varOptions = [];
@@ -1225,7 +1234,7 @@ function loadData(url, oldScrollPos) {
 
                     deviceHTML += "<p>" + valInfo + "</p>";
                     if (isReadOnly(valInfo)) {
-                        deviceHTML += AddReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
+                        deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                     } else if (varOptionsFirst === "d" || varOptionsFirst === "dk" || varOptionsFirst === "g" || varOptionsFirst === "h") {
                         // Goglo
                         addDiagram = true;
@@ -1246,17 +1255,17 @@ function loadData(url, oldScrollPos) {
                     } else {
                         if (valType === "2") {
                             // Bool.
-                            deviceHTML += AddSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+                            deviceHTML += addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
                         } else if (valType === "4") {
                             // Float, Integer.
-                            deviceHTML += AddSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+                            deviceHTML += addSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
                         } else if (valType === "16") {
                             // Liste.
-                            deviceHTML += AddSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+                            deviceHTML += addSetValueList(valID, strValue, valList, valUnit, vorDate, true);
                         } else if (valType === "20" && valUnit === "html") {
-                            deviceHTML += AddHTML(valID, strValue, vorDate, false);
+                            deviceHTML += addHTML(valID, strValue, vorDate, false);
                         } else if (valType === "20") {
-                            deviceHTML += AddSetText(valID, strValue, valUnit, vorDate);
+                            deviceHTML += addSetText(valID, strValue, valUnit, vorDate);
                         } else {
                             deviceHTML += "Unbekannter Variablentyp!";
                         }
@@ -1265,10 +1274,10 @@ function loadData(url, oldScrollPos) {
                     var prgID = device['id'];
                     var prgInfo = device['info'];
                     var prgDate = device['date'];
-                    vorDate = GetTimeDiffString(prgDate, systemDate);
+                    vorDate = getTimeDiffString(prgDate, systemDate);
 
                     deviceHTML += "<p>" + prgInfo + "</p>";
-                    deviceHTML += AddStartProgramButton(prgID, "Ausf&uuml;hren", vorDate);
+                    deviceHTML += addStartProgramButton(prgID, "Ausf&uuml;hren", vorDate);
                 }
 
                 if (deviceHTML !== "") {
@@ -1444,8 +1453,6 @@ function loadData(url, oldScrollPos) {
                                 }
                             }
                         }
-                        ////////////////////////////
-                        //var plotDiagram = $.jqplot(diagramID, [diagArr0, diagArr1], {
                         $.jqplot(diagramID, [diagArr[0], diagArr[1], diagArr[2], diagArr[3], diagArr[4]], {
                             axes: {
                                 xaxis: {
@@ -1655,11 +1662,13 @@ function loadData(url, oldScrollPos) {
         $(".ui-input-search .ui-input-text").trigger("change");
         $("[id^=button]").trigger("create");
         $("[id^=input]").trigger("create");
+        
+        $("textarea").textinput("refresh");
 
         if (oldScrollPos === -1) {
-            ScrollToContentHeader();
+            scrollToContentHeader();
         } else {
-            ScrollToPosition(oldScrollPos);
+            scrollToPosition(oldScrollPos);
         }
 
     });
@@ -1677,19 +1686,8 @@ function loadVariables(restart) {
         $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticVariablesMap") === null) {
-
-            $.ajax({
-                type: 'GET',
-                url: 'cgi/systemvariables.cgi',
-                dataType: 'json',
-                success: function (data) {
-                    variablesMap = data;
-                    localStorage.setItem("webmaticVariablesMap", JSON.stringify(variablesMap));
-                },
-                async: false
-            });
+            loadConfigData(false, 'cgi/systemvariables.cgi', 'variables', 'webmaticVariablesMap');
             isActual = true;
-
         } else {
             variablesMap = JSON.parse(localStorage.getItem("webmaticVariablesMap"));
         }
@@ -1706,9 +1704,9 @@ function loadVariables(restart) {
     }
 
     if (!isActual) {
-        $.getJSON('cgi/systemvariables.cgi', function (data) {
-            var systemDate = data['date'];
-            $.each(data.entries, function (i, variable) {
+        loadConfigData(true, 'cgi/systemvariables.cgi', 'variables', 'webmaticVariablesMap', function (dta) {
+            var systemDate = dta['date'];
+            $.each(dta.entries, function (i, variable) {
                 var valVisible = variable['visible'] === "true";
                 var valID = variable['id'];
                 if ($('#' + valID).length === 0 && ((readModus && valVisible) || !readModus)) {
@@ -1719,7 +1717,6 @@ function loadVariables(restart) {
                     $('#' + valID).hide();
                 }
             });
-            localStorage.setItem("webmaticVariablesMap", JSON.stringify(data));
             reloadList("Systemvariablen", systemDate);
         });
     }
@@ -1727,6 +1724,7 @@ function loadVariables(restart) {
     $('#buttonRefresh .ui-btn-text').html("&nbsp;");
     // Filter Update:
     $(".ui-input-search .ui-input-text").trigger("change");
+    $("textarea").textinput("refresh");
 }
 
 function loadPrograms(restart) {
@@ -1741,19 +1739,8 @@ function loadPrograms(restart) {
         $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticProgramsMap") === null) {
-
-            $.ajax({
-                type: 'GET',
-                url: 'cgi/programs.cgi',
-                dataType: 'json',
-                success: function (data) {
-                    programsMap = data;
-                    localStorage.setItem("webmaticProgramsMap", JSON.stringify(programsMap));
-                },
-                async: false
-            });
+            loadConfigData(false, 'cgi/programs.cgi', 'programs', 'webmaticProgramsMap');
             isActual = true;
-
         } else {
             programsMap = JSON.parse(localStorage.getItem("webmaticProgramsMap"));
         }
@@ -1773,9 +1760,9 @@ function loadPrograms(restart) {
     }
 
     if (!isActual) {
-        $.getJSON('cgi/programs.cgi', function (data) {
-            var systemDate = data['date'];
-            $.each(data.entries, function (i, prog) {
+        loadConfigData(true, 'cgi/programs.cgi', 'programs', 'webmaticProgramsMap', function (dta) {
+            var systemDate = dta['date'];
+            $.each(dta.entries, function (i, prog) {
                 var prgVisible = prog['visible'] === "true";
                 var prgActive = prog['active'] === "true";
                 var prgID = prog['id'];
@@ -1788,7 +1775,6 @@ function loadPrograms(restart) {
                     $('#' + prgID).hide();
                 }
             });
-            localStorage.setItem("webmaticProgramsMap", JSON.stringify(data));
             reloadList("Programme", systemDate);
             $("#dataList").find(".btnDisabled").button('disable');
         });
@@ -1808,63 +1794,30 @@ function loadGraphicIDs() {
     $('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
     if (localStorage.getItem("webmaticFavoritesMap") === null) {
-        $.ajax({
-            type: 'GET',
-            url: 'cgi/favorites.cgi',
-            dataType: 'json',
-            success: function (data) {
-                favoritesMap = data;
-                localStorage.setItem("webmaticFavoritesMap", JSON.stringify(favoritesMap));
-            },
-            async: false
-        });
+        loadConfigData(false, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');    
     } else {
         favoritesMap = JSON.parse(localStorage.getItem("webmaticFavoritesMap"));
-        $.getJSON('cgi/favorites.cgi', function (data) {
-            localStorage.setItem("webmaticFavoritesMap", JSON.stringify(data));
-        });
+        loadConfigData(true, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>Favoriten</li>");
     processGraphicID('favorites', favoritesMap);
 
     if (localStorage.getItem("webmaticRoomsMap") === null) {
-        $.ajax({
-            type: 'GET',
-            url: 'cgi/rooms.cgi',
-            dataType: 'json',
-            success: function (data) {
-                roomsMap = data;
-                localStorage.setItem("webmaticRoomsMap", JSON.stringify(roomsMap));
-            },
-            async: false
-        });
+        loadConfigData(false, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap');        
     } else {
         roomsMap = JSON.parse(localStorage.getItem("webmaticRoomsMap"));
-        $.getJSON('cgi/rooms.cgi', function (data) {
-            localStorage.setItem("webmaticRoomsMap", JSON.stringify(data));
-        });
+        loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap');
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>R&auml;ume</li>");
     processGraphicID('rooms', roomsMap);
 
     if (localStorage.getItem("webmaticFunctionsMap") === null) {
-        $.ajax({
-            type: 'GET',
-            url: 'cgi/functions.cgi',
-            dataType: 'json',
-            success: function (data) {
-                functionsMap = data;
-                localStorage.setItem("webmaticFunctionsMap", JSON.stringify(functionsMap));
-            },
-            async: false
-        });
+        loadConfigData(false, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');       
     } else {
         functionsMap = JSON.parse(localStorage.getItem("webmaticFunctionsMap"));
-        $.getJSON('cgi/functions.cgi', function (data) {
-            localStorage.setItem("webmaticFunctionsMap", JSON.stringify(data));
-        });
+        loadConfigData(true, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
     }
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>Gewerke</li>");
@@ -1979,10 +1932,10 @@ $(function () {
         var infoID = "info_" + dataID;      // Info Textfeld neben Button.
 
         $("#" + infoID).text("Übertrage...");
-        $.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
-                RefreshPage(0, true);
+                refreshPage(0, true);
             } else {
                 $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
             }
@@ -2000,10 +1953,10 @@ $(function () {
 
         var valueDivided = parseFloat(value) / factor;
         $("#" + infoID).text("Übertrage...");
-        $.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function () {
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
-                RefreshPage(0, true);
+                refreshPage(0, true);
             } else {
                 $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
             }
@@ -2018,9 +1971,9 @@ $(function () {
         var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
         $("#" + infoID).text("Übertrage...");
-        $.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
-            RefreshPage(0, true);
+            refreshPage(0, true);
         });
     });
 
@@ -2032,9 +1985,9 @@ $(function () {
         var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
         $("#" + infoID).text("Übertrage...");
-        $.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
-            RefreshPage(0, true);
+            refreshPage(0, true);
         });
     });
 
@@ -2050,9 +2003,9 @@ $(function () {
         value = encodeURIComponent(value);
 
         $("#" + infoID).text("Übertrage...");
-        $.getJSON('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
-            RefreshPage(0, true);
+            refreshPage(0, true);
         });
     });
 
@@ -2062,7 +2015,7 @@ $(function () {
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
 
         $("#" + infoID).text("Starte...");
-        $.getJSON('cgi/startprogram.cgi?id=' + dataID, function () {
+        $.get('cgi/startprogram.cgi?id=' + dataID, function () {
             $("#" + infoID).text("OK!");
         });
     });

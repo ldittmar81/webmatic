@@ -22,10 +22,10 @@ $(function () {
     lastClickType = 1;
     lastClickID = getUrlParameter('id');
     $('.ui-input-search .ui-input-text').val("");
-    RefreshPage($(this), false);
+    refreshPage($(this), false);
 
     // Update Timer loslaufen lassen:
-    RestartTimer();
+    restartTimer();
     changeTheme(theme);
     readModus = true;
 });

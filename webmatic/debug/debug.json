@@ -250,5 +250,31 @@
 {"id":"62204", "type":"HSSDP", "hssType":"HUMIDITY", "value":"58", "valueUnit":"%", "date":"13.11.2015 23:11:43"},
 {"id":"62203", "type":"HSSDP", "hssType":"DEW_POINT", "value":"12.100000", "valueUnit":"&#176;C", "date":"13.11.2015 23:11:43"},
 {"id":"62202", "type":"HSSDP", "hssType":"ABS_HUMIDITY", "value":"10.400000", "valueUnit":"g/m&#179;", "date":"13.11.2015 23:11:43"} ]
-}]
+},
+{"name":"Dimmer_WL_Wohnzimmer", "type":"CHANNEL", "id":"2504", "address":"JEQ0741031:13", "hssType":"DIGITAL_ANALOG_OUTPUT", "visible":"true", "operate":"true", "channels": [
+{"id":"9217", "type":"HSSDP", "hssType":"FREQUENCY", "value":"0.000000", "valueUnit":"mHz", "date":"16.11.2015 16:51:09"},
+{"name":"DimmprozWZ", "type":"VARDP", "id":"9997","info":"Prozentwert%20Dimmer%20WZ", "value":"80.000000","valueMin":"0","valueMax":"100", "valueType":"4", "valueUnit":"%", "date":"16.11.2015 16:36:00"} ]
+},
+{"name":"Wohnzimmer RGB Dimmer", "type":"CHANNEL", "id":"5696", "address":"[adress]:1", "hssType":"DIMMER", "visible":"true", "operate":"true", "channels": [
+    {"id":"5700", "type":"HSSDP", "hssType":"LEVEL", "value":"1.000000", "valueUnit":"100%", "date":"16.11.2015 17:37:54"},
+    {"id":"5701", "type":"HSSDP", "hssType":"OLD_LEVEL", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"5704", "type":"HSSDP", "hssType":"RAMP_TIME", "value":"", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
+    {"id":"5702", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
+    {"id":"5703", "type":"HSSDP", "hssType":"RAMP_STOP", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"5698", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueUnit":"", "date":"14.11.2015 13:38:22"}  ]
+},
+    {"name":"Wohnzimmer RGB Farbe", "type":"CHANNEL", "id":"5706", "address":"[adress]:2", "hssType":"RGBW_COLOR", "visible":"true", "operate":"true", "channels": [
+    {"id":"5712", "type":"HSSDP", "hssType":"COLOR", "value":"200", "valueUnit":"", "date":"14.11.2015 13:41:13"},
+    {"id":"5718", "type":"HSSDP", "hssType":"USER_COLOR", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"5714", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
+    {"id":"5716", "type":"HSSDP", "hssType":"RAMP_TIME", "value":"", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
+    {"id":"5713", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueUnit":"", "date":"14.11.2015 13:38:22"}  ]
+},
+    {"name":"Wohnzimmer RGB Programm", "type":"CHANNEL", "id":"5719", "address":"[adress]:3", "hssType":"RGBW_AUTOMATIC", "visible":"true", "operate":"true", "channels": [
+    {"id":"5730", "type":"HSSDP", "hssType":"PROGRAM", "value":"4", "valueUnit":"", "date":"16.11.2015 17:37:49"},
+    {"id":"5733", "type":"HSSDP", "hssType":"USER_PROGRAM", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
+    {"id":"5728", "type":"HSSDP", "hssType":"ON_TIME", "value":"0.000000", "valueUnit":"s", "date":"14.11.2015 13:38:22"},
+    {"id":"5731", "type":"HSSDP", "hssType":"RAMP_TIME", "value":"0.500000", "valueUnit":"s", "date":"14.11.2015 13:38:22"},
+    {"id":"5727", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueUnit":"", "date":"14.11.2015 13:38:22"}  ]
 }
+]}
