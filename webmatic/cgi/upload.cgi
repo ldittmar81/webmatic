@@ -9,13 +9,13 @@ set filename ""
 set path ""
 
 catch {
-  set input $env(QUERY_STRING)
-  set pairs [split $input &]
-  foreach pair $pairs {
-    if {0 != [regexp "^(\[^=]*)=(.*)$" $pair dummy varname val]} {
-      set $varname $val
+    set input $env(QUERY_STRING)
+    set pairs [split $input &]
+    foreach pair $pairs {
+        if {0 != [regexp "^(\[^=]*)=(.*)$" $pair dummy varname val]} {
+            set $varname $val
+        }
     }
-  }
 }
 
 cgi_eval {
@@ -26,10 +26,10 @@ cgi_eval {
     cgi_http_head
 
     cgi_import "file"
-	cgi_import "path"
-	cgi_import "filename"
-	
-	set tmpfile [lindex $file 0]
+    cgi_import "path"
+    cgi_import "filename"
+
+    set tmpfile [lindex $file 0]
     set newfile $path
     append newfile $filename
 
@@ -37,5 +37,5 @@ cgi_eval {
     puts $newfile
 
     file rename -force -- $tmpfile $newfile
-	
+
 }
