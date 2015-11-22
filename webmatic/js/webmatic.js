@@ -541,7 +541,6 @@ function processGraphicID(type, map) {
 }
 
 function getErrorMessage(errType, error, errValue, deviceHssType) {
-    var noError = false;  // Wird verwendet, wenn "Unbekannter Fehler" nicht angezeigt werden soll.
     var txt = "";
 
     if (errType === "ALARMDP") {
@@ -554,60 +553,16 @@ function getErrorMessage(errType, error, errValue, deviceHssType) {
             type = "Error";
         }
         return "<span class='value" + type + " value" + type + "-" + theme + "'>" + mapText(errType + "__" + error) + "</span>";
-
     } else if (errType === "HSSDP") {
         txt = mapText(deviceHssType + "__" + error + "__" + errValue);
-        /*
-         if (error === "LOWBAT" || error === "ERROR" || error === "STATE") {
-         txt = mapText(deviceHssType + "__" + error );
-         } else if (error === "ERROR" || error === "STATE") {
-         txt = mapText(errType + "__" + error + "__" + errValue);
-         } else if (error === "ERROR_REDUCED") {
-         if (errValue) {
-         txt = "Reduzierte Leistung";
-         } else {
-         noError = true;
-         }
-         } else if (error === "ERROR_OVERLOAD") {
-         if (errValue) {
-         txt = "Strom-&Uuml;berlastung";
-         } else {
-         noError = true;
-         }
-         } else if (error === "ERROR_OVERHEAT") {
-         if (errValue) {
-         txt = "&Uuml;berhitzung";
-         } else {
-         noError = true;
-         }
-         } else if (error === "ERROR_POWER") {
-         if (!errValue) {
-         txt = "Netzspannung fehlerhaft";
-         } else {
-         noError = true;
-         }
-         } else if (error === "ERROR_SABOTAGE") {
-         if (!errValue) {
-         txt = "Sabotage ausgel&ouml;st";
-         } else {
-         noError = true;
-         }
-         } else if (error === "ERROR_BATTERY") {
-         if (!errValue) {
-         txt = "Batterie fehlerhaft";
-         } else {
-         noError = true;
-         }
-         }
-         */
         if (txt !== "" && txt !== "-") {
-            txt = "<span class='valueError valueError-" + theme + "'>" + txt + "</span>";
+            return "<span class='valueError valueError-" + theme + "'>" + txt + "</span>";
         }
     }
 
     // Konnte kein Text ermittelt werden, dann "Unbekannter Fehler" anzeigen:
-    if (txt === "" && !noError) {
-        txt = "<span class='valueError valueError-" + theme + "'>Unbekannter Fehler: " + errValue + "</span>";
+    if (txt === "" ) {
+        txt = "<span class='valueError valueError-" + theme + "'>" + mapText("UNKNOWN_ERROR") + ": " + errValue + "</span>";
     }
     return txt;
 }
@@ -1285,6 +1240,10 @@ function isReadOnly(valInfo) {
                 varOptionsFirst = varOptions[0].toLowerCase();
             }
         }
+    }
+    
+    if(varOptionsFirst === "h" || varOptionsFirst === "dk" || varOptionsFirst !== "d" || varOptionsFirst !== "g"){
+        return false;
     }
 
     if (optionsMap["systemvar_readonly"] && readModus) {

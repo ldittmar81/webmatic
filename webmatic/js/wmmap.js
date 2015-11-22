@@ -428,7 +428,8 @@ var textMap = {
     OFF: "Aus",
     MAX: "Maximum",
     MED: "Medium",
-    MIN: "Minimum"
+    MIN: "Minimum",
+    UNKNOWN_ERROR: "Unbekannter Fehler"
     
 };
 
