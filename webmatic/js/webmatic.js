@@ -62,7 +62,7 @@ function checkrefreshPage() {
         if (t - lastTime > 60000)
         {
             if (lastClickType !== 4 && lastClickType !== 7) {
-                refreshPage(0, true); // Kein Refresh bei GrafikIDs und Optionen.
+                refreshPage(0); // Kein Refresh bei GrafikIDs und Optionen.
             }
             refreshServiceMessages();
             lastTime = t;
@@ -78,7 +78,7 @@ function restartTimer() {
     lastTime = d.getTime();
 }
 
-function refreshPage(item, saveScrollPos) {
+function refreshPage(item) {
     // Gleich mal den Timer neu starten, lieber vor dem Reload, damit sich die nicht in die Quere kommen.
     // Später dann besser nur einen Refresh zur selben Zeit zulassen:
     restartTimer();
@@ -166,7 +166,7 @@ function refreshServiceMessages() {
             $('#buttonService, #popupDiv').addClass('valueService-' + theme);
             $('#headerButtonGroup').controlgroup('refresh', true);
         }
-        $('#serviceList').listview().listview('refresh', true);
+        $('#serviceList').listview('refresh', true);
     });
 }
 
@@ -553,52 +553,54 @@ function getErrorMessage(errType, error, errValue, deviceHssType) {
         } else {
             type = "Error";
         }
-        return "<span class='value" + type + " value" + type + "-" + theme + "'>" + mapText(deviceHssType + "__" + error + "__" + errValue) + "</span>";
+        return "<span class='value" + type + " value" + type + "-" + theme + "'>" + mapText(errType + "__" + error) + "</span>";
 
     } else if (errType === "HSSDP") {
-        if (error === "LOWBAT") {
-            txt = "Batterie leer";
-        } else if (error === "ERROR" || error === "STATE") {
-            txt = mapText(deviceHssType + "__" + error + "__" + errValue);
-        } else if (error === "ERROR_REDUCED") {
-            if (errValue) {
-                txt = "Reduzierte Leistung";
-            } else {
-                noError = true;
-            }
-        } else if (error === "ERROR_OVERLOAD") {
-            if (errValue) {
-                txt = "Strom-&Uuml;berlastung";
-            } else {
-                noError = true;
-            }
-        } else if (error === "ERROR_OVERHEAT") {
-            if (errValue) {
-                txt = "&Uuml;berhitzung";
-            } else {
-                noError = true;
-            }
-        } else if (error === "ERROR_POWER") {
-            if (!errValue) {
-                txt = "Netzspannung fehlerhaft";
-            } else {
-                noError = true;
-            }
-        } else if (error === "ERROR_SABOTAGE") {
-            if (!errValue) {
-                txt = "Sabotage ausgel&ouml;st";
-            } else {
-                noError = true;
-            }
-        } else if (error === "ERROR_BATTERY") {
-            if (!errValue) {
-                txt = "Batterie fehlerhaft";
-            } else {
-                noError = true;
-            }
-        }
-
-        if (txt !== "") {
+        txt = mapText(deviceHssType + "__" + error + "__" + errValue);
+        /*
+         if (error === "LOWBAT" || error === "ERROR" || error === "STATE") {
+         txt = mapText(deviceHssType + "__" + error );
+         } else if (error === "ERROR" || error === "STATE") {
+         txt = mapText(errType + "__" + error + "__" + errValue);
+         } else if (error === "ERROR_REDUCED") {
+         if (errValue) {
+         txt = "Reduzierte Leistung";
+         } else {
+         noError = true;
+         }
+         } else if (error === "ERROR_OVERLOAD") {
+         if (errValue) {
+         txt = "Strom-&Uuml;berlastung";
+         } else {
+         noError = true;
+         }
+         } else if (error === "ERROR_OVERHEAT") {
+         if (errValue) {
+         txt = "&Uuml;berhitzung";
+         } else {
+         noError = true;
+         }
+         } else if (error === "ERROR_POWER") {
+         if (!errValue) {
+         txt = "Netzspannung fehlerhaft";
+         } else {
+         noError = true;
+         }
+         } else if (error === "ERROR_SABOTAGE") {
+         if (!errValue) {
+         txt = "Sabotage ausgel&ouml;st";
+         } else {
+         noError = true;
+         }
+         } else if (error === "ERROR_BATTERY") {
+         if (!errValue) {
+         txt = "Batterie fehlerhaft";
+         } else {
+         noError = true;
+         }
+         }
+         */
+        if (txt !== "" && txt !== "-") {
             txt = "<span class='valueError valueError-" + theme + "'>" + txt + "</span>";
         }
     }
@@ -1037,43 +1039,50 @@ function addChannel(device, systemDate, options) {
             } else if (hssType === "PROGRAM" && deviceHssType === "RGBW_AUTOMATIC") {
                 //mrlee HM-LC-RGBW-WM
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                deviceHTML += addSetButton(channelID, "Aus", 0, vorDate, true, valFloat === 0.0, true);
-                deviceHTML += addSetButton(channelID, "langsam", 1, vorDate, true, valFloat === 1.0, true);
-                deviceHTML += addSetButton(channelID, "normal", 2, vorDate, true, valFloat === 2.0, true);
-                deviceHTML += addSetButton(channelID, "schnell", 3, vorDate, true, valFloat === 3.0, true);
-                deviceHTML += addSetButton(channelID, "Lagerfeuer", 4, vorDate, true, valFloat === 4.0, true);
-                deviceHTML += addSetButton(channelID, "Wasserfall", 5, vorDate, true, valFloat === 5.0, true);
-                deviceHTML += addSetButton(channelID, "TV", 6, vorDate, true, valFloat === 6.0, true);
+                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__0"), 0, vorDate, true, valFloat === 0.0, true);
+                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__1"), 1, vorDate, true, valFloat === 1.0, true);
+                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__2"), 2, vorDate, true, valFloat === 2.0, true);
+                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__3"), 3, vorDate, true, valFloat === 3.0, true);
+                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__4"), 4, vorDate, true, valFloat === 4.0, true);
+                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__5"), 5, vorDate, true, valFloat === 5.0, true);
+                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__6"), 6, vorDate, true, valFloat === 6.0, true);
                 deviceHTML += "</div>";
             } else if (hssType === "COLOR" && deviceHssType === "RGBW_COLOR") {
                 //mrlee HM-LC-RGBW-WM
                 deviceHTML += "<span class='RGBW-Color'>";
                 deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 200.0, 1, 1, vorDate, true);
                 deviceHTML += "</span>";
-            } else if (hssType === "LED_STATUS") {
+            } else if (hssType === "LED_STATUS" && deviceHssType === "KEY") {
                 switch (valFloat) {
                     case 0: // Off
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/off_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/off_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__0") + " | <span><i>" + vorDate + "</i></span></p>";
                         break;
                     case 1: // Red
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/red_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/red_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__1") + " | <span><i>" + vorDate + "</i></span></p>";
                         break;
                     case 2: // Green
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/green_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/green_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__2") + " | <span><i>" + vorDate + "</i></span></p>";
                         break;
                     case 3: // Orange
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/orange_lamp.png' style='max-height:40px'> Status | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/orange_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__3") + " | <span><i>" + vorDate + "</i></span></p>";
                         break;
                 }
             } else if (hssType === "LEVEL" && deviceHssType === "BLIND") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = " + mapText("CLOSE") + ", 100% = " + mapText("OPEN"), false);
+                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
                 deviceHTML += addSetControlGroup(channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat);
             } else if (hssType === "LEVEL" && deviceHssType === "WINMATIC") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100.0, vorDate + " | -0.5 = " + mapText("LOCKED") + ", 0% = " + mapText("CLOSE") + ", 100% = " + mapText("OPEN"), false);
+                deviceHTML += addSetNumber(channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100.0, vorDate + " | -0.5" + valUnit + " = " + mapText("LOCKED") + ", 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
                 deviceHTML += addSetControlGroup(channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, addSetButton(channelID, mapText("LOCK"), -0.005, vorDate, true, valFloat === -0.005, false));
             } else if (hssType === "LEVEL" && (deviceHssType === "DIMMER" || deviceHssType === "VIRTUAL_DIMMER")) {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0% = " + mapText("OFF") + ", 100% = " + mapText("ON"), false);
+                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("OFF") + ", 100" + valUnit + " = " + mapText("ON"), false);
                 deviceHTML += addSetControlGroup(channelID, mapText("OFF"), mapText("ON"), vorDate, valFloat);
+            } else if (hssType === "FREQUENCY" && deviceHssType === "DIGITAL_ANALOG_OUTPUT") {
+                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 50000.0, 1.0, 1, vorDate + " | 0" + valUnit + " = " + mapText("MAX") + ", 50000" + valUnit + " = " + mapText("MIN"), false);
+                deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
+                deviceHTML += addSetButton(channelID, mapText("MAX"), 0.0, vorDate, true, valFloat === 0.0, true);
+                deviceHTML += addSetButton(channelID, mapText("MED"), 30000.0, vorDate, true, valFloat === 30000.0, true);
+                deviceHTML += addSetButton(channelID, mapText("MIN"), 50000.0, vorDate, true, valFloat === 50000.0, true);
+                deviceHTML += "</div>"; 
             } else {
                 var inputType = mapInput(hssType, deviceHssType, channel['id'], valString, vorDate);
 
@@ -1081,32 +1090,34 @@ function addChannel(device, systemDate, options) {
                     deviceHTML += inputType;
                 } else {
                     var status = mapState(hssType, deviceHssType, valFloat, valBool);
-                    var stateText = "";
-                    var name = "&nbsp;";
-                    var faktor = 1.0;
+                    if (status !== "Hide") {
+                        var stateText = "";
+                        var name = "&nbsp;";
+                        var faktor = 1.0;
 
-                    if (status !== "") {
-                        stateText = "<span class='value" + status + " value" + status + "-" + theme + "'>" + mapText(deviceHssType + "__" + hssType + "__" + status) + "</span>";
-                    } else if (hssType === "VALUE") {
-                        stateText = valString + " " + valUnit;
-                    } else {
-                        if ((hssType === "LEVEL" && deviceHssType === "AKKU") || (hssType === "BAT_LEVEL" && deviceHssType === "POWER")) {
-                            faktor = 100.0;
+                        if (status !== "") {
+                            stateText = "<span class='value" + status + " value" + status + "-" + theme + "'>" + mapText(deviceHssType + "__" + hssType + "__" + valString) + "&nbsp;" + valUnit + "</span>";
+                        } else if (hssType === "VALUE") {
+                            stateText = valString + " " + valUnit;
+                        } else {
+                            if ((hssType === "LEVEL" && deviceHssType === "AKKU") || (hssType === "BAT_LEVEL" && deviceHssType === "POWER")) {
+                                faktor = 100.0;
+                            }
+                            name = mapText(deviceHssType + "__" + hssType);
+                            var v = valString;
+                            if (!isNaN(valString) || faktor !== 1.0) {
+                                v = valFloat * faktor;
+                            }
+                            stateText = v + " " + valUnit;
                         }
-                        name = mapText(deviceHssType + "__" + hssType);
-                        var v = valString;
-                        if (!isNaN(valString) || faktor !== 1.0) {
-                            v = valFloat * faktor;
-                        }
-                        stateText = v + " " + valUnit;
-                    }
 
-                    if (name !== "-") {
-                        deviceHTML += "<p class='ui-li-desc'>";
-                        deviceHTML += "<img class='ui-img-" + theme + "' src='img/channels/" + mapImage(hssType) + "' style='max-height:20px'>";
-                        deviceHTML += "<span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span>&nbsp;" + name + "&nbsp;|&nbsp;";
-                        deviceHTML += "<span><i>" + vorDate + "</i></span>";
-                        deviceHTML += "</p>";
+                        if (name !== "-") {
+                            deviceHTML += "<p class='ui-li-desc'>";
+                            deviceHTML += "<img class='ui-img-" + theme + "' src='img/channels/" + mapImage(hssType) + "' style='max-height:20px'>";
+                            deviceHTML += "<span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span>&nbsp;" + name + "&nbsp;|&nbsp;";
+                            deviceHTML += "<span><i>" + vorDate + "</i></span>";
+                            deviceHTML += "</p>";
+                        }
                     }
                 }
             }
@@ -1437,7 +1448,7 @@ function loadData(url, id, restart) {
             options['varOptionsFirst'] = "";
             if (device['visible'] !== "false") {
                 var html = processDevices(device, systemDate, options);
-                if(html !== ""){
+                if (html !== "") {
                     $("#dataList").append(html);
                 }
             }
@@ -1459,13 +1470,13 @@ function loadData(url, id, restart) {
                 options['diagramUnit'] = "";
                 options['varOptions'] = {};
                 options['varOptionsFirst'] = "";
-                
+
                 var html = processDevices(device, systemDate, options);
 
                 if (html !== "") {
                     var devVisible = device['visible'] !== "false";
                     var devID = device['id'];
-                    
+
                     if ($('#' + devID).length === 0 && devVisible) {
                         $("#dataList").append(html);
                     } else if (devVisible) {
@@ -1755,7 +1766,7 @@ $(function () {
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
-                refreshPage(0, true);
+                refreshPage(0);
             } else {
                 $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
             }
@@ -1776,7 +1787,7 @@ $(function () {
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
-                refreshPage(0, true);
+                refreshPage(0);
             } else {
                 $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
             }
@@ -1793,7 +1804,7 @@ $(function () {
         $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
-            refreshPage(0, true);
+            refreshPage(0);
         });
     });
 
@@ -1807,7 +1818,7 @@ $(function () {
         $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
-            refreshPage(0, true);
+            refreshPage(0);
         });
     });
 
@@ -1825,7 +1836,7 @@ $(function () {
         $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
-            refreshPage(0, true);
+            refreshPage(0);
         });
     });
 

@@ -55,15 +55,12 @@ cgi_eval {
                     object objInner;
                     objInner = dom.GetObject(objDP.Device());
 
-                    ! MOTION_DETECTOR
-                    ! CLIMATECONTROL_VENT_DRIVE
-                    ! SHUTTER_CONTACT
-                    ! ROTARY_HANDLE_SENSOR
-                    ! DIMMER
-                    ! WINMATIC
-                    ! POWER
                     string strDpType = objDP.HssType();
-                    if ((strDpType == "ERROR") || (strDpType == "ERROR_OVERHEAT") || (strDpType == "ERROR_OVERLOAD") || (strDpType == "ERROR_REDUCED") || (strDpType == "LOWBAT") || (strDpType == "U_SOURCE_FAIL")){
+                    if ((strDpType == "ERROR") || (strDpType == "ERROR_OVERHEAT") || (strDpType == "ERROR_OVERLOAD") || 
+                        (strDpType == "ERROR_REDUCED") || (strDpType == "LOWBAT") || (strDpType == "U_SOURCE_FAIL") ||
+                        (strDpType == "ERROR_POWER") || (strDpType == "ERROR_SABOTAGE") || (strDpType == "ERROR_BATTERY") ||
+                        (strDpType == "STATE_UNCERTAIN") || (strDpType == "ERROR_ALARM_TEST") || (strDpType == "ERROR_SMOKE_CHAMBER") ||
+                        (strDpType == "FAULT_REPORTING")){
                         if (isFirst) { 
                             isFirst=false; 
                         } else { 
