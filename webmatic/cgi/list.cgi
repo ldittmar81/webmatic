@@ -40,7 +40,7 @@ cgi_eval {
         WriteLine('  "entries": [');
         integer firstEntry = 0;
         foreach (strObjID, strListEnum){
-            objObject = dom.GetObject (strObjID);
+            objObject = dom.GetObject(strObjID);
             strType   = objObject.TypeName();
             if (strType == "CHANNEL"){
                 ! Komma anhängen, wenn schon eine Zeile vorhanden:
@@ -78,54 +78,37 @@ cgi_eval {
                         WriteLine(',');
                     }
                     firstChannelItem = false;
-
-                    ! Prüfen -> Was hat es damit auf sich? Fehlt in Doku.
-                    if (strTemp == "HSSDP"){
-                        Write('    {');
-                        Write('"id":"' # objDP.ID() # '"');
-                        Write(', "type":"' # objDP.TypeName() # '"');
-                        Write(', "hssType":"' # objDP.HssType() # '"');
-                        Write(', "value":"' # objDP.Value() # '"');
-                        Write(', "valueUnit":"' # objDP.ValueUnit() # '"');
-                        Write(', "date":"' # objDP.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
-                        Write('}');
-                    }else{
-                        ! Im Falle einer Variable die allgemeinen Werte setzen und Inhalt auslesen. Spaeter als Funktion, da unten nochmal selber Code:
-                        Write('    {');
-                        Write('"name":"');
-                        WriteURL(objDP.Name());
-                        Write('"');
-                        Write(', "type":"VARDP"');
-                        Write(', "id":"' # objDP.ID() # '"');
-                        Write(',"info":"');
-                        WriteURL(objDP.DPInfo());
-                        Write('"');
-                        Write(', "value":"');
-                        WriteURL(objDP.Value());
-                        Write('"');
-
-                        if (objDP.ValueType() == 16){
-                            Write(',"valueList":"' # objDP.ValueList() # '"');
-                        }
-                        if (objDP.ValueType() == 2){
-                            Write(',"valueName0":"' # objDP.ValueName0() # '"');
-                            Write(',"valueName1":"' # objDP.ValueName1() # '"');
-                        }
-                        if (objDP.ValueType() == 4){
-                            Write(',"valueMin":"' # objDP.ValueMin() # '"');
-                            Write(',"valueMax":"' # objDP.ValueMax() # '"');
-                        }
-
-                        Write(', "valueType":"' # objDP.ValueType() # '"');
-                        Write(', "valueUnit":"' # objDP.ValueUnit() # '"');
-                        Write(', "date":"' # objDP.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
-                        Write ('}');
+             
+                    Write('    {');
+                    Write('"id":"' # objDP.ID() # '"');
+                    Write(', "name":"' # objDP.Name() # '"');
+                    Write(', "type":"' # objDP.TypeName() # '"');
+                    Write(', "hssType":"' # objDP.HssType() # '"');
+                    Write(', "info":"' # objDP.DPInfo() # '"');
+                    Write(', "value":"' # objDP.Value() # '"');
+                    Write(', "valueUnit":"' # objDP.ValueUnit() # '"');
+                    if (objDP.ValueType() == 16){
+                        Write(',"valueList":"' # objDP.ValueList() # '"');
                     }
+                    if (objDP.ValueType() == 2){
+                        Write(',"valueName0":"' # objDP.ValueName0() # '"');
+                        Write(',"valueName1":"' # objDP.ValueName1() # '"');
+                    }
+                    if (objDP.ValueType() == 4){
+                        Write(',"valueMin":"' # objDP.ValueMin() # '"');
+                        Write(',"valueMax":"' # objDP.ValueMax() # '"');
+                    }
+                    Write(', "valueType":"' # objDP.ValueType() # '"');
+                    Write(', "readable":"' # ((OPERATION_READ & objDP.Operations()) == 1) # '"');
+                    Write(', "writeable":"' # ((OPERATION_WRITE & objDP.Operations()) == 2) # '"');
+                    Write(', "date":"' # objDP.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
+                    Write('}');
+
                 }
                 WriteLine('  ]');
                 Write ('}');
 
-                }else{
+            }else{
 
                 if ((strType == "VARDP") || (strType == "ALARMDP")){
                     ! Komma anhängen, wenn schon eine Zeile vorhanden:
@@ -134,18 +117,13 @@ cgi_eval {
 
                     ! Im Falle einer Variable die allgemeinen Werte setzen und Inhalt auslesen:
                     Write('    {');
-                    Write('"name":"');
-                    WriteURL(objObject.Name());
-                    Write('"');
+                    Write('"name":"' # objObject.Name() # '"');
                     Write(', "type":"VARDP"');
                     Write(', "id":"' # objObject.ID() # '"');
-                    Write(',"info":"');
-                    WriteURL(objObject.DPInfo());
-                    Write('"');
-                    Write(', "value":"');
-                    WriteURL(objObject.Value());
-                    Write('"');
-
+                    Write(', "info":"' # objObject.DPInfo() # '"');
+                    Write(', "value":"' # objObject.Value() # '"');
+                    Write(', "visible":"' # objObject.Visible() # '"');
+                    
                     if (objObject.ValueType() == 16){
                         Write(',"valueList":"' # objObject.ValueList() # '"');
                     }
@@ -201,7 +179,21 @@ cgi_eval {
                         Write(', "type":"PROGRAM"');
                         Write(', "id":"' # objObject.ID() # '"');
                         Write(', "info":"' # objObject.PrgInfo() # '"');
+                        Write(', "visible":"' # objObject.Visible() # '"');
+                        Write(', "operate":');
+                        if( objObject.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
+                            Write('"true"');
+                        } else {
+                            Write('"false"');
+                        }
+
                         Write(', "date":"' # objObject.ProgramLastExecuteTime().Format("%d.%m.%Y %H:%M:%S") # '"');
+                        Write ('}');
+                    }else{
+                        Write('    {');
+                        Write('"name":"' # objObject.Name() # '"');
+                        Write(', "type":"' # strType # '"');
+                        Write(', "id":"' # objObject.ID() # '"');                        
                         Write ('}');
                     }
                 }

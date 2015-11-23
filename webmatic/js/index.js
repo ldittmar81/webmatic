@@ -85,16 +85,16 @@ $(function () {
     //Menüpunkt Sonstiges
     if (optionsMap["others"]) {
         $("#main_menu").append("<div class='menuListRow' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "others") + "'><h3>Sonstiges</h3><ul id='listOther' data-role='listview' data-inset='true'></ul></div>");
-        $("#listOther").append("<li class='menuItemVariables'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>Systemvariablen</span></a></li>");
-        $("#listOther").append("<li class='menuItemPrograms'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>Programme</span></a></li>");
-        $("#listOther").append("<li class='menuItemOptions'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>Optionen</span></a></li>");
-        $("#listOther").append("<li class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>Grafik IDs</span></a></li>");
+        $("#listOther").append("<li id='menuItemVariables' class='menuItemVariables'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>Systemvariablen</span></a></li>");
+        $("#listOther").append("<li id='menuItemPrograms' class='menuItemPrograms'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>Programme</span></a></li>");
+        $("#listOther").append("<li id='menuItemOptions' class='menuItemOptions'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>Optionen</span></a></li>");
+        $("#listOther").append("<li id='menuItemGraphicIDs' class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>Grafik IDs</span></a></li>");
 
         // Größe der Grafiken aus localStorage holen:
         var showTestPages = localStorage.getItem("optionsMenuShowTestpages");
         if (showTestPages && showTestPages === "true") {
-            $("#listOther").append("<li class='menuItemDebug'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>Testseite</span></a></li>");
-            $("#listOther").append("<li class='menuItemDebugCUxD'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>Testseite CUxD</span></a></li>");
+            $("#listOther").append("<li id='menuItemDebug' class='menuItemDebug'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>Testseite</span></a></li>");
+            $("#listOther").append("<li id='menuItemDebugCUxD' class='menuItemDebugCUxD'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>Testseite CUxD</span></a></li>");
         }
         $("#listOther").listview().listview("refresh");
     }

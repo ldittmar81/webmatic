@@ -24,10 +24,10 @@ var lastTime = -1;
 
 //Initialwerte einlesen
 if (localStorage.getItem("webmaticOptionsMap") === null) {
-    loadConfigData(true, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
+    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
 } else {
     optionsMap = JSON.parse(localStorage.getItem("webmaticOptionsMap"));
-    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
+    loadConfigData(true, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
 }
 
 //Design setzen
@@ -98,10 +98,13 @@ function refreshPage(item) {
     }
 
     if (lastClickType !== -1 && lastClickID !== -1) {
-
         var restart = oldID !== lastClickID;
         oldID = lastClickID;
-
+        
+        if(restart){
+            $("#dataList").hide();
+        }
+        
         switch (lastClickType) {
             case 1:
                 loadData('cgi/list.cgi', lastClickID, restart);
@@ -371,7 +374,7 @@ function addSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh)
     html += "<a href='#' id='setNumberButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
-    return html;
+    return html;    
 }
 
 function addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, refresh) {
@@ -950,7 +953,9 @@ function addChannel(device, systemDate, options) {
             var valFloat = parseFloat(channel['value']);
             var valBool = (valString === "true");
             var valUnit = channel['valueUnit'];
-
+            var valMin = parseFloat(channel['valueMin']);
+            var valMax = parseFloat(channel['valueMax']);
+            
             if (typeof (valUnit) === "undefined") {
                 valUnit = "";
             } else if (valUnit === "100%") {
@@ -1023,13 +1028,13 @@ function addChannel(device, systemDate, options) {
                         break;
                 }
             } else if (hssType === "LEVEL" && deviceHssType === "BLIND") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
+                deviceHTML += addSetNumber(channelID, valFloat, valUnit, valMin, valMax, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
                 deviceHTML += addSetControlGroup(channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat);
             } else if (hssType === "LEVEL" && deviceHssType === "WINMATIC") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100.0, vorDate + " | -0.5" + valUnit + " = " + mapText("LOCKED") + ", 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
+                deviceHTML += addSetNumber(channelID, valFloat, valUnit, valMin, valMax, 0.01, 100.0, vorDate + " | -0.5" + valUnit + " = " + mapText("LOCKED") + ", 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
                 deviceHTML += addSetControlGroup(channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, addSetButton(channelID, mapText("LOCK"), -0.005, vorDate, true, valFloat === -0.005, false));
             } else if (hssType === "LEVEL" && (deviceHssType === "DIMMER" || deviceHssType === "VIRTUAL_DIMMER")) {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("OFF") + ", 100" + valUnit + " = " + mapText("ON"), false);
+                deviceHTML += addSetNumber(channelID, valFloat, valUnit, valMax, valMax, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("OFF") + ", 100" + valUnit + " = " + mapText("ON"), false);
                 deviceHTML += addSetControlGroup(channelID, mapText("OFF"), mapText("ON"), vorDate, valFloat);
             } else if (hssType === "FREQUENCY" && deviceHssType === "DIGITAL_ANALOG_OUTPUT") {
                 deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 50000.0, 1.0, 1, vorDate + " | 0" + valUnit + " = " + mapText("MAX") + ", 50000" + valUnit + " = " + mapText("MIN"), false);
@@ -1039,7 +1044,7 @@ function addChannel(device, systemDate, options) {
                 deviceHTML += addSetButton(channelID, mapText("MIN"), 50000.0, vorDate, true, valFloat === 50000.0, true);
                 deviceHTML += "</div>"; 
             } else {
-                var inputType = mapInput(hssType, deviceHssType, channel['id'], valString, vorDate);
+                var inputType = mapInput(deviceHssType, channel, vorDate);
 
                 if (inputType !== "") {
                     deviceHTML += inputType;
@@ -1179,42 +1184,45 @@ function getDateFromString(strDate) {
     return new Date(yr, mn, dy, hr, mi, sc);
 }
 
-function loadConfigData(sync, url, type, map, callback) {
+function loadConfigData(async, url, type, map, callback) {
     $.ajax({
         type: 'GET',
         url: url,
         dataType: 'json',
-        success: function (data) {
-            switch (type) {
-                case "config":
-                    optionsMap = data;
-                    break;
-                case "variables":
-                    variablesMap = data;
-                    break;
-                case "programs":
-                    programsMap = data;
-                    break
-                case "favorites":
-                    favoritesMap = data;
-                    break
-                case "rooms":
-                    roomsMap = data;
-                    break
-                case "functions":
-                    functionsMap = data;
-                    break
-                case "devices":
-                    devicesMap = data;
-                    break
-            }
+        async: async
+    })
+    .done(function (data) {
+        switch (type) {
+            case "config":
+                optionsMap = data;
+                break;
+            case "variables":
+                variablesMap = data;
+                break;
+            case "programs":
+                programsMap = data;
+                break
+            case "favorites":
+                favoritesMap = data;
+                break
+            case "rooms":
+                roomsMap = data;
+                break
+            case "functions":
+                functionsMap = data;
+                break
+            case "devices":
+                devicesMap = data;
+                break
+        }
 
-            localStorage.setItem(map, JSON.stringify(data));
-            if (typeof callback === "function") {
-                callback(data);
-            }
-        },
-        async: sync
+        localStorage.setItem(map, JSON.stringify(data));
+        if (typeof callback === "function") {
+            callback(data);
+        }
+    })
+    .fail(function( jqXHR, textStatus ) {
+        alert( "Request failed: " + textStatus );
     });
 }
 
@@ -1242,7 +1250,7 @@ function isReadOnly(valInfo) {
         }
     }
     
-    if(varOptionsFirst === "h" || varOptionsFirst === "dk" || varOptionsFirst !== "d" || varOptionsFirst !== "g"){
+    if(varOptionsFirst === "h" || varOptionsFirst === "dk" || varOptionsFirst === "d" || varOptionsFirst === "g"){
         return false;
     }
 
@@ -1255,7 +1263,9 @@ function isReadOnly(valInfo) {
 function getTimeDiffString(diffDate, systemDate) {
     var timeDiff = (getDateFromString(systemDate) - getDateFromString(diffDate)) / 1000;  // In Sekunden konvertieren.
 
-    if (timeDiff < 60) {
+    if(timeDiff < 0) {
+        return "";
+    }else if (timeDiff < 60) {
         return "Vor " + Math.floor(timeDiff + 0.5) + " Sekunde/n";
     } else if (timeDiff < 60 * 60) {
         return "Vor " + Math.floor(timeDiff / 60 + 0.5) + " Minute/n";
@@ -1275,11 +1285,14 @@ function getTimeDiffString(diffDate, systemDate) {
     }
 }
 
-function reloadList(txt, systemDate) {
+function reloadList(txt, systemDate, restart) {
     $("#dataListHeader").empty();
     $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>").listview("refresh");
     $("#dataList").listview("refresh");
     $("#dataList").trigger("create");
+    if(restart){
+        $("#dataList").fadeIn();
+    }
 }
 
 function processDevices(device, systemDate, options) {
@@ -1363,7 +1376,7 @@ function processDevices(device, systemDate, options) {
         vorDate = getTimeDiffString(prgDate, systemDate);
 
         deviceHTML += "<p>" + prgInfo + "</p>";
-        deviceHTML += addStartProgramButton(prgID, "Ausf&uuml;hren", vorDate);
+        deviceHTML += addStartProgramButton(prgID, "Ausf&uuml;hren", vorDate, device['operate'] === "true");
     }
 
     // Ist leer, wenn (nv) oder ein leerer Channel.
@@ -1414,7 +1427,7 @@ function loadData(url, id, restart) {
             addDiagram(options);
         });
 
-        reloadList(devicesMap['name'], systemDate);
+        reloadList(devicesMap['name'], systemDate, restart);
     }
 
     if (!isActual) {
@@ -1448,7 +1461,7 @@ function loadData(url, id, restart) {
                 addDiagram(options);
             });
 
-            reloadList(dta['name'], systemDate);
+            reloadList(dta['name'], systemDate, restart);
 
         });
 
@@ -1490,7 +1503,7 @@ function loadVariables(restart) {
                 $("#dataList").append(processVariable(variable, valID, systemDate));
             }
         });
-        reloadList("Systemvariablen", systemDate);
+        reloadList("Systemvariablen", systemDate, restart);
     }
 
     if (!isActual) {
@@ -1507,7 +1520,7 @@ function loadVariables(restart) {
                     $('#' + valID).remove();
                 }
             });
-            reloadList("Systemvariablen", systemDate);
+            reloadList("Systemvariablen", systemDate, restart);
         });
     }
     // Animated Icon aus Refresh wieder entfernen:
@@ -1545,7 +1558,7 @@ function loadPrograms(restart) {
                 $("#dataList").append(processProgram(prog, prgID, systemDate));
             }
         });
-        reloadList("Programme", systemDate);
+        reloadList("Programme", systemDate, restart);
         $("#dataList").find(".btnDisabled").button('disable');
     }
 
@@ -1565,7 +1578,7 @@ function loadPrograms(restart) {
                     $('#' + prgID).remove();
                 }
             });
-            reloadList("Programme", systemDate);
+            reloadList("Programme", systemDate, restart);
             $("#dataList").find(".btnDisabled").button('disable');
         });
     }
@@ -1626,7 +1639,7 @@ function loadGraphicIDs() {
     $('#buttonRefresh .ui-btn-text').html("&nbsp;");
 
     $("#dataList").listview("refresh");
-    $("#dataList").trigger("create");
+    $("#dataList").trigger("create").fadeIn();
 
 }
 
@@ -1703,7 +1716,7 @@ function loadOptions() {
 
     $("#dataListHeader").listview("refresh");
     $("#dataList").listview("refresh");
-    $("#dataList").trigger("create");
+    $("#dataList").trigger("create").fadeIn();
 }
 
 // ------------------------- OnDocumentReady -----------------------------

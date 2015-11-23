@@ -15,7 +15,6 @@ var textMap = {
     ALARMACTUATOR__INHIBIT: "INHIBIT",
     ALARMACTUATOR__WORKING: "WORKING",
     ALARMACTUATOR__LOWBAT: "LOWBAT",
-    BLIND__LEVEL: "BLIND_LEVEL",
     BLIND__STOP: "Anhalten",
     BLIND__INHIBIT: "-",
     BLIND__WORKING: "-",
@@ -82,7 +81,6 @@ var textMap = {
     DIMMER__TOGGLE: "DIMMER__TOGGLE",
     DIMMER__PROG_DIM_UP: "PROG_DIM_UP",
     DIMMER__PROG_DIM_DOWN: "PROG_DIM_DOWN",
-    DIMMER__LEVEL: "LEVEL",
     DIMMER__OLD_LEVEL: "OLD_LEVEL",
     DIMMER__RAMP_TIME: "RAMP_TIME",
     DIMMER__ON_TIME: "ON_TIME",
@@ -336,7 +334,6 @@ var textMap = {
     THERMALCONTROL_TRANSMIT__PARTY_STOP_YEAR: "PARTY_STOP_YEAR",
     TILT_SENSOR__STATE: "STATE",
     TILT_SENSOR__LOWBAT: "LOWBAT",
-    VIRTUAL_DIMMER__LEVEL: "LEVEL",
     VIRTUAL_DIMMER__OLD_LEVEL: "OLD_LEVEL",
     VIRTUAL_DIMMER__RAMP_TIME: "RAMP_TIME",
     VIRTUAL_DIMMER__ON_TIME: "ON_TIME",
@@ -384,7 +381,6 @@ var textMap = {
     WEBCAM__IMAGE: "IMAGE",
     WEBCAM__PTZ_CMD: "PTZ_CMD",
     WEBCAM__IR: "IR",    
-    WINMATIC__LEVEL: "LEVEL",
     WINMATIC__SPEED: "SPEED",
     WINMATIC__STOP: "Stop",
     WINMATIC__RELOCK_DELAY: "RELOCK_DELAY",
@@ -429,6 +425,7 @@ var textMap = {
     MAX: "Maximum",
     MED: "Medium",
     MIN: "Minimum",
+    RUN: "Ausf&uuml;hren",
     UNKNOWN_ERROR: "Unbekannter Fehler"
     
 };
@@ -558,8 +555,14 @@ function mapState(hssType, deviceHssType, valFloat, valBool) {
 }
 
 //Eingabefelder und Buttons erstellen
-function mapInput(hssType, deviceHssType, channelId, valString, vorDate){
+function mapInput(deviceHssType, channel, vorDate){
+    var channelId = channel['id'];
+    var hssType = channel['hssType'];
+    var valString = channel['value'];
+    
     var input = typeInput[deviceHssType + "__" + hssType];
+    
+    var txt = textMap[deviceHssType + "__" + hssType];
     
     if(input){
         switch (input) {
@@ -570,6 +573,27 @@ function mapInput(hssType, deviceHssType, channelId, valString, vorDate){
             case "ButtonNoRefresh":
                 return addSetButton(channelId, mapText(deviceHssType + "__" + hssType), true, vorDate, false, false, false);
         } 
+    }else if(channel['writeable'] === "true" && (!txt || txt !== "-")){
+        
+        var valType = channel['valueType'];
+        var valRead = channel['readable'] === "true"; 
+        
+        var valUnit = channel['valueUnit'];        
+        
+        if(valType === "2" && valRead){
+            return addSetBoolButtonList(channelId, valString, mapText("OFF"), mapText("ON"), "", vorDate, true);
+        }
+        if(valType === "2" && !valRead){
+            return addSetButton(channelId, mapText("RUN"), true, vorDate, false, false, true);
+        }
+        if(valType === "4" && valRead){
+            var valMin = parseFloat(channel['valueMin']);
+            var valMax = parseFloat(channel['valueMax']);
+            return addSetNumber(channelId, valString, valUnit, valMin, valMax, 0.001, 1.0, vorDate + " | " + valMin + " " + valUnit + " = " + mapText("OFF") + ", " + valMax + " " + valUnit + " = " + mapText("ON"), false);
+        }
+        if(valType === "16" && valRead){
+            return addSetValueList(channelId, valString, channel['valueList'], valUnit, vorDate, true);
+        }
     }
     
     return "";
