@@ -1,4 +1,4 @@
-/* global theme */
+/* global theme, font */
 
 // ------------------------- Initial call after page loading ------------------------
 $(function () {
@@ -27,5 +27,6 @@ $(function () {
     // Update Timer loslaufen lassen:
     restartTimer();
     changeTheme(theme);
+    changeFont(font);
     readModus = true;
 });

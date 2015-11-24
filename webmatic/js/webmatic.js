@@ -164,7 +164,7 @@ function refreshServiceMessages() {
                 return (css.match(/(^|\s)valueService-\S{1}/g) || []).join(' ');
             });
             $('#headerButtonGroup').controlgroup('refresh', true);
-            $("#serviceList").append("<li><p>Keine Servicemeldungen vorhanden.</p></li>");
+            $("#serviceList").append("<li><p>" + mapText("NO_SERVICE_MESSAGES") + "</p></li>");
         } else {
             $('#buttonService, #popupDiv').addClass('valueService-' + theme);
             $('#headerButtonGroup').controlgroup('refresh', true);
@@ -230,6 +230,10 @@ function changeTheme(newTheme) {
     $('img').removeClass(function (i, css) {
         return (css.match(/(^|\s)ui-img-\S{1}/g) || []).join(' ');
     }).addClass('ui-img-' + newTheme);
+    
+    $('.control-set').removeClass(function (i, css) {
+        return (css.match(/(^|\s)control-set-\S{1}/g) || []).join(' ');
+    }).addClass('control-set-' + newTheme);
 
     theme = newTheme;
     localStorage.setItem("optionsMenuGfxTheme", theme);
@@ -316,7 +320,7 @@ function changeFont(code) {
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 // onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
-function addSetButton(id, text, value, vorDate, onlyButton, noAction, refresh) {
+function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh) {
     var html = "";
     if (!onlyButton) {
         html += "<p class='ui-li-desc'>";
@@ -325,7 +329,7 @@ function addSetButton(id, text, value, vorDate, onlyButton, noAction, refresh) {
     if (noAction) {
         html += "<a href='#' data-value='" + value + "' data-role='button' class='ui-btn-active' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
     } else {
-        html += "<a href='#' id='setButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
+        html += "<a href='#' id='setButton_" + id + "' data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
     }
 
     if (!onlyButton) {
@@ -335,18 +339,18 @@ function addSetButton(id, text, value, vorDate, onlyButton, noAction, refresh) {
     return html;
 }
 
-function addSetControlGroup(id, txt0, txt1, vorDate, valFloat, addFirst, addLast) {
+function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, addFirst, addLast) {
     var html = "";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     if (addFirst) {
         html += addFirst;
     }
-    html += addSetButton(id, txt0, 0.0, vorDate, true, valFloat === 0.0, false);
-    html += addSetButton(id, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
-    html += addSetButton(id, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
-    html += addSetButton(id, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
-    html += addSetButton(id, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
-    html += addSetButton(id, txt1, 1.0, vorDate, true, valFloat === 1.0, false);
+    html += addSetButton(paretnId, id, txt0, 0.0, vorDate, true, valFloat === 0.0, false);
+    html += addSetButton(paretnId, id, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
+    html += addSetButton(paretnId, id, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
+    html += addSetButton(paretnId, id, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
+    html += addSetButton(paretnId, id, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
+    html += addSetButton(paretnId, id, txt1, 1.0, vorDate, true, valFloat === 1.0, false);
     if (addLast) {
         html += addLast;
     }
@@ -356,8 +360,8 @@ function addSetControlGroup(id, txt0, txt1, vorDate, valFloat, addFirst, addLast
 }
 
 // Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
-function addStartProgramButton(id, text, vorDate, operate) {
-    var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-id='" + id + "'>" + text + "</a></div>";
+function addStartProgramButton(parentId, id, text, vorDate, operate) {
+    var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "'>" + text + "</a></div>";
     html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
     return html;
 }
@@ -367,17 +371,17 @@ function addStartProgramButton(id, text, vorDate, operate) {
 // ist aber 0 - 100 schöner.
 //
 // TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groß ist?
-function addSetNumber(id, value, unit, min, max, step, factor, vorDate, refresh) {
+function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate, refresh) {
     var html = "<div class='ui-field-contain'>";
     html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
     html += " (" + min * factor + " - " + max * factor + " " + unit + ") ";
-    html += "<a href='#' id='setNumberButton_" + id + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
+    html += "<a href='#' id='setNumberButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     return html;    
 }
 
-function addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, refresh) {
+function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vorDate, refresh) {
     var html = "<div data-role='fieldcontain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
 
@@ -386,14 +390,14 @@ function addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, ref
     if (strValue === "false" || strValue === "") {
         idString = "class='ui-btn-active'";
     } else {
-        idString = "id='setButton_" + valID + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
+        idString = "id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     }
     html += "<a href='#' " + idString + " data-value='false' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val0 + "</a>";
 
     if (strValue === "true") {
         idString = "class='ui-btn-active'";
     } else {
-        idString = "id='setButton_" + valID + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
+        idString = "id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     }
     html += "<a href='#' " + idString + " data-value='true' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val1 + "</a>";
 
@@ -401,11 +405,11 @@ function addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, ref
     html += "</div>";
     html += " " + valUnit + " ";//<a href='#' id='setBoolButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-
+   
     return html;
 }
 
-function addSetValueList(valID, strValue, valList, valUnit, vorDate, refresh) {
+function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh) {
     var html = "<div data-role='fieldcontain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     var selIndex = parseInt(strValue);
@@ -414,38 +418,38 @@ function addSetValueList(valID, strValue, valList, valUnit, vorDate, refresh) {
         if (selIndex === i) {
             html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' class='ui-btn-active' data-theme='" + theme + "'>" + optionsArray[i] + "</a>";
         } else {
-            html += "<a href='#' id='setButton_" + valID + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' data-role='button' data-inline='true'>" + optionsArray[i] + "</a>";
+            html += "<a href='#' id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' data-role='button' data-inline='true'>" + optionsArray[i] + "</a>";
         }
     }
     html += "</div>";
     html += "</div>";
-    html += " " + valUnit + " "; //<a href='#' id='setValueListButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
+    html += " " + valUnit + " ";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
 
     return html;
 }
 
-function addSetText(valID, val, valUnit, vorDate) {
+function addSetText(parentId, valID, val, valUnit, vorDate) {
     var html = "<div data-role='fieldcontain'>";
     // Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
     val = val.replace(/\"/g, "&quot;");
     if (val.length > 40) {
-        html += "<textarea id='setValue_" + valID + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
+        html += "<textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
     } else {
-        html += "<input type='text' id='setValue_" + valID + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
+        html += "<input type='text' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
     }
-    html += " " + valUnit + " <a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
+    html += " " + valUnit + " <a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     return html;
 }
 
-function addHTML(valID, val, vorDate, readonly) {
+function addHTML(parentId, valID, val, vorDate, readonly) {
     var html = "<div data-role='fieldcontain' class='" + (readonly ? "" : "ui-grid-a") + "'>";
     html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "'>" + val + "</div>";
     if (!readonly) {
-        html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
-        html += "<a href='#' id='setTextButton_" + valID + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
+        html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
+        html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>Setzen</a>";
         html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
         html += "</div>";
         html += "</div>";
@@ -475,7 +479,7 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
         visVal = strValue;
     }
     if (valType === "20" && valUnit === "html") {
-        return addHTML(valID, strValue, vorDate, true);
+        return addHTML('', valID, strValue, vorDate, true);
     } else {
         return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
     }
@@ -501,19 +505,19 @@ function processVariable(variable, valID, systemDate) {
         html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
     } else if (valType === "2") {
         // Bool.
-        html += addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+        html += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true);
     } else if (valType === "4") {
         // Float, Integer.
-        html += addSetNumber(valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.001, 1.0, vorDate, true);
+        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.001, 1.0, vorDate, true);
     } else if (valType === "16") {
         // Liste.
-        html += addSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+        html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
     } else if (valType === "20" && valUnit === "html") {
         html += addHTML(valID, strValue, vorDate, false);
     } else if (valType === "20") {
-        html += addSetText(valID, strValue, valUnit, vorDate);
+        html += addSetText('', valID, strValue, valUnit, vorDate);
     } else {
-        html += "Unbekannter Variablentyp!";
+        html += mapText("UNKNOWN_VAR_TYPE") + "!";
     }
     html += "</li>";
 
@@ -522,7 +526,7 @@ function processVariable(variable, valID, systemDate) {
 
 function processProgram(prog, prgID, systemDate) {
     var deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prog['name'] + "</h2><p>" + prog['info'] + "</p>";
-    deviceHTML += addStartProgramButton(prgID, "Ausf&uuml;hren", getTimeDiffString(prog['date'], systemDate), prog['operate'] === "true");
+    deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), prog['operate'] === "true");
     deviceHTML += "</li>";
     return deviceHTML;
 }
@@ -535,7 +539,7 @@ function processGraphicID(type, map) {
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><h1>" + val + " (<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>)</h1></div>";
         html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
-        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>Speichern</a></div>";
+        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("SAVE") + "</a></div>";
         html += "</div>";
         html += "</form>";
         html += "</li>";
@@ -934,9 +938,11 @@ function addDiagram(options) {
 
 function addChannel(device, systemDate, options) {
     var deviceHssType = device['hssType'];
+    var deviceID = device['id'];
     var hasChannel = false;
-    var deviceHTMLPostChannelGroup = "";
-    var deviceHTMLPostChannelGroupMode = 0;
+    var crt = [];
+    crt['deviceHTMLPostChannelGroup'] = "";
+    crt['deviceHTMLPostChannelGroupMode'] = 0;
     var deviceHTML = "";
 
     $.each(device.channels, function (j, channel) {
@@ -963,54 +969,77 @@ function addChannel(device, systemDate, options) {
             }
 
             if (hssType === "SETPOINT" || hssType === "SET_TEMPERATURE") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
+                
                 var lowTemp = valFloat - 3.0;
                 var highTemp = lowTemp + 6.0;
-                if (lowTemp < 6.0) {
-                    lowTemp = 6.0;
+                if (lowTemp < valMin) {
+                    lowTemp = valMin;
                     highTemp = 11.0;
                 }
-                if (highTemp > 30.0) {
+                if (highTemp > valMax) {
                     lowTemp = 25.0;
-                    highTemp = 30.0;
+                    highTemp = valMax;
                 }
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
+                if(hssType === "SETPOINT"){
+                    deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__VENT_CLOSED"), 0.0, vorDate, true, 0.0 === valFloat, false);
+                }
                 for (i = lowTemp; i <= highTemp; i += 1.0) {
-                    deviceHTML += addSetButton(channelID, i + valUnit, i, vorDate, true, i === valFloat, false);
+                    deviceHTML += addSetButton(deviceID, channelID, i + valUnit, i, vorDate, true, i === valFloat, false);
+                }
+                if(hssType === "SETPOINT"){
+                    deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__VENT_OPEN"), 100.0, vorDate, true, 100.0 === valFloat, false);
                 }
                 deviceHTML += "</div>";
-            } else if (deviceHssType === "CLIMATECONTROL_RT_TRANSCEIVER") {
+            } else if (deviceHssType === "CLIMATECONTROL_RT_TRANSCEIVER" && (hssType.endsWith("MODE") || hssType.startsWith("PARTY"))) {
                 if (hssType === "CONTROL_MODE") {
-                    // save control_mode 
-                    deviceHTMLPostChannelGroupMode = valFloat;
+                    crt['deviceHTMLPostChannelGroupMode'] = valFloat;
                 } else if (hssType === "AUTO_MODE") {
-                    // collect post buttons
-                    deviceHTMLPostChannelGroup += addSetButton(channel['id'], mapText(deviceHssType + "__" + hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 0.0, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 0.0, true);
                 } else if (hssType === "MANU_MODE") {
-                    // collect post buttons
-                    deviceHTMLPostChannelGroup += addSetButton(channel['id'], mapText(deviceHssType + "__" + hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 1.0, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 1.0, true);
                 } else if (hssType === "BOOST_MODE") {
-                    // collect post buttons
-                    deviceHTMLPostChannelGroup += addSetButton(channel['id'], mapText(deviceHssType + "__" + hssType), true, vorDate, true, deviceHTMLPostChannelGroupMode === 3.0, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 3.0, true);
                 } else if (hssType === "LOWERING_MODE" || hssType === "COMFORT_MODE") {
-                    // collect post buttons
-                    deviceHTMLPostChannelGroup += addSetButton(channel['id'], mapText(deviceHssType + "__" + hssType), true, vorDate, true, false, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, false, true);
+                } else if (hssType === "PARTY_TEMPERATURE"){
+                    crt['PARTY_TEMPERATURE'] = valFloat;
+                } else if (hssType === "PARTY_START_TIME"){
+                    crt['PARTY_START_TIME'] = parseInt(valString);
+                } else if (hssType === "PARTY_START_DAY"){
+                    crt['PARTY_START_DAY'] = parseInt(valString);
+                } else if (hssType === "PARTY_START_MONTH"){
+                    crt['PARTY_START_MONTH'] = parseInt(valString);
+                } else if (hssType === "PARTY_START_YEAR"){
+                    crt['PARTY_START_YEAR'] = parseInt(valString);
+                } else if (hssType === "PARTY_STOP_TIME"){
+                    crt['PARTY_STOP_TIME'] = parseInt(valString);
+                } else if (hssType === "PARTY_STOP_DAY"){
+                    crt['PARTY_STOP_DAY'] = parseInt(valString);
+                } else if (hssType === "PARTY_STOP_MONTH"){
+                    crt['PARTY_STOP_MONTH'] = parseInt(valString);
+                } else if (hssType === "PARTY_STOP_YEAR"){
+                    crt['PARTY_STOP_YEAR'] = parseInt(valString);
+                } else if (hssType === "PARTY_MODE_SUBMIT"){
+                    crt['PARTY_MODE_ID'] = channelID;
+                    crt['VORDATE'] = vorDate;
                 }
             } else if (hssType === "PROGRAM" && deviceHssType === "RGBW_AUTOMATIC") {
                 //mrlee HM-LC-RGBW-WM
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__0"), 0, vorDate, true, valFloat === 0.0, true);
-                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__1"), 1, vorDate, true, valFloat === 1.0, true);
-                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__2"), 2, vorDate, true, valFloat === 2.0, true);
-                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__3"), 3, vorDate, true, valFloat === 3.0, true);
-                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__4"), 4, vorDate, true, valFloat === 4.0, true);
-                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__5"), 5, vorDate, true, valFloat === 5.0, true);
-                deviceHTML += addSetButton(channelID, mapText(deviceHssType + "__" + hssType + "__6"), 6, vorDate, true, valFloat === 6.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__0"), 0, vorDate, true, valFloat === 0.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__1"), 1, vorDate, true, valFloat === 1.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__2"), 2, vorDate, true, valFloat === 2.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__3"), 3, vorDate, true, valFloat === 3.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__4"), 4, vorDate, true, valFloat === 4.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__5"), 5, vorDate, true, valFloat === 5.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__6"), 6, vorDate, true, valFloat === 6.0, true);
                 deviceHTML += "</div>";
             } else if (hssType === "COLOR" && deviceHssType === "RGBW_COLOR") {
                 //mrlee HM-LC-RGBW-WM
                 deviceHTML += "<span class='RGBW-Color'>";
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 200.0, 1, 1, vorDate, true);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 200.0, 1, 1, vorDate, true);
                 deviceHTML += "</span>";
             } else if (hssType === "LED_STATUS" && deviceHssType === "KEY") {
                 switch (valFloat) {
@@ -1028,23 +1057,34 @@ function addChannel(device, systemDate, options) {
                         break;
                 }
             } else if (hssType === "LEVEL" && deviceHssType === "BLIND") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, valMin, valMax, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
-                deviceHTML += addSetControlGroup(channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 100.0, 0.01, 1.0, vorDate + " | 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
+                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat);
             } else if (hssType === "LEVEL" && deviceHssType === "WINMATIC") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, valMin, valMax, 0.01, 100.0, vorDate + " | -0.5" + valUnit + " = " + mapText("LOCKED") + ", 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
-                deviceHTML += addSetControlGroup(channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, addSetButton(channelID, mapText("LOCK"), -0.005, vorDate, true, valFloat === -0.005, false));
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, -0.005, 100.0, 0.01, 1.0, vorDate + " | -0.5" + valUnit + " = " + mapText("LOCKED") + ", 0" + valUnit + " = " + mapText("CLOSE") + ", 100" + valUnit + " = " + mapText("OPEN"), false);
+                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, addSetButton(deviceID, channelID, mapText("LOCK"), -0.005, vorDate, true, valFloat === -0.005, false));
             } else if (hssType === "LEVEL" && (deviceHssType === "DIMMER" || deviceHssType === "VIRTUAL_DIMMER")) {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, valMax, valMax, 0.01, 100.0, vorDate + " | 0" + valUnit + " = " + mapText("OFF") + ", 100" + valUnit + " = " + mapText("ON"), false);
-                deviceHTML += addSetControlGroup(channelID, mapText("OFF"), mapText("ON"), vorDate, valFloat);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 100.0, 0.01, 1.0, vorDate + " | 0" + valUnit + " = " + mapText("OFF") + ", 100" + valUnit + " = " + mapText("ON"), false);
+                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("OFF"), mapText("ON"), vorDate, valFloat);
             } else if (hssType === "FREQUENCY" && deviceHssType === "DIGITAL_ANALOG_OUTPUT") {
-                deviceHTML += addSetNumber(channelID, valFloat, valUnit, 0.0, 50000.0, 1.0, 1, vorDate + " | 0" + valUnit + " = " + mapText("MAX") + ", 50000" + valUnit + " = " + mapText("MIN"), false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 50000.0, 100.0, 1.0, vorDate + " | 0" + valUnit + " = " + mapText("MAX") + ", 50000" + valUnit + " = " + mapText("MIN"), false);
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                deviceHTML += addSetButton(channelID, mapText("MAX"), 0.0, vorDate, true, valFloat === 0.0, true);
-                deviceHTML += addSetButton(channelID, mapText("MED"), 30000.0, vorDate, true, valFloat === 30000.0, true);
-                deviceHTML += addSetButton(channelID, mapText("MIN"), 50000.0, vorDate, true, valFloat === 50000.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText("MAX"), 0.0, vorDate, true, valFloat === 0.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText("MED"), 30000.0, vorDate, true, valFloat === 30000.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText("MIN"), 50000.0, vorDate, true, valFloat === 50000.0, true);
                 deviceHTML += "</div>"; 
+            } else if(hssType === "SUBMIT" && (deviceHssType === "SIGNAL_LED" || deviceHssType === "SIGNAL_CHIME")){
+                //TODO SIGNAL_LED SIGNAL_CHIME
+            } else if(hssType === "ON_TIME") {
+                deviceHTML += "<div class='ui-field-contain ui-grid-c'>";
+                deviceHTML += "<div class='ui-block-a'>";
+                deviceHTML += "<input type='text' data-role='datebox' data-ontime-parent='" + deviceID + "' data-id='" + channelID + "' data-options='{\"mode\":\"durationbox\"}'/>&nbsp;";
+                deviceHTML += "</div>";
+                deviceHTML += "<div class='ui-block-b grid-text'>";
+                deviceHTML += mapText(deviceHssType + "__" + hssType);
+                deviceHTML += "</div>";
+                deviceHTML += "</div>";
             } else {
-                var inputType = mapInput(deviceHssType, channel, vorDate);
+                var inputType = mapInput(deviceHssType, channel, vorDate, deviceID);
 
                 if (inputType !== "") {
                     deviceHTML += inputType;
@@ -1089,8 +1129,6 @@ function addChannel(device, systemDate, options) {
             valUnit = channel['valueUnit'];
             var val0 = channel['valueName0'];
             var val1 = channel['valueName1'];
-            var valMin = channel['valueMin'];
-            var valMax = channel['valueMax'];
             var valList = channel['valueList'];
             channelDate = channel['date'];
             vorDate = getTimeDiffString(channelDate, systemDate);
@@ -1140,19 +1178,19 @@ function addChannel(device, systemDate, options) {
                 } else {
                     if (valType === "2") {
                         // Bool.
-                        deviceHTML += addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+                        deviceHTML += addSetBoolButtonList(deviceID, valID, strValue, val0, val1, valUnit, vorDate, true);
                     } else if (valType === "4") {
                         // Float, Integer.
-                        deviceHTML += addSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+                        deviceHTML += addSetNumber(deviceID, valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
                     } else if (valType === "16") {
                         // Liste.
-                        deviceHTML += addSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+                        deviceHTML += addSetValueList(deviceID, valID, strValue, valList, valUnit, vorDate, true);
                     } else if (valType === "20" && valUnit === "html") {
-                        deviceHTML += addHTML(valID, strValue, vorDate, false);
+                        deviceHTML += addHTML(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20") {
-                        deviceHTML += addSetText(valID, strValue, valUnit, vorDate);
+                        deviceHTML += addSetText(deviceID, valID, strValue, valUnit, vorDate);
                     } else {
-                        deviceHTML += "Unbekannter Variablentyp!";
+                        deviceHTML += mapText("UNKNOWN_VAR_TYPE") + "!";
                     }
                 }
             }
@@ -1160,12 +1198,33 @@ function addChannel(device, systemDate, options) {
 
     });
 
-    if (deviceHTMLPostChannelGroup !== "") {
+    if (crt['deviceHTMLPostChannelGroup'] !== "") {
         deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-        deviceHTML += deviceHTMLPostChannelGroup;
+        deviceHTML += crt['deviceHTMLPostChannelGroup'];
         deviceHTML += "</div>";
-    }
-    if (!hasChannel) {
+        
+        var id = crt['PARTY_MODUS_ID'];
+        var startDate = [crt['PARTY_START_YEAR'] + 2000, crt['PARTY_START_MONTH'] - 1, crt['PARTY_START_DAY']];
+        var startTime = crt['PARTY_START_TIME'] * 60;
+        var endDate = [crt['PARTY_STOP_YEAR'] + 2000, crt['PARTY_STOP_MONTH'] - 1, crt['PARTY_STOP_DAY']];
+        var endTime = crt['PARTY_STOP_TIME'] * 60;
+        
+        deviceHTML += "<div class='ui-field-contain ui-grid-c control-set control-set-" + theme + "'>";
+        deviceHTML += "<div class='ui-block-a grid-text'>" + mapText("CLIMATECONTROL_RT_TRANSCEIVER__PARTY_TEMPERATURE") + "</div>";
+        deviceHTML += "<div class='ui-block-b'><input type='range' data-parent-id='" + deviceID + "' value='" + crt['PARTY_TEMPERATURE'] + "' min='5.0' max='30.0' step='0.5' data-factor='1' id='setTemperature_" + id + "' data-highlight='true' data-theme='" + theme + "'/></div>";
+        deviceHTML += "<div class='ui-block-c'></div>";
+        deviceHTML += "<div class='ui-block-d'></div>";
+        deviceHTML += "<div class='ui-block-a grid-text'>" + mapText("CLIMATECONTROL_RT_TRANSCEIVER__PARTY_START") + "</div>";
+        deviceHTML += "<div class='ui-block-b'><input type='text' data-parent-id='" + deviceID + "' data-datebox-default-value='" + startDate + "' id='setStartDate_" + id + "' data-theme='" + theme + "' data-role='datebox' data-datebox-mode='calbox' data-datebox-use-lang='de'/></div>";
+        deviceHTML += "<div class='ui-block-c'><input type='text' data-parent-id='" + deviceID + "' data-datebox-default-value='" + startTime + "' id='setStartTime_" + id + "' data-theme='" + theme + "' data-role='datebox' data-datebox-mode='timebox' data-datebox-minute-step='30' data-datebox-use-lang='de'/></div>";
+        deviceHTML += "<div class='ui-block-d'></div>";
+        deviceHTML += "<div class='ui-block-a grid-text'>" + mapText("CLIMATECONTROL_RT_TRANSCEIVER__PARTY_STOP") + "</div>";
+        deviceHTML += "<div class='ui-block-b'><input type='text' data-parent-id='" + deviceID + "' data-datebox-default-value='" + endDate + "' id='setEndDate_" + id + "' data-theme='" + theme + "' data-role='datebox' data-datebox-mode='calbox' data-datebox-use-lang='de'/></div>";
+        deviceHTML += "<div class='ui-block-c'><input type='text' data-parent-id='" + deviceID + "' data-datebox-default-value='" + endTime + "' id='setEndTime_" + id + "' data-theme='" + theme + "' data-role='datebox' data-datebox-mode='timebox' data-datebox-minute-step='30' data-datebox-use-lang='de'/></div>";
+        deviceHTML += "<div class='ui-block-d'></div>";
+        deviceHTML += "<div class='ui-block-a'>" + addSetButton(deviceID, id, mapText("CLIMATECONTROL_RT_TRANSCEIVER__PARTY_MODE"), "", crt['VORDATE'], true, crt['deviceHTMLPostChannelGroupMode'] === 2.0, true) + "</div>"; 
+        deviceHTML += "</div>";
+    }else if (!hasChannel) {
         deviceHTML = "";  // Nicht anzeigen, z.B. Raumthermostat:3, wenn kein Fensterkontakt vorhanden.
     }
 
@@ -1262,25 +1321,31 @@ function isReadOnly(valInfo) {
 
 function getTimeDiffString(diffDate, systemDate) {
     var timeDiff = (getDateFromString(systemDate) - getDateFromString(diffDate)) / 1000;  // In Sekunden konvertieren.
+    var result;
 
     if(timeDiff < 0) {
         return "";
     }else if (timeDiff < 60) {
-        return "Vor " + Math.floor(timeDiff + 0.5) + " Sekunde/n";
+        result = Math.floor(timeDiff + 0.5);
+        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_SEC_SINGULAR"):mapText("TIME_SEC_PLURAL")) + " " + mapText("TIME_SUFFIX");
     } else if (timeDiff < 60 * 60) {
-        return "Vor " + Math.floor(timeDiff / 60 + 0.5) + " Minute/n";
+        result = Math.floor(timeDiff / 60 + 0.5);
+        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_MIN_SINGULAR"):mapText("TIME_MIN_PLURAL")) + " " + mapText("TIME_SUFFIX");
     } else if (timeDiff < 60 * 60 * 24) {
-        return "Vor " + Math.floor(timeDiff / (60 * 60) + 0.5) + " Stunde/n";
+        result = Math.floor(timeDiff / (60 * 60) + 0.5);
+        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_H_SINGULAR"):mapText("TIME_H_PLURAL")) + " " + mapText("TIME_SUFFIX");
     } else if (timeDiff < 60 * 60 * 24 * 30.5) {
-        return "Vor " + Math.floor(timeDiff / (60 * 60 * 24) + 0.5) + " Tag/en";
+        result = Math.floor(timeDiff / (60 * 60 * 24) + 0.5);
+        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_DAY_SINGULAR"):mapText("TIME_DAY_PLURAL")) + " " + mapText("TIME_SUFFIX");
     } else if (timeDiff < 60 * 60 * 24 * 30.5 * 12) {
-        return "Vor " + Math.floor(timeDiff / (60 * 60 * 24 * 30.5) + 0.5) + " Monat/en";
+        result = Math.floor(timeDiff / (60 * 60 * 24 * 30.5) + 0.5);
+        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_MON_SINGULAR"):mapText("TIME_MON_PLURAL")) + " " + mapText("TIME_SUFFIX");
     } else {
-        var y = Math.floor(timeDiff / (60 * 60 * 24 * 30.5 * 12) + 0.5);
-        if (y > 40) {
-            return "Noch nicht ver&auml;ndert";
+        result = Math.floor(timeDiff / (60 * 60 * 24 * 30.5 * 12) + 0.5);
+        if (result > 40) {
+            return mapText("NO_CHANGE");
         } else {
-            return "Vor " + y + " Jahr/en";
+            return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_Y_SINGULAR"):mapText("TIME_Y_PLURAL")) + " " + mapText("TIME_SUFFIX");
         }
     }
 }
@@ -1354,19 +1419,19 @@ function processDevices(device, systemDate, options) {
         } else {
             if (valType === "2") {
                 // Bool.
-                deviceHTML += addSetBoolButtonList(valID, strValue, val0, val1, valUnit, vorDate, true);
+                deviceHTML += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true);
             } else if (valType === "4") {
                 // Float, Integer.
-                deviceHTML += addSetNumber(valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+                deviceHTML += addSetNumber('', valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
             } else if (valType === "16") {
                 // Liste.
-                deviceHTML += addSetValueList(valID, strValue, valList, valUnit, vorDate, true);
+                deviceHTML += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
             } else if (valType === "20" && valUnit === "html") {
-                deviceHTML += addHTML(valID, strValue, vorDate, false);
+                deviceHTML += addHTML('', valID, strValue, vorDate, false);
             } else if (valType === "20") {
-                deviceHTML += addSetText(valID, strValue, valUnit, vorDate);
+                deviceHTML += addSetText('', valID, strValue, valUnit, vorDate);
             } else {
-                deviceHTML += "Unbekannter Variablentyp!";
+                deviceHTML += mapText("UNKNOWN_VAR_TYPE") + "!";
             }
         }
     } else if (device['type'] === "PROGRAM") {
@@ -1376,7 +1441,7 @@ function processDevices(device, systemDate, options) {
         vorDate = getTimeDiffString(prgDate, systemDate);
 
         deviceHTML += "<p>" + prgInfo + "</p>";
-        deviceHTML += addStartProgramButton(prgID, "Ausf&uuml;hren", vorDate, device['operate'] === "true");
+        deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, device['operate'] === "true");
     }
 
     // Ist leer, wenn (nv) oder ein leerer Channel.
@@ -1399,7 +1464,7 @@ function loadData(url, id, restart) {
         $("#dataList").empty();
         $("#dataListHeader").empty();
         // "Lade..." anzeigen:
-        $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
+        $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticDevicesMap" + id) === null) {
             loadConfigData(false, url + '?list=' + id, 'devices', 'webmaticDevicesMap' + id);
@@ -1486,7 +1551,7 @@ function loadVariables(restart) {
         $("#dataList").empty();
         $("#dataListHeader").empty();
         // "Lade..." anzeigen:
-        $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
+        $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticVariablesMap") === null) {
             loadConfigData(false, 'cgi/systemvariables.cgi', 'variables', 'webmaticVariablesMap');
@@ -1520,7 +1585,7 @@ function loadVariables(restart) {
                     $('#' + valID).remove();
                 }
             });
-            reloadList("Systemvariablen", systemDate, restart);
+            reloadList(mapText("SYS_VAR"), systemDate, restart);
         });
     }
     // Animated Icon aus Refresh wieder entfernen:
@@ -1539,7 +1604,7 @@ function loadPrograms(restart) {
         $("#dataList").empty();
         $("#dataListHeader").empty();
         // "Lade..." anzeigen:
-        $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
+        $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticProgramsMap") === null) {
             loadConfigData(false, 'cgi/programs.cgi', 'programs', 'webmaticProgramsMap');
@@ -1558,7 +1623,7 @@ function loadPrograms(restart) {
                 $("#dataList").append(processProgram(prog, prgID, systemDate));
             }
         });
-        reloadList("Programme", systemDate, restart);
+        reloadList(mapText("PROGRAMS"), systemDate, restart);
         $("#dataList").find(".btnDisabled").button('disable');
     }
 
@@ -1592,7 +1657,7 @@ function loadGraphicIDs() {
     $("#dataList").empty();
     $("#dataListHeader").empty();
     // "Lade..." anzeigen:
-    $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>Lade...</li>").listview("refresh");
+    $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
     // Icon Animation in Refresh Button:
     $('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
@@ -1603,7 +1668,7 @@ function loadGraphicIDs() {
         loadConfigData(true, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
     }
 
-    $("#dataList").append("<li data-role='list-divider' role='heading'>Favoriten</li>");
+    $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText("FAVORITES") + "</li>");
     processGraphicID('favorites', favoritesMap);
 
     if (localStorage.getItem("webmaticRoomsMap") === null) {
@@ -1613,7 +1678,7 @@ function loadGraphicIDs() {
         loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap');
     }
 
-    $("#dataList").append("<li data-role='list-divider' role='heading'>R&auml;ume</li>");
+    $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText("ROOMS") + "</li>");
     processGraphicID('rooms', roomsMap);
 
     if (localStorage.getItem("webmaticFunctionsMap") === null) {
@@ -1623,7 +1688,7 @@ function loadGraphicIDs() {
         loadConfigData(true, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
     }
 
-    $("#dataList").append("<li data-role='list-divider' role='heading'>Gewerke</li>");
+    $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText("FUNCTIONS") + "</li>");
     processGraphicID('functions', functionsMap);
 
     $("#dataList").listview("refresh");
@@ -1632,7 +1697,7 @@ function loadGraphicIDs() {
 
     // "Lade..." wieder entfernen und Überschrift anzeigen:
     $("#dataListHeader").empty();
-    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>Grafik IDs</li>");
+    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("EDIT") + "</li>");
     $("#dataListHeader").listview("refresh");
 
     // Animated Icon aus Refresh wieder entfernen:
@@ -1729,18 +1794,35 @@ $(function () {
 
     // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
     $(document.body).on("click", "[id^=setButton]", function () {
-        var dataID = $(this).data("id");    // Homematic Geräte ID.
-        var refresh = $(this).data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
-        var value = $(this).data("value"); // Wert.
+        var obj = $(this);
+        var dataID = obj.data("id");    // Homematic Geräte ID.
+        var refresh = obj.data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
+        var value = obj.data("value"); // Wert.
         var infoID = "info_" + dataID;      // Info Textfeld neben Button.
+        var ontimeVal = 0;
+        
+        var ontimeObj = $("[data-ontime-parent='" + obj.data("parent-id") + "']");
+        var ontimeValue = "";
+        if(ontimeObj.length === 1){
+            ontimeVal = ontimeObj.datebox('getLastDur');
+            if(isNaN(ontimeVal)){
+                ontimeVal = 0;
+            }else if(ontimeVal > 0){
+                ontimeValue = '&ontimeId=' + ontimeObj.data("id") + '&ontimeValue=' + ontimeVal;
+            }
+        }
 
-        $("#" + infoID).text("Übertrage...");
-        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
+        $("#" + infoID).text("&Uuml;bertrage...");
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value + ontimeValue, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
                 refreshPage(0);
             } else {
-                $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
+                $("#" + infoID).text("Wert wird noch an Ger&auml;t übertragen und erst verz&ouml;gert hier dargestellt.");
+            }
+            
+            if(ontimeVal > 0){
+                setTimeout(function(){ refreshPage(0); }, (ontimeVal + 3) * 1000);
             }
         });
     });
@@ -1755,7 +1837,7 @@ $(function () {
         var factor = $("#" + valueID).data("factor"); // Factor auslesen.
 
         var valueDivided = parseFloat(value) / factor;
-        $("#" + infoID).text("Übertrage...");
+        $("#" + infoID).text("&Uuml;bertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
@@ -1768,12 +1850,13 @@ $(function () {
 
     // Ein Button, bei dessen drücken ein Bool an die ID übertragen wird.
     $(document.body).on("click", "[id^=setBoolButton]", function () {
-        var dataID = $(this).data("id");  // Homematic Geräte ID.
+        var obj = $(this);
+        var dataID = obj.data("id");  // Homematic Geräte ID.
         var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
         var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
-
-        $("#" + infoID).text("Übertrage...");
+        
+        $("#" + infoID).text("&Uuml;bertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
             refreshPage(0);
@@ -1787,7 +1870,7 @@ $(function () {
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
         var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
-        $("#" + infoID).text("Übertrage...");
+        $("#" + infoID).text("&Uuml;bertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
             refreshPage(0);
@@ -1805,7 +1888,7 @@ $(function () {
         // Dann noch enocden, damit alles übertragen wird:
         value = encodeURIComponent(value);
 
-        $("#" + infoID).text("Übertrage...");
+        $("#" + infoID).text("&Uuml;bertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
             refreshPage(0);

@@ -3,6 +3,13 @@
 .valueWarning { font-size: 16px; font-weight: bold; font-style: italic; }
 .valueError { font-size: 16px; font-weight: bold; font-style: italic; }
 .valueOK { font-size: 16px; font-style: italic; }
+.control-set { 
+    padding: 10px;
+    -webkit-border-radius: 1em;
+    border-radius: 1em;
+    border-style: solid;
+    border-width: 1px;
+}
 
 .valueNoError-a { color:#909090; }
 .valueInfo-a { color:#000; }
@@ -10,6 +17,7 @@
 .valueError-a { color:#c00; }
 .valueOK-a { color:green; }
 .valueService-a{ background-color:#fdd017 !important;}
+.control-set-a{ border-color: #000; }
 
 .valueNoError-b { color:#909090;}
 .valueInfo-b { color:#fff; }
@@ -17,6 +25,7 @@
 .valueError-b { color:#c00; }
 .valueOK-b { color:green; }
 .valueService-b{ background-color:#2ad !important;}
+.control-set-b{ border-color: #fff; }
 
 .valueNoError-c { color:#909090;}
 .valueInfo-c { color:#fff; }
@@ -24,6 +33,7 @@
 .valueError-c { color:#c00; }
 .valueOK-c { color:green; }
 .valueService-c{ background-color:#f75d59 !important;}
+.control-set-c{ border-color: #fff; }
 
 .valueNoError-d { color:#909090;}
 .valueInfo-d { color:#fff; }
@@ -34,6 +44,7 @@
     background-color:#fdd017 !important;
     color: #3d5a20 !important;
 }
+.control-set-d{ border-color: #fff; }
 
 .valueNoError-e { color:#909090;}
 .valueInfo-e { color:#fff; }
@@ -44,6 +55,7 @@
     background-color:#fdd017 !important;
     color: #000 !important;
 }
+.control-set-e{ border-color: #fff; }
 
 .valueNoError-f { color:#909090;}
 .valueInfo-f { color:#000; }
@@ -54,6 +66,7 @@
     background-color:#e0e0e0 !important;
     color: gray !important;
 }
+.control-set-f{ border-color: #000; }
 
 .valueNoError-g { color:#909090;}
 .valueInfo-g { color:#fff; }
@@ -61,6 +74,7 @@
 .valueError-g { color:#c00; }
 .valueOK-g { color:green; }
 .valueService-g{ background-color:#fdd017 !important;}
+.control-set-g{ border-color: #fff; }
 
 .valueNoError-h { color:#909090;}
 .valueInfo-h { color:#fff; }
@@ -68,6 +82,7 @@
 .valueError-h { color:#c00; }
 .valueOK-h { color:green; }
 .valueService-h{ background-color:#fdd017 !important;}
+.control-set-h{ border-color: #fff; }
 
 .valueNoError-i { color:#909090;}
 .valueInfo-i { color:#fff; }
@@ -75,6 +90,7 @@
 .valueError-i { color:#c00; }
 .valueOK-i { color:green; }
 .valueService-i{ background-color:#fdd017 !important;}
+.control-set-i{ border-color: #fff; }
 
 .valueNoError-j { color:#909090;}
 .valueInfo-j { color:#fff; }
@@ -82,6 +98,7 @@
 .valueError-j { color:#c00; }
 .valueOK-j { color:green; }
 .valueService-j{ background-color:#ffebcd !important;}
+.control-set-j{ border-color: #fff; }
 
 .valueNoError-k { color:#909090;}
 .valueInfo-k { color:#fff; }
@@ -89,6 +106,7 @@
 .valueError-k { color:#c00; }
 .valueOK-k { color:green; }
 .valueService-k{ background-color:#fdd017 !important;}
+.control-set-k{ border-color: #fff; }
 
 .valueNoError-l { color:#909090;}
 .valueInfo-l { color:#fff; }
@@ -96,6 +114,12 @@
 .valueError-l { color:#ff8c00; }
 .valueOK-l { color:#5cb3ff; }
 .valueService-l{ background-color:#ff8c00 !important;}
+.control-set-l{ border-color: #fff; }
+
+.grid-text{
+    padding-top: 15px;
+    padding-left: 5px;
+}
 
 img.ui-img-f{
     -webkit-filter: grayscale(1);

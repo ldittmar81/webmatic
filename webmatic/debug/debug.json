@@ -70,7 +70,7 @@
     {"id":"dbg_17458", "type":"HSSDP", "hssType":"HUMIDITY", "value":"52", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"%", "date":"08.11.2012 11:48:38"}  ]
 },
     {"name":"Heiz-Thermostat Bad:2", "type":"CHANNEL", "id":"dbg_17460", "address":"JEQ0081213:2", "hssType":"CLIMATECONTROL_REGULATOR", "channels": [
-    {"id":"dbg_17463", "type":"HSSDP", "hssType":"SETPOINT", "value":"6.000000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"&#176;C", "date":"08.11.2012 08:00:02"},
+    {"id":"dbg_17463", "type":"HSSDP", "hssType":"SETPOINT", "value":"6.000000", "valueMin":"6.0", "valueMax":"30.0", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"&#176;C", "date":"08.11.2012 08:00:02"},
     {"id":"dbg_17461", "type":"HSSDP", "hssType":"ADJUSTING_COMMAND", "value":"0", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:58"},
     {"id":"dbg_17462", "type":"HSSDP", "hssType":"ADJUSTING_DATA", "value":"0", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:58"}  ]
 },
@@ -231,7 +231,7 @@
 {"id":"31784", "type":"HSSDP", "hssType":"VALVE_STATE", "value":"0", "valueUnit":"%", "date":"13.11.2015 23:10:35"},
 {"id":"31756", "type":"HSSDP", "hssType":"BOOST_STATE", "value":"0", "valueUnit":"min", "date":"13.11.2015 23:10:35"},
 {"id":"31752", "type":"HSSDP", "hssType":"ACTUAL_TEMPERATURE", "value":"21.000000", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
-{"id":"31783", "type":"HSSDP", "hssType":"SET_TEMPERATURE", "value":"18.000000", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
+{"id":"31783", "type":"HSSDP", "hssType":"SET_TEMPERATURE", "value":"18.000000", "valueMin":"5.0", "valueMax":"30.0", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
 {"id":"31753", "type":"HSSDP", "hssType":"AUTO_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
 {"id":"31782", "type":"HSSDP", "hssType":"MANU_MODE", "value":"", "valueUnit":"°C", "date":"01.01.1970 01:00:00"},
 {"id":"31755", "type":"HSSDP", "hssType":"BOOST_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
