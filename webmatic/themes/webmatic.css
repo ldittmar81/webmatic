@@ -160,4 +160,18 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
         width: 100%;
         float: left;
     }
+    
+    .grid-text{
+        padding-top: 0;
+        padding-left: 5px;
+    }
+    
+    .ui-block-a,
+    .ui-block-b,
+    .ui-block-c,
+    .ui-block-d,
+    .ui-block-e {
+	width: 100% !important;
+	float: none;
+    }
 }

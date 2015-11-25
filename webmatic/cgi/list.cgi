@@ -43,7 +43,7 @@ cgi_eval {
             objObject = dom.GetObject(strObjID);
             strType   = objObject.TypeName();
             if (strType == "CHANNEL"){
-                ! Komma anhÃ¤ngen, wenn schon eine Zeile vorhanden:
+                ! Komma anhängen, wenn schon eine Zeile vorhanden:
                 if (firstEntry != 0) { WriteLine(','); }
                 firstEntry = 1;
 
@@ -83,7 +83,9 @@ cgi_eval {
                     Write('"id":"' # objDP.ID() # '"');
                     Write(', "name":"' # objDP.Name() # '"');
                     Write(', "type":"' # objDP.TypeName() # '"');
-                    Write(', "hssType":"' # objDP.HssType() # '"');
+                    if(objDP.TypeName() == "HSSDP"){
+                        Write(', "hssType":"' # objDP.HssType() # '"');
+                    }
                     Write(', "info":"' # objDP.DPInfo() # '"');
                     Write(', "value":"' # objDP.Value() # '"');
                     Write(', "valueUnit":"' # objDP.ValueUnit() # '"');
@@ -111,7 +113,7 @@ cgi_eval {
             }else{
 
                 if ((strType == "VARDP") || (strType == "ALARMDP")){
-                    ! Komma anhÃ¤ngen, wenn schon eine Zeile vorhanden:
+                    ! Komma anhängen, wenn schon eine Zeile vorhanden:
                     if (firstEntry != 0) { WriteLine(','); }
                     firstEntry = 1;
 
@@ -140,7 +142,7 @@ cgi_eval {
                     Write(', "valueUnit":"' # objObject.ValueUnit() # '"');
                     Write(', "date":"' # objObject.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
 
-                    ! PrÃ¼fen ob Kombinationsdiagramm vorliegt. Fix notwendig -> objObject.DPInfo() liefert in manchen FÃ¼llen wohl ein obj?
+                    ! Prüfen ob Kombinationsdiagramm vorliegt. Fix notwendig -> objObject.DPInfo() liefert in manchen Füllen wohl ein obj?
                     string inf;
                     ! var v = objObject.DPInfo();
                     if (inf.Find("(dk") == -1){
@@ -151,7 +153,7 @@ cgi_eval {
                         string strDkVar;
                         integer firstDiagram = 0;
                         foreach(strDkVar, val.Split(";")){
-                            ! Komma anhÃ¤ngen, wenn schon eine Zeile vorhanden:
+                            ! Komma anhängen, wenn schon eine Zeile vorhanden:
                             if (firstDiagram != 0) { WriteLine(','); }
                             firstDiagram = 1;
 
@@ -170,7 +172,7 @@ cgi_eval {
                     Write ('}');
                 }else{
                     if (strType == "PROGRAM"){
-                        ! Komma anhÃ¤ngen, wenn schon eine Zeile vorhanden:
+                        ! Komma anhängen, wenn schon eine Zeile vorhanden:
                         if (firstEntry != 0) { WriteLine(','); }
                         firstEntry = 1;
 

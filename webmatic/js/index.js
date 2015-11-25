@@ -5,7 +5,7 @@ $(function () {
     // Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
     $.ajaxSetup({cache: false});
 
-    // GrÃ¶ÃŸe der Grafiken aus localStorage holen:
+    // Größe der Grafiken aus localStorage holen:
     var gfxClass = localStorage.getItem("optionsMenuGfxSize");
     if (!gfxClass || gfxClass === "" || gfxClass === "large") {
         gfxClass = "ui-li-thumbnail";
@@ -90,7 +90,7 @@ $(function () {
         $("#listOther").append("<li id='menuItemOptions' class='menuItemOptions'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>Optionen</span></a></li>");
         $("#listOther").append("<li id='menuItemGraphicIDs' class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>Grafik IDs</span></a></li>");
 
-        // GrÃ¶ÃŸe der Grafiken aus localStorage holen:
+        // Größe der Grafiken aus localStorage holen:
         var showTestPages = localStorage.getItem("optionsMenuShowTestpages");
         if (showTestPages && showTestPages === "true") {
             $("#listOther").append("<li id='menuItemDebug' class='menuItemDebug'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>Testseite</span></a></li>");

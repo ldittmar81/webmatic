@@ -73,14 +73,14 @@ function checkrefreshPage() {
 }
 
 function restartTimer() {
-    // Zeit zurÃ¼cksetzen, damit wieder neu gezÃ¤hlt wird:
+    // Zeit zurücksetzen, damit wieder neu gezählt wird:
     var d = new Date();
     lastTime = d.getTime();
 }
 
 function refreshPage(item) {
     // Gleich mal den Timer neu starten, lieber vor dem Reload, damit sich die nicht in die Quere kommen.
-    // SpÃ¤ter dann besser nur einen Refresh zur selben Zeit zulassen:
+    // Später dann besser nur einen Refresh zur selben Zeit zulassen:
     restartTimer();
 
     // Markieren von selektiertem Menueintrag:
@@ -318,8 +318,8 @@ function changeFont(code) {
 
 // ----------------------- HTML Creation Helper ------------------------------
 
-// Ein Button, bei dessen drÃ¼cken ein Wert an die ID Ã¼bertragen wird.
-// onlyButton wird benutzt, wenn fÃ¼r das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
+// Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
+// onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
 function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh) {
     var html = "";
     if (!onlyButton) {
@@ -359,18 +359,18 @@ function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, addFirs
     return html;
 }
 
-// Ein Button, bei dessen drÃ¼cken ein Programm ID ausgefÃ¼hrt wird.
+// Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
 function addStartProgramButton(parentId, id, text, vorDate, operate) {
     var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "'>" + text + "</a></div>";
     html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
     return html;
 }
 
-// Ein Slider und Button, bei dessen drÃ¼cken der neue Wert an die ID Ã¼bertragen wird.
-// Factor wird fÃ¼r das Setzen verwendet, z.B. bei Jalousien muss 0-1 gesetzt werden, fÃ¼r die Anzeige
-// ist aber 0 - 100 schÃ¶ner.
+// Ein Slider und Button, bei dessen drücken der neue Wert an die ID übertragen wird.
+// Factor wird für das Setzen verwendet, z.B. bei Jalousien muss 0-1 gesetzt werden, für die Anzeige
+// ist aber 0 - 100 schöner.
 //
-// TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groÃŸ ist?
+// TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groß ist?
 function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate, refresh) {
     var html = "<div class='ui-field-contain'>";
     html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
@@ -386,7 +386,7 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     html += "<div data-role='controlgroup' data-type='horizontal'>";
 
     var idString = "";
-    // Leerstring heiÃŸt wohl auch false, z.B. bei Alarmzone.
+    // Leerstring heißt wohl auch false, z.B. bei Alarmzone.
     if (strValue === "false" || strValue === "") {
         idString = "class='ui-btn-active'";
     } else {
@@ -431,7 +431,7 @@ function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, r
 
 function addSetText(parentId, valID, val, valUnit, vorDate) {
     var html = "<div data-role='fieldcontain'>";
-    // Der String ist hier mit " eingefasst, darum mÃ¼ssen diese im String mit &quot; ersetzt werden:
+    // Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
     val = val.replace(/\"/g, "&quot;");
     if (val.length > 40) {
         html += "<textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
@@ -581,12 +581,12 @@ function addDiagram(options) {
         var dType = "l"; // Typ = Line.
         var dColor = "69A5CF"; // Farbe.
         var dLow = ""; // Kleinster Werte 10% unter Minimum.
-        var dHigh = ""; // GrÃ¶ÃŸter Wert 10% Ã¼ber Maximum.
+        var dHigh = ""; // Größter Wert 10% über Maximum.
         var dKomma = 1; // Eine Nachkommastellen.
-        var dStart = "0/#008800"; // Startwert fÃ¼r Gauge.
-        var dEnd = "30/#AA4400";  // Endwert fÃ¼r Gauge.
+        var dStart = "0/#008800"; // Startwert für Gauge.
+        var dEnd = "30/#AA4400";  // Endwert für Gauge.
 
-        // Diagrammoptionen prÃ¼fen:
+        // Diagrammoptionen prüfen:
         for (var i = 0; i < options['varOptions'].length; i++) {
             var dA = options['varOptions'][i].split("=");
             if (dA.length === 2) {
@@ -965,7 +965,7 @@ function addChannel(device, systemDate, options) {
             if (typeof (valUnit) === "undefined") {
                 valUnit = "";
             } else if (valUnit === "100%") {
-                valUnit = "%";  // Manche GerÃ¤te haben als Einheit 100%. WÃ¼rde zu seltsamen Darstellungen fÃ¼hren.
+                valUnit = "%";  // Manche Geräte haben als Einheit 100%. Würde zu seltsamen Darstellungen führen.
             }
 
             if (hssType === "SETPOINT" || hssType === "SET_TEMPERATURE") {
@@ -1136,7 +1136,7 @@ function addChannel(device, systemDate, options) {
             // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten,
             // bei (d) / (dk) ist es ein Diagramm in den Favoriten,
             // bei (g) eine Tankuhr,
-            // bei (nv) soll der Wert ausgeblendet werden (Sollwertscript). Nur bei Variablen in GerÃ¤ten verknÃ¼pft.
+            // bei (nv) soll der Wert ausgeblendet werden (Sollwertscript). Nur bei Variablen in Geräten verknüpft.
             // ( finden:
             options['varOptionsFirst'] = "";
             options['varOptions'] = [];
@@ -1155,7 +1155,7 @@ function addChannel(device, systemDate, options) {
             }
 
             if (options['varOptionsFirst'] !== "nv") {
-                // <br> davor, weil es an der Stelle eine mit GerÃ¤t verknÃ¼pfte Variable ist:
+                // <br> davor, weil es an der Stelle eine mit Gerät verknüpfte Variable ist:
                 deviceHTML += "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
                 deviceHTML += "<p>" + valInfo + "</p>";
                 if (isReadOnly(valInfo)) {
@@ -1342,12 +1342,11 @@ function getTimeDiffString(diffDate, systemDate) {
         return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_MON_SINGULAR"):mapText("TIME_MON_PLURAL")) + " " + mapText("TIME_SUFFIX");
     } else {
         result = Math.floor(timeDiff / (60 * 60 * 24 * 30.5 * 12) + 0.5);
-        if (result > 40) {
-            return mapText("NO_CHANGE");
-        } else {
+        if (result < 40) {
             return mapText("TIME_PREFIX") + " " + result + " " + (result === 1?mapText("TIME_Y_SINGULAR"):mapText("TIME_Y_PLURAL")) + " " + mapText("TIME_SUFFIX");
         }
     }
+    return "";
 }
 
 function reloadList(txt, systemDate, restart) {
@@ -1713,7 +1712,7 @@ function loadOptions() {
     $("#dataListHeader").empty();
 
     $("#dataListHeader").append("<li data-role='list-divider' role='heading'>Optionen</li>");
-    var html = "<li><h1>Gr&ouml;&szlig;e der Menugrafiken</h1><p><div data-role='fieldcontain'>";
+    var html = "<li><h1>Grö&szlig;e der Menugrafiken</h1><p><div data-role='fieldcontain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     var gfxSize = localStorage.getItem("optionsMenuGfxSize");
     var theme1 = "";
@@ -1743,7 +1742,7 @@ function loadOptions() {
     html += "</div></li>";
     $("#dataList").append(html);
 
-    html = "<li><h1>Theme ausw&auml;hlen</h1><p><div data-role='fieldcontain'>";
+    html = "<li><h1>Theme auswählen</h1><p><div data-role='fieldcontain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='a' class='" + (theme === 'a' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Normal</a>";
     html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='b' class='" + (theme === 'b' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Schwarz</a>";
@@ -1792,10 +1791,10 @@ $(function () {
         $.mobile.listview.prototype.options.filterPlaceholder = "Daten filtern...";
     });
 
-    // Ein Button, bei dessen drÃ¼cken ein Wert an die ID Ã¼bertragen wird.
+    // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
     $(document.body).on("click", "[id^=setButton]", function () {
         var obj = $(this);
-        var dataID = obj.data("id");    // Homematic GerÃ¤te ID.
+        var dataID = obj.data("id");    // Homematic Geräte ID.
         var refresh = obj.data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
         var value = obj.data("value"); // Wert.
         var infoID = "info_" + dataID;      // Info Textfeld neben Button.
@@ -1812,13 +1811,13 @@ $(function () {
             }
         }
 
-        $("#" + infoID).text("&Uuml;bertrage...");
+        $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value + ontimeValue, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
                 refreshPage(0);
             } else {
-                $("#" + infoID).text("Wert wird noch an Ger&auml;t Ã¼bertragen und erst verz&ouml;gert hier dargestellt.");
+                $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
             }
             
             if(ontimeVal > 0){
@@ -1827,9 +1826,9 @@ $(function () {
         });
     });
 
-    // Ein Button, bei dessen drÃ¼cken ein Wert an die ID Ã¼bertragen wird.
+    // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
     $(document.body).on("click", "[id^=setNumberButton]", function () {
-        var dataID = $(this).data("id");  // Homematic GerÃ¤te ID.
+        var dataID = $(this).data("id");  // Homematic Geräte ID.
         var refresh = $(this).data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
         var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
@@ -1837,67 +1836,67 @@ $(function () {
         var factor = $("#" + valueID).data("factor"); // Factor auslesen.
 
         var valueDivided = parseFloat(value) / factor;
-        $("#" + infoID).text("&Uuml;bertrage...");
+        $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + valueDivided, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
                 refreshPage(0);
             } else {
-                $("#" + infoID).text("Wert wird noch an GerÃ¤t Ã¼bertragen und erst verzÃ¶gert hier dargestellt.");
+                $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
             }
         });
     });
 
-    // Ein Button, bei dessen drÃ¼cken ein Bool an die ID Ã¼bertragen wird.
+    // Ein Button, bei dessen drücken ein Bool an die ID übertragen wird.
     $(document.body).on("click", "[id^=setBoolButton]", function () {
         var obj = $(this);
-        var dataID = obj.data("id");  // Homematic GerÃ¤te ID.
+        var dataID = obj.data("id");  // Homematic Geräte ID.
         var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
         var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
         
-        $("#" + infoID).text("&Uuml;bertrage...");
+        $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
             refreshPage(0);
         });
     });
 
-    // Ein Button, bei dessen drÃ¼cken ein ValueList Item an die ID Ã¼bertragen wird.
+    // Ein Button, bei dessen drücken ein ValueList Item an die ID übertragen wird.
     $(document.body).on("click", "[id^=setValueListButton]", function () {
-        var dataID = $(this).data("id");  // Homematic GerÃ¤te ID.
+        var dataID = $(this).data("id");  // Homematic Geräte ID.
         var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
         var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
 
-        $("#" + infoID).text("&Uuml;bertrage...");
+        $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
             refreshPage(0);
         });
     });
 
-    // Ein Button, bei dessen drÃ¼cken ein Bool an die ID Ã¼bertragen wird.
+    // Ein Button, bei dessen drücken ein Bool an die ID übertragen wird.
     $(document.body).on("click", "[id^=setTextButton]", function () {
-        var dataID = $(this).data("id");  // Homematic GerÃ¤te ID.
+        var dataID = $(this).data("id");  // Homematic Geräte ID.
         var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
         var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
         // Alle " durch ' ersetzen, da sonst Probleme an verschiedenen Stellen:
         value = value.replace(/\"/g, "'");
-        // Dann noch enocden, damit alles Ã¼bertragen wird:
+        // Dann noch enocden, damit alles übertragen wird:
         value = encodeURIComponent(value);
 
-        $("#" + infoID).text("&Uuml;bertrage...");
+        $("#" + infoID).text("Übertrage...");
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value, function () {
             $("#" + infoID).text("OK!");
             refreshPage(0);
         });
     });
 
-    // Ein Button, bei dessen drÃ¼cken ein "true" an die ID Ã¼bertragen wird.
+    // Ein Button, bei dessen drücken ein "true" an die ID übertragen wird.
     $(document.body).on("click", "[id^=startProgramButton]", function () {
-        var dataID = $(this).data("id");  // Homematic GerÃ¤te ID.
+        var dataID = $(this).data("id");  // Homematic Geräte ID.
         var infoID = "info_" + dataID;  // Info Textfeld neben Button.
 
         $("#" + infoID).text("Starte...");
@@ -1911,8 +1910,8 @@ $(function () {
 
         if (file.name.length < 1) {
         } else if (file.type !== 'image/png' && file.type !== 'image/jpg' && !file.type !== 'image/gif' && file.type !== 'image/jpeg') {
-            //TODO alert ist nicht schÃ¶n... muss noch ersetzt werden
-            $.mobile.alert("Es kÃ¶nnen nur JPG, GIF oder PNG hochgeladen werden!");
+            //TODO alert ist nicht schön... muss noch ersetzt werden
+            $.mobile.alert("Es können nur JPG, GIF oder PNG hochgeladen werden!");
         } else {
             var id = $(this).attr('id');
             var key = id.substr(4, id.length);
