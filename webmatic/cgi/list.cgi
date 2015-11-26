@@ -43,7 +43,7 @@ cgi_eval {
             objObject = dom.GetObject(strObjID);
             strType   = objObject.TypeName();
             if (strType == "CHANNEL"){
-                ! Komma anh‰ngen, wenn schon eine Zeile vorhanden:
+                ! Komma anh√§ngen, wenn schon eine Zeile vorhanden:
                 if (firstEntry != 0) { WriteLine(','); }
                 firstEntry = 1;
 
@@ -113,7 +113,7 @@ cgi_eval {
             }else{
 
                 if ((strType == "VARDP") || (strType == "ALARMDP")){
-                    ! Komma anh‰ngen, wenn schon eine Zeile vorhanden:
+                    ! Komma anh√§ngen, wenn schon eine Zeile vorhanden:
                     if (firstEntry != 0) { WriteLine(','); }
                     firstEntry = 1;
 
@@ -142,7 +142,7 @@ cgi_eval {
                     Write(', "valueUnit":"' # objObject.ValueUnit() # '"');
                     Write(', "date":"' # objObject.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
 
-                    ! Pr¸fen ob Kombinationsdiagramm vorliegt. Fix notwendig -> objObject.DPInfo() liefert in manchen F¸llen wohl ein obj?
+                    ! Pr√ºfen ob Kombinationsdiagramm vorliegt. Fix notwendig -> objObject.DPInfo() liefert in manchen F√§llen wohl ein obj?
                     string inf;
                     ! var v = objObject.DPInfo();
                     if (inf.Find("(dk") == -1){
@@ -153,7 +153,7 @@ cgi_eval {
                         string strDkVar;
                         integer firstDiagram = 0;
                         foreach(strDkVar, val.Split(";")){
-                            ! Komma anh‰ngen, wenn schon eine Zeile vorhanden:
+                            ! Komma anh√§ngen, wenn schon eine Zeile vorhanden:
                             if (firstDiagram != 0) { WriteLine(','); }
                             firstDiagram = 1;
 
@@ -172,7 +172,7 @@ cgi_eval {
                     Write ('}');
                 }else{
                     if (strType == "PROGRAM"){
-                        ! Komma anh‰ngen, wenn schon eine Zeile vorhanden:
+                        ! Komma anh√§ngen, wenn schon eine Zeile vorhanden:
                         if (firstEntry != 0) { WriteLine(','); }
                         firstEntry = 1;
 

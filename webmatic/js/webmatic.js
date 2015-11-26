@@ -479,7 +479,7 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
         visVal = strValue;
     }
     if (valType === "20" && valUnit === "html") {
-        return addHTML('', valID, strValue, vorDate, true);
+        return addHTML("", valID, strValue, vorDate, true);
     } else {
         return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
     }
@@ -513,9 +513,9 @@ function processVariable(variable, valID, systemDate) {
         // Liste.
         html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
     } else if (valType === "20" && valUnit === "html") {
-        html += addHTML(valID, strValue, vorDate, false);
+        html += addHTML("", valID, strValue, vorDate, false);
     } else if (valType === "20") {
-        html += addSetText('', valID, strValue, valUnit, vorDate);
+        html += addSetText("", valID, strValue, valUnit, vorDate);
     } else {
         html += mapText("UNKNOWN_VAR_TYPE") + "!";
     }
@@ -1068,10 +1068,10 @@ function addChannel(device, systemDate, options) {
                 deviceHTML += "</div>"; 
             } else if(hssType === "SUBMIT" && (deviceHssType === "SIGNAL_LED" || deviceHssType === "SIGNAL_CHIME")){
                 //TODO SIGNAL_LED SIGNAL_CHIME
-            } else if(hssType === "ON_TIME") {
+            } else if(hssType === "ON_TIME" || hssType === "RAMP_TIME") {
                 deviceHTML += "<div class='ui-field-contain ui-grid-c'>";
                 deviceHTML += "<div class='ui-block-a'>";
-                deviceHTML += "<input type='text' data-role='datebox' data-ontime-parent='" + deviceID + "' data-id='" + channelID + "' data-options='{\"mode\":\"durationbox\"}'/>&nbsp;";
+                deviceHTML += "<input type='text' data-role='datebox' data-duration-parent='" + deviceID + "' data-id='" + channelID + "' data-options='{\"mode\":\"durationbox\"}'/>&nbsp;";
                 deviceHTML += "</div>";
                 deviceHTML += "<div class='ui-block-b grid-text'>";
                 deviceHTML += mapText(deviceHssType + "__" + hssType);
@@ -1420,9 +1420,9 @@ function processDevices(device, systemDate, options) {
                 // Liste.
                 deviceHTML += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
             } else if (valType === "20" && valUnit === "html") {
-                deviceHTML += addHTML('', valID, strValue, vorDate, false);
+                deviceHTML += addHTML("", valID, strValue, vorDate, false);
             } else if (valType === "20") {
-                deviceHTML += addSetText('', valID, strValue, valUnit, vorDate);
+                deviceHTML += addSetText("", valID, strValue, valUnit, vorDate);
             } else {
                 deviceHTML += mapText("UNKNOWN_VAR_TYPE") + "!";
             }
@@ -1792,21 +1792,21 @@ $(function () {
         var refresh = obj.data("refresh");  // Hinweis, ob ein Refresh stattfinden soll.
         var value = obj.data("value"); // Wert.
         var infoID = "info_" + dataID;      // Info Textfeld neben Button.
-        var ontimeVal = 0;
+        var durationVal = 0;
         
-        var ontimeObj = $("[data-ontime-parent='" + obj.data("parent-id") + "']");
-        var ontimeValue = "";
-        if(ontimeObj.length === 1){
-            ontimeVal = ontimeObj.datebox('getLastDur');
-            if(isNaN(ontimeVal)){
-                ontimeVal = 0;
-            }else if(ontimeVal > 0){
-                ontimeValue = '&ontimeId=' + ontimeObj.data("id") + '&ontimeValue=' + ontimeVal;
+        var durationObj = $("[data-duration-parent='" + obj.data("parent-id") + "']");
+        var durationValue = "";
+        if(durationObj.length === 1){
+            durationVal = durationObj.datebox('getLastDur');
+            if(isNaN(durationVal)){
+                durationVal = 0;
+            }else if(durationVal > 0){
+                durationValue = '&durationId=' + durationObj.data("id") + '&durationValue=' + durationVal;
             }
         }
 
         $("#" + infoID).text("Übertrage...");
-        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value + ontimeValue, function () {
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value + durationValue, function () {
             if (refresh) {
                 $("#" + infoID).text("OK!");
                 refreshPage(0);
@@ -1814,8 +1814,8 @@ $(function () {
                 $("#" + infoID).text("Wert wird noch an Gerät übertragen und erst verzögert hier dargestellt.");
             }
             
-            if(ontimeVal > 0){
-                setTimeout(function(){ refreshPage(0); }, (ontimeVal + 3) * 1000);
+            if(durationVal > 0){
+                setTimeout(function(){ refreshPage(0); }, (durationVal + 3) * 1000);
             }
         });
     });

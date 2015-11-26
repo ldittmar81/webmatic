@@ -7,28 +7,30 @@ source [file join $env(DOCUMENT_ROOT) cgi.tcl]
 cgi_eval {
     cgi_input
     cgi_content_type "text/html; charset=iso-8859-1"
+
     set id ""
     set value ""
-    set ontimeId ""
-    set ontimeValue ""
+    set durationId ""
+    set durationValue ""
+
     catch { import id }
     catch { import value }
-    catch { import ontimeId }
-    catch { import ontimeValue }
-
+    catch { import durationId }
+    catch { import durationValue }
+    
     array set res [rega_script {
         string strId = "} $id {";
         string strValue = "} $value {";
-        string strOntimeId = "} $ontimeId {";
-        string strOntimeValue = "} $ontimeValue {";
+        string strDurationId = "} $durationId {";
+        string strDurationValue = "} $durationValue {";
 
         string s_dbg;
         s_dbg = strId.StrValueByIndex ("_", 0);
         if (s_dbg != "dbg"){
-            if(strOntimeId != ""){
-                object ontime_obj = dom.GetObject(strOntimeId);
-                ontime_obj.State(strOntimeValue);
-                WriteLine ('{ "ON_TIME" : "' # strOntimeValue # '" }');
+            if(strDurationId != ""){
+                object duration_obj = dom.GetObject(strDurationId);
+                duration_obj.State(strDurationValue);
+                WriteLine ('{ "duration" : "' # strDurationValue # '" }');
             }
             object o_object = dom.GetObject(strId);
             boolean b;
