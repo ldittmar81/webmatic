@@ -5,7 +5,7 @@ $(function () {
     // Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
     $.ajaxSetup({cache: false});
 
-    // Gr��e der Grafiken aus localStorage holen:
+    // Größe der Grafiken aus localStorage holen:
     var gfxClass = localStorage.getItem("optionsMenuGfxSize");
     if (!gfxClass || gfxClass === "" || gfxClass === "large") {
         gfxClass = "ui-li-thumbnail";
@@ -17,7 +17,7 @@ $(function () {
 
     //Menüpunkt Favoriten
     if (optionsMap["favorites"]) {
-        $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "favorites") + "'><h3>Favoriten</h3><ul id='listFavorites' data-role='listview' data-inset='true'></ul></div>");
+        $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "favorites") + "'><h3>" + mapText("FAVORITES") + "</h3><ul id='listFavorites' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticFavoritesMap") === null) {
             loadConfigData(false, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
@@ -36,7 +36,7 @@ $(function () {
 
     //Menüpunkt Räume
     if (optionsMap["rooms"]) {
-        $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "rooms") + "'><h3>R&auml;ume</h3><ul id='listRooms' data-role='listview' data-inset='true'></ul></div>");
+        $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "rooms") + "'><h3>" + mapText("ROOMS") + "</h3><ul id='listRooms' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticRoomsMap") === null) {
             loadConfigData(false, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap'); 
@@ -55,7 +55,7 @@ $(function () {
 
     //Menüpunkt Gewerke
     if (optionsMap["functions"]) {
-        $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "functions") + "'><h3>Gewerke</h3><ul id='listFunctions' data-role='listview' data-inset='true'></ul></div>");
+        $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "functions") + "'><h3>" + mapText("FUNCTIONS") + "</h3><ul id='listFunctions' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticFunctionsMap") === null) {
             loadConfigData(false, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
@@ -74,27 +74,27 @@ $(function () {
 
     //Menüpunkt Variablen
     if (optionsMap["variables"]) {
-        $("#main_menu").append("<div id='listVariables' class='scrollToList' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] === "variables") + "'><h3>Systemvariablen</h3></div>");
+        $("#main_menu").append("<div id='listVariables' class='scrollToList' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] === "variables") + "'><h3>" + mapText("SYS_VAR") + "</h3></div>");
     }
 
     //Menüpunkt Programme
     if (optionsMap["programs"]) {
-        $("#main_menu").append("<div id='listPrograms' class='scrollToList' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] === "programs") + "'><h3>Programme</h3></div>");
+        $("#main_menu").append("<div id='listPrograms' class='scrollToList' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (optionsMap["collapsed"] === "programs") + "'><h3>" + mapText("PROGRAMS") + "</h3></div>");
     }
 
     //Menüpunkt Sonstiges
     if (optionsMap["others"]) {
-        $("#main_menu").append("<div class='menuListRow' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "others") + "'><h3>Sonstiges</h3><ul id='listOther' data-role='listview' data-inset='true'></ul></div>");
-        $("#listOther").append("<li id='menuItemVariables' class='menuItemVariables'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>Systemvariablen</span></a></li>");
-        $("#listOther").append("<li id='menuItemPrograms' class='menuItemPrograms'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>Programme</span></a></li>");
-        $("#listOther").append("<li id='menuItemOptions' class='menuItemOptions'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>Optionen</span></a></li>");
-        $("#listOther").append("<li id='menuItemGraphicIDs' class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>Grafik IDs</span></a></li>");
+        $("#main_menu").append("<div class='menuListRow' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "others") + "'><h3>" + mapText("SETTINGS") + "</h3><ul id='listOther' data-role='listview' data-inset='true'></ul></div>");
+        $("#listOther").append("<li id='menuItemVariables' class='menuItemVariables'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>" + mapText("SYS_VAR") + "</span></a></li>");
+        $("#listOther").append("<li id='menuItemPrograms' class='menuItemPrograms'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>" + mapText("PROGRAMS") + "</span></a></li>");
+        $("#listOther").append("<li id='menuItemOptions' class='menuItemOptions'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>" + mapText("OPTIONS") + "Optionen</span></a></li>");
+        $("#listOther").append("<li id='menuItemGraphicIDs' class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + "</span></a></li>");
 
-        // Gr��e der Grafiken aus localStorage holen:
+        // Größe der Grafiken aus localStorage holen:
         var showTestPages = localStorage.getItem("optionsMenuShowTestpages");
         if (showTestPages && showTestPages === "true") {
-            $("#listOther").append("<li id='menuItemDebug' class='menuItemDebug'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>Testseite</span></a></li>");
-            $("#listOther").append("<li id='menuItemDebugCUxD' class='menuItemDebugCUxD'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>Testseite CUxD</span></a></li>");
+            $("#listOther").append("<li id='menuItemDebug' class='menuItemDebug'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>" + mapText("TEST_DEVICE") + "</span></a></li>");
+            $("#listOther").append("<li id='menuItemDebugCUxD' class='menuItemDebugCUxD'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>" + mapText("TEST_CUXD") + "</span></a></li>");
         }
         $("#listOther").listview().listview("refresh");
     }

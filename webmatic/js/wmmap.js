@@ -1,4 +1,4 @@
-// �bersetzungen von HomeMatic IDs zu sprechenden Texten für alle
+// Übersetzungen von HomeMatic IDs zu sprechenden Texten für alle
 // Controls, die nicht direkt im webmatic.js abgehandelt werden.
 
 //DEVICETYP__CHANNELTYP__EVENTUELLERSTATUS
@@ -16,7 +16,7 @@ var textMap = {
     ALARMACTUATOR__ERROR_SABOTAGE__0: "-",
     ALARMACTUATOR__ERROR_BATTERY__1: "Batterie defekt",
     ALARMACTUATOR__ERROR_BATTERY__0: "-",
-    ALARMACTUATOR__ON_TIME: "Dauer",
+    ALARMACTUATOR__ON_TIME: "Einschaltdauer",
     ALARMACTUATOR__INHIBIT: "-",
     ALARMACTUATOR__WORKING: "-",
     ALARMACTUATOR__LOWBAT__true: "Batteriestand niedrig",
@@ -60,8 +60,8 @@ var textMap = {
     CLIMATECONTROL_REGULATOR__SUMMER_MODE__false: "Sommerbetrieb aus",
     CLIMATECONTROL_REGULATOR__PARTY_MODE_SUBMIT: "** CLIMATECONTROL_REGULATOR__PARTY_MODE_SUBMIT",
     CLIMATECONTROL_REGULATOR__VACATION_STOP: "** CLIMATECONTROL_REGULATOR__VACATION_STOP",
-    CLIMATECONTROL_REGULATOR__SETPOINT__VENT_CLOSED: "Zu",
-    CLIMATECONTROL_REGULATOR__SETPOINT__VENT_OPEN: "Auf",
+    CLIMATECONTROL_REGULATOR__SETPOINT__VENT_CLOSED: "zu",
+    CLIMATECONTROL_REGULATOR__SETPOINT__VENT_OPEN: "auf",
     CLIMATECONTROL_REGULATOR__SET_INVERT: "** CLIMATECONTROL_REGULATOR__SET_INVERT",
     CLIMATECONTROL_REGULATOR__MODE_TEMPERATUR_REGULATOR__0: "automatisch",
     CLIMATECONTROL_REGULATOR__MODE_TEMPERATUR_REGULATOR__1: "manuell",
@@ -73,7 +73,7 @@ var textMap = {
     CLIMATECONTROL_RT_TRANSCEIVER__ACTUAL_TEMPERATURE: "Temperatur",
     CLIMATECONTROL_RT_TRANSCEIVER__ACTUAL_HUMIDITY: "Aktuelle Luftfeuchtigkeit",
     CLIMATECONTROL_RT_TRANSCEIVER__FAULT_REPORTING__0: "-",
-    CLIMATECONTROL_RT_TRANSCEIVER__FAULT_REPORTING__1: "Ventilantrieb schwergängig",
+    CLIMATECONTROL_RT_TRANSCEIVER__FAULT_REPORTING__1: "Ventilantrieb schwerg&auml;ngig",
     CLIMATECONTROL_RT_TRANSCEIVER__FAULT_REPORTING__2: "Stellbereich zu gro&szlig;",
     CLIMATECONTROL_RT_TRANSCEIVER__FAULT_REPORTING__3: "Stellbereich zu klein",
     CLIMATECONTROL_RT_TRANSCEIVER__FAULT_REPORTING__4: "Verbindungsfehler",
@@ -106,14 +106,14 @@ var textMap = {
     CLIMATECONTROL_RT_TRANSCEIVER__PARTY_STOP_YEAR: "-",
     CLIMATECONTROL_RT_TRANSCEIVER__CLEAR_WINDOW_OPEN_SYMBOL: "-",
     CLIMATECONTROL_RT_TRANSCEIVER__SET_SYMBOL_FOR_HEATING_PHASE: "-",
-    CLIMATECONTROL_RT_TRANSCEIVER__WINDOW_STATE__false: "Geschlossen",
-    CLIMATECONTROL_RT_TRANSCEIVER__WINDOW_STATE__true: "Offen",
+    CLIMATECONTROL_RT_TRANSCEIVER__WINDOW_STATE__false: "geschlossen",
+    CLIMATECONTROL_RT_TRANSCEIVER__WINDOW_STATE__true: "offen",
     CLIMATECONTROL_VENT_DRIVE__VALVE_STATE: "Ventil&ouml;ffnung",
-    CLIMATECONTROL_VENT_DRIVE__ERROR_0: "-",
-    CLIMATECONTROL_VENT_DRIVE__ERROR_1: "Ventilantrieb blockiert",
-    CLIMATECONTROL_VENT_DRIVE__ERROR_2: "Ventilantrieb lose",
-    CLIMATECONTROL_VENT_DRIVE__ERROR_3: "Einstellungsbereicht zu klein",
-    CLIMATECONTROL_VENT_DRIVE__ERROR_4: "Batteriestand niedrig",
+    CLIMATECONTROL_VENT_DRIVE__ERROR__0: "-",
+    CLIMATECONTROL_VENT_DRIVE__ERROR__1: "Ventilantrieb blockiert",
+    CLIMATECONTROL_VENT_DRIVE__ERROR__2: "Ventilantrieb lose",
+    CLIMATECONTROL_VENT_DRIVE__ERROR__3: "Einstellungsbereicht zu klein",
+    CLIMATECONTROL_VENT_DRIVE__ERROR__4: "Batteriestand niedrig",
     CLIMATECONTROL_VENT_DRIVE__VALVE_OFFSET_VALUE: "Ventilantrieb Offsetstellung",
     CLIMATECONTROL_VENT_DRIVE__TEMPERATURE: "Temperatur",
     CLIMATECONTROL_VENT_DRIVE__ALARM__true: "Ventilantrieb blockiert",
@@ -125,7 +125,8 @@ var textMap = {
     DIGITAL_ANALOG_INPUT__VALUE: "** DIGITAL_ANALOG_INPUT__VALUE",
     DIGITAL_ANALOG_OUTPUT__FREQUENCY: "** DIGITAL_ANALOG_OUTPUT__FREQUENCY",
     DIGITAL_INPUT__FREQUENCY: "** DIGITAL_INPUT__FREQUENCY",
-    DIGITAL_OUTPUT__STATE: "** DIGITAL_OUTPUT__STATE",
+    DIGITAL_OUTPUT__STATE__true: "an",
+    DIGITAL_OUTPUT__STATE__false: "aus",
     DIMMER__PROG_TIMER: "-",
     DIMMER__TOGGLE: "Zustand wechseln",
     DIMMER__PROG_DIM_UP: "-",
@@ -163,8 +164,8 @@ var textMap = {
     DISPLAY__UNIT__0: "-",
     DISPLAY__UNIT__1: "%",
     DISPLAY__UNIT__2: "W",
-    DISPLAY__UNIT__3: "�C",
-    DISPLAY__UNIT__4: "�F",
+    DISPLAY__UNIT__3: "°C",
+    DISPLAY__UNIT__4: "°F",
     DISPLAY__BEEP__0: "-",
     DISPLAY__BEEP__1: "Ton 1",
     DISPLAY__BEEP__2: "Ton 2",
@@ -192,6 +193,13 @@ var textMap = {
     KEY__SEND: "Snapshot",
     KEY__RESET: "Rebooten",
     KEY__WORKING: "-",
+    KEY__CMD_SETS: "-",
+    KEY__CMD_SETL: "-",
+    KEY__CMD_RETS: "-",
+    KEY__CMD_RETL: "-",
+    KEY__CMD_QUERY_RET: "-",
+    KEY__CMD_EXEC: "-",
+    KEY__CMD_KILL: "-",
     KEYMATIC__STATE__true: "&Ouml;ffnen",
     KEYMATIC__STATE__false: "Schlie&szlig;en",
     KEYMATIC__OPEN: "&Ouml;ffnen",
@@ -287,7 +295,8 @@ var textMap = {
     SENSOR__CONTROL__1: "Wechselstromz&auml;hler",
     SENSOR__CONTROL__2: "Wirkleistungsmesser",
     SENSOR__CONTROL__3: "Gasz&auml;hler",
-    SENSOR__SENSOR: "** SENSOR__SENSOR",
+    SENSOR__SENSOR__true: "** SENSOR__SENSOR__true",
+    SENSOR__SENSOR__false: "** SENSOR__SENSOR__false",
     SENSOR__STATE__true: "an",
     SENSOR__STATE__false: "aus",
     SENSOR__NOTIFICATION: "-",
@@ -320,8 +329,8 @@ var textMap = {
     SENSOR_FOR_CARBON_DIOXIDE__STATE__0: "CO<sub>2</sub> Konzentration normal",
     SENSOR_FOR_CARBON_DIOXIDE__STATE__1: "CO<sub>2</sub> Konzentration erh&ouml;ht",
     SENSOR_FOR_CARBON_DIOXIDE__STATE__2: "CO<sub>2</sub> Konzentration stark erh&ouml;ht",
-    SHUTTER_CONTACT__STATE__true: "Offen",
-    SHUTTER_CONTACT__STATE__false: "Geschlossen",
+    SHUTTER_CONTACT__STATE__true: "offen",
+    SHUTTER_CONTACT__STATE__false: "geschlossen",
     SHUTTER_CONTACT__ERROR__0: "-",
     SHUTTER_CONTACT__ERROR__1: "Sabotage ausgel&ouml;st",
     SHUTTER_CONTACT__LOWBAT__true: "Batteriestand niedrig",
@@ -329,12 +338,12 @@ var textMap = {
     SHUTTER_CONTACT__INHIBIT: "-",
     SIGNAL_CHIME__STATE__true: "an",
     SIGNAL_CHIME__STATE__false: "aus",
-    SIGNAL_CHIME__ON_TIME: "Dauer",
+    SIGNAL_CHIME__ON_TIME: "Einschaltdauer",
     SIGNAL_CHIME__INHIBIT: "-",
     SIGNAL_CHIME__WORKING: "-",
     SIGNAL_LED__STATE__true: "an",
     SIGNAL_LED__STATE__false: "aus",
-    SIGNAL_LED__ON_TIME: "Dauer",
+    SIGNAL_LED__ON_TIME: "Einschaltdauer",
     SIGNAL_LED__INHIBIT: "-",
     SIGNAL_LED__WORKING: "-",
     SMOKE_DETECTOR__STATE__true: "Rauch registriert",
@@ -401,7 +410,7 @@ var textMap = {
     SYSTEM__PRIORITY__4: "Priorit&auml;t kritisch",
     SYSTEM__APIKEY: "-",
     SWITCH__INFO: "eingetragene Adresse",
-    SWITCH__IP: "Adresse nach DNS-Aufl�sung",
+    SWITCH__IP: "Adresse nach DNS-Auflösung",
     SWITCH__UNREACH_CTR: "Fehlversuche",
     SWITCH__STATE__true: "an",
     SWITCH__STATE__false: "aus",
@@ -565,7 +574,6 @@ var textMap = {
     WRAPPER__TIME_ON_EVENT: "-",
     WRAPPER__TIME_OFF_EVENT: "-",
     WRAPPER__LIGHT: "** WRAPPER__LIGHT",
-    
     ALARMDP__CONFIG_PENDING: "Konfigurationsdaten stehen zur &Uuml;bertragung an",
     ALARMDP__DEVICE_IN_BOOTLOADER: "Ger&auml;t startet neu",
     ALARMDP__LOWBAT: "Batteriestand niedrig",
@@ -574,10 +582,10 @@ var textMap = {
     ALARMDP__UNREACH: "Kommunikation zur Zeit gest&ouml;rt",
     ALARMDP__UPDATE_PENDING: "Update verf&uuml;gbar",
     ALARMDP__USBH_POWERFAIL: "USB-Host deaktiviert",
-    OPEN: "Offen",
-    OPEN_SHORT: "Auf",
-    CLOSE: "Geschlossen",
-    CLOSE_SHORT: "Zu",
+    OPEN: "offen",
+    OPEN_SHORT: "auf",
+    CLOSE: "geschlossen",
+    CLOSE_SHORT: "zu",
     LOCKED: "Verriegelt",
     LOCK: "Verriegeln",
     ON: "an",
@@ -593,9 +601,13 @@ var textMap = {
     ROOMS: "R&auml;ume",
     FUNCTIONS: "Gewerke",
     EDIT: "Grafik IDs",
+    OPTIONS: "Optionen",
+    TEST_DEVICE: "Testseite HM",
+    TEST_CUXD: "Testseite CUXD",
     UNKNOWN_ERROR: "Unbekannter Fehler",
     NO_SERVICE_MESSAGES: "Keine Servicemeldungen vorhanden.",
     UNKNOWN_VAR_TYPE: "Unbekannter Variablentyp",
+    SETTINGS: "Einstellungen",
     TIME_SEC_SINGULAR: "Sekunde",
     TIME_SEC_PLURAL: "Sekunden",
     TIME_MIN_SINGULAR: "Minute",
@@ -696,6 +708,34 @@ var typeInput = {
     WINMATIC__STOP: "ButtonNoRefresh"
 };
 
+var unitMap = {
+    ABS_HUMIDITY: "g/m<sup>3</sup>",
+    DEW_POINT: "°C",
+    HUM_MAX_24H: "%",
+    HUM_MIN_24H: "%",
+    HUMIDITY: "%",
+    HUMIDITYF: "%",
+    LEVEL: "%",
+    ON_TIME: "s",
+    PROG_DIM_DOWN: "s",
+    PROG_DIM_UP: "s",
+    PROG_TIMER: "s",
+    RAIN_CTR: "mm",
+    RAIN_CTR_24H: "mm",
+    RAMP_TIME: "s",
+    SETPOINT: "°C",
+    TEMP_MAX_24H: "°C",
+    TEMP_MIN_24H: "°C",
+    TEMPERATURE: "°C",
+    TEMPERATUR_COMFORT_VALUE: "°C",
+    TEMPERATUR_LOWERING_VALUE: "°C",
+    TEMPERATUR_WINDOW_OPEN_VALUE: "°C",
+    VALVE_OFFSET_VALUE: "%",
+    VALVE_STATE: "%",
+    WIND_MAX_24H: "km/h",
+    WIND_SPEED: "km/h"
+};
+
 // Funktion zum mappen der IDs auf Texte.
 function mapText(text, defaultText) {
     var newText = "";
@@ -711,6 +751,17 @@ function mapText(text, defaultText) {
     } else {
         return newText;
     }
+}
+
+function mapUnit(unit, hssType) {
+
+    if (unit === "100%") {
+        return "%";  // Manche Geräte haben als Einheit 100%. Würde zu seltsamen Darstellungen führen.
+    } else if (typeof (unit) === "undefined" || unit === "") {
+        var result = unitMap[hssType];
+        return typeof (result) === "undefined" ? "" : result;
+    }
+    return unit;
 }
 
 // Funktion zum mappen von IDs auf Grafiken:
@@ -737,17 +788,19 @@ function mapState(hssType, deviceHssType, valFloat, valBool) {
             case 2:
                 if (valFloat === 0.0) {
                     return "OK";
-                } else if (valFloat === 1.0) {
+                } else if (valFloat == 1.0) {
                     return "Warning";
-                } else
+                } else {
                     return "Error";
+                }
             case 3:
                 return valBool ? "Warning" : "OK";
             case 4:
                 if (valFloat === 0.0) {
                     return "Hide";
-                } else
+                } else {
                     return "Warning";
+                }
             case 5:
                 return valBool ? "Error" : "NoError";
             case 6:
@@ -759,22 +812,25 @@ function mapState(hssType, deviceHssType, valFloat, valBool) {
                     return "NoError";
                 } else if (valFloat === 2.0) {
                     return "NoError";
-                } else
+                } else {
                     return "Warning";
+                }
             case 8:
                 return valBool ? "Error" : "Hide";
             case 9:
                 if (valFloat === 0.0) {
                     return "Hide";
-                } else
+                } else {
                     return "Error";
+                }
             case 10:
                 return valBool ? "Warning" : "Hide";
         }
     }
 
-    if (hssType === "STATE")
+    if (hssType === "STATE") {
         return valBool ? "OFF" : "ON";
+    }
 
     return "";
 }
