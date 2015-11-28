@@ -33,114 +33,114 @@ cgi_eval {
 
         strListEnum = dom.GetObject(strList).EnumUsedIDs();
         strListName = dom.GetObject(strList).Name();
-        WriteLine ('  "name": "' # strListName # '",');
+        WriteLine ("  -+#+-name-+#+-: -+#+-" # strListName # "-+#+-,");
         strDate = system.Date("%d.%m.%Y %H:%M:%S");
-        WriteLine ('  "date": "' # strDate # '",');
+        WriteLine ("  -+#+-date-+#+-: -+#+-" # strDate # "-+#+-,");
 
-        WriteLine('  "entries": [');
+        WriteLine("  -+#+-entries-+#+-: [");
         integer firstEntry = 0;
         foreach (strObjID, strListEnum){
             objObject = dom.GetObject(strObjID);
             strType   = objObject.TypeName();
             if (strType == "CHANNEL"){
                 ! Komma anhängen, wenn schon eine Zeile vorhanden:
-                if (firstEntry != 0) { WriteLine(','); }
+                if (firstEntry != 0) { WriteLine(","); }
                 firstEntry = 1;
 
                 ! Im Falle eines Kanals die allgemeinen Werte setzen und Datenpunkte auslesen:
-                Write('    {');
-                Write('"name":"' # objObject.Name() # '"');
-                Write(', "type":"CHANNEL"');
-                Write(', "id":"' # objObject.ID() # '"');
-                Write(', "address":"' # objObject.Address() # '"');
-                Write(', "hssType":"' # objObject.HssType() # '"');
+                Write("    {");
+                Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                Write(", -+#+-type-+#+-:-+#+-CHANNEL-+#+-");
+                Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");
+                Write(", -+#+-address-+#+-:-+#+-" # objObject.Address() # "-+#+-");
+                Write(", -+#+-hssType-+#+-:-+#+-" # objObject.HssType() # "-+#+-");
 
                 if (false == objObject.Internal()) {
-                    Write(', "visible":"' # objObject.Visible() # '"');
-                    Write(', "operate":');
+                    Write(", -+#+-visible-+#+-:-+#+-" # objObject.Visible() # "-+#+-");
+                    Write(", -+#+-operate-+#+-:");
                     if( objObject.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
-                        Write('"true"');
+                        Write("-+#+-true-+#+-");
                     } else {
-                        Write('"false"');
+                        Write("-+#+-false-+#+-");
                     }
                 } else {
-                    Write(', "visible":""');
-                    Write(', "operate":""');
+                    Write(", -+#+-visible-+#+-:-+#+--+#+-");
+                    Write(", -+#+-operate-+#+-:-+#+--+#+-");
                 }
 
-                WriteLine(', "channels": [');
+                WriteLine(", -+#+-channels-+#+-: [");
                 boolean firstChannelItem = true;
                 ! Datenpunkte iterieren:
                 foreach (strDP, objObject.DPs().EnumUsedIDs()){
                     objDP = dom.GetObject (strDP);
                     strTemp = objDP.TypeName();
                     if (firstChannelItem == false){
-                        WriteLine(',');
+                        WriteLine(",");
                     }
                     firstChannelItem = false;
              
-                    Write('    {');
-                    Write('"id":"' # objDP.ID() # '"');
-                    Write(', "name":"' # objDP.Name() # '"');
-                    Write(', "type":"' # objDP.TypeName() # '"');
+                    Write("    {");
+                    Write("-+#+-id-+#+-:-+#+-" # objDP.ID() # "-+#+-");
+                    Write(", -+#+-name-+#+-:-+#+-" # objDP.Name() # "-+#+-");
+                    Write(", -+#+-type-+#+-:-+#+-" # objDP.TypeName() # "-+#+-");
                     if(objDP.TypeName() == "HSSDP"){
-                        Write(', "hssType":"' # objDP.HssType() # '"');
+                        Write(", -+#+-hssType-+#+-:-+#+-" # objDP.HssType() # "-+#+-");
                     }
-                    Write(', "info":"' # objDP.DPInfo() # '"');
-                    Write(', "value":"' # objDP.Value() # '"');
-                    Write(', "valueUnit":"' # objDP.ValueUnit() # '"');
+                    Write(", -+#+-info-+#+-:-+#+-" # objDP.DPInfo() # "-+#+-");
+                    Write(", -+#+-value-+#+-:-+#+-" # objDP.Value() # "-+#+-");
+                    Write(", -+#+-valueUnit-+#+-:-+#+-" # objDP.ValueUnit() # "-+#+-");
                     if (objDP.ValueType() == 16){
-                        Write(',"valueList":"' # objDP.ValueList() # '"');
+                        Write(",-+#+-valueList-+#+-:-+#+-" # objDP.ValueList() # "-+#+-");
                     }
                     if (objDP.ValueType() == 2){
-                        Write(',"valueName0":"' # objDP.ValueName0() # '"');
-                        Write(',"valueName1":"' # objDP.ValueName1() # '"');
+                        Write(",-+#+-valueName0-+#+-:-+#+-" # objDP.ValueName0() # "-+#+-");
+                        Write(",-+#+-valueName1-+#+-:-+#+-" # objDP.ValueName1() # "-+#+-");
                     }
                     if (objDP.ValueType() == 4){
-                        Write(',"valueMin":"' # objDP.ValueMin() # '"');
-                        Write(',"valueMax":"' # objDP.ValueMax() # '"');
+                        Write(",-+#+-valueMin-+#+-:-+#+-" # objDP.ValueMin() # "-+#+-");
+                        Write(",-+#+-valueMax-+#+-:-+#+-" # objDP.ValueMax() # "-+#+-");
                     }
-                    Write(', "valueType":"' # objDP.ValueType() # '"');
-                    Write(', "readable":"' # ((OPERATION_READ & objDP.Operations()) == 1) # '"');
-                    Write(', "writeable":"' # ((OPERATION_WRITE & objDP.Operations()) == 2) # '"');
-                    Write(', "date":"' # objDP.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
-                    Write('}');
+                    Write(", -+#+-valueType-+#+-:-+#+-" # objDP.ValueType() # "-+#+-");
+                    Write(", -+#+-readable-+#+-:-+#+-" # ((OPERATION_READ & objDP.Operations()) == 1) # "-+#+-");
+                    Write(", -+#+-writeable-+#+-:-+#+-" # ((OPERATION_WRITE & objDP.Operations()) == 2) # "-+#+-");
+                    Write(", -+#+-date-+#+-:-+#+-" # objDP.Timestamp().Format("%d.%m.%Y %H:%M:%S") # "-+#+-");
+                    Write("}");
 
                 }
-                WriteLine('  ]');
-                Write ('}');
+                WriteLine("  ]");
+                Write ("}");
 
             }else{
 
                 if ((strType == "VARDP") || (strType == "ALARMDP")){
                     ! Komma anhängen, wenn schon eine Zeile vorhanden:
-                    if (firstEntry != 0) { WriteLine(','); }
+                    if (firstEntry != 0) { WriteLine(","); }
                     firstEntry = 1;
 
                     ! Im Falle einer Variable die allgemeinen Werte setzen und Inhalt auslesen:
-                    Write('    {');
-                    Write('"name":"' # objObject.Name() # '"');
-                    Write(', "type":"VARDP"');
-                    Write(', "id":"' # objObject.ID() # '"');
-                    Write(', "info":"' # objObject.DPInfo() # '"');
-                    Write(', "value":"' # objObject.Value() # '"');
-                    Write(', "visible":"' # objObject.Visible() # '"');
+                    Write("    {");
+                    Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                    Write(", -+#+-type-+#+-:-+#+-VARDP-+#+-");
+                    Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");
+                    Write(", -+#+-info-+#+-:-+#+-" # objObject.DPInfo() # "-+#+-");
+                    Write(", -+#+-value-+#+-:-+#+-" # objObject.Value() # "-+#+-");
+                    Write(", -+#+-visible-+#+-:-+#+-" # objObject.Visible() # "-+#+-");
                     
                     if (objObject.ValueType() == 16){
-                        Write(',"valueList":"' # objObject.ValueList() # '"');
+                        Write(",-+#+-valueList-+#+-:-+#+-" # objObject.ValueList() # "-+#+-");
                     }
                     if (objObject.ValueType() == 2){
-                        Write(',"valueName0":"' # objObject.ValueName0() # '"');
-                        Write(',"valueName1":"' # objObject.ValueName1() # '"');
+                        Write(",-+#+-valueName0-+#+-:-+#+-" # objObject.ValueName0() # "-+#+-");
+                        Write(",-+#+-valueName1-+#+-:-+#+-" # objObject.ValueName1() # "-+#+-");
                     }
                     if (objObject.ValueType() == 4){
-                        Write(',"valueMin":"' # objObject.ValueMin() # '"');
-                        Write(',"valueMax":"' # objObject.ValueMax() # '"');
+                        Write(",-+#+-valueMin-+#+-:-+#+-" # objObject.ValueMin() # "-+#+-");
+                        Write(",-+#+-valueMax-+#+-:-+#+-" # objObject.ValueMax() # "-+#+-");
                     }
 
-                    Write(', "valueType":"' # objObject.ValueType() # '"');
-                    Write(', "valueUnit":"' # objObject.ValueUnit() # '"');
-                    Write(', "date":"' # objObject.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
+                    Write(", -+#+-valueType-+#+-:-+#+-" # objObject.ValueType() # "-+#+-");
+                    Write(", -+#+-valueUnit-+#+-:-+#+-" # objObject.ValueUnit() # "-+#+-");
+                    Write(", -+#+-date-+#+-:-+#+-" # objObject.Timestamp().Format("%d.%m.%Y %H:%M:%S") # "-+#+-");
 
                     ! Prüfen ob Kombinationsdiagramm vorliegt. Fix notwendig -> objObject.DPInfo() liefert in manchen Fällen wohl ein obj?
                     string inf;
@@ -148,62 +148,63 @@ cgi_eval {
                     if (inf.Find("(dk") == -1){
                     }else{
                         ! Werte aller Diagramme auslesen, auf welche hier verwiesen wird:
-                        WriteLine(', "diagrams": [');
+                        WriteLine(", -+#+-diagrams-+#+-: [");
                         string val = objObject.Value();
                         string strDkVar;
                         integer firstDiagram = 0;
                         foreach(strDkVar, val.Split(";")){
                             ! Komma anhängen, wenn schon eine Zeile vorhanden:
-                            if (firstDiagram != 0) { WriteLine(','); }
+                            if (firstDiagram != 0) { WriteLine(","); }
                             firstDiagram = 1;
 
-                            Write('  {');
+                            Write("  {");
                             ! Das ist noch die Variable inklusive Optionen, nochmal am , teilen und ersten Teil nehmen:
                             string strVarName = strDkVar.StrValueByIndex(",", 0);
                             object objDkVar = dom.GetObject(strVarName);
                             if (objDkVar){
-                                Write('"name":"' # objDkVar.Name() # '"');
-                                Write(', "value":"' # objDkVar.Value() # '"');
+                                Write("-+#+-name-+#+-:-+#+-" # objDkVar.Name() # "-+#+-");
+                                Write(", -+#+-value-+#+-:-+#+-" # objDkVar.Value() # "-+#+-");
                             }
-                            Write('  }');
+                            Write("  }");
                         }
-                        WriteLine('    ]');
+                        WriteLine("    ]");
                     }
-                    Write ('}');
+                    Write ("}");
                 }else{
                     if (strType == "PROGRAM"){
                         ! Komma anhängen, wenn schon eine Zeile vorhanden:
-                        if (firstEntry != 0) { WriteLine(','); }
+                        if (firstEntry != 0) { WriteLine(","); }
                         firstEntry = 1;
 
-                        Write('    {');
-                        Write('"name":"' # objObject.Name() # '"');
-                        Write(', "type":"PROGRAM"');
-                        Write(', "id":"' # objObject.ID() # '"');
-                        Write(', "info":"' # objObject.PrgInfo() # '"');
-                        Write(', "visible":"' # objObject.Visible() # '"');
-                        Write(', "operate":');
+                        Write("    {");
+                        Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                        Write(", -+#+-type-+#+-:-+#+-PROGRAM-+#+-");
+                        Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");
+                        Write(", -+#+-info-+#+-:-+#+-" # objObject.PrgInfo() # "-+#+-");
+                        Write(", -+#+-visible-+#+-:-+#+-" # objObject.Visible() # "-+#+-");
+                        Write(", -+#+-operate-+#+-:");
                         if( objObject.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
-                            Write('"true"');
+                            Write("-+#+-true-+#+-");
                         } else {
-                            Write('"false"');
+                            Write("-+#+-false-+#+-");
                         }
 
-                        Write(', "date":"' # objObject.ProgramLastExecuteTime().Format("%d.%m.%Y %H:%M:%S") # '"');
-                        Write ('}');
+                        Write(", -+#+-date-+#+-:-+#+-" # objObject.ProgramLastExecuteTime().Format("%d.%m.%Y %H:%M:%S") # "-+#+-");
+                        Write ("}");
                     }else{
-                        Write('    {');
-                        Write('"name":"' # objObject.Name() # '"');
-                        Write(', "type":"' # strType # '"');
-                        Write(', "id":"' # objObject.ID() # '"');                        
-                        Write ('}');
+                        Write("    {");
+                        Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                        Write(", -+#+-type-+#+-:-+#+-" # strType # "-+#+-");
+                        Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");                        
+                        Write ("}");
                     }
                 }
             }
         }	
-        WriteLine('  ]');
-        WriteLine('}');
+        WriteLine("  ]");
+        WriteLine("}");
     }]
 
-    puts -nonewline $res(STDOUT)
+    set response [string map {\" ' -+#+- \" \n "" \r ""} $res(STDOUT)]
+    puts -nonewline $response
 }
