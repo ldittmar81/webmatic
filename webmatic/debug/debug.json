@@ -1,262 +1,59 @@
 {
   "name": "Testliste",
-  "date": "08.11.2012 11:49:38",
+  "date": "08.11.2016 11:49:38",
   "entries": [
       
     {"name":"Heizung_Kueche", "type":"VARDP", "id":"1918","info":"(h)", "value":"288%3B2015-11-21%2022%3A45%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-21%2022%3A50%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-21%2022%3A55%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-21%2023%3A00%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A05%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-21%2023%3A10%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A15%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A20%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A25%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A30%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A35%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A40%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A45%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A50%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-21%2023%3A55%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2000%3A00%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2000%3A05%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2000%3A10%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2000%3A15%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2000%3A20%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2000%3A25%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2000%3A30%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2000%3A35%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2000%3A40%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2000%3A45%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2000%3A50%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2000%3A55%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A00%3A01%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A05%3A01%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A10%3A01%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A15%3A01%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A20%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A25%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A30%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2001%3A35%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2001%3A40%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2001%3A45%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2001%3A50%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2001%3A55%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A00%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A05%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A10%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A15%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A20%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A25%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A30%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A35%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A40%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A45%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A50%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2002%3A55%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2003%3A00%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2003%3A05%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2003%3A10%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A15%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A20%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A25%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A30%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A35%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A40%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A45%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A50%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2003%3A55%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2004%3A00%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2004%3A05%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2004%3A10%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2004%3A15%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A20%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A25%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A30%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A35%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A40%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A45%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A50%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2004%3A55%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A00%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A05%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A10%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A15%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A20%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A25%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A30%3A01%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A35%3A01%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A40%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A45%3A01%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A50%3A01%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2005%3A55%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2006%3A00%3A01%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2006%3A05%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A10%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A15%3A01%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A20%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A25%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A30%3A01%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A35%3A01%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A40%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A45%3A01%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A50%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2006%3A55%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2007%3A00%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2007%3A05%3A00%2C20.0%2C18.9%2C0%2C65%3B2015-11-22%2007%3A10%3A00%2C20.0%2C19.0%2C0%2C65%3B2015-11-22%2007%3A15%3A00%2C20.0%2C19.4%2C0%2C65%3B2015-11-22%2007%3A20%3A00%2C20.0%2C19.8%2C0%2C54%3B2015-11-22%2007%3A25%3A00%2C20.0%2C20.2%2C0%2C35%3B2015-11-22%2007%3A30%3A00%2C20.0%2C20.6%2C0%2C35%3B2015-11-22%2007%3A35%3A00%2C20.0%2C20.9%2C0%2C24%3B2015-11-22%2007%3A40%3A00%2C20.0%2C21.1%2C0%2C15%3B2015-11-22%2007%3A45%3A00%2C20.0%2C21.3%2C0%2C14%3B2015-11-22%2007%3A50%3A00%2C20.0%2C21.3%2C0%2C12%3B2015-11-22%2007%3A55%3A00%2C20.0%2C21.4%2C0%2C10%3B2015-11-22%2008%3A00%3A00%2C20.0%2C21.4%2C0%2C9%3B2015-11-22%2008%3A05%3A00%2C20.0%2C21.4%2C0%2C8%3B2015-11-22%2008%3A10%3A00%2C20.0%2C21.4%2C0%2C8%3B2015-11-22%2008%3A15%3A00%2C20.0%2C21.3%2C0%2C8%3B2015-11-22%2008%3A20%3A00%2C20.0%2C21.2%2C0%2C10%3B2015-11-22%2008%3A25%3A00%2C20.0%2C21.1%2C0%2C10%3B2015-11-22%2008%3A30%3A00%2C20.0%2C21.1%2C0%2C10%3B2015-11-22%2008%3A35%3A00%2C20.0%2C21.0%2C0%2C12%3B2015-11-22%2008%3A40%3A01%2C20.0%2C20.9%2C0%2C14%3B2015-11-22%2008%3A45%3A01%2C20.0%2C20.8%2C0%2C14%3B2015-11-22%2008%3A50%3A00%2C20.0%2C20.6%2C0%2C14%3B2015-11-22%2008%3A55%3A00%2C20.0%2C20.6%2C0%2C14%3B2015-11-22%2009%3A00%3A00%2C20.0%2C20.7%2C0%2C14%3B2015-11-22%2009%3A05%3A00%2C20.0%2C20.8%2C0%2C14%3B2015-11-22%2009%3A10%3A00%2C20.0%2C20.9%2C0%2C14%3B2015-11-22%2009%3A15%3A00%2C20.0%2C20.9%2C0%2C14%3B2015-11-22%2009%3A20%3A00%2C20.0%2C21.0%2C0%2C14%3B2015-11-22%2009%3A25%3A00%2C20.0%2C21.0%2C0%2C14%3B2015-11-22%2009%3A30%3A00%2C20.0%2C21.1%2C0%2C14%3B2015-11-22%2009%3A35%3A00%2C20.0%2C21.1%2C0%2C14%3B2015-11-22%2009%3A40%3A00%2C20.0%2C21.2%2C0%2C14%3B2015-11-22%2009%3A45%3A00%2C20.0%2C21.1%2C0%2C12%3B2015-11-22%2009%3A50%3A00%2C20.0%2C20.9%2C0%2C12%3B2015-11-22%2009%3A55%3A00%2C20.0%2C20.8%2C0%2C14%3B2015-11-22%2010%3A00%3A00%2C20.0%2C20.6%2C0%2C14%3B2015-11-22%2010%3A05%3A00%2C17.0%2C20.5%2C0%2C0%3B2015-11-22%2010%3A10%3A00%2C17.0%2C20.3%2C0%2C0%3B2015-11-22%2010%3A15%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2010%3A20%3A00%2C17.0%2C20.0%2C0%2C0%3B2015-11-22%2010%3A25%3A00%2C17.0%2C19.8%2C0%2C0%3B2015-11-22%2010%3A30%3A00%2C17.0%2C19.7%2C0%2C0%3B2015-11-22%2010%3A35%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-22%2010%3A40%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-22%2010%3A45%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2010%3A50%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2010%3A55%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2011%3A00%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2011%3A05%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2011%3A10%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2011%3A15%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2011%3A20%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2011%3A25%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2011%3A30%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2011%3A35%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2011%3A40%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2011%3A45%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2011%3A53%3A23%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2011%3A55%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2012%3A00%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2012%3A05%3A00%2C20.0%2C19.2%2C0%2C61%3B2015-11-22%2012%3A10%3A00%2C20.0%2C19.3%2C0%2C61%3B2015-11-22%2012%3A15%3A00%2C20.0%2C19.6%2C0%2C61%3B2015-11-22%2012%3A20%3A00%2C20.0%2C19.9%2C0%2C38%3B2015-11-22%2012%3A25%3A00%2C20.0%2C20.2%2C0%2C38%3B2015-11-22%2012%3A30%3A00%2C20.0%2C20.6%2C0%2C27%3B2015-11-22%2012%3A35%3A00%2C20.0%2C20.8%2C0%2C27%3B2015-11-22%2012%3A40%3A00%2C20.0%2C21.0%2C0%2C27%3B2015-11-22%2012%3A45%3A00%2C20.0%2C21.2%2C0%2C17%3B2015-11-22%2012%3A50%3A00%2C20.0%2C21.3%2C0%2C13%3B2015-11-22%2012%3A55%3A00%2C20.0%2C21.4%2C0%2C13%3B2015-11-22%2013%3A00%3A00%2C20.0%2C21.4%2C0%2C10%3B2015-11-22%2013%3A05%3A00%2C20.0%2C21.2%2C0%2C10%3B2015-11-22%2013%3A10%3A00%2C20.0%2C21.1%2C0%2C11%3B2015-11-22%2013%3A15%3A00%2C20.0%2C21.0%2C0%2C14%3B2015-11-22%2013%3A20%3A00%2C20.0%2C21.0%2C0%2C14%3B2015-11-22%2013%3A25%3A00%2C20.0%2C20.9%2C0%2C14%3B2015-11-22%2013%3A30%3A00%2C20.0%2C20.8%2C0%2C14%3B2015-11-22%2013%3A35%3A00%2C17.0%2C20.6%2C0%2C0%3B2015-11-22%2013%3A40%3A00%2C17.0%2C20.6%2C0%2C0%3B2015-11-22%2013%3A45%3A00%2C17.0%2C20.6%2C0%2C0%3B2015-11-22%2013%3A50%3A00%2C17.0%2C20.6%2C0%2C0%3B2015-11-22%2013%3A55%3A00%2C17.0%2C20.5%2C0%2C0%3B2015-11-22%2014%3A00%3A00%2C17.0%2C20.4%2C0%2C0%3B2015-11-22%2014%3A05%3A00%2C17.0%2C20.4%2C0%2C0%3B2015-11-22%2014%3A10%3A00%2C17.0%2C20.4%2C0%2C0%3B2015-11-22%2014%3A15%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2014%3A20%3A00%2C17.0%2C20.0%2C0%2C0%3B2015-11-22%2014%3A25%3A00%2C17.0%2C20.0%2C0%2C0%3B2015-11-22%2014%3A30%3A01%2C17.0%2C20.0%2C0%2C0%3B2015-11-22%2014%3A35%3A00%2C17.0%2C19.9%2C0%2C0%3B2015-11-22%2014%3A40%3A00%2C17.0%2C19.8%2C0%2C0%3B2015-11-22%2014%3A45%3A00%2C17.0%2C19.8%2C0%2C0%3B2015-11-22%2014%3A50%3A00%2C17.0%2C19.7%2C0%2C0%3B2015-11-22%2014%3A55%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-22%2015%3A00%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-22%2015%3A05%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-22%2015%3A10%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-22%2015%3A15%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2015%3A20%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2015%3A25%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2015%3A30%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2015%3A35%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2015%3A40%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2015%3A45%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2015%3A50%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2015%3A55%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2016%3A00%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2016%3A05%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2016%3A10%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2016%3A15%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2016%3A20%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2016%3A25%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2016%3A30%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2016%3A35%3A00%2C17.0%2C19.1%2C0%2C0%3B2015-11-22%2016%3A40%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2016%3A45%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2016%3A50%3A00%2C17.0%2C18.9%2C0%2C0%3B2015-11-22%2016%3A55%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2017%3A00%3A00%2C17.0%2C19.0%2C0%2C0%3B2015-11-22%2017%3A05%3A00%2C20.0%2C19.0%2C0%2C64%3B2015-11-22%2017%3A10%3A00%2C20.0%2C19.1%2C0%2C64%3B2015-11-22%2017%3A15%3A00%2C20.0%2C19.4%2C0%2C64%3B2015-11-22%2017%3A20%3A00%2C20.0%2C19.7%2C0%2C64%3B2015-11-22%2017%3A25%3A00%2C20.0%2C20.0%2C0%2C52%3B2015-11-22%2017%3A30%3A01%2C20.0%2C20.5%2C0%2C37%3B2015-11-22%2017%3A35%3A00%2C20.0%2C20.7%2C0%2C27%3B2015-11-22%2017%3A40%3A00%2C20.0%2C21.0%2C0%2C27%3B2015-11-22%2017%3A45%3A00%2C20.0%2C21.3%2C0%2C17%3B2015-11-22%2017%3A50%3A00%2C20.0%2C21.4%2C0%2C14%3B2015-11-22%2017%3A55%3A00%2C20.0%2C21.4%2C0%2C11%3B2015-11-22%2018%3A00%3A00%2C20.0%2C21.4%2C0%2C11%3B2015-11-22%2018%3A05%3A00%2C20.0%2C21.4%2C0%2C11%3B2015-11-22%2018%3A10%3A00%2C20.0%2C21.4%2C0%2C11%3B2015-11-22%2018%3A15%3A00%2C20.0%2C21.3%2C0%2C11%3B2015-11-22%2018%3A20%3A00%2C20.0%2C21.3%2C0%2C11%3B2015-11-22%2018%3A25%3A01%2C20.0%2C21.2%2C0%2C11%3B2015-11-22%2018%3A30%3A01%2C20.0%2C21.1%2C0%2C11%3B2015-11-22%2018%3A35%3A00%2C20.0%2C21.0%2C0%2C13%3B2015-11-22%2018%3A40%3A00%2C20.0%2C20.9%2C0%2C13%3B2015-11-22%2018%3A45%3A00%2C20.0%2C20.8%2C0%2C13%3B2015-11-22%2018%3A50%3A00%2C20.0%2C20.7%2C0%2C13%3B2015-11-22%2018%3A55%3A00%2C20.0%2C20.6%2C0%2C23%3B2015-11-22%2019%3A00%3A00%2C20.0%2C20.5%2C0%2C23%3B2015-11-22%2019%3A05%3A00%2C17.0%2C20.4%2C0%2C0%3B2015-11-22%2019%3A10%3A00%2C17.0%2C20.3%2C0%2C0%3B2015-11-22%2019%3A15%3A00%2C17.0%2C20.3%2C0%2C0%3B2015-11-22%2019%3A20%3A00%2C17.0%2C20.3%2C0%2C0%3B2015-11-22%2019%3A25%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2019%3A30%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2019%3A35%3A00%2C17.0%2C20.0%2C0%2C0%3B2015-11-22%2019%3A40%3A00%2C17.0%2C20.0%2C0%2C0%3B2015-11-22%2019%3A45%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2019%3A50%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2019%3A55%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2020%3A00%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2020%3A05%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2020%3A10%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2020%3A15%3A00%2C17.0%2C20.3%2C0%2C0%3B2015-11-22%2020%3A20%3A00%2C17.0%2C20.3%2C0%2C0%3B2015-11-22%2020%3A25%3A00%2C17.0%2C20.4%2C0%2C0%3B2015-11-22%2020%3A30%3A00%2C17.0%2C20.3%2C0%2C0%3B2015-11-22%2020%3A35%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2020%3A40%3A00%2C17.0%2C20.2%2C0%2C0%3B2015-11-22%2020%3A45%3A00%2C17.0%2C20.0%2C0%2C0%3B2015-11-22%2020%3A50%3A00%2C17.0%2C19.9%2C0%2C0%3B2015-11-22%2020%3A55%3A00%2C17.0%2C19.9%2C0%2C0%3B2015-11-22%2021%3A00%3A00%2C17.0%2C19.7%2C0%2C0%3B2015-11-22%2021%3A05%3A00%2C17.0%2C19.6%2C0%2C0%3B2015-11-22%2021%3A10%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2021%3A15%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2021%3A20%3A00%2C17.0%2C19.5%2C0%2C0%3B2015-11-22%2021%3A25%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2021%3A30%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2021%3A35%3A00%2C17.0%2C19.4%2C0%2C0%3B2015-11-22%2021%3A40%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2021%3A45%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2021%3A50%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2021%3A55%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2022%3A00%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2022%3A05%3A00%2C17.0%2C19.3%2C0%2C0%3B2015-11-22%2022%3A10%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2022%3A15%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2022%3A20%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2022%3A25%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2022%3A30%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2022%3A35%3A00%2C17.0%2C19.2%2C0%2C0%3B2015-11-22%2022%3A40%3A00%2C17.0%2C19.2%2C0%2C0", "valueType":"20", "valueUnit":"", "date":"22.11.2015 22:40:00"
 },
-    {"name":"Lampe AN:2", "type":"CHANNEL", "id":"dbg_2030", "address":"HEQ0352111:2", "hssType":"KEY", "channels": [
-    {"id":"dbg_2033", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"06.11.2012 23:02:43"},
-    {"id":"dbg_2032", "type":"HSSDP", "hssType":"PRESS_LONG", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
+{"name":"Bad DG Deckenlicht", "type":"CHANNEL", "id":"3454", "address":"LEQ1226421:1", "hssType":"SWITCH", "visible":"true", "operate":"true", "channels": [
+{"id":"3458", "name":"BidCos-RF.LEQ1226421:1.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"28.11.2015 06:46:35"},
+{"id":"3457", "name":"BidCos-RF.LEQ1226421:1.ON_TIME", "type":"HSSDP", "hssType":"ON_TIME", "info":"", "value":"", "valueUnit":"s","valueMin":"0.000000","valueMax":"85825945.500000", "valueType":"4", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+{"id":"3455", "name":"BidCos-RF.LEQ1226421:1.INHIBIT", "type":"HSSDP", "hssType":"INHIBIT", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"24.11.2015 10:42:16"} ]
 },
-    {"name":"Bew. Melder Terrasse:1", "type":"CHANNEL", "id":"dbg_16282", "address":"JEQ0128615:1", "hssType":"MOTION_DETECTOR", "channels": [
-    {"id":"dbg_16283", "type":"HSSDP", "hssType":"BRIGHTNESS", "value":"184", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:47:33"},
-    {"id":"dbg_16285", "type":"HSSDP", "hssType":"MOTION", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"06.11.2012 15:12:46"}  ]
+{"name":"Bad DG Fenster", "type":"CHANNEL", "id":"47180", "address":"KEQ0887431:1", "hssType":"SHUTTER_CONTACT", "visible":"true", "operate":"true", "channels": [
+{"id":"47205", "name":"BidCos-RF.KEQ0887431:1.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"false", "date":"28.11.2015 07:49:31"},
+{"id":"47181", "name":"BidCos-RF.KEQ0887431:1.ERROR", "type":"HSSDP", "hssType":"ERROR", "info":"", "value":"0", "valueUnit":"","valueList":"NO_ERROR;;;;;;;SABOTAGE", "valueType":"16", "readable":"true", "writeable":"false", "date":"28.11.2015 07:49:31"},
+{"id":"47204", "name":"BidCos-RF.KEQ0887431:1.LOWBAT", "type":"HSSDP", "hssType":"LOWBAT", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"false", "date":"28.11.2015 07:49:31"} ]
 },
-    {"name":"Bew.Melder Flur:1", "type":"CHANNEL", "id":"dbg_3018", "address":"HEQ0405467:1", "hssType":"MOTION_DETECTOR", "channels": [
-    {"id":"dbg_3019", "type":"HSSDP", "hssType":"BRIGHTNESS", "value":"48", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:27"},
-    {"id":"dbg_3043", "type":"HSSDP", "hssType":"MOTION", "value":"true", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 09:34:44"},
-    {"id":"dbg_3020", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:27"}  ]
+{"name":"Bad DG Fluter", "type":"CHANNEL", "id":"59514", "address":"LEQ0236448:1", "hssType":"SWITCH", "visible":"true", "operate":"true", "channels": [
+{"id":"59518", "name":"BidCos-RF.LEQ0236448:1.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"28.11.2015 06:46:35"},
+{"id":"59517", "name":"BidCos-RF.LEQ0236448:1.ON_TIME", "type":"HSSDP", "hssType":"ON_TIME", "info":"", "value":"", "valueUnit":"s","valueMin":"0.000000","valueMax":"85825945.500000", "valueType":"4", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+{"id":"59515", "name":"BidCos-RF.LEQ0236448:1.INHIBIT", "type":"HSSDP", "hssType":"INHIBIT", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"24.11.2015 10:42:17"} ]
 },
-    {"name":"Philips Ambilight Lampe WZ:1", "type":"CHANNEL", "id":"dbg_3428", "address":"HEQ0353361:1", "hssType":"DIMMER", "channels": [
-    {"id":"dbg_3443", "type":"HSSDP", "hssType":"LEVEL", "value":"0.000000", "date":"07.11.2012 22:38:01"},
-    {"id":"dbg_3444", "type":"HSSDP", "hssType":"OLD_LEVEL", "value":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_3446", "type":"HSSDP", "hssType":"RAMP_TIME", "value":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_3445", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_3441", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "date":"06.11.2012 19:13:11"},
-    {"id":"dbg_3437", "type":"HSSDP", "hssType":"ERROR_REDUCED", "value":"false", "date":"07.11.2012 22:38:01"},
-    {"id":"dbg_3433", "type":"HSSDP", "hssType":"ERROR_OVERLOAD", "value":"true", "date":"07.11.2012 22:38:01"},
-    {"id":"dbg_3429", "type":"HSSDP", "hssType":"ERROR_OVERHEAT", "value":"false", "date":"07.11.2012 22:38:01"},
-    {"id":"dbg_16543", "type":"HSSDP", "hssType":"RAMP_STOP", "value":"", "date":"01.01.1970 01:00:00"}  ]
+{"name":"Bad DG Heizung", "type":"CHANNEL", "id":"59308", "address":"INT0000002:1", "hssType":"CLIMATECONTROL_RT_TRANSCEIVER", "visible":"true", "operate":"true", "channels": [
+{"id":"59314", "name":"VirtualDevices.INT0000002:1.CONTROL_MODE", "type":"HSSDP", "hssType":"CONTROL_MODE", "info":"", "value":"0", "valueUnit":"","valueList":"AUTO-MODE;MANU-MODE;PARTY-MODE;BOOST-MODE", "valueType":"16", "readable":"true", "writeable":"false", "date":"28.11.2015 10:54:00"},
+{"id":"59309", "name":"VirtualDevices.INT0000002:1.ACTUAL_HUMIDITY", "type":"HSSDP", "hssType":"ACTUAL_HUMIDITY", "info":"", "value":"53.000000", "valueUnit":"%","valueMin":"0.0","valueMax":"99.0", "valueType":"4", "readable":"true", "writeable":"false", "date":"28.11.2015 10:53:51"},
+{"id":"59312", "name":"VirtualDevices.INT0000002:1.BOOST_MODE", "type":"HSSDP", "hssType":"BOOST_MODE", "info":"", "value":"", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+{"id":"59311", "name":"VirtualDevices.INT0000002:1.AUTO_MODE", "type":"HSSDP", "hssType":"AUTO_MODE", "info":"", "value":"", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+{"id":"59327", "name":"VirtualDevices.INT0000002:1.SET_TEMPERATURE", "type":"HSSDP", "hssType":"SET_TEMPERATURE", "info":"", "value":"21.000000", "valueUnit":"°C","valueMin":"5.0","valueMax":"30.0", "valueType":"4", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59310", "name":"VirtualDevices.INT0000002:1.ACTUAL_TEMPERATURE", "type":"HSSDP", "hssType":"ACTUAL_TEMPERATURE", "info":"", "value":"19.700000", "valueUnit":"°C","valueMin":"-10.0","valueMax":"50.0", "valueType":"4", "readable":"true", "writeable":"false", "date":"28.11.2015 10:54:00"},
+{"id":"59316", "name":"VirtualDevices.INT0000002:1.MANU_MODE", "type":"HSSDP", "hssType":"MANU_MODE", "info":"", "value":"", "valueUnit":"°C","valueMin":"4.5","valueMax":"30.5", "valueType":"4", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+{"id":"59313", "name":"VirtualDevices.INT0000002:1.COMFORT_MODE", "type":"HSSDP", "hssType":"COMFORT_MODE", "info":"", "value":"", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+{"id":"59315", "name":"VirtualDevices.INT0000002:1.LOWERING_MODE", "type":"HSSDP", "hssType":"LOWERING_MODE", "info":"", "value":"", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+{"id":"59326", "name":"VirtualDevices.INT0000002:1.PARTY_TEMPERATURE", "type":"HSSDP", "hssType":"PARTY_TEMPERATURE", "info":"", "value":"5.000000", "valueUnit":"°C","valueMin":"5.0","valueMax":"30.0", "valueType":"4", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59320", "name":"VirtualDevices.INT0000002:1.PARTY_START_TIME", "type":"HSSDP", "hssType":"PARTY_START_TIME", "info":"", "value":"0", "valueUnit":"minutes","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59318", "name":"VirtualDevices.INT0000002:1.PARTY_START_DAY", "type":"HSSDP", "hssType":"PARTY_START_DAY", "info":"", "value":"1", "valueUnit":"day","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59319", "name":"VirtualDevices.INT0000002:1.PARTY_START_MONTH", "type":"HSSDP", "hssType":"PARTY_START_MONTH", "info":"", "value":"1", "valueUnit":"month","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59321", "name":"VirtualDevices.INT0000002:1.PARTY_START_YEAR", "type":"HSSDP", "hssType":"PARTY_START_YEAR", "info":"", "value":"0", "valueUnit":"year","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59324", "name":"VirtualDevices.INT0000002:1.PARTY_STOP_TIME", "type":"HSSDP", "hssType":"PARTY_STOP_TIME", "info":"", "value":"0", "valueUnit":"minutes","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59322", "name":"VirtualDevices.INT0000002:1.PARTY_STOP_DAY", "type":"HSSDP", "hssType":"PARTY_STOP_DAY", "info":"", "value":"1", "valueUnit":"day","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59323", "name":"VirtualDevices.INT0000002:1.PARTY_STOP_MONTH", "type":"HSSDP", "hssType":"PARTY_STOP_MONTH", "info":"", "value":"1", "valueUnit":"month","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59325", "name":"VirtualDevices.INT0000002:1.PARTY_STOP_YEAR", "type":"HSSDP", "hssType":"PARTY_STOP_YEAR", "info":"", "value":"0", "valueUnit":"year","valueList":"", "valueType":"16", "readable":"true", "writeable":"true", "date":"28.11.2015 10:54:00"},
+{"id":"59317", "name":"VirtualDevices.INT0000002:1.PARTY_MODE_SUBMIT", "type":"HSSDP", "hssType":"PARTY_MODE_SUBMIT", "info":"", "value":"", "valueUnit":"", "valueType":"20", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"} ]
 },
-    {"name":"Virtual Dimmer", "type":"CHANNEL", "id":"dbg_9909", "address":"JEQ0200435:3", "hssType":"VIRTUAL_DIMMER", "channels": [
-    {"id":"9925", "type":"HSSDP", "hssType":"LEVEL", "value":"1.000000", "date":"13.02.2012 20:07:13"},
-    {"id":"9926", "type":"HSSDP", "hssType":"OLD_LEVEL", "value":"", "date":"01.01.1970 01:00:00"},
-    {"id":"9928", "type":"HSSDP", "hssType":"RAMP_TIME", "value":"", "date":"01.01.1970 01:00:00"},
-    {"id":"9927", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "date":"01.01.1970 01:00:00"},
-    {"id":"9923", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "date":"10.02.2012 12:23:19"},
-    {"id":"9919", "type":"HSSDP", "hssType":"ERROR_REDUCED", "value":"false", "date":"13.02.2012 20:07:13"},
-    {"id":"9915", "type":"HSSDP", "hssType":"ERROR_OVERLOAD", "value":"false", "date":"13.02.2012 20:07:13"},
-    {"id":"9911", "type":"HSSDP", "hssType":"ERROR_OVERHEAT", "value":"false", "date":"13.02.2012 20:07:13"},
-    {"id":"10208", "type":"HSSDP", "hssType":"RAMP_STOP", "value":"", "date":"01.01.1970 01:00:00"}  ]
+{"name":"Bad DG Thermostat", "type":"CHANNEL", "id":"59265", "address":"LEQ0597252:1", "hssType":"WEATHER_TRANSMIT", "visible":"true", "operate":"true", "channels": [
+{"id":"59267", "name":"BidCos-RF.LEQ0597252:1.TEMPERATURE", "type":"HSSDP", "hssType":"TEMPERATURE", "info":"", "value":"19.700000", "valueUnit":"°C","valueMin":"-10.000000","valueMax":"50.000000", "valueType":"4", "readable":"true", "writeable":"false", "date":"28.11.2015 10:54:11"},
+{"id":"59266", "name":"BidCos-RF.LEQ0597252:1.HUMIDITY", "type":"HSSDP", "hssType":"HUMIDITY", "info":"", "value":"53", "valueUnit":"%","valueList":"", "valueType":"16", "readable":"true", "writeable":"false", "date":"28.11.2015 10:54:11"} ]
 },
-    {"name":"Briefschlitz-Kontakt:1", "type":"CHANNEL", "id":"dbg_13480", "address":"JEQ0079986:1", "hssType":"SHUTTER_CONTACT", "channels": [
-    {"id":"dbg_13482", "type":"HSSDP", "hssType":"STATE", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 11:49:05"}  ]
+{"name":"Bad DG Tür", "type":"CHANNEL", "id":"3244", "address":"LEQ1172851:1", "hssType":"SHUTTER_CONTACT", "visible":"true", "operate":"true", "channels": [
+{"id":"3269", "name":"BidCos-RF.LEQ1172851:1.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"true", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"false", "date":"28.11.2015 10:23:40"},
+{"id":"3245", "name":"BidCos-RF.LEQ1172851:1.ERROR", "type":"HSSDP", "hssType":"ERROR", "info":"", "value":"0", "valueUnit":"","valueList":"NO_ERROR;;;;;;;SABOTAGE", "valueType":"16", "readable":"true", "writeable":"false", "date":"28.11.2015 10:23:40"},
+{"id":"3268", "name":"BidCos-RF.LEQ1172851:1.LOWBAT", "type":"HSSDP", "hssType":"LOWBAT", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"false", "date":"28.11.2015 10:23:40"} ]
 },
-    {"name":"FBedienug 12er Taste 1 AN:1", "type":"CHANNEL", "id":"dbg_6528", "address":"HEQ0403365:1", "hssType":"KEY", "channels": [
-    {"id":"dbg_6531", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"06.11.2012 17:33:47"},
-    {"id":"dbg_6530", "type":"HSSDP", "hssType":"PRESS_LONG", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"FBedienung2 Tuer ZU:1", "type":"CHANNEL", "id":"dbg_1776", "address":"EEQ0007879:1", "hssType":"KEY", "channels": [
-    {"id":"dbg_1779", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 10:39:42"},
-    {"id":"dbg_1778", "type":"HSSDP", "hssType":"PRESS_LONG", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"GaesteWC AUF Fenster:2", "type":"CHANNEL", "id":"dbg_-1", "address":"HEQ0361557:2", "hssType":"KEY", "channels": [
-    {"id":"dbg_-1", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"06.11.2012 15:29:30"},
-    {"id":"dbg_-1", "type":"HSSDP", "hssType":"PRESS_LONG", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"Gong Lichtsignal", "type":"CHANNEL", "id":"dbg_2390", "address":"HEQ0104691:1", "hssType":"SIGNAL_LED", "channels": [
-    {"id":"dbg_2394", "type":"HSSDP", "hssType":"STATE", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:35"},
-    {"id":"dbg_2393", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_2391", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 11:19:27"}  ]
-},
-    {"name":"Gong Warnsignal", "type":"CHANNEL", "id":"dbg_2396", "address":"HEQ0104691:2", "hssType":"SIGNAL_CHIME", "channels": [
-    {"id":"dbg_2400", "type":"HSSDP", "hssType":"STATE", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:35"},
-    {"id":"dbg_2399", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_2397", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 11:19:27"}  ]
-},
-    {"name":"Heiz-Thermostat Bad:1", "type":"CHANNEL", "id":"dbg_17457", "address":"JEQ0081213:1", "hssType":"WEATHER", "channels": [
-    {"id":"dbg_17459", "type":"HSSDP", "hssType":"TEMPERATURE", "value":"22.800000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"&#176;C", "date":"08.11.2012 11:48:38"},
-    {"id":"dbg_17458", "type":"HSSDP", "hssType":"HUMIDITY", "value":"52", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"%", "date":"08.11.2012 11:48:38"}  ]
-},
-    {"name":"Heiz-Thermostat Bad:2", "type":"CHANNEL", "id":"dbg_17460", "address":"JEQ0081213:2", "hssType":"CLIMATECONTROL_REGULATOR", "channels": [
-    {"id":"dbg_17463", "type":"HSSDP", "hssType":"SETPOINT", "value":"6.000000", "valueMin":"6.0", "valueMax":"30.0", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"&#176;C", "date":"08.11.2012 08:00:02"},
-    {"id":"dbg_17461", "type":"HSSDP", "hssType":"ADJUSTING_COMMAND", "value":"0", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:58"},
-    {"id":"dbg_17462", "type":"HSSDP", "hssType":"ADJUSTING_DATA", "value":"0", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:58"}  ]
-},
-    {"name":"Heizungsventil Bad:1", "type":"CHANNEL", "id":"dbg_17486", "address":"JEQ0017528:1", "hssType":"CLIMATECONTROL_VENT_DRIVE", "channels": [
-    {"id":"dbg_17500", "type":"HSSDP", "hssType":"VALVE_STATE", "value":"0", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"%", "date":"08.11.2012 11:48:58"},
-    {"id":"dbg_17487", "type":"HSSDP", "hssType":"ERROR", "value":"2", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:48:58"}  ]
-},
-    {"name":"CUX", "type":"CHANNEL", "id":"dbg_13264", "address":"CUX4100001:9", "hssType":"PING", "channels": [
-    {"id":"dbg_13266", "type":"HSSDP", "hssType":"INFO", "value":"<td><span style='color:green'><b>Erreichbar</b></span></td></tr><tr>", "valueName0":"0", "valueName1":"1", "valueType":"20", "valueUnit":"", "date":"08.11.2012 11:19:28"},
-    {"id":"dbg_13267", "type":"HSSDP", "hssType":"UNREACH_CTR", "value":"0", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 11:19:28"},
-    {"id":"dbg_13265", "type":"HSSDP", "hssType":"ALIVE", "value":"true", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 11:19:28"}  ]
-},
-    {"name":"IKEA Standlampe Wohnzimmerecke:1", "type":"CHANNEL", "id":"dbg_6464", "address":"IEQ0007175:1", "hssType":"SWITCH", "channels": [
-    {"id":"dbg_6468", "type":"HSSDP", "hssType":"STATE", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"07.11.2012 22:39:33"},
-    {"id":"dbg_6467", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_6465", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:36"}  ]
-},
-    {"name":"Jalousie rechts Tuer:1", "type":"CHANNEL", "id":"dbg_3935", "address":"IEQ0020339:1", "hssType":"BLIND", "channels": [
-    {"id":"dbg_3938", "type":"HSSDP", "hssType":"LEVEL", "value":"1.000000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"100%", "date":"08.11.2012 08:00:24"},
-    {"id":"dbg_3939", "type":"HSSDP", "hssType":"STOP", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_3936", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:36"}  ]
-},
-    {"name":"Kontaktsensor TerrassenTUER rechts:1", "type":"CHANNEL", "id":"dbg_2929", "address":"HEQ0363470:1", "hssType":"SHUTTER_CONTACT", "channels": [
-    {"id":"dbg_2953", "type":"HSSDP", "hssType":"STATE", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"07.11.2012 13:28:29"},
-    {"id":"dbg_2930", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"05.11.2012 13:25:34"}  ]
-},
-    {"name":"Rauchmelder Team", "type":"CHANNEL", "id":"dbg_7123", "address":"*IEQ0012649:1", "hssType":"SMOKE_DETECTOR_TEAM", "channels": [
-    {"id":"dbg_7125", "type":"HSSDP", "hssType":"STATE", "value":"true", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 03:36:22"}  ]
-},
-    {"name":"Sabotagekontakt", "type":"CHANNEL", "id":"dbg_1232", "address":"System:2", "hssType":"SABOTAGE", "channels": [
-    {"id":"dbg_1233", "type":"HSSDP", "hssType":"SHAKING", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 11:40:23"}  ]
-},
-    {"name":"Temp Schlafzimmer:1", "type":"CHANNEL", "id":"dbg_13072", "address":"JEQ0195672:1", "hssType":"WEATHER", "channels": [
-    {"id":"dbg_13073", "type":"HSSDP", "hssType":"TEMPERATURE", "value":"19.400000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"&#176;C", "date":"08.11.2012 11:49:05"}  ]
-},
-    {"name":"Temp Sensor Garten:1", "type":"CHANNEL", "id":"dbg_16233", "address":"JEQ0149377:1", "hssType":"WEATHER", "channels": [
-    {"id":"dbg_16235", "type":"HSSDP", "hssType":"TEMPERATURE", "value":"10.000000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"&#176;C", "date":"08.11.2012 11:48:09"},
-    {"id":"dbg_16234", "type":"HSSDP", "hssType":"HUMIDITY", "value":"74", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"%", "date":"08.11.2012 11:48:09"}  ]
-},
-    {"name":"Temperatursensor", "type":"CHANNEL", "id":"dbg_6352", "address":"HEQ0355435:1", "hssType":"WEATHER", "channels": [
-    {"id":"dbg_6354", "type":"HSSDP", "hssType":"TEMPERATURE", "value":"19.800000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"&#176;C", "date":"08.11.2012 11:47:00"},
-    {"id":"dbg_6353", "type":"HSSDP", "hssType":"HUMIDITY", "value":"58", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"%", "date":"08.11.2012 11:47:00"}  ]
-},
-    {"name":"Terrassenlicht:2", "type":"CHANNEL", "id":"dbg_10835", "address":"IEQ0535578:2", "hssType":"SWITCH", "channels": [
-    {"id":"dbg_10839", "type":"HSSDP", "hssType":"STATE", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"07.11.2012 23:00:05"},
-    {"id":"dbg_10838", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_10836", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:39"}  ]
-},
-    {"name":"Tuerschloss:1", "type":"CHANNEL", "id":"dbg_1743", "address":"EEQ0008725:1", "hssType":"KEYMATIC", "channels": [
-    {"id":"dbg_1755", "type":"HSSDP", "hssType":"STATE", "value":"true", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 09:29:57"},
-    {"id":"dbg_1753", "type":"HSSDP", "hssType":"OPEN", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_1754", "type":"HSSDP", "hssType":"RELOCK_DELAY", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_1756", "type":"HSSDP", "hssType":"STATE_UNCERTAIN", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 09:29:57"},
-    {"id":"dbg_1751", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:39"},
-    {"id":"dbg_1744", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"08.11.2012 09:29:57"}  ]
-},
-    {"name":"Wassermelder Waschmaschine:1", "type":"CHANNEL", "id":"dbg_6375", "address":"HEQ0031616:1", "hssType":"WATERDETECTIONSENSOR", "channels": [
-    {"id":"dbg_6377", "type":"HSSDP", "hssType":"STATE", "value":"0", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"07.11.2012 19:00:19"}  ]
-},
-    {"name":"WinMatic GaesteWC:1", "type":"CHANNEL", "id":"dbg_11243", "address":"GEQ0146609:1", "hssType":"WINMATIC", "channels": [
-    {"id":"dbg_11252", "type":"HSSDP", "hssType":"LEVEL", "value":"-0.005000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"100%", "date":"06.11.2012 15:40:29"},
-    {"id":"dbg_11253", "type":"HSSDP", "hssType":"RELOCK_DELAY", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"s", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_11254", "type":"HSSDP", "hssType":"SPEED", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"100%", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_11256", "type":"HSSDP", "hssType":"STOP", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_11255", "type":"HSSDP", "hssType":"STATE_UNCERTAIN", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"06.11.2012 15:40:29"},
-    {"id":"dbg_11251", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:42"},
-    {"id":"dbg_11244", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"06.11.2012 15:40:29"}  ]
-},
-    {"name":"WinMatic GaesteWC:2", "type":"CHANNEL", "id":"dbg_11257", "address":"GEQ0146609:2", "hssType":"AKKU", "channels": [
-    {"id":"dbg_11258", "type":"HSSDP", "hssType":"LEVEL", "value":"0.525000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"100%", "date":"07.11.2012 12:28:40"},
-    {"id":"dbg_11259", "type":"HSSDP", "hssType":"STATUS", "value":"2", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"07.11.2012 12:28:40"}  ]
-},
-    {"name":"Zentralennetzteil", "type":"CHANNEL", "id":"dbg_1216", "address":"System:1", "hssType":"POWER", "channels": [
-    {"id":"dbg_1227", "type":"HSSDP", "hssType":"U_SOURCE_FAIL", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:34"},
-    {"id":"dbg_1219", "type":"HSSDP", "hssType":"LOWBAT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:53:34"},
-    {"id":"dbg_1231", "type":"HSSDP", "hssType":"U_USBD_OK", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"08.11.2012 11:19:27"},
-    {"id":"dbg_1217", "type":"HSSDP", "hssType":"BAT_LEVEL", "value":"1.000000", "valueName0":"0", "valueName1":"1", "valueType":"4", "valueUnit":"100%", "date":"08.11.2012 11:48:32"}  ]
-},
-    {"name":"Anrufumleitung AN:3", "type":"CHANNEL", "id":"dbg_1023", "address":"BidCoS-RF:3", "hssType":"VIRTUAL_KEY", "channels": [
-    {"id":"dbg_1025", "type":"HSSDP", "hssType":"PRESS_LONG", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_1026", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"false", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"04.11.2012 08:57:34"},
-    {"id":"dbg_1024", "type":"HSSDP", "hssType":"LEVEL", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"6", "valueUnit":"100%", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"HM-RCV-50 BidCoS-RF:1", "type":"CHANNEL", "id":"dbg_1015", "address":"BidCoS-RF:1", "hssType":"VIRTUAL_KEY", "channels": [
-    {"id":"dbg_1017", "type":"HSSDP", "hssType":"PRESS_LONG", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_1018", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"2", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_1016", "type":"HSSDP", "hssType":"LEVEL", "value":"", "valueName0":"0", "valueName1":"1", "valueType":"6", "valueUnit":"100%", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"Sensor Garage", "type":"CHANNEL", "id":"dbg_1656", "address":"HEQ0024925:4", "hssType":"SENSOR", "channels": [
-    {"id":"dbg_1658", "type":"HSSDP", "hssType":"SENSOR", "value":"false", "date":"06.11.2012 23:31:18"} ]
-},
-    {"name":"Sirene", "type":"CHANNEL", "id":"dbg_27667", "address":"GEQ0005550:1", "hssType":"ALARMACTUATOR", "channels": [
-    {"id":"dbg_27671", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"06.11.2012 09:14:10"},
-    {"id":"dbg_27670", "type":"HSSDP", "hssType":"ON_TIME", "value":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_27668", "type":"HSSDP", "hssType":"INHIBIT", "value":"false", "date":"05.11.2012 09:19:26"},
-    {"id":"dbg_29034", "type":"HSSDP", "hssType":"ERROR_POWER", "value":"true", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_29035", "type":"HSSDP", "hssType":"ERROR_SABOTAGE", "value":"false", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_29033", "type":"HSSDP", "hssType":"ERROR_BATTERY", "value":"false", "date":"01.01.1970 01:00:00"}  ]
-},
- {"name":"Neigungssensor Garagentor", "type":"CHANNEL", "id":"dbg_17737", "address":"IEQ1234567:1", "hssType":"TILT_SENSOR", "channels": [
-    {"id":"dbg_17739", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"06.11.2012 18:14:40"}  ]
-},
+{"name":"Bad DG Wassermelder", "type":"CHANNEL", "id":"58127", "address":"LEQ0473859:1", "hssType":"WATERDETECTIONSENSOR", "visible":"true", "operate":"true", "channels": [
+{"id":"58130", "name":"BidCos-RF.LEQ0473859:1.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"0", "valueUnit":"","valueList":"DRY;WET;WATER", "valueType":"16", "readable":"true", "writeable":"false", "date":"27.11.2015 19:49:44"},
+{"id":"58129", "name":"BidCos-RF.LEQ0473859:1.LOWBAT", "type":"HSSDP", "hssType":"LOWBAT", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"false", "date":"27.11.2015 19:49:44"} ]
 
-
-{"name":"I/O Modul - Digital Output", "type":"CHANNEL", "id":"dbg_1913", "address":"IEQ0100917:14", "hssType":"DIGITAL_OUTPUT", "channels": [
-{"id":"dbg_1914", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"05.11.2012 22:12:09"} ]
-},
-{"name":"I/O Modul - Digital Input", "type":"CHANNEL", "id":"dbg_1921", "address":"IEQ0100917:18", "hssType":"DIGITAL_INPUT", "channels": [
-{"id":"dbg_2657", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"02.11.2012 16:45:49"} ]
-},
-{"name":"I/O Modul - Digital Analog Input", "type":"CHANNEL", "id":"dbg_1923", "address":"IEQ0100917:19", "hssType":"DIGITAL_ANALOG_INPUT", "channels": [
-{"id":"dbg_2662", "type":"HSSDP", "hssType":"VALUE", "value":"278", "date":"01.11.2012 20:59:51"} ]
-},
-{"name":"RS485 Digital Analog Output", "type":"CHANNEL", "id":"dbg_29048", "address":"IEQ0458948:9", "hssType":"DIGITAL_ANALOG_OUTPUT", "channels": [
-{"id":"dbg_29049", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"11.10.2012 17:38:19"} ]
-},
-{"name":"Unbekanntes Gerät", "type":"CHANNEL", "id":"dbg_29043", "address":"IEQ0458446:1", "hssType":"UNKNOWN_TEST", "channels": [
-{"id":"dbg_29029", "type":"HSSDP", "hssType":"STATE", "value":"false", "date":"11.10.2012 17:38:19"},
-{"id":"dbg_29019", "type":"HSSDP", "hssType":"UQ_LONG", "value":"true", "date":"11.10.2012 17:38:19"},
-{"id":"dbg_11244", "type":"HSSDP", "hssType":"ERROR", "value":"1", "valueName0":"0", "valueName1":"1", "valueType":"16", "valueUnit":"", "date":"06.11.2012 15:40:29"} ]
-},
-{"name":"CO2 Sensor", "type":"CHANNEL", "id":"dbg_2591", "address":"GEQ0169495:1", "hssType":"SENSOR_FOR_CARBON_DIOXIDE", "channels": [
-{"id":"dbg_2593", "type":"HSSDP", "hssType":"STATE", "value":"0", "date":"11.10.2012 15:04:31"} ]
-},
-{"name":"CO2 Sensor", "type":"CHANNEL", "id":"dbg_2591", "address":"GEQ0169495:1", "hssType":"SENSOR_FOR_CARBON_DIOXIDE", "channels": [
-{"id":"dbg_2593", "type":"HSSDP", "hssType":"STATE", "value":"1", "date":"11.10.2012 15:04:31"} ]
-},
-{"name":"CO2 Sensor", "type":"CHANNEL", "id":"dbg_2591", "address":"GEQ0169495:1", "hssType":"SENSOR_FOR_CARBON_DIOXIDE", "channels": [
-{"id":"dbg_2593", "type":"HSSDP", "hssType":"STATE", "value":"2", "date":"11.10.2012 15:04:31"} ]
-},
-{"name":"LED16 Anzeige, Aus", "type":"CHANNEL", "id":"dbg_11084", "address":"JEQ0088xxx:1", "hssType":"KEY", "channels": [
-    {"id":"dbg_11088", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_11087", "type":"HSSDP", "hssType":"LED_STATUS", "value":"0", "valueUnit":"", "date":"24.09.2012 17:02:01"},
-    {"id":"dbg_11085", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"LED16 Anzeige, Rot", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
-    {"id":"dbg_11093", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"1", "valueUnit":"", "date":"24.07.2012 17:02:27"},
-    {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"LED16 Anzeige, Grün", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
-    {"id":"dbg_11093", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"2", "valueUnit":"", "date":"24.10.2012 17:02:27"},
-    {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
-},
-    {"name":"LED16 Anzeige, Orange", "type":"CHANNEL", "id":"dbg_11089", "address":"JEQ0088xxx:2", "hssType":"KEY", "channels": [
-    {"id":"dbg_11093", "type":"HSSDP", "hssType":"PRESS_SHORT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-    {"id":"dbg_11092", "type":"HSSDP", "hssType":"LED_STATUS", "value":"3", "valueUnit":"", "date":"24.08.2012 17:02:27"},
-    {"id":"dbg_11090", "type":"HSSDP", "hssType":"ALL_LEDS", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"}  ]
-},
-{"name":"Füllstandsmesser", "type":"CHANNEL", "id":"dbg_13629", "address":"JEQ0652897:1", "hssType":"CAPACITIVE_FILLING_LEVEL_SENSOR", "channels": [
-    {"id":"dbg_13630", "type":"HSSDP", "hssType":"FILLING_LEVEL", "value":"9", "valueUnit":"%", "date":"03.11.2012 10:13:31"}  ]
-},
-{"name":"Bad EG Heizung", "type":"CHANNEL", "id":"31751", "address":"KEQ0575468:4", "hssType":"CLIMATECONTROL_RT_TRANSCEIVER", "visible":"true", "operate":"true", "channels": [
-{"id":"31758", "type":"HSSDP", "hssType":"CONTROL_MODE", "value":"0", "valueUnit":"", "date":"13.11.2015 23:10:35"},
-{"id":"31759", "type":"HSSDP", "hssType":"FAULT_REPORTING", "value":"0", "valueUnit":"", "date":"13.11.2015 23:10:35"},
-{"id":"31754", "type":"HSSDP", "hssType":"BATTERY_STATE", "value":"2.900000", "valueUnit":"V", "date":"13.11.2015 23:10:35"},
-{"id":"31784", "type":"HSSDP", "hssType":"VALVE_STATE", "value":"0", "valueUnit":"%", "date":"13.11.2015 23:10:35"},
-{"id":"31756", "type":"HSSDP", "hssType":"BOOST_STATE", "value":"0", "valueUnit":"min", "date":"13.11.2015 23:10:35"},
-{"id":"31752", "type":"HSSDP", "hssType":"ACTUAL_TEMPERATURE", "value":"21.000000", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
-{"id":"31783", "type":"HSSDP", "hssType":"SET_TEMPERATURE", "value":"18.000000", "valueMin":"5.0", "valueMax":"30.0", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
-{"id":"31753", "type":"HSSDP", "hssType":"AUTO_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-{"id":"31782", "type":"HSSDP", "hssType":"MANU_MODE", "value":"", "valueUnit":"°C", "date":"01.01.1970 01:00:00"},
-{"id":"31755", "type":"HSSDP", "hssType":"BOOST_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-{"id":"31757", "type":"HSSDP", "hssType":"COMFORT_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-{"id":"31781", "type":"HSSDP", "hssType":"LOWERING_MODE", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-{"id":"55124", "type":"HSSDP", "hssType":"PARTY_MODE_SUBMIT", "value":"", "valueUnit":"", "date":"01.01.1970 01:00:00"},
-{"id":"55133", "type":"HSSDP", "hssType":"PARTY_TEMPERATURE", "value":"5.000000", "valueUnit":"°C", "date":"13.11.2015 23:10:35"},
-{"id":"55127", "type":"HSSDP", "hssType":"PARTY_START_TIME", "value":"0", "valueUnit":"minutes", "date":"13.11.2015 23:10:35"},
-{"id":"55125", "type":"HSSDP", "hssType":"PARTY_START_DAY", "value":"1", "valueUnit":"day", "date":"13.11.2015 23:10:35"},
-{"id":"55126", "type":"HSSDP", "hssType":"PARTY_START_MONTH", "value":"1", "valueUnit":"month", "date":"13.11.2015 23:10:35"},
-{"id":"55128", "type":"HSSDP", "hssType":"PARTY_START_YEAR", "value":"0", "valueUnit":"year", "date":"13.11.2015 23:10:35"},
-{"id":"55131", "type":"HSSDP", "hssType":"PARTY_STOP_TIME", "value":"0", "valueUnit":"minutes", "date":"13.11.2015 23:10:35"},
-{"id":"55129", "type":"HSSDP", "hssType":"PARTY_STOP_DAY", "value":"1", "valueUnit":"day", "date":"13.11.2015 23:10:35"},
-{"id":"55130", "type":"HSSDP", "hssType":"PARTY_STOP_MONTH", "value":"1", "valueUnit":"month", "date":"13.11.2015 23:10:35"},
-{"id":"55132", "type":"HSSDP", "hssType":"PARTY_STOP_YEAR", "value":"0", "valueUnit":"year", "date":"13.11.2015 23:10:35"} ]
-},
-{"name":"Bad EG Klima", "type":"CHANNEL", "id":"62201", "address":"CUX0100109:1", "hssType":"WEATHER", "visible":"true", "operate":"true", "channels": [
-{"id":"62206", "type":"HSSDP", "hssType":"TEMPERATURE", "value":"20.600000", "valueUnit":"&#176;C", "date":"13.11.2015 23:10:45"},
-{"id":"62204", "type":"HSSDP", "hssType":"HUMIDITY", "value":"58", "valueUnit":"%", "date":"13.11.2015 23:11:43"},
-{"id":"62203", "type":"HSSDP", "hssType":"DEW_POINT", "value":"12.100000", "valueUnit":"&#176;C", "date":"13.11.2015 23:11:43"},
-{"id":"62202", "type":"HSSDP", "hssType":"ABS_HUMIDITY", "value":"10.400000", "valueUnit":"g/m&#179;", "date":"13.11.2015 23:11:43"} ]
-},
-{"name":"Dimmer_WL_Wohnzimmer", "type":"CHANNEL", "id":"2504", "address":"JEQ0741031:13", "hssType":"DIGITAL_ANALOG_OUTPUT", "visible":"true", "operate":"true", "channels": [
-{"id":"9217", "type":"HSSDP", "hssType":"FREQUENCY", "value":"0.000000", "valueUnit":"mHz", "date":"16.11.2015 16:51:09"},
-{"name":"DimmprozWZ", "type":"VARDP", "id":"9997","info":"Prozentwert%20Dimmer%20WZ", "value":"80.000000","valueMin":"0","valueMax":"100", "valueType":"4", "valueUnit":"%", "date":"16.11.2015 16:36:00"} ]
 },
 {"name":"Wohnzimmer RGB Dimmer", "type":"CHANNEL", "id":"5696", "address":"[adress]:1", "hssType":"DIMMER", "visible":"true", "operate":"true", "channels": [
     {"id":"5700", "type":"HSSDP", "hssType":"LEVEL", "value":"1.000000", "valueUnit":"100%", "date":"16.11.2015 17:37:54"},

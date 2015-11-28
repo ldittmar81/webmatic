@@ -25,10 +25,19 @@ sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" get.html
 
 sed -i "s/wmmap.de.js/wmmap.de.min.js?${HASHDATE}/" index.html
 sed -i "s/wmmap.de.js/wmmap.de.min.js?${HASHDATE}/" get.html
+sed -i "s/wmmap.js/wmmap.min.js?${HASHDATE}/" index.html
+sed -i "s/wmmap.js/wmmap.min.js?${HASHDATE}/" get.html
 sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" index.html
 sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" get.html
 sed -i "s/index.js/index.min.js?${HASHDATE}/" index.html
 sed -i "s/get.js/get.min.js?${HASHDATE}/" get.html
+
+cd js
+
+sed -i "s/debugModus=true/debugModus=false/" webmatic.min.js
+
+cd ..
+
 cd ..
 
 tar --owner=root --group=root -czvf ../webmatic-${VERSION}.tar.gz *

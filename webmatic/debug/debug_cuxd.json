@@ -228,5 +228,62 @@
     {"id":"27798", "type":"HSSDP", "hssType":"TIMER_STOP", "value":"", "date":"01.01.1970 01:00:00"},
     {"id":"27795", "type":"HSSDP", "hssType":"TIMER_EVENT", "value":"", "date":"01.01.1970 01:00:00"},
     {"id":"27796", "type":"HSSDP", "hssType":"TIMER_GET", "value":"0.000000", "date":"28.12.2012 20:11:50"}  ]
+},
+    {"name":"Bewässerung hinten", "type":"CHANNEL", "id":"15122", "address":"CUX4000002:15", "hssType":"SWITCH", "visible":"true", "operate":"true", "channels": [
+    {"id":"15129", "name":"CUxD.CUX4000002:15.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"24.11.2015 20:51:28"},
+    {"id":"15128", "name":"CUxD.CUX4000002:15.SEND_CMD", "type":"HSSDP", "hssType":"SEND_CMD", "info":"", "value":"", "valueUnit":"", "valueType":"20", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+    {"id":"15127", "name":"CUxD.CUX4000002:15.RCVS", "type":"HSSDP", "hssType":"RCVS", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"},
+    {"id":"15126", "name":"CUxD.CUX4000002:15.RCVL", "type":"HSSDP", "hssType":"RCVL", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"}  ]
+},
+    {"name":"Poolpumpe", "type":"CHANNEL", "id":"15188", "address":"CUX4000003:7", "hssType":"SWITCH", "visible":"true", "operate":"true", "channels": [
+    {"id":"15195", "name":"CUxD.CUX4000003:7.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"24.11.2015 13:02:44"},
+    {"id":"15194", "name":"CUxD.CUX4000003:7.SEND_CMD", "type":"HSSDP", "hssType":"SEND_CMD", "info":"", "value":"", "valueUnit":"", "valueType":"20", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+    {"id":"15193", "name":"CUxD.CUX4000003:7.RCVS", "type":"HSSDP", "hssType":"RCVS", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:31"},
+    {"id":"15192", "name":"CUxD.CUX4000003:7.RCVL", "type":"HSSDP", "hssType":"RCVL", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:31"}  ]
+},
+    {"name":"Wasserzähler:1", "type":"CHANNEL", "id":"4036", "address":"CUX0600101:1", "hssType":"SENSOR", "visible":"true", "operate":"true", "channels": [
+    {"id":"4038", "name":"CUxD.CUX0600101:1.COUNTER", "type":"HSSDP", "hssType":"COUNTER", "info":"", "value":"58", "valueUnit":"","valueList":"", "valueType":"16", "readable":"true", "writeable":"false", "date":"25.11.2015 12:12:21"},
+    {"id":"4060", "name":"CUxD.CUX0600101:1.SUM", "type":"HSSDP", "hssType":"SUM", "info":"", "value":"916.000000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:12:21"},
+    {"id":"4057", "name":"CUxD.CUX0600101:1.MEAN5MINUTES", "type":"HSSDP", "hssType":"MEAN5MINUTES", "info":"", "value":"1.714000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:12:21"},
+    {"id":"4039", "name":"CUxD.CUX0600101:1.MAX5MINUTES", "type":"HSSDP", "hssType":"MAX5MINUTES", "info":"", "value":"1.714000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:12:21"},
+    {"id":"4061", "name":"CUxD.CUX0600101:1.SUM_1H", "type":"HSSDP", "hssType":"SUM_1H", "info":"", "value":"1.143000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:12:21"},
+    {"id":"4040", "name":"CUxD.CUX0600101:1.MAX_1H", "type":"HSSDP", "hssType":"MAX_1H", "info":"", "value":"1.714000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:12:21"},
+    {"id":"4062", "name":"CUxD.CUX0600101:1.SUM_24H", "type":"HSSDP", "hssType":"SUM_24H", "info":"", "value":"28.286000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:02:20"},
+    {"id":"4041", "name":"CUxD.CUX0600101:1.MAX_24H", "type":"HSSDP", "hssType":"MAX_24H", "info":"", "value":"125.436000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:02:20"},
+    {"id":"4059", "name":"CUxD.CUX0600101:1.MISS_24H", "type":"HSSDP", "hssType":"MISS_24H", "info":"", "value":"31", "valueUnit":"","valueList":"", "valueType":"16", "readable":"true", "writeable":"false", "date":"25.11.2015 12:02:20"},
+    {"id":"4058", "name":"CUxD.CUX0600101:1.METER", "type":"HSSDP", "hssType":"METER", "info":"", "value":"76063.570923", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:12:21"}  ]
+},
+    {"name":"Bewässerung hinten", "type":"CHANNEL", "id":"15122", "address":"CUX4000002:15", "hssType":"SWITCH", "visible":"true", "operate":"true", "channels": [
+    {"id":"15129", "name":"CUxD.CUX4000002:15.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"24.11.2015 20:51:28"},
+    {"id":"15128", "name":"CUxD.CUX4000002:15.SEND_CMD", "type":"HSSDP", "hssType":"SEND_CMD", "info":"", "value":"", "valueUnit":"", "valueType":"20", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+    {"id":"15127", "name":"CUxD.CUX4000002:15.RCVS", "type":"HSSDP", "hssType":"RCVS", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"},
+    {"id":"15126", "name":"CUxD.CUX4000002:15.RCVL", "type":"HSSDP", "hssType":"RCVL", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"}  ]
+},
+    {"name":"Bewässerung hinten Automatik", "type":"CHANNEL", "id":"15114", "address":"CUX4000002:14", "hssType":"SWITCH", "visible":"true", "operate":"true", "channels": [
+    {"id":"15121", "name":"CUxD.CUX4000002:14.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"24.11.2015 10:41:47"},
+    {"id":"15120", "name":"CUxD.CUX4000002:14.SEND_CMD", "type":"HSSDP", "hssType":"SEND_CMD", "info":"", "value":"", "valueUnit":"", "valueType":"20", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+    {"id":"15119", "name":"CUxD.CUX4000002:14.RCVS", "type":"HSSDP", "hssType":"RCVS", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"},
+    {"id":"15118", "name":"CUxD.CUX4000002:14.RCVL", "type":"HSSDP", "hssType":"RCVL", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"},
+    {"id":"4030", "name":"Bewässerung hinten Dauer", "type":"VARDP", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"},
+    {"id":"4029", "name":"Bewässerung hinten Start", "type":"VARDP", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"},
+    {"id":"4027", "name":"Bewässerung Regensperre", "type":"VARDP", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:32"}  ]
+},
+    {"name":"Poolpumpe", "type":"CHANNEL", "id":"15188", "address":"CUX4000003:7", "hssType":"SWITCH", "visible":"true", "operate":"true", "channels": [
+    {"id":"15195", "name":"CUxD.CUX4000003:7.STATE", "type":"HSSDP", "hssType":"STATE", "info":"", "value":"false", "valueUnit":"","valueName0":"0","valueName1":"1", "valueType":"2", "readable":"true", "writeable":"true", "date":"24.11.2015 13:02:44"},
+    {"id":"15194", "name":"CUxD.CUX4000003:7.SEND_CMD", "type":"HSSDP", "hssType":"SEND_CMD", "info":"", "value":"", "valueUnit":"", "valueType":"20", "readable":"false", "writeable":"true", "date":"01.01.1970 01:00:00"},
+    {"id":"15193", "name":"CUxD.CUX4000003:7.RCVS", "type":"HSSDP", "hssType":"RCVS", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:31"},
+    {"id":"15192", "name":"CUxD.CUX4000003:7.RCVL", "type":"HSSDP", "hssType":"RCVL", "info":"", "value":"0", "valueUnit":"", "valueType":"20", "readable":"true", "writeable":"false", "date":"24.11.2015 10:42:31"}  ]
+},
+    {"name":"Wasserzähler:1", "type":"CHANNEL", "id":"4036", "address":"CUX0600101:1", "hssType":"SENSOR", "visible":"true", "operate":"true", "channels": [
+    {"id":"4038", "name":"CUxD.CUX0600101:1.COUNTER", "type":"HSSDP", "hssType":"COUNTER", "info":"", "value":"57", "valueUnit":"","valueList":"", "valueType":"16", "readable":"true", "writeable":"false", "date":"25.11.2015 12:07:20"},
+    {"id":"4060", "name":"CUxD.CUX0600101:1.SUM", "type":"HSSDP", "hssType":"SUM", "info":"", "value":"915.856999", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:07:20"},
+    {"id":"4057", "name":"CUxD.CUX0600101:1.MEAN5MINUTES", "type":"HSSDP", "hssType":"MEAN5MINUTES", "info":"", "value":"1.714000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:07:20"},
+    {"id":"4039", "name":"CUxD.CUX0600101:1.MAX5MINUTES", "type":"HSSDP", "hssType":"MAX5MINUTES", "info":"", "value":"1.714000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:07:20"},
+    {"id":"4061", "name":"CUxD.CUX0600101:1.SUM_1H", "type":"HSSDP", "hssType":"SUM_1H", "info":"", "value":"1.143000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:07:20"},
+    {"id":"4040", "name":"CUxD.CUX0600101:1.MAX_1H", "type":"HSSDP", "hssType":"MAX_1H", "info":"", "value":"1.714000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:07:20"},
+    {"id":"4062", "name":"CUxD.CUX0600101:1.SUM_24H", "type":"HSSDP", "hssType":"SUM_24H", "info":"", "value":"28.286000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:02:20"},
+    {"id":"4041", "name":"CUxD.CUX0600101:1.MAX_24H", "type":"HSSDP", "hssType":"MAX_24H", "info":"", "value":"125.436000", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:02:20"},
+    {"id":"4059", "name":"CUxD.CUX0600101:1.MISS_24H", "type":"HSSDP", "hssType":"MISS_24H", "info":"", "value":"31", "valueUnit":"","valueList":"", "valueType":"16", "readable":"true", "writeable":"false", "date":"25.11.2015 12:02:20"},
+    {"id":"4058", "name":"CUxD.CUX0600101:1.METER", "type":"HSSDP", "hssType":"METER", "info":"", "value":"76063.428955", "valueUnit":"","valueMin":"0.000000","valueMax":"9999999.890625", "valueType":"4", "readable":"true", "writeable":"false", "date":"25.11.2015 12:07:20"}  ]
 }  ]
 }
