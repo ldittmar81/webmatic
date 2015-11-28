@@ -319,7 +319,7 @@ var textMap = {
     SENSOR__RELAIS2__false: "Relais 2 aus",
     SENSOR__MODE: "** SENSOR__MODE",
     SENSOR__VANE: "** SENSOR__VANE",
-    SENSOR__SPEEN: "** SENSOR__SPEEN",
+    SENSOR__SPEED: "** SENSOR__SPEED",
     SENSOR__ROOM: "** SENSOR__ROOM",
     SENSOR__INFO: "Sensortyp",
     SENSOR__ERROR: "Fehlermeldung",
