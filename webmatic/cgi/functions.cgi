@@ -23,8 +23,8 @@ cgi_eval {
                 WriteLine (',');
             }
 
-            var room = dom.GetObject(id);
-            Write('  "' + id + '": "' + room.Name() + '"');
+            var function = dom.GetObject(id);
+            Write('  "' + id + '": "' + function.Name() + '"');
         }
 
         WriteLine ("");

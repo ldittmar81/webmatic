@@ -1263,39 +1263,57 @@ function loadConfigData(async, url, type, map, callback) {
         dataType: 'json',
         async: async
     })
-            .done(function (data) {
-                switch (type) {
-                    case "config":
-                        optionsMap = data;
-                        break;
-                    case "variables":
-                        variablesMap = data;
-                        break;
-                    case "programs":
-                        programsMap = data;
-                        break
-                    case "favorites":
-                        favoritesMap = data;
-                        break
-                    case "rooms":
-                        roomsMap = data;
-                        break
-                    case "functions":
-                        functionsMap = data;
-                        break
-                    case "devices":
-                        devicesMap = data;
-                        break
-                }
+    .done(function (data) {
+        switch (type) {
+            case "config":
+                optionsMap = data;
+                break;
+            case "variables":
+                variablesMap = data;
+                break;
+            case "programs":
+                programsMap = data;
+                break
+            case "favorites":
+                favoritesMap = data;
+                break
+            case "rooms":
+                roomsMap = data;
+                break
+            case "functions":
+                functionsMap = data;
+                break
+            case "devices":
+                devicesMap = data;
+                break
+        }
 
-                localStorage.setItem(map, JSON.stringify(data));
-                if (typeof callback === "function") {
-                    callback(data);
-                }
-            })
-            .fail(function (jqXHR, textStatus) {
-                log("Request failed: " + textStatus, 2);
-            });
+        localStorage.setItem(map, JSON.stringify(data));
+        if (typeof callback === "function") {
+            callback(data);
+        }
+    })
+    .fail(function (jqXHR, textStatus) {
+        log("Request failed: " + textStatus, 2);
+    });
+}
+
+function createConfigFile(){
+    var text = '{';
+    text += '"favorites": "true",';
+    text += '"rooms": "true",';
+    text += '"functions": "true",';
+    text += '"variables": "true",';
+    text += '"programs": "true",';
+    text += '"others": "true",';
+    text += '"collapsed": "rooms",';
+    text += '"systemvar_readonly": "true",';
+    text += '"default_theme": "a",';
+    text += '"default_font": "a",';   
+    text += '"default_language": "de"'; 
+    text += '}';    
+    
+    optionsMap = JSON.parse(text);
 }
 
 function isReadOnly(valInfo) {
@@ -1414,9 +1432,13 @@ function buttonEvents(obj, refresh) {
     });
 }
 
-function reloadList(txt, systemDate, restart) {
+function reloadList(txt, systemDate, restart, description) {
     $("#dataListHeader").empty();
-    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>").listview("refresh");
+    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>");
+    if(description !== ""){
+         $("#dataListHeader").append("<li class='description'>" + description + "</li>");
+    }
+    $("#dataListHeader").listview("refresh");
     $("#dataList").listview("refresh");
     $("#dataList").trigger("create");
     if (restart) {
@@ -1556,7 +1578,7 @@ function loadData(url, id, restart) {
             addDiagram(options);
         });
 
-        reloadList(devicesMap['name'], systemDate, restart);
+        reloadList(devicesMap['name'], systemDate, restart, devicesMap['description']);
     }
 
     if (!isActual) {
@@ -1590,7 +1612,7 @@ function loadData(url, id, restart) {
                 addDiagram(options);
             });
 
-            reloadList(dta['name'], systemDate, restart);
+            reloadList(dta['name'], systemDate, restart, dta['description']);
 
         });
 
@@ -1632,7 +1654,7 @@ function loadVariables(restart) {
                 $("#dataList").append(processVariable(variable, valID, systemDate));
             }
         });
-        reloadList("Systemvariablen", systemDate, restart);
+        reloadList(mapText("SYS_VAR"), systemDate, restart, "");
     }
 
     if (!isActual) {
@@ -1649,7 +1671,7 @@ function loadVariables(restart) {
                     $('#' + valID).remove();
                 }
             });
-            reloadList(mapText("SYS_VAR"), systemDate, restart);
+            reloadList(mapText("SYS_VAR"), systemDate, restart, "");
         });
     }
     // Animated Icon aus Refresh wieder entfernen:
@@ -1687,7 +1709,7 @@ function loadPrograms(restart) {
                 $("#dataList").append(processProgram(prog, prgID, systemDate));
             }
         });
-        reloadList(mapText("PROGRAMS"), systemDate, restart);
+        reloadList(mapText("PROGRAMS"), systemDate, restart, "");
         $("#dataList").find(".btnDisabled").button('disable');
     }
 
@@ -1707,7 +1729,7 @@ function loadPrograms(restart) {
                     $('#' + prgID).remove();
                 }
             });
-            reloadList("Programme", systemDate, restart);
+            reloadList(mapText("PROGRAMS"), systemDate, restart, "");
             $("#dataList").find(".btnDisabled").button('disable');
         });
     }

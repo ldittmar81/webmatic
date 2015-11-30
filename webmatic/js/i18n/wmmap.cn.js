@@ -648,7 +648,7 @@ var textMap = {
     FILTER: "过滤数据......",
     TRANSFER: "转移......",
     DELAY: "值仍然只有在这里延迟传输到设备并显示出来。",
-    TRANSFER_OK: "OK！",
-    IMAGE_UPLOAD: "它只能JPG,GIF或PNG上传！",
+    TRANSFER_OK: "好吧!",
+    IMAGE_UPLOAD: "它只能JPG,GIF或PNG上传!",
     START: "开始......"
 };

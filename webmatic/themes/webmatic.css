@@ -126,7 +126,15 @@ img.ui-img-f{
     filter: grayscale(1);
 }
 
-.breakText { white-space:normal; word-wrap:break-word; }
+.breakText { 
+    white-space:normal; 
+    word-wrap:break-word; 
+}
+
+.description {
+    font-style: italic;
+    font-size: 12px;
+}
 
 .content-secondary {
     width: 30%;

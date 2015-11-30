@@ -17,25 +17,19 @@ cgi_eval {
         string strList = "} $list {";
 
         WriteLine('{');
-        string tab = '\t';
-
-        string strTemp;
-
+       
         string strObjID;
         object objObject;
         object objDP;
-        string strListName;
         string strDP;
         string strType;
-
         string strListEnum = "";
-        string strDate;
-
-        strListEnum = dom.GetObject(strList).EnumUsedIDs();
-        strListName = dom.GetObject(strList).Name();
-        WriteLine ("  -+#+-name-+#+-: -+#+-" # strListName # "-+#+-,");
-        strDate = system.Date("%d.%m.%Y %H:%M:%S");
-        WriteLine ("  -+#+-date-+#+-: -+#+-" # strDate # "-+#+-,");
+       
+        var obj = dom.GetObject(strList);
+        strListEnum = obj.EnumUsedIDs();
+        WriteLine ("  -+#+-name-+#+-: -+#+-" # obj.Name() # "-+#+-,");
+        WriteLine ("  -+#+-description-+#+-: -+#+-" # obj.EnumInfo() # "-+#+-,");
+        WriteLine ("  -+#+-date-+#+-: -+#+-" # system.Date("%d.%m.%Y %H:%M:%S") # "-+#+-,");
 
         WriteLine("  -+#+-entries-+#+-: [");
         integer firstEntry = 0;
@@ -73,7 +67,6 @@ cgi_eval {
                 ! Datenpunkte iterieren:
                 foreach (strDP, objObject.DPs().EnumUsedIDs()){
                     objDP = dom.GetObject (strDP);
-                    strTemp = objDP.TypeName();
                     if (firstChannelItem == false){
                         WriteLine(",");
                     }
