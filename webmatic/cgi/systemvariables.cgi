@@ -10,8 +10,8 @@ cgi_eval {
     array set res [rega_script {
         WriteLine ("{");
         string s_date = system.Date("%d.%m.%Y %H:%M:%S");
-        WriteLine ('"date": "' # s_date # '",');
-        WriteLine ('"entries":[');
+        WriteLine ("-+#+-date-+#+-: -+#+-" # s_date # "-+#+-,");
+        WriteLine ("-+#+-entries-+#+-:[");
 
         string id;
         object obj;
@@ -21,42 +21,44 @@ cgi_eval {
         isFirst = true;
         foreach (id, obj.EnumUsedIDs()){
             var sysVar = dom.GetObject(id);
-            if (isFirst) { isFirst = false; } else { WriteLine (','); }
-            Write('{');
-            Write('"name":"');
+            if (isFirst) { isFirst = false; } else { WriteLine (","); }
+            Write("{");
+            Write("-+#+-name-+#+-:-+#+-");
             WriteURL(sysVar.Name());
-            Write('"');
-            Write(',"id":"' # sysVar.ID() # '"');
-            Write(',"info":"');
+            Write("-+#+-");
+            Write(",-+#+-id-+#+-:-+#+-" # sysVar.ID() # "-+#+-");
+            Write(",-+#+-info-+#+-:-+#+-");
             WriteURL(sysVar.DPInfo());
-            Write('"');
-            Write(',"value":"')
+            Write("-+#+-");
+            Write(",-+#+-value-+#+-:-+#+-")
             if(sysVar.ValueUnit() == "html"){
                 WriteHTML(sysVar.Value());
             }else{
                 WriteURL(sysVar.Value());
             }
-            Write('"');
+            Write("-+#+-");
             if (sysVar.ValueType() == 16){
-                Write(',"valueList":"' # sysVar.ValueList() # '"');
+                Write(",-+#+-valueList-+#+-:-+#+-" # sysVar.ValueList() # "-+#+-");
             }
             if (sysVar.ValueType() == 2){
-                Write(',"valueName0":"' # sysVar.ValueName0() # '"');
-                Write(',"valueName1":"' # sysVar.ValueName1() # '"');
+                Write(",-+#+-valueName0-+#+-:-+#+-" # sysVar.ValueName0() # "-+#+-");
+                Write(",-+#+-valueName1-+#+-:-+#+-" # sysVar.ValueName1() # "-+#+-");
             }
             if (sysVar.ValueType() == 4){
-                Write(',"valueMin":"' # sysVar.ValueMin() # '"');
-                Write(',"valueMax":"' # sysVar.ValueMax() # '"');
+                Write(",-+#+-valueMin-+#+-:-+#+-" # sysVar.ValueMin() # "-+#+-");
+                Write(",-+#+-valueMax-+#+-:-+#+-" # sysVar.ValueMax() # "-+#+-");
             }
-            Write(',"valueType":"' # sysVar.ValueType() # '"');
-            Write(',"valueUnit":"' # sysVar.ValueUnit() # '"');
-            Write(',"date":"' # sysVar.Timestamp().Format("%d.%m.%Y %H:%M:%S") # '"');
-            Write(',"visible":"' # sysVar.Visible() # '"');
-            Write('}');
+            Write(",-+#+-valueType-+#+-:-+#+-" # sysVar.ValueType() # "-+#+-");
+            Write(",-+#+-valueUnit-+#+-:-+#+-" # sysVar.ValueUnit() # "-+#+-");
+            Write(",-+#+-date-+#+-:-+#+-" # sysVar.Timestamp().Format("%d.%m.%Y %H:%M:%S") # "-+#+-");
+            Write(",-+#+-visible-+#+-:-+#+-" # sysVar.Visible() # "-+#+-");
+            Write("}");
         }
 
         WriteLine ("");
         WriteLine ("]}");
     }]
-    puts -nonewline $res(STDOUT)
+
+    set response [string map {\" ' -+#+- \" \n "" \r ""} $res(STDOUT)]
+    puts -nonewline $response
 }
