@@ -1,4 +1,4 @@
-/* global optionsMap, theme, font */
+/* global optionsMap, theme, font, newVersion, saveDataToFile */
 
 // ------------------------- Initial call after page loading ------------------------
 $(function () {
@@ -20,15 +20,32 @@ $(function () {
         $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "favorites") + "'><h3>" + mapText("FAVORITES") + "</h3><ul id='listFavorites' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticFavoritesMap") === null) {
-            loadConfigData(false, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
+            if(newVersion){
+                saveDataToFile = true;
+            }
+            loadConfigData(false, '../webmatic_user/favorites.json', 'favorites', 'webmaticFavoritesMap', false, false);
         } else {
-            favoritesMap = JSON.parse(localStorage.getItem("webmaticFavoritesMap"));
-            loadConfigData(true, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
+            favoritesMap = JSON.parse(localStorage.getItem("webmaticFavoritesMap"));            
         }
-
+        
+        loadConfigData(true, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap', false, true);
+        
+        var tmpObj = {};
         $.each(favoritesMap, function (key, val) {
-            $("#listFavorites").append("<li class='menuListItem scrollToList' id='" + key + "'><a href='#'><img id='menuImg" + key + "' class='lazyFavorites " + gfxClass + " ui-img-" + theme + "' data-original='../webmatic_user/img/ids/favorites/" + key + ".png' src='img/menu/favorites.png'><span class='breakText'>" + val + "</span></a></li>");
+            var html = "<li class='menuListItem scrollToList' id='" + key + "' " + (val['visible']?"":"style='display: none;'") + ">";
+            html += "<a href='#'><img id='menuImg" + key + "' class='" + gfxClass + " ui-img-" + theme;
+            if(val['pic']){
+                html += " lazyFavorites' data-original='../webmatic_user/img/ids/favorites/" + key + ".png";
+            }
+            html += "' src='img/menu/favorites.png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
+            tmpObj[val['position']] = html;            
         });
+        var keys = Object.keys(tmpObj).sort();
+        var len = keys.length;    
+        for (var i = 0; i < len; i++) {
+            var k = keys[i];
+            $("#listFavorites").append(tmpObj[k]);
+        }
         $("#listFavorites").listview().listview("refresh");
         $("img.lazyFavorites").lazyload({event: "lazyLoadInstantly"});
         $("img").trigger("lazyLoadInstantly");
@@ -39,15 +56,32 @@ $(function () {
         $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "rooms") + "'><h3>" + mapText("ROOMS") + "</h3><ul id='listRooms' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticRoomsMap") === null) {
-            loadConfigData(false, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap'); 
+            if(newVersion){
+                saveDataToFile = true;
+            }
+            loadConfigData(false, '../webmatic_user/rooms.json', 'rooms', 'webmaticRoomsMap', false, false);
         } else {
-            roomsMap = JSON.parse(localStorage.getItem("webmaticRoomsMap"));
-            loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap'); 
+            roomsMap = JSON.parse(localStorage.getItem("webmaticRoomsMap"));            
         }
+        
+        loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap', false, true);
 
+        var tmpObj = {};
         $.each(roomsMap, function (key, val) {
-            $("#listRooms").append("<li class='menuListItem scrollToList' id='" + key + "'><a href='#'><img id='menuImg" + key + "' class='lazyRooms " + gfxClass + " ui-img-" + theme + "' data-original='../webmatic_user/img/ids/rooms/" + key + ".png' src='img/menu/rooms.png'><span class='breakText'>" + val + "</span></a></li>");
+            var html = "<li class='menuListItem scrollToList' id='" + key + "' " + (val['visible']?"":"style='display: none;'") + ">";
+            html += "<a href='#'><img id='menuImg" + key + "' class='" + gfxClass + " ui-img-" + theme;
+            if(val['pic']){
+                html += " lazyRooms' data-original='../webmatic_user/img/ids/rooms/" + key + ".png";
+            }
+            html += "' src='img/menu/rooms.png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
+            tmpObj[val['position']] = html;            
         });
+        var keys = Object.keys(tmpObj).sort();
+        var len = keys.length;    
+        for (var i = 0; i < len; i++) {
+            var k = keys[i];
+            $("#listRooms").append(tmpObj[k]);
+        }
         $("#listRooms").listview().listview("refresh");
         $("img.lazyRooms").lazyload({event: "lazyLoadInstantly"});
         $("img").trigger("lazyLoadInstantly");
@@ -58,15 +92,32 @@ $(function () {
         $("#main_menu").append("<div class='scrollToTop' data-role='collapsible' data-collapsed='" + (optionsMap["collapsed"] === "functions") + "'><h3>" + mapText("FUNCTIONS") + "</h3><ul id='listFunctions' data-role='listview' data-inset='true'></ul></div>");
 
         if (localStorage.getItem("webmaticFunctionsMap") === null) {
-            loadConfigData(false, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
+            if(newVersion){
+                saveDataToFile = true;
+            }
+            loadConfigData(false, '../webmatic_user/functions.json', 'functions', 'webmaticFunctionsMap', false, false);
         } else {
-            functionsMap = JSON.parse(localStorage.getItem("webmaticFunctionsMap"));
-            loadConfigData(true, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
+            functionsMap = JSON.parse(localStorage.getItem("webmaticFunctionsMap"));            
         }
+        
+        loadConfigData(true, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap', false, true);
 
+        var tmpObj = {};
         $.each(functionsMap, function (key, val) {
-            $("#listFunctions").append("<li class='menuListItem scrollToList' id='" + key + "'><a href='#'><img id='menuImg" + key + "' class='lazyFunctions " + gfxClass + " ui-img-" + theme + "' data-original='../webmatic_user/img/ids/functions/" + key + ".png' src='img/menu/functions.png'><span class='breakText'>" + val + "</span></a></li>");
+            var html = "<li class='menuListItem scrollToList' id='" + key + "' " + (val['visible']?"":"style='display: none;'") + ">";
+            html += "<a href='#'><img id='menuImg" + key + "' class='" + gfxClass + " ui-img-" + theme;
+            if(val['pic']){
+                html += " lazyFunctions' data-original='../webmatic_user/img/ids/functions/" + key + ".png";
+            }
+            html += "' src='img/menu/functions.png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
+            tmpObj[val['position']] = html;            
         });
+        var keys = Object.keys(tmpObj).sort();
+        var len = keys.length;    
+        for (var i = 0; i < len; i++) {
+            var k = keys[i];
+            $("#listFunctions").append(tmpObj[k]);
+        }
         $("#listFunctions").listview().listview("refresh");
         $("img.lazyFunctions").lazyload({event: "lazyLoadInstantly"});
         $("img").trigger("lazyLoadInstantly");

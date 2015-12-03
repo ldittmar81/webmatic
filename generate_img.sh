@@ -1,7 +1,6 @@
 #!/bin/sh
 mkdir -p tmp
 cp -a webmatic tmp/
-cp -a webmatic_user tmp/
 cp -a ccu1 tmp/
 cp -a ccu2 tmp/
 cp -a ccurm tmp/

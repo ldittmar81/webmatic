@@ -1,8 +1,8 @@
 // WebMatic
-// (c) Frank Epple
-// h-Diagrams by Goglo
-// Ab Version 2.0 by ldittmar
+// by ldittmar
 // ----------------------- Click function handlers ----------------------------
+
+var storageVersion = 1;
 
 // Globale variablen
 var debugModus = true;
@@ -12,6 +12,9 @@ var oldID = -1;
 var lastClickID = -1;
 var readModus = false;
 var prevItem = 0;
+var saveDataToFile = false;
+var newVersion = false;
+var mustBeSaved = false;
 
 var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap;
 
@@ -24,12 +27,19 @@ var refreshTimer = setInterval(function () {
 }, 1000);
 var lastTime = -1;
 
-//Initialwerte einlesen
+//Initialwerte (Einstellungen) einlesen
 if (localStorage.getItem("webmaticOptionsMap") === null) {
-    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
+    localStorage.clear();
+    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap', false, true);
 } else {
     optionsMap = JSON.parse(localStorage.getItem("webmaticOptionsMap"));
-    loadConfigData(true, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap');
+    var ok = true;
+    if(optionsMap['storageVersion'] !== storageVersion){
+        ok = false;
+        localStorage.clear();
+        newVersion = true;
+    }
+    loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap', false, true);    
 }
 
 //Design setzen
@@ -536,19 +546,42 @@ function processProgram(prog, prgID, systemDate) {
 }
 
 function processGraphicID(type, map) {
+    var tmpObj = {};    
     $.each(map, function (key, val) {
-        var html = "<li>";
-        html += "<img id='img" + key + "' class='lazyLoadImage ui-li-thumbnail ui-img-" + theme + "' data-original='../webmatic_user/img/ids/" + type + "/" + key + ".png' src='img/menu/" + type + ".png'/>";
+        var html = "<li id='list" + key +"'>";
+        html += "<div style='float: left; text-align: center;'>";
+        html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
+        if(val['pic']){
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + key + ".png";
+        }
+        html += "' src='img/menu/" + type + ".png'/>";
+        html += "<a href='#' " + (!val['pic'] ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
+        html += "<h1>(<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>)</h1>";
+        html += "</div>";
         html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key + "'>";
         html += "<div class='ui-grid-b'>";
-        html += "<div class='ui-block-a'><h1>" + val + " (<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>)</h1></div>";
+        html += "<div class='ui-block-a'><input name='editName' data-id='" + key +"' data-type='" + type + "' type='text' value='" + val['name'] + "' /></div>";
         html += "<div class='ui-block-b'><input name='file' id='file" + key + "' type='file' accept='image/*' /></div>";
-        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("SAVE") + "</a></div>";
+        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("UPLOAD") + "</a></div>";
+        html += "<div class='ui-block-a small-hidden'></div>";
+        html += "<div class='ui-block-b small-hidden'></div>";
+        html += "<div class='ui-block-c'>";
+        html += "<label>" + mapText("VISIBILITY") +":&nbsp;";
+        html += "<input type='checkbox' data-role='flipswitch' name='editVisible' data-type='" + type + "' data-id='" + key +"' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['visible']?"checked":"") + "/>";
+        html += "</label>";
+        html += "</div>";
         html += "</div>";
         html += "</form>";
         html += "</li>";
-        $("#dataList").append(html);
+        tmpObj[val['position']] = html;        
     });
+    
+    var keys = Object.keys(tmpObj).sort();
+    var len = keys.length;    
+    for (var i = 0; i < len; i++) {
+        var k = keys[i];
+        $("#dataList").append(tmpObj[k]);
+    }
 }
 
 function getErrorMessage(errType, error, errValue, deviceHssType) {
@@ -681,7 +714,11 @@ function addDiagram(options) {
                         min: gaugeMin,
                         max: gaugeMax,
                         intervals: gValArr,
-                        intervalColors: gColArr
+                        intervalColors: gColArr,
+                        smooth: true,
+                        animation: {
+                            show: true
+                        }
                     }
                 },
                 grid: {
@@ -817,7 +854,8 @@ function addDiagram(options) {
                 },
                 grid: {
                     backgroundColor: "#F4F4F4"
-                }
+                },
+                animated: true
             });
             //------------------------------------ end Goglo
         } else if (dType === "l" || dType === "f") {
@@ -933,7 +971,8 @@ function addDiagram(options) {
                     },
                     grid: {
                         backgroundColor: "#F4F4F4"
-                    }
+                    },
+                    animated: true
                 });
             }
         }   // if  dType...
@@ -1246,6 +1285,11 @@ function log(txt, type) {
     }
 }
 
+function activateSettingSaveButton(){
+    $('[name="saveAllChanges"]').removeClass('ui-state-disabled');
+    mustBeSaved = true;
+}
+
 function getDateFromString(strDate) {
     var dy = strDate.substring(0, 2);
     var mn = strDate.substring(3, 5) - 1; // -1, da 0 basiert.
@@ -1256,7 +1300,7 @@ function getDateFromString(strDate) {
     return new Date(yr, mn, dy, hr, mi, sc);
 }
 
-function loadConfigData(async, url, type, map, callback) {
+function loadConfigData(async, url, type, map, create, actual, callback) {
     $.ajax({
         type: 'GET',
         url: url,
@@ -1266,54 +1310,227 @@ function loadConfigData(async, url, type, map, callback) {
     .done(function (data) {
         switch (type) {
             case "config":
-                optionsMap = data;
+                if(!async){
+                    saveDataToFile = true;
+                    saveConfigFile(type, data, create, map, true);
+                }else{
+                    optionsMap = data;
+                    localStorage.setItem(map, JSON.stringify(data));
+                }                
                 break;
             case "variables":
                 variablesMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
                 break;
             case "programs":
                 programsMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
                 break
             case "favorites":
-                favoritesMap = data;
+                saveConfigFile(type, data, create, map, actual);                
                 break
-            case "rooms":
-                roomsMap = data;
+            case "rooms":               
+                saveConfigFile(type, data, create, map, actual);
                 break
             case "functions":
-                functionsMap = data;
+                saveConfigFile(type, data, create, map, actual);
                 break
             case "devices":
                 devicesMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
                 break
         }
 
-        localStorage.setItem(map, JSON.stringify(data));
         if (typeof callback === "function") {
             callback(data);
         }
     })
     .fail(function (jqXHR, textStatus) {
-        log("Request failed: " + textStatus, 2);
+        if (jqXHR.status === 404) {
+            createConfigFile(type, map);
+        }else{
+            log("Request failed: " + textStatus, 2);
+        }
     });
+   
 }
 
-function createConfigFile(){
-    var text = '{';
-    text += '"favorites": "true",';
-    text += '"rooms": "true",';
-    text += '"functions": "true",';
-    text += '"variables": "true",';
-    text += '"programs": "true",';
-    text += '"others": "true",';
-    text += '"collapsed": "rooms",';
-    text += '"systemvar_readonly": "true",';
-    text += '"default_theme": "a",';
-    text += '"default_font": "a",';   
-    text += '"default_language": "de"'; 
-    text += '}';    
+function saveConfigFile(type, newJsonObj, create, map, actual){
     
-    optionsMap = JSON.parse(text);
+    if(actual){
+        var returnJson = {};
+        if( type === "rooms" || type === "favorites" || type === "functions" ){
+            var i = 0;
+            $.each(newJsonObj, function (key, val) {
+                i++;
+                var obj = {};
+                obj['name'] = val;
+                obj['oldname'] = val;
+                obj['visible'] = true;
+                obj['pic'] = false;
+                obj['position'] = i;
+                returnJson[key] = obj;
+            });
+        }else{
+            returnJson = newJsonObj;
+        }
+        
+        var oldMap;
+        switch (type) {
+            case "variables":
+                oldMap = variablesMap;
+                break;
+            case "programs":
+                oldMap = programsMap;
+                break
+            case "favorites":
+                oldMap = favoritesMap;                
+                break
+            case "rooms":               
+                oldMap = roomsMap;
+                break
+            case "functions":
+                oldMap = functionsMap;
+                break 
+            case "devices":
+                oldMap = devicesMap;
+                break
+        }
+        
+        returnJson = refreshJSONObj(type, returnJson, create, oldMap);
+       
+        localStorage.setItem(map, JSON.stringify(returnJson));
+        if(saveDataToFile){
+            saveDataToFile = false;
+            $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(returnJson)});
+        }
+    }else{
+        switch (type) {
+            case "variables":
+                variablesMap = newJsonObj;
+                break;
+            case "programs":
+                programsMap = newJsonObj;
+                break
+            case "favorites":
+                favoritesMap = newJsonObj;                
+                break
+            case "rooms":               
+                roomsMap = newJsonObj;
+                break
+            case "functions":
+                functionsMap = newJsonObj;
+                break
+            case "devices":
+                devicesMap = newJsonObj;
+                break
+        }
+    }
+}
+
+function refreshJSONObj(type, newJsonObj, create, oldMap){
+   if(type === "rooms" || type === "favorites" || type === "functions"){
+        if(create){
+            var returnJson = {};
+            $.each(newJsonObj, function(key, val){
+                $.ajax({
+                    type: 'GET',
+                    url: '../webmatic_user/img/ids/' + type + '/' + key + '.png',
+                    async: false
+                })
+                .done(function(){
+                    val['pic'] = true;
+                })
+                .fail(function() {                         
+                    val['pic'] = false;
+                });
+                returnJson[key] = val;
+            });
+            newJsonObj = returnJson;
+        } else {
+            var returnJson = {};
+            $.each(newJsonObj, function(key, val){
+                if(key in oldMap){
+                    var savedVal = oldMap[key];
+                    val['visible'] = savedVal['visible'];
+                    val['pic'] = savedVal['pic'];
+                    val['position'] = savedVal['position'];
+                    if(val['oldname'] === savedVal['oldname']){
+                        val['name'] = savedVal['name'];                        
+                    } else {
+                        saveDataToFile = true;
+                    }                   
+                }
+                returnJson[key] = val;                
+            });
+            newJsonObj = returnJson;
+        }      
+    }else if(type === "config" && !create){
+        newJsonObj['storageVersion'] = storageVersion;
+    }
+    
+    switch (type) {
+        case "config":
+            optionsMap = newJsonObj;
+            break;
+        case "variables":
+            variablesMap = newJsonObj;
+            break;
+        case "programs":
+            programsMap = newJsonObj;
+            break
+        case "favorites":
+            favoritesMap = newJsonObj;                
+            break
+        case "rooms":               
+            roomsMap = newJsonObj;
+            break
+        case "functions":
+            functionsMap = newJsonObj;
+            break
+        case "devices":
+            devicesMap = newJsonObj;
+            break
+    }
+    
+    return newJsonObj;
+}
+
+function createConfigFile(type, map){    
+    saveDataToFile = true;
+    if(type === "config"){
+        var text = '{';
+        text += '"storageVersion" : ' + storageVersion + ',';
+        text += '"favorites" : true,';
+        text += '"rooms" : true,';
+        text += '"functions" : true,';
+        text += '"variables" : true,';
+        text += '"programs" : true,';
+        text += '"others" : true,';
+        text += '"collapsed" : "rooms",';
+        text += '"systemvar_readonly" : true,';
+        text += '"default_theme" : "a",';
+        text += '"default_font" : "a"';   
+        text += '}';
+        
+        saveConfigFile(type, JSON.parse(text), true, map, true);
+    }else{
+        loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);
+    }    
+}
+
+function saveAllDatasToServer(){
+    
+    localStorage.setItem("webmaticFavoritesMap", JSON.stringify(favoritesMap));
+    localStorage.setItem("webmaticRoomsMap", JSON.stringify(roomsMap));
+    localStorage.setItem("webmaticFunctionsMap", JSON.stringify(functionsMap));
+    
+    $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap)});
+    $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap)});
+    $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap)});
+    
+    mustBeSaved = false;    
+    $('[name="saveAllChanges"]').addClass('ui-state-disabled');
 }
 
 function isReadOnly(valInfo) {
@@ -1348,6 +1565,15 @@ function isReadOnly(valInfo) {
         return varOptionsFirst !== "w";
     }
     return varOptionsFirst === "r";
+}
+
+function isEmpty(map) {
+    for(var key in map) {
+        if (map.hasOwnProperty(key)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function getTimeDiffString(diffDate, systemDate) {
@@ -1553,7 +1779,10 @@ function loadData(url, id, restart) {
         $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticDevicesMap" + id) === null) {
-            loadConfigData(false, url + '?list=' + id, 'devices', 'webmaticDevicesMap' + id);
+            if(newVersion){
+                saveDataToFile = true;
+            }
+            loadConfigData(false, url + '?list=' + id, 'devices', 'webmaticDevicesMap' + id, false, true);
             isActual = true;
         } else {
             devicesMap = JSON.parse(localStorage.getItem("webmaticDevicesMap" + id));
@@ -1582,7 +1811,7 @@ function loadData(url, id, restart) {
     }
 
     if (!isActual) {
-        loadConfigData(true, url + '?list=' + id, 'devices', 'webmaticDevicesMap' + id, function (dta) {
+        loadConfigData(true, url + '?list=' + id, 'devices', 'webmaticDevicesMap' + id, false, true, function (dta) {
             var systemDate = dta['date'];
 
             $.each(dta.entries, function (i, device) {
@@ -1640,7 +1869,10 @@ function loadVariables(restart) {
         $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticVariablesMap") === null) {
-            loadConfigData(false, 'cgi/systemvariables.cgi', 'variables', 'webmaticVariablesMap');
+            if(newVersion){
+                saveDataToFile = true;
+            }
+            loadConfigData(false, 'cgi/systemvariables.cgi', 'variables', 'webmaticVariablesMap', false, true);
             isActual = true;
         } else {
             variablesMap = JSON.parse(localStorage.getItem("webmaticVariablesMap"));
@@ -1658,7 +1890,7 @@ function loadVariables(restart) {
     }
 
     if (!isActual) {
-        loadConfigData(true, 'cgi/systemvariables.cgi', 'variables', 'webmaticVariablesMap', function (dta) {
+        loadConfigData(true, 'cgi/systemvariables.cgi', 'variables', 'webmaticVariablesMap', false, true, function (dta) {
             var systemDate = dta['date'];
             $.each(dta.entries, function (i, variable) {
                 var valVisible = variable['visible'] === "true";
@@ -1693,7 +1925,10 @@ function loadPrograms(restart) {
         $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         if (localStorage.getItem("webmaticProgramsMap") === null) {
-            loadConfigData(false, 'cgi/programs.cgi', 'programs', 'webmaticProgramsMap');
+            if(newVersion){
+                saveDataToFile = true;
+            }
+            loadConfigData(false, 'cgi/programs.cgi', 'programs', 'webmaticProgramsMap', false, true);
             isActual = true;
         } else {
             programsMap = JSON.parse(localStorage.getItem("webmaticProgramsMap"));
@@ -1714,7 +1949,7 @@ function loadPrograms(restart) {
     }
 
     if (!isActual) {
-        loadConfigData(true, 'cgi/programs.cgi', 'programs', 'webmaticProgramsMap', function (dta) {
+        loadConfigData(true, 'cgi/programs.cgi', 'programs', 'webmaticProgramsMap', false, true, function (dta) {
             var systemDate = dta['date'];
             $.each(dta.entries, function (i, prog) {
                 var prgVisible = prog['visible'] === "true";
@@ -1746,36 +1981,52 @@ function loadGraphicIDs() {
     $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
     // Icon Animation in Refresh Button:
     $('#buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
+    
+    $("#dataList").append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
 
     if (localStorage.getItem("webmaticFavoritesMap") === null) {
-        loadConfigData(false, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
+        if(newVersion){
+            saveDataToFile = true;
+        }
+        loadConfigData(false, '../webmatic_user/favorites.json', 'favorites', 'webmaticFavoritesMap', false, false);
     } else {
-        favoritesMap = JSON.parse(localStorage.getItem("webmaticFavoritesMap"));
-        loadConfigData(true, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap');
+        favoritesMap = JSON.parse(localStorage.getItem("webmaticFavoritesMap"));        
     }
+    
+    loadConfigData(true, 'cgi/favorites.cgi', 'favorites', 'webmaticFavoritesMap', false, true);
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText("FAVORITES") + "</li>");
     processGraphicID('favorites', favoritesMap);
 
     if (localStorage.getItem("webmaticRoomsMap") === null) {
-        loadConfigData(false, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap');
+        if(newVersion){
+            saveDataToFile = true;
+        }
+        loadConfigData(false, '../webmatic_user/rooms.json', 'rooms', 'webmaticRoomsMap', false, false);
     } else {
-        roomsMap = JSON.parse(localStorage.getItem("webmaticRoomsMap"));
-        loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap');
+        roomsMap = JSON.parse(localStorage.getItem("webmaticRoomsMap"));        
     }
+    
+    loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticRoomsMap', false, true);
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText("ROOMS") + "</li>");
     processGraphicID('rooms', roomsMap);
 
     if (localStorage.getItem("webmaticFunctionsMap") === null) {
-        loadConfigData(false, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
+        if(newVersion){
+            saveDataToFile = true;
+        }
+        loadConfigData(false, '../webmatic_user/functions.json', 'functions', 'webmaticFunctionsMap', false, false);
     } else {
-        functionsMap = JSON.parse(localStorage.getItem("webmaticFunctionsMap"));
-        loadConfigData(true, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap');
+        functionsMap = JSON.parse(localStorage.getItem("webmaticFunctionsMap"));        
     }
+    
+    loadConfigData(true, 'cgi/functions.cgi', 'functions', 'webmaticFunctionsMap', false, true);
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText("FUNCTIONS") + "</li>");
     processGraphicID('functions', functionsMap);
+    
+    $("#dataList").append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
 
     $("#dataList").listview("refresh");
     $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
@@ -1937,6 +2188,91 @@ $(function () {
             $("#" + infoID).text(mapText("TRANSFER_OK"));
         });
     });
+    
+    $(document.body).on("click", "[name='deletePic']", function(){
+        var obj = $(this);
+        var type = obj.data("type");
+        var id = obj.data("id");
+        
+        $.get('cgi/delete.cgi?type=' + type + '&name=' + id, function () {
+           $("#img" + id).fadeOut(500, function () {
+                $("#img" + id).attr("src", "img/menu/" + type + ".png").fadeIn(1000);
+            });
+            $("#menuImg" + id).fadeOut(500, function () {
+                $("#menuImg" + id).attr("src", "img/menu/" + type + ".png").fadeIn(1000);
+            });
+            
+            switch (type) {
+                case "favorites":
+                    favoritesMap[id]['pic'] = false;                
+                    break
+                case "rooms":               
+                    roomsMap[id]['pic'] = false; 
+                    break
+                case "functions":
+                    functionsMap[id]['pic'] = false; 
+                    break
+            }
+            
+            obj.addClass("ui-state-disabled");
+        });
+    });
+    
+    $(document.body).on("change", "[name='editVisible']", function(){
+        var obj = $(this);
+        var id = obj.data("id");
+        var type = obj.data("type");
+        var checked = obj.prop('checked');
+        
+        if(checked){
+            $("#" + id).fadeIn(1000);
+        }else{
+            $("#" + id).fadeOut(1000);
+        }
+        
+        switch (type) {
+            case "favorites":
+                favoritesMap[id]['visible'] = checked;                
+                break
+            case "rooms":               
+                roomsMap[id]['visible'] = checked; 
+                break
+            case "functions":
+                functionsMap[id]['visible'] = checked; 
+                break
+        }
+
+        activateSettingSaveButton();
+    });
+    
+    $(document.body).on("click", "[name='saveAllChanges']", function(){
+        saveAllDatasToServer();
+    });
+    
+    $(document.body).on("change", "[name='editName']", function(){
+        var obj = $(this);
+        var id = obj.data("id");
+        var name = obj.val();
+        var type = obj.data("type");
+        
+        switch (type) {
+            case "favorites":
+                favoritesMap[id]['name'] = name;                
+                break
+            case "rooms":               
+                roomsMap[id]['name'] = name; 
+                break
+            case "functions":
+                functionsMap[id]['name'] = name; 
+                break
+        }
+        
+        $("#menuText" + id).fadeOut(500, function () {
+            $("#menuText" + id).text(name).fadeIn(1000);
+        });
+        
+        activateSettingSaveButton();
+    });
 
     $(document.body).on("change", ":file", function () {
         var file = this.files[0];
@@ -2011,6 +2347,18 @@ $(function () {
                 $("#menuImg" + key).fadeOut(500, function () {
                     $("#menuImg" + key).attr("src", dataURL).fadeIn(1000);
                 });
+                
+                switch (type) {
+                case "favorites":
+                    favoritesMap[key]['pic'] = true;                
+                    break
+                case "rooms":               
+                    roomsMap[key]['pic'] = true; 
+                    break
+                case "functions":
+                    functionsMap[key]['pic'] = true; 
+                    break
+            }
 
                 formData.append('file', blob, key + '.png');
                 formData.append('filename', key + '.png');
@@ -2027,8 +2375,15 @@ $(function () {
 
             };
             $("#uploadPicture" + key).addClass("ui-state-disabled");
+            $("#deletePic" + key).removeClass("ui-state-disabled");
         };
         reader.readAsDataURL(file);
+    });
+    
+    $(window).on('beforeunload', function() {
+        if(mustBeSaved){
+            saveAllDatasToServer();
+        }
     });
 
 });

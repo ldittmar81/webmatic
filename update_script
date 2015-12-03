@@ -37,7 +37,6 @@ rm -f ${RCDDIR}/webmatic-dlg
 # copy
 cp -R ${ADDONNAME}/* ${WWWDIR}/
 cp VERSION ${WWWDIR}/
-cp -R ${ADDONNAME}_user/* ${USERDIR}/
 cp rc.d/${ADDONNAME} ${RCDDIR}/
 chmod +x ${RCDDIR}/${ADDONNAME}
 
