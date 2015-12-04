@@ -1,7 +1,8 @@
 // WebMatic
 // by ldittmar
 // ----------------------- Click function handlers ----------------------------
-
+var webmaticVersion = '0';
+var newWebmaticVersion = webmaticVersion;
 var storageVersion = 1;
 
 // Globale variablen
@@ -20,6 +21,9 @@ var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap,
 
 var theme, font;
 var loadedFont = ["a"];
+
+var today = new Date();
+var dateNow = (today.getDate()<10?"0" + today.getDate():today.getDate()) + "." + (today.getMonth()+1<10?"0"+today.getMonth()+1:today.getMonth()+1) + "." + today.getFullYear();
 
 // Initialize refresh timer:
 var refreshTimer = setInterval(function () {
@@ -41,6 +45,10 @@ if (localStorage.getItem("webmaticOptionsMap") === null) {
     }
     loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap', false, true);    
 }
+
+$.get('https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION', function(data){
+    newWebmaticVersion = data;
+});
 
 //Design setzen
 if (localStorage.getItem("optionsMenuGfxTheme") === null) {
@@ -172,6 +180,12 @@ function refreshServiceMessages() {
             $("#serviceList").append("<li><p class='ui-li-desc' style='text-align:right;'>" + msgDate + "</p><h1>" + msgName + "</h1><p>" + msgReadable + "</p></li>");
             errNr += 1;
         });
+        
+        if(webmaticVersion !== newWebmaticVersion){
+            $("#serviceList").append("<li><p class='ui-li-desc' style='text-align:right;'>" + dateNow + "</p><h1>" + mapText("NEW_VERSION") + "</h1><p><span class='valueInfo valueInfo-" + theme + "'><a href='https://github.com/jens-maus/webmatic/releases' target='_blank' >Webmatic " + newWebmaticVersion + " " + mapText("DOWNLOAD") + "</a></span></p></li>");
+            errNr += 1;
+        }
+        
         $('#buttonService .ui-btn-text').text("(" + errNr + ")");
         if (errNr === 0) {
             $('#buttonService, #popupDiv').removeClass(function (i, css) {

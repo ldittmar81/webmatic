@@ -655,5 +655,7 @@ var textMap = {
     DELAY: "değeri hala burada sadece bir gecikmeden sonra cihaza aktarılır ve gösterilir.",
     TRANSFER_OK: "Tamam!",
     IMAGE_UPLOAD: "Bu sadece JPG, GIF ya da PNG yüklenir yapabilir!",
-    START: "start ..."
+    START: "start ...",
+    NEW_VERSION: "Yeni WebMatic versiyonu",
+    DOWNLOAD: "indirme linki"
 };

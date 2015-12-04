@@ -655,5 +655,7 @@ var textMap = {
     DELAY: "值仍然只有在这里延迟传输到设备并显示出来。",
     TRANSFER_OK: "好吧!",
     IMAGE_UPLOAD: "它只能JPG,GIF或PNG上传!",
-    START: "开始......"
+    START: "开始......",
+    NEW_VERSION: "新版本WebMatic",
+    DOWNLOAD: "下载链接"
 };

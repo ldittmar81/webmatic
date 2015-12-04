@@ -33,6 +33,7 @@ sed -i "s/get.js/get.min.js?${HASHDATE}/" get.html
 
 cd js
 
+sed -i "s/webmaticVersion='0'/webmaticVersion='${VERSION}'/" webmatic.min.js
 sed -i "s/debugModus=true/debugModus=false/" webmatic.min.js
 
 cd ..
