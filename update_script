@@ -5,14 +5,13 @@ WWWDIR=/usr/local/etc/config/addons/www/${ADDONNAME}
 RCDDIR=/usr/local/etc/config/rc.d
 USERDIR=/usr/local/etc/config/addons/www/${ADDONNAME}_user
 
-if [ "$1" == "" ]; then
+if [ "$1" = "" ]; then
   echo "CCU1"
-  lcdtool "Installing WebMatic..."
   mount -t yaffs /dev/mtdblock3 /usr/local
-elif [ "$1" == "CCU2" ]; then
+elif [ "$1" = "CCU2" ]; then
   echo "CCU2"
   mount -t ubifs ubi1:user /usr/local
-elif [ "$1" == "HM-RASPBERRYMATIC" ]; then
+elif [ "$1" = "HM-RASPBERRYMATIC" ]; then
   echo "HM-RASPBERRYMATIC"
   mount /usr/local
 fi
@@ -58,11 +57,6 @@ sync
 
 if [ "$1" = "" ]; then
   echo "CCU1"
-  lcdtool "Reboot...             "
-  lcdtool -a 0x40 -t bin 00
-  echo "x" > /dev/watchdog
-  reboot
-  while true ; do true ;  done
 elif [ "$1" = "CCU2" ]; then
   echo "CCU2"
   # CCU2 always reboots after Addon/Firmware Update
