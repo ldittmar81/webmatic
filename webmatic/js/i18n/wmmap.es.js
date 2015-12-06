@@ -657,5 +657,6 @@ var textMap = {
     IMAGE_UPLOAD: "Puede solamente JPG, GIF o PNG se suben!",
     START: "empezar ...",
     NEW_VERSION: "Nueva WebMatic versión",
-    DOWNLOAD: "enlace de descarga"
+    DOWNLOAD: "enlace de descarga",
+    MANUAL: "Sólo ejecución manual"
 };

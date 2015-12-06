@@ -552,8 +552,8 @@ function processVariable(variable, valID, systemDate) {
     return html;
 }
 
-function processProgram(prog, prgID, systemDate) {
-    var deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prog['name'] + "</h2><p>" + prog['info'] + "</p>";
+function processProgram(prog, prgID, systemDate, active) {
+    var deviceHTML = "<li class='dataListItem' id='" + prgID + "'><h2 class='ui-li-heading'>" + prog['name'] + "</h2><p>" + prog['info'] + " " + (!active?"(" + mapText("MANUAL") + ")":"") + "</p>";
     deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] === "true" || !readModus));
     deviceHTML += "</li>";
     return deviceHTML;
@@ -1954,8 +1954,8 @@ function loadPrograms(restart) {
             var prgActive = prog['active'] === "true";
             var prgID = prog['id'];
 
-            if ((readModus && prgVisible && prgActive) || !readModus) {
-                $("#dataList").append(processProgram(prog, prgID, systemDate));
+            if ((readModus && prgVisible) || !readModus) {
+                $("#dataList").append(processProgram(prog, prgID, systemDate, prgActive));
             }
         });
         reloadList(mapText("PROGRAMS"), systemDate, restart, "");
@@ -1970,10 +1970,10 @@ function loadPrograms(restart) {
                 var prgActive = prog['active'] === "true";
                 var prgID = prog['id'];
 
-                if ($('#' + prgID).length === 0 && ((readModus && prgVisible && prgActive) || !readModus)) {
-                    $("#dataList").append(processProgram(prog, prgID, systemDate));
-                } else if ((readModus && prgVisible && prgActive) || !readModus) {
-                    $('#' + prgID).replaceWith(processProgram(prog, prgID, systemDate));
+                if ($('#' + prgID).length === 0 && ((readModus && prgVisible) || !readModus)) {
+                    $("#dataList").append(processProgram(prog, prgID, systemDate, prgActive));
+                } else if ((readModus && prgVisible) || !readModus) {
+                    $('#' + prgID).replaceWith(processProgram(prog, prgID, systemDate, prgActive));
                 } else if ($('#' + prgID).length !== 0) {
                     $('#' + prgID).remove();
                 }
