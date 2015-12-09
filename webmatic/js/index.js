@@ -139,7 +139,10 @@ $(function () {
         $("#listOther").append("<li id='menuItemVariables' class='menuItemVariables'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>" + mapText("SYS_VAR") + "</span></a></li>");
         $("#listOther").append("<li id='menuItemPrograms' class='menuItemPrograms'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>" + mapText("PROGRAMS") + "</span></a></li>");
         $("#listOther").append("<li id='menuItemOptions' class='menuItemOptions'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>" + mapText("OPTIONS") + "</span></a></li>");
-        $("#listOther").append("<li id='menuItemGraphicIDs' class='menuItemGraphicIDs'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + "</span></a></li>");
+        $("#listOther").append("<li id='menuItemGraphicIDs_FAVORITES' class='menuItemGraphicIDs' data-refresh-id='4'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("FAVORITES") + ")</span></a></li>");
+        $("#listOther").append("<li id='menuItemGraphicIDs_ROOMS' class='menuItemGraphicIDs' data-refresh-id='8'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("ROOMS") + ")</span></a></li>");
+        $("#listOther").append("<li id='menuItemGraphicIDs_FUNCTIONS' class='menuItemGraphicIDs' data-refresh-id='9'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("FUNCTIONS") + ")</span></a></li>");
+        $("#listOther").append("<li id='menuItemGraphicIDs_PROGRAMS' class='menuItemGraphicIDs' data-refresh-id='10'><a href='#'><img class='" + gfxClass + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("PROGRAMS") + ")</span></a></li>");
 
         // Größe der Grafiken aus localStorage holen:
         var showTestPages = localStorage.getItem("optionsMenuShowTestpages");
@@ -213,7 +216,7 @@ $(function () {
     });
 
     $(document.body).on("click", ".menuItemGraphicIDs", function () {
-        lastClickType = 4;
+        lastClickType = $(this).data("refresh-id");
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;

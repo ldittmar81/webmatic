@@ -658,5 +658,6 @@ var textMap = {
     START: "开始......",
     NEW_VERSION: "新版本WebMatic",
     DOWNLOAD: "下载链接",
-    MANUAL: "只有手动执行"
+    MANUAL: "只有手动执行",
+    OPERATABLE: "可操作"
 };

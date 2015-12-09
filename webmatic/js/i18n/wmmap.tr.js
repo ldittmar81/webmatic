@@ -658,5 +658,6 @@ var textMap = {
     START: "start ...",
     NEW_VERSION: "Yeni WebMatic versiyonu",
     DOWNLOAD: "indirme linki",
-    MANUAL: "sadece manuel yürütme"
+    MANUAL: "sadece manuel yürütme",
+    OPERATABLE: "çalıştırılabilir"
 };

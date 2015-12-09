@@ -114,10 +114,10 @@ var unitMap = {
 // Funktion zum mappen der IDs auf Texte.
 function mapText(text, defaultText) {
     var newText = "";
-    newText = textMap[text];
+    newText = textMap[text.toUpperCase()];
 
     if (defaultText && !newText) {
-        newText = textMap[defaultText];
+        newText = textMap[defaultText.toUpperCase()];
     }
 
     // Wenn nichts gefunden, dann Originaltext zurück:
@@ -133,7 +133,7 @@ function mapUnit(unit, hssType) {
     if (unit === "100%") {
         return "%";  // Manche Geräte haben als Einheit 100%. Würde zu seltsamen Darstellungen führen.
     } else if (typeof (unit) === "undefined" || unit === "") {
-        var result = unitMap[hssType];
+        var result = unitMap[hssType.toUpperCase()];
         return typeof (result) === "undefined" ? "" : result;
     }
     return unit;
@@ -142,7 +142,7 @@ function mapUnit(unit, hssType) {
 // Funktion zum mappen von IDs auf Grafiken:
 function mapImage(text) {
     var gfx = "";
-    gfx = imageMap[text];
+    gfx = imageMap[text.toUpperCase()];
 
     // Wenn keines gefunden, dann unknown.png zurück:
     if (!gfx) {
@@ -154,7 +154,7 @@ function mapImage(text) {
 
 //Statusanzeige
 function mapState(hssType, deviceHssType, valFloat, valBool) {
-    var type = typeState[deviceHssType + "__" + hssType];
+    var type = typeState[deviceHssType.toUpperCase() + "__" + hssType.toUpperCase()];
 
     if (type) {
         switch (type) {
@@ -216,9 +216,9 @@ function mapInput(deviceHssType, channel, vorDate, deviceID) {
     var hssType = channel['hssType'];
     var valString = channel['value'];
 
-    var input = typeInput[deviceHssType + "__" + hssType];
+    var input = typeInput[deviceHssType.toUpperCase() + "__" + hssType.toUpperCase()];
 
-    var txt = textMap[deviceHssType + "__" + hssType];
+    var txt = textMap[deviceHssType.toUpperCase() + "__" + hssType.toUpperCase()];
 
     if (input) {
         switch (input) {

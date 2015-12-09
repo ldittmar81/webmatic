@@ -10,9 +10,8 @@ cgi_eval {
     array set res [rega_script {
         WriteLine ('{');
         string s_date = system.Date("%d.%m.%Y %H:%M:%S");
-        WriteLine ('"date": "' # s_date # '",');
-        WriteLine ('"entries":[');
-
+        WriteLine ('"date": "' # s_date # '"');
+      
         string id;
         object obj;
         boolean isFirst;
@@ -20,27 +19,24 @@ cgi_eval {
         obj = dom.GetObject(ID_PROGRAMS);
         isFirst = true;
         foreach (id, obj.EnumUsedIDs()){
-            if (isFirst) { isFirst = false; } else { WriteLine (','); }
-
             var program = dom.GetObject(id);
-            Write('{');
-            Write('"id":"' # id # '"');
-            Write(',"name":"' # program.Name() # '"');
+            Write(',"' # id # '":{');
+            Write('"name":"' # program.Name() # '"');
             Write(',"info":"' # program.PrgInfo() # '"');
             Write(',"date":"' # program.ProgramLastExecuteTime().Format("%d.%m.%Y %H:%M:%S") # '"');
-            Write(',"visible":"' # program.Visible() # '"');
-            Write(',"active":"' # program.Active() # '"');
-            Write(', "operate":');
+            Write(',"visible":' # program.Visible() # '');
+            Write(',"active":' # program.Active() # '');
+            Write(',"operate":');
             if( program.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
-                Write('"true"');
+                Write('true');
             } else {
-                Write('"false"');
+                Write('false');
             }
             Write('}');
         }
 
         WriteLine ("");
-        WriteLine ("]}");
+        WriteLine ("}");
     }]
 
     puts -nonewline $res(STDOUT)

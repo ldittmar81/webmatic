@@ -623,7 +623,7 @@ var textMap = {
     TIME_H_SINGULAR: "Stunde",
     TIME_H_PLURAL: "Stunden",
     TIME_DAY_SINGULAR: "Tag",
-    TIME_DAY_PLURAL: "Tage",
+    TIME_DAY_PLURAL: "Tagen",
     TIME_MON_SINGULAR: "Monat",
     TIME_MON_PLURAL: "Monate",
     TIME_Y_SINGULAR: "Jahr",
@@ -658,5 +658,6 @@ var textMap = {
     START: "Starte...",
     NEW_VERSION: "Neue WebMatic Version",
     DOWNLOAD: "runterladen",
-    MANUAL: "nur manuelle Ausführung"
+    MANUAL: "nur manuelle Ausführung",
+    OPERATABLE: "bedienbar"
 };
