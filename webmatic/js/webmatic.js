@@ -478,7 +478,7 @@ function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate,
 function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh) {
     var html = "<div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    html += "<select id='selector_" + valID + " data-theme='" + theme + "'>";
+    html += "<select id='selector_" + valID + "' data-theme='" + theme + "'>";
     for (var i = 0; i < optionsArray.length; i++) {
         if (selIndex === i) {
             html += "<option value='" + i + "' selected='selected'>" + optionsArray[i] + "</option>";
@@ -2297,7 +2297,7 @@ $(function () {
     $(document.body).on("click", "[id^=setValueBigList]", function () {
         var obj = $(this);
         var dataID = obj.data("id");
-        obj.attr('data-value', $('#selector_' + dataID).val())
+        obj.attr('data-value', $('#selector_' + dataID).val());
         buttonEvents(obj, obj.data("refresh"));
     });      
 
