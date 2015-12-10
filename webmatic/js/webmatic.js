@@ -3,7 +3,7 @@
 // ----------------------- Click function handlers ----------------------------
 var webmaticVersion = '0';
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 3;
+var storageVersion = 5;
 
 // Globale variablen
 var debugModus = true;
@@ -16,8 +16,10 @@ var prevItem = 0;
 var saveDataToFile = false;
 var newVersion = false;
 var mustBeSaved = false;
+var client = "";
 
-var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap;
+var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap, recognizeMap;
+var optionsClientMap = {};
 
 var theme, font;
 var loadedFont = ["a"];
@@ -31,19 +33,35 @@ var refreshTimer = setInterval(function () {
 }, 1000);
 var lastTime = -1;
 
-//Initialwerte (Einstellungen) einlesen
-if (localStorage.getItem("webmaticOptionsMap") === null) {
-    localStorage.clear();
-    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap', false, true);
+if (localStorage.getItem("webmaticrecognizeMap") === null) {
+    loadRecognization();
 } else {
-    optionsMap = JSON.parse(localStorage.getItem("webmaticOptionsMap"));
+    recognizeMap = JSON.parse(localStorage.getItem("webmaticrecognizeMap"));
+    client = ("REMOTE_ADDR" in recognizeMap?recognizeMap["REMOTE_ADDR"]:"");
+}
+
+//Initialwerte (Einstellungen) einlesen
+if (localStorage.getItem("webmaticoptionsMap") === null) {
+    localStorage.clear();
+    localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
+    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);
+} else {
+    optionsMap = JSON.parse(localStorage.getItem("webmaticoptionsMap"));
     var ok = true;
     if(optionsMap['storageVersion'] !== storageVersion){
         ok = false;
         localStorage.clear();
+        localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
         newVersion = true;
     }
-    loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticOptionsMap', false, true);    
+    loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);    
+}
+if (localStorage.getItem("webmaticoptionsclientMap") === null) {
+    if(client !== ""){
+        loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true);
+    }
+} else {
+    optionsClientMap = JSON.parse(localStorage.getItem("webmaticoptionsclientMap"));    
 }
 
 $.get('https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION', function(data){
@@ -51,21 +69,12 @@ $.get('https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION', fun
 });
 
 //Design setzen
-if (localStorage.getItem("optionsMenuGfxTheme") === null) {
-    theme = optionsMap["default_theme"];
-    localStorage.setItem("optionsMenuGfxTheme", theme);
-} else {
-    theme = localStorage.getItem("optionsMenuGfxTheme");
-}
+theme = ("default_theme" in optionsClientMap?optionsClientMap["default_theme"]:optionsMap["default_theme"]);
 if (theme === "undefined" || $.inArray(theme, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     theme = "a";
 }
-if (localStorage.getItem("optionsMenuGfxFont") === null) {
-    font = optionsMap["default_font"];
-    localStorage.setItem("optionsMenuGfxFont", font);
-} else {
-    font = localStorage.getItem("optionsMenuGfxFont");
-}
+
+font = ("default_font" in optionsClientMap?optionsClientMap["default_font"]:optionsMap["default_font"]);
 if (font === "undefined" || $.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     font = "a";
 }
@@ -81,7 +90,7 @@ function checkrefreshPage() {
     {
         if (t - lastTime > 60000)
         {
-            if (lastClickType !== 4 && lastClickType !== 7) {
+            if (lastClickType >= 7) {
                 refreshPage(0); // Kein Refresh bei GrafikIDs und Optionen.
             }
             refreshServiceMessages();
@@ -153,6 +162,9 @@ function refreshPage(item) {
                 break;
             case 10:
                 loadGraphicIDs("programs");
+                break;
+            case 11:
+                loadOptionsClient();
                 break;
         }
 
@@ -351,205 +363,6 @@ function changeFont(code) {
     localStorage.setItem("optionsMenuGfxFont", font);
 }
 
-// ----------------------- HTML Creation Helper ------------------------------
-
-// Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
-// onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
-function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh) {
-    var html = "";
-    if (!onlyButton) {
-        html += "<p class='ui-li-desc'>";
-    }
-
-    if (noAction) {
-        html += "<a href='#' data-value='" + value + "' data-role='button' class='ui-btn-active' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
-    } else {
-        html += "<a href='#' id='setButton_" + id + "' data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
-    }
-
-    if (!onlyButton) {
-        html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
-    }
-
-    return html;
-}
-
-function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, addFirst, addLast) {
-    var html = "";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    if (addFirst) {
-        html += addFirst;
-    }
-    html += addSetButton(paretnId, id, txt0, 0.0, vorDate, true, valFloat === 0.0, false);
-    html += addSetButton(paretnId, id, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
-    html += addSetButton(paretnId, id, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
-    html += addSetButton(paretnId, id, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
-    html += addSetButton(paretnId, id, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
-    html += addSetButton(paretnId, id, txt1, 1.0, vorDate, true, valFloat === 1.0, false);
-    if (addLast) {
-        html += addLast;
-    }
-    html += "</div>";
-
-    return html;
-}
-
-// Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
-function addStartProgramButton(parentId, id, text, vorDate, operate) {
-    var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "'>" + text + "</a></div>";
-    html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
-    return html;
-}
-
-// Ein Slider und Button, bei dessen drücken der neue Wert an die ID übertragen wird.
-// Factor wird für das Setzen verwendet, z.B. bei Jalousien muss 0-1 gesetzt werden, für die Anzeige
-// ist aber 0 - 100 schöner.
-//
-// TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groß ist?
-function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate, refresh) {
-    var html = "<div class='ui-field-contain'>";
-    html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
-    html += " (" + min * factor + " - " + max * factor + " <span id='unit_ " + id + "'>" + unit + "</span>) ";
-    html += "<a href='#' id='setButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
-    html += "</div>";
-    return html;
-}
-
-function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vorDate, refresh) {
-    var html = "<div class=ui-field-contain'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-
-    var idString = "";
-    // Leerstring heißt wohl auch false, z.B. bei Alarmzone.
-    if (strValue === "false" || strValue === "") {
-        idString = "class='ui-btn-active'";
-    } else {
-        idString = "id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
-    }
-    html += "<a href='#' " + idString + " data-value='false' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val0 + "</a>";
-
-    if (strValue === "true") {
-        idString = "class='ui-btn-active'";
-    } else {
-        idString = "id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
-    }
-    html += "<a href='#' " + idString + " data-value='true' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val1 + "</a>";
-
-    html += "</div>";
-    html += "</div>";
-    html += " <span id='unit_ " + valID + "'>" + valUnit + "</span> ";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-
-    return html;
-}
-
-function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh, forceList) {
-    
-    var selIndex = parseInt(strValue);
-    var optionsArray = valList.split(";");
-    
-    if(forceList === "small" || (optionsArray.length < 6 && forceList !== "big")){
-        return addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh);
-    }else{
-        return addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh);
-    }
-    
-}
-
-function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh){
-    var html = "<div class='ui-field-contain'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";    
-    for (var i = 0; i < optionsArray.length; i++) {
-        if (selIndex === i) {
-            html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' class='ui-btn-active' data-theme='" + theme + "'>" + optionsArray[i] + "</a>";
-        } else {
-            html += "<a href='#' id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' data-role='button' data-inline='true'>" + optionsArray[i] + "</a>";
-        }
-    }
-    html += "</div>";
-    html += "</div>";
-    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> ";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-
-    return html;
-}
-
-function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh) {
-    var html = "<div class='ui-field-contain'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    html += "<select id='selector_" + valID + "' data-theme='" + theme + "'>";
-    for (var i = 0; i < optionsArray.length; i++) {
-        if (selIndex === i) {
-            html += "<option value='" + i + "' selected='selected'>" + optionsArray[i] + "</option>";
-        } else {
-            html += "<option value='" + i + "'>" + optionsArray[i] + "</option>";
-        }
-    }
-    html += "</select>";    
-    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-    html += "</div>";
-    html += "</div>";
-    return html;
-}
-
-function addSetText(parentId, valID, val, valUnit, vorDate) {
-    var html = "<div class=ui-field-contain'>";
-    // Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
-    val = val.replace(/\"/g, "&quot;");
-    if (val.length > 40) {
-        html += "<textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
-    } else {
-        html += "<input type='text' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
-    }
-    html += " <span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-    html += "</div>";
-    return html;
-}
-
-function addHTML(parentId, valID, val, vorDate, readonly) {
-    var html = "<div class='ui-field-contain'" + (readonly ? "" : " ui-grid-a") + "'>";
-    html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "'>" + val + "</div>";
-    if (!readonly) {
-        html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
-        html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-        html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-        html += "</div>";
-        html += "</div>";
-    }
-    return html;
-}
-
-function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1) {
-    // Bestimmen, wie der sichtbare Werte aussehen soll:
-    var visVal = "";
-    if (valType === "2") {
-        // Bool.
-        if (strValue === "true") {
-            visVal = val1;
-        } else {
-            visVal = val0;
-        }
-    } else if (valType === "4") {
-        // Float, Integer.
-        visVal = parseFloat(strValue);
-    } else if (valType === "16") {
-        // Liste.
-        var optionsArray = valList.split(";");
-        visVal = optionsArray[parseInt(strValue)];
-    } else {
-        // String oder unbekannt.
-        visVal = strValue;
-    }
-    if (valType === "20" && valUnit === "html") {
-        return addHTML("", valID, strValue, vorDate, true);
-    } else {
-        return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
-    }
-}
-
 // ------------------------ HTML Erstellung -----------------------------
 
 function processVariable(variable, valID, systemDate) {
@@ -577,8 +390,10 @@ function processVariable(variable, valID, systemDate) {
     } else if (valType === "16") {
         // Liste.
         html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
-    } else if (valType === "20" && valUnit === "html") {
+    } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
         html += addHTML("", valID, strValue, vorDate, false);
+    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+        html += addHistorianDiagram("", valID, strValue, vorDate, false);
     } else if (valType === "20") {
         html += addSetText("", valID, strValue, valUnit, vorDate);
     } else {
@@ -608,13 +423,12 @@ function processGraphicID(type) {
     var map = getMap(type);
     
     var tmpObj = {};
-    var size = map.length;
+    var size = map["size"];
     $.each(map, function (key, val) {
-        if(key === "date"){
-            size--;
+        if(key === "date" || key === "size"){
             return;
         }
-        var html = "<li id='list" + key +"'>";
+        var html = "<li id='list" + key +"' data-id='" + key + "'>";
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
         if(val['pic']){
@@ -622,9 +436,26 @@ function processGraphicID(type) {
         }
         html += "' src='img/menu/" + type + ".png'/>";
         html += "<a href='#' " + (!val['pic'] ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
-        if(type !== "programs"){
-            html += "<h1>(<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>)</h1>";
+        html += "<h1>(";
+        if(type === "rooms" || type === "functions" || type === "favorites"){
+            html += "<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>";
+        }else{
+            html += key;
         }
+        html += ")</h1>";
+        html += "</div>";
+        html += "<div style='float: right;'>";
+        html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key +"' data-type='" + type + "' value='" + val['position'] + "' data-last='" + (size === val['position']) + "'/>";
+        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
+        if(val['position'] <= 1){
+            html += " ui-state-disabled' style='display: none;";
+        }
+        html += "' name='setUp' id='setUp" + key + "' data-id='" + key + "' />";
+        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext ui-corner-all";
+        if(val['position'] >= size){
+            html += " ui-state-disabled' style='display: none;";
+        }
+        html += "' name='setDown' id='setDown" + key + "' data-id='" + key + "' />";
         html += "</div>";
         html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key + "'>";
         html += "<div class='ui-grid-b'>";
@@ -646,15 +477,6 @@ function processGraphicID(type) {
         html += "<input type='checkbox' data-role='flipswitch' name='editVisible' data-type='" + type + "' data-id='" + key +"' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['visible']?"checked":"") + "/>";
         html += "</label>";
         html += "</div>";
-        html += "</div>";
-        html += "<div style='float: right;'>";
-        html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key +"' data-type='" + type + "' value='" + val['position'] + "'";
-        if(val['position'] > 1){
-            html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext' name='setUp' id='setUp" + key + "' data-id='" + key + "' data-type='" + type + "'/>";
-        }
-        if(val['position'] < size){
-            html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext' name='setDown' id='setDown" + key + "' data-id='" + key + "' data-type='" + type + "'/>";
-        }
         html += "</div>";
         html += "</form>";
         html += "</li>";
@@ -1307,8 +1129,10 @@ function addChannel(device, systemDate, options) {
                     } else if (valType === "16") {
                         // Liste.
                         deviceHTML += addSetValueList(deviceID, valID, strValue, valList, valUnit, vorDate, true);
-                    } else if (valType === "20" && valUnit === "html") {
+                    } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                         deviceHTML += addHTML(deviceID, valID, strValue, vorDate, false);
+                    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+                        deviceHTML += addHistorianDiagram(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20") {
                         deviceHTML += addSetText(deviceID, valID, strValue, valUnit, vorDate);
                     } else {
@@ -1351,500 +1175,6 @@ function addChannel(device, systemDate, options) {
     }
 
     return deviceHTML;
-}
-
-// ----------------------- Helper functions ----------------------------
-
-function log(txt, type) {
-    if (debugModus) {
-
-        if (type === 0) {
-            console.info(txt);
-        } else if (type === 1) {
-            console.warn(txt);
-        } else if (type === 2) {
-            console.error(txt);
-        } else {
-            console.log(txt);
-        }
-    }
-}
-
-function activateSettingSaveButton(){
-    $('[name="saveAllChanges"]').removeClass('ui-state-disabled');
-    mustBeSaved = true;
-}
-
-function getDateFromString(strDate) {
-    var dy = strDate.substring(0, 2);
-    var mn = strDate.substring(3, 5) - 1; // -1, da 0 basiert.
-    var yr = strDate.substring(6, 10);
-    var hr = strDate.substring(11, 13);
-    var mi = strDate.substring(14, 16);
-    var sc = strDate.substring(17, 19);
-    return new Date(yr, mn, dy, hr, mi, sc);
-}
-
-function loadConfigData(async, url, type, map, create, actual, callback) {
-    $.ajax({
-        type: 'GET',
-        url: url,
-        dataType: 'json',
-        async: async
-    })
-    .done(function (data) {
-        var processedData;
-        switch (type) {
-            case "config":
-                if(!async){
-                    saveDataToFile = true;
-                    processedData = saveConfigFile(type, data, create, map, true);
-                }else{
-                    processedData = data;
-                    optionsMap = data;
-                    localStorage.setItem(map, JSON.stringify(data));
-                }                
-                break;
-            case "variables":
-                processedData = data;
-                variablesMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break;
-            case "programs":
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break
-            case "favorites":
-                processedData = saveConfigFile(type, data, create, map, actual);                
-                break
-            case "rooms":               
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break
-            case "functions":
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break
-            case "devices":
-                processedData = data;
-                devicesMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break
-        }
-
-        if (typeof callback === "function") {
-            callback(processedData);
-        }
-    })
-    .fail(function (jqXHR, textStatus) {
-        if (jqXHR.status === 404) {
-            createConfigFile(type, map);
-        }else{
-            log("Request failed: " + textStatus, 2);
-        }
-    });
-   
-}
-
-function saveConfigFile(type, newJsonObj, create, map, actual){
-    
-    if(actual){
-        var returnJson = {};
-        if( type === "rooms" || type === "favorites" || type === "functions" ){
-            var i = 0;
-            $.each(newJsonObj, function (key, val) {
-                i++;
-                var obj = {};
-                obj['name'] = val;
-                obj['oldname'] = val;
-                obj['visible'] = true;
-                obj['pic'] = false;
-                obj['position'] = i;
-                returnJson[key] = obj;
-            });
-        } else if( type === "programs"){
-            var i = 0;
-            $.each(newJsonObj, function (key, val) {
-                if(key === "date"){
-                    returnJson[key] = val;
-                    return;
-                }
-                i++;
-                var obj = {};
-                obj['name'] = val['name'];
-                obj['oldname'] = val['name'];
-                obj['visible'] = val['visible'];
-                obj['oldvisible'] = val['visible'];
-                obj['pic'] = false;
-                obj['position'] = i;
-                obj['active'] = val['active'];
-                obj['operate'] = val['operate'];
-                obj['oldoperate'] = val['operate'];
-                obj['date'] = val['date'];
-                obj['info'] = val['info'];
-                returnJson[key] = obj;
-            });
-        } else {
-            returnJson = newJsonObj;
-        }
-        
-        returnJson = refreshJSONObj(type, returnJson, create);
-       
-        localStorage.setItem(map, JSON.stringify(returnJson));
-        if(saveDataToFile){
-            saveDataToFile = false;
-            $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(returnJson)});
-        }
-        return returnJson;
-    }else{
-        setMap(type, newJsonObj);        
-        return newJsonObj;
-    }
-}
-
-function refreshJSONObj(type, newJsonObj, create){
-   var oldMap = getMap(type);
-   if(type === "rooms" || type === "favorites" || type === "functions" ){
-        if(create){
-            var returnJson = {};
-            $.each(newJsonObj, function(key, val){
-                $.ajax({
-                    type: 'GET',
-                    url: '../webmatic_user/img/ids/' + type + '/' + key + '.png',
-                    async: false
-                })
-                .done(function(){
-                    val['pic'] = true;
-                })
-                .fail(function() {                         
-                    val['pic'] = false;
-                });
-                returnJson[key] = val;
-            });
-            newJsonObj = returnJson;
-        } else {
-            var returnJson = {};
-            $.each(newJsonObj, function(key, val){
-                if(key === "date"){
-                    returnJson[key] = val;
-                    return;
-                }
-                if(key in oldMap){
-                    var savedVal = oldMap[key];
-                    val['visible'] = savedVal['visible'];
-                    val['pic'] = savedVal['pic'];
-                    val['position'] = savedVal['position'];
-                    if(val['oldname'] === savedVal['oldname']){
-                        val['name'] = savedVal['name'];                        
-                    } else {
-                        saveDataToFile = true;
-                    }                   
-                } else {
-                    saveDataToFile = true;
-                } 
-                returnJson[key] = val;                
-            });
-            newJsonObj = returnJson;
-        }      
-    } else if(type === "programs" ) {
-        if(create){
-            var returnJson = {};
-            $.each(newJsonObj, function(key, val){
-                if(key === "date"){
-                    returnJson[key] = val;
-                    return;
-                }
-                $.ajax({
-                    type: 'GET',
-                    url: '../webmatic_user/img/ids/' + type + '/' + key + '.png',
-                    async: false
-                })
-                .done(function(){
-                    val['pic'] = true;
-                })
-                .fail(function() {                         
-                    val['pic'] = false;
-                });
-                returnJson[key] = val;
-            });
-            newJsonObj = returnJson;
-        } else {
-            var returnJson = {};
-            $.each(newJsonObj, function(key, val){
-                if(key === "date"){
-                    returnJson[key] = val;
-                    return;
-                }
-                if(key in oldMap){
-                    var savedVal = oldMap[key];
-                    val['pic'] = savedVal['pic'];
-                    val['position'] = savedVal['position'];
-                    if(val['oldname'] === savedVal['oldname']){
-                        val['name'] = savedVal['name'];                        
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if(val['oldvisible'] === savedVal['oldvisible']){
-                        val['visible'] = savedVal['visible'];                        
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if(val['oldoperate'] === savedVal['oldoperate']){
-                        val['operate'] = savedVal['operate'];                        
-                    } else {
-                        saveDataToFile = true;
-                    }
-                }else{
-                    saveDataToFile = true;
-                }
-                returnJson[key] = val;                
-            });
-            newJsonObj = returnJson;
-        }      
-    } else if(type === "config" && !create) {
-        newJsonObj['storageVersion'] = storageVersion;
-    }
-    
-    setMap(type, newJsonObj);
-    return newJsonObj;
-}
-
-function createConfigFile(type, map){    
-    saveDataToFile = true;
-    if(type === "config"){
-        var text = '{';
-        text += '"storageVersion" : ' + storageVersion + ',';
-        text += '"favorites" : true,';
-        text += '"rooms" : true,';
-        text += '"functions" : true,';
-        text += '"variables" : true,';
-        text += '"programs" : true,';
-        text += '"others" : true,';
-        text += '"collapsed" : "rooms",';
-        text += '"systemvar_readonly" : true,';
-        text += '"default_theme" : "a",';
-        text += '"default_font" : "a"';   
-        text += '}';
-        
-        saveConfigFile(type, JSON.parse(text), true, map, true);
-    }else{
-        loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);
-    }    
-}
-
-function saveAllDatasToServer(){
-    
-    localStorage.setItem("webmaticfavoritesMap", JSON.stringify(favoritesMap));
-    localStorage.setItem("webmaticroomsMap", JSON.stringify(roomsMap));
-    localStorage.setItem("webmaticfunctionsMap", JSON.stringify(functionsMap));
-    localStorage.setItem("webmaticprogramsMap", JSON.stringify(programsMap));
-    
-    $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap)});
-    $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap)});
-    $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap)});
-    $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap)});
-    
-    mustBeSaved = false;    
-    $('[name="saveAllChanges"]').addClass('ui-state-disabled');
-}
-
-function getMap(type){
-     switch (type) {
-        case "variables":
-            return variablesMap;
-        case "programs":
-            return programsMap;
-        case "favorites":
-            return favoritesMap;
-        case "rooms":               
-            return roomsMap;
-        case "functions":
-            return functionsMap;
-        case "devices":
-            return devicesMap;
-    }
-}
-
-function setMap(type, data){
-    switch (type) {
-        case "variables":
-            variablesMap = data;
-            break;
-        case "programs":
-            programsMap = data;
-            break
-        case "favorites":
-            favoritesMap = data;                
-            break
-        case "rooms":               
-            roomsMap = data;
-            break
-        case "functions":
-            functionsMap = data;
-            break
-        case "devices":
-            devicesMap = data;
-            break
-    }
-}
-
-function loadLocalStorageMap(type, id){
-    switch (type) {
-        case "variables":
-            variablesMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
-            break;
-        case "programs":
-            programsMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
-            break
-        case "favorites":
-            favoritesMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));                
-            break
-        case "rooms":               
-            roomsMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
-            break
-        case "functions":
-            functionsMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
-            break 
-        case "devices":
-            devicesMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map" + id));
-            break
-    }
-}
-
-function isReadOnly(valInfo) {
-    if (!readModus) {
-        return false;
-    }
-
-    // Wenn die Variable hinten (r) hat, dann ist sie Read-Only:
-    // Wenn die Variable hinten (w) hat, dann ist sie nicht Read-Only:
-    var varOptionsFirst = "";
-    var varOptions = [];
-    // ( finden:
-    var bracketOpen = valInfo.indexOf("(");
-    if (bracketOpen !== -1) {
-        // ) finden:
-        var bracketClose = valInfo.indexOf(")", bracketOpen);
-        if (bracketClose !== -1) {
-            var optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
-            varOptions = optionsString.split(",");
-
-            if (varOptions.length >= 1) {
-                varOptionsFirst = varOptions[0].toLowerCase();
-            }
-        }
-    }
-
-    if (varOptionsFirst === "h" || varOptionsFirst === "dk" || varOptionsFirst === "d" || varOptionsFirst === "g") {
-        return false;
-    }
-
-    if (optionsMap["systemvar_readonly"] && readModus) {
-        return varOptionsFirst !== "w";
-    }
-    return varOptionsFirst === "r";
-}
-
-function isEmpty(map) {
-    for(var key in map) {
-        if (map.hasOwnProperty(key)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function getTimeDiffString(diffDate, systemDate) {
-    var timeDiff = (getDateFromString(systemDate) - getDateFromString(diffDate)) / 1000;  // In Sekunden konvertieren.
-    var result;
-
-    if (timeDiff < 0) {
-        return "";
-    } else if (timeDiff < 60) {
-        result = Math.floor(timeDiff + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_SEC_SINGULAR") : mapText("TIME_SEC_PLURAL")) + " " + mapText("TIME_SUFFIX");
-    } else if (timeDiff < 60 * 60) {
-        result = Math.floor(timeDiff / 60 + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_MIN_SINGULAR") : mapText("TIME_MIN_PLURAL")) + " " + mapText("TIME_SUFFIX");
-    } else if (timeDiff < 60 * 60 * 24) {
-        result = Math.floor(timeDiff / (60 * 60) + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_H_SINGULAR") : mapText("TIME_H_PLURAL")) + " " + mapText("TIME_SUFFIX");
-    } else if (timeDiff < 60 * 60 * 24 * 30.5) {
-        result = Math.floor(timeDiff / (60 * 60 * 24) + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_DAY_SINGULAR") : mapText("TIME_DAY_PLURAL")) + " " + mapText("TIME_SUFFIX");
-    } else if (timeDiff < 60 * 60 * 24 * 30.5 * 12) {
-        result = Math.floor(timeDiff / (60 * 60 * 24 * 30.5) + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_MON_SINGULAR") : mapText("TIME_MON_PLURAL")) + " " + mapText("TIME_SUFFIX");
-    } else {
-        result = Math.floor(timeDiff / (60 * 60 * 24 * 30.5 * 12) + 0.5);
-        if (result < 40) {
-            return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_Y_SINGULAR") : mapText("TIME_Y_PLURAL")) + " " + mapText("TIME_SUFFIX");
-        }
-    }
-    return "";
-}
-
-function buttonEvents(obj, refresh) {
-    var dataID = obj.data("id");  // Homematic Geräte ID.
-    var urlAttr = '?id=' + dataID;
-    var infoID = "info_" + dataID;  // Info Textfeld neben Button.
-    
-    var value = obj.data("value");
-    
-    if(typeof value === "undefined"){
-        var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
-
-        value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
-        var factor = $("#" + valueID).data("factor"); // Factor auslesen.
-        if (typeof factor !== "undefined") {
-            urlAttr += '&value=' + (parseFloat(value) / factor);
-        } else {
-            urlAttr += '&value=' + value;
-        }
-    }else{
-        urlAttr += '&value=' + value;
-    }
-
-    var durationVal = 0;
-    var durationObj = $("[data-duration-parent='" + obj.data("parent-id") + "']");
-    durationObj.each(function (i) {
-        var dur = $(this).datebox('getLastDur');
-        if (!isNaN(dur)) {
-            durationVal = dur > durationVal ? dur : durationVal;
-            urlAttr += '&durationId' + i + '=' + durationObj.data("id") + '&durationValue' + i + '=' + dur;
-        }
-    });
-
-    if (testSite) {
-        urlAttr += '&debug=true';
-    }
-
-    $("#" + infoID).text(mapText("TRANSFER"));
-    $.get('cgi/set.cgi' + urlAttr, function () {
-        if (refresh) {
-            $("#" + infoID).text(mapText("TRANSFER_OK"));
-            refreshPage(0);
-        } else {
-            $("#" + infoID).text(mapText("DELAY"));
-        }
-
-        if (durationVal > 0) {
-            setTimeout(function () {
-                refreshPage(0);
-            }, (durationVal + 3) * 1000);
-        }
-    });
-}
-
-function reloadList(txt, systemDate, restart, description) {
-    $("#dataListHeader").empty();
-    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>");
-    if(description !== ""){
-         $("#dataListHeader").append("<li class='description'>" + description + "</li>");
-    }
-    $("#dataListHeader").listview("refresh");
-    $("#dataList").listview("refresh");
-    $("#dataList").trigger("create");
-    if (restart) {
-        $("#dataList").fadeIn();
-    }
 }
 
 function processDevices(device, systemDate, options) {
@@ -1913,8 +1243,10 @@ function processDevices(device, systemDate, options) {
             } else if (valType === "16") {
                 // Liste.
                 deviceHTML += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
-            } else if (valType === "20" && valUnit === "html") {
+            } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                 deviceHTML += addHTML("", valID, strValue, vorDate, false);
+            } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+                deviceHTML += addHistorianDiagram("", valID, strValue, vorDate, false);
             } else if (valType === "20") {
                 deviceHTML += addSetText("", valID, strValue, valUnit, vorDate);
             } else {
@@ -1937,6 +1269,399 @@ function processDevices(device, systemDate, options) {
     }
 
     return deviceHTML;
+}
+
+// ----------------------- Helper functions ----------------------------
+
+function activateSettingSaveButton(){
+    $('[name="saveAllChanges"]').removeClass('ui-state-disabled');
+    mustBeSaved = true;
+}
+
+function loadRecognization(){
+    $.ajax({
+        type: 'GET',
+        url: 'cgi/recognizer.cgi',
+        dataType: 'json',
+        async: false
+    })
+    .done(function (data) {
+        if(data['REMOTE_ADDR'].match("^192.168.") || data['REMOTE_ADDR'].match("^10.")){
+            recognizeMap = data;
+            client = data['REMOTE_ADDR'];
+            localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
+        }else{
+            recognizeMap = {};
+            client = "";
+        }
+    })
+    .fail(function (jqXHR, textStatus) {
+        recognizeMap = {};
+        clint = "";
+        log("Recognization failed: " + textStatus, 2);
+    });
+}
+
+function loadConfigData(async, url, type, map, create, actual, callback) {
+    $.ajax({
+        type: 'GET',
+        url: url,
+        dataType: 'json',
+        async: async
+    })
+    .done(function (data) {
+        var processedData;
+        switch (type) {
+            case "config":
+                if(!async){
+                    saveDataToFile = true;
+                    processedData = saveConfigFile(type, data, create, map, true);
+                }else{
+                    processedData = data;
+                    optionsMap = data;
+                    localStorage.setItem(map, JSON.stringify(data));
+                }                
+                break;
+            case "variables":
+                processedData = data;
+                variablesMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break;
+            case "programs":
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break
+            case "favorites":
+                processedData = saveConfigFile(type, data, create, map, actual);                
+                break
+            case "rooms":               
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break
+            case "functions":
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break
+            case "devices":
+                processedData = data;
+                devicesMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "configClient":
+                optionsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break;
+        }
+
+        if (typeof callback === "function") {
+            callback(processedData);
+        }
+    })
+    .fail(function (jqXHR, textStatus) {
+        if (jqXHR.status === 404) {
+            createConfigFile(type, map);
+        }else{
+            log("Request failed: " + textStatus, 2);
+        }
+    });
+   
+}
+
+function saveConfigFile(type, newJsonObj, create, map, actual){
+    
+    if(actual){
+        var returnJson = {};
+        if( type === "rooms" || type === "favorites" || type === "functions" ){
+            var i = 0;
+            $.each(newJsonObj, function (key, val) {
+                if(key === "size"){
+                    return;
+                }
+                i++;
+                var obj = {};
+                obj['name'] = val;
+                obj['oldname'] = val;
+                obj['visible'] = true;
+                obj['pic'] = false;
+                obj['position'] = i;
+                returnJson[key] = obj;
+            });
+            returnJson['size'] = i;
+        } else if( type === "programs"){
+            var i = 0;
+            $.each(newJsonObj, function (key, val) {
+                if(key === "date" || key === "size"){
+                    returnJson[key] = val;
+                    return;
+                }
+                i++;
+                var obj = {};
+                obj['name'] = val['name'];
+                obj['oldname'] = val['name'];
+                obj['visible'] = val['visible'];
+                obj['oldvisible'] = val['visible'];
+                obj['pic'] = false;
+                obj['position'] = i;
+                obj['active'] = val['active'];
+                obj['operate'] = val['operate'];
+                obj['oldoperate'] = val['operate'];
+                obj['date'] = val['date'];
+                obj['info'] = val['info'];
+                returnJson[key] = obj;
+            });
+            returnJson['size'] = i;
+        } else {
+            returnJson = newJsonObj;
+        }
+        
+        returnJson = refreshJSONObj(type, returnJson, create);
+       
+        localStorage.setItem(map, JSON.stringify(returnJson));
+        if(saveDataToFile){
+            saveDataToFile = false;
+            $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(returnJson)});
+        }
+        return returnJson;
+    }else{
+        setMap(type, newJsonObj);        
+        return newJsonObj;
+    }
+}
+
+function refreshJSONObj(type, newJsonObj, create){
+   var oldMap = getMap(type);
+   if(type === "rooms" || type === "favorites" || type === "functions" ){
+        if(create){
+            var returnJson = {};
+            $.each(newJsonObj, function(key, val){
+                $.ajax({
+                    type: 'GET',
+                    url: '../webmatic_user/img/ids/' + type + '/' + key + '.png',
+                    async: false
+                })
+                .done(function(){
+                    val['pic'] = true;
+                })
+                .fail(function() {                         
+                    val['pic'] = false;
+                });
+                returnJson[key] = val;
+            });
+            newJsonObj = returnJson;
+        } else {
+            var returnJson = {};
+            var size = newJsonObj["size"];
+            $.each(newJsonObj, function(key, val){
+                if(key === "date" || key === "size"){
+                    returnJson[key] = val;
+                    return;
+                }
+                if(key in oldMap){
+                    var savedVal = oldMap[key];
+                    val['visible'] = savedVal['visible'];
+                    val['pic'] = savedVal['pic'];
+                    val['position'] = savedVal['position'];
+                    if(val['oldname'] === savedVal['oldname']){
+                        val['name'] = savedVal['name'];                        
+                    } else {
+                        saveDataToFile = true;
+                    }                   
+                } else {
+                    size++;
+                    val['position'] = size;
+                    saveDataToFile = true;
+                } 
+                returnJson[key] = val;                
+            });
+            returnJson["size"] = size;
+            newJsonObj = returnJson;
+        }      
+    } else if(type === "programs" ) {
+        if(create){
+            var returnJson = {};            
+            $.each(newJsonObj, function(key, val){
+                if(key === "date" || key === "size"){
+                    returnJson[key] = val;
+                    return;
+                }
+                $.ajax({
+                    type: 'GET',
+                    url: '../webmatic_user/img/ids/' + type + '/' + key + '.png',
+                    async: false
+                })
+                .done(function(){
+                    val['pic'] = true;
+                })
+                .fail(function() {                         
+                    val['pic'] = false;
+                });
+                returnJson[key] = val;
+            });
+            newJsonObj = returnJson;
+        } else {
+            var returnJson = {};
+            var size = newJsonObj["size"];
+            $.each(newJsonObj, function(key, val){
+                if(key === "date" || key === "size"){
+                    returnJson[key] = val;
+                    return;
+                }
+                if(key in oldMap){
+                    var savedVal = oldMap[key];
+                    val['pic'] = savedVal['pic'];
+                    val['position'] = savedVal['position'];
+                    if(val['oldname'] === savedVal['oldname']){
+                        val['name'] = savedVal['name'];                        
+                    } else {
+                        saveDataToFile = true;
+                    }
+                    if(val['oldvisible'] === savedVal['oldvisible']){
+                        val['visible'] = savedVal['visible'];                        
+                    } else {
+                        saveDataToFile = true;
+                    }
+                    if(val['oldoperate'] === savedVal['oldoperate']){
+                        val['operate'] = savedVal['operate'];                        
+                    } else {
+                        saveDataToFile = true;
+                    }
+                }else{
+                    size++;
+                    val['position'] = size;
+                    saveDataToFile = true;
+                }
+                returnJson[key] = val;                
+            });
+            returnJson["size"] = size;
+            newJsonObj = returnJson;
+        }      
+    } else if(type === "config" && !create) {
+        newJsonObj['storageVersion'] = storageVersion;
+        if(!("ccu_historian" in newJsonObj)){
+            newJsonObj['ccu_historian'] = "";
+        }
+    }
+    
+    setMap(type, newJsonObj);
+    return newJsonObj;
+}
+
+function createConfigFile(type, map){    
+    saveDataToFile = true;
+    if(type === "config"){
+        var text = '{';
+        text += '"storageVersion" : ' + storageVersion + ',';
+        text += '"favorites" : true,';
+        text += '"rooms" : true,';
+        text += '"functions" : true,';
+        text += '"variables" : true,';
+        text += '"programs" : true,';
+        text += '"others" : true,';
+        text += '"collapsed" : "rooms",';
+        text += '"systemvar_readonly" : true,';
+        text += '"default_theme" : "a",';
+        text += '"default_font" : "a",';
+        text += '"ccu_historian" : ""';
+        text += '}';
+        
+        optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
+    }else if(type === "configClient"){
+        var text = '{}';
+        optionsClientMap = saveConfigFile('config' + client, JSON.parse(text), true, map, true);
+    }else{
+        loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);
+    }    
+}
+
+function saveOptionsToServer(){
+    localStorage.setItem("webmaticoptionsMap", JSON.stringify(optionsMap));    
+    $.post('cgi/saveconfig.cgi', {name: "config", text: JSON.stringify(optionsMap)});
+}
+
+function saveClientOptionsToServer(){
+    localStorage.setItem("webmaticoptionsclientMap", JSON.stringify(optionsClientMap));    
+    if(client !== ""){
+        $.post('cgi/saveconfig.cgi', {name: "config" + client, text: JSON.stringify(optionsClientMap)});
+    }
+}
+
+function saveAllDatasToServer(){
+    
+    localStorage.setItem("webmaticfavoritesMap", JSON.stringify(favoritesMap));
+    localStorage.setItem("webmaticroomsMap", JSON.stringify(roomsMap));
+    localStorage.setItem("webmaticfunctionsMap", JSON.stringify(functionsMap));
+    localStorage.setItem("webmaticprogramsMap", JSON.stringify(programsMap));
+    
+    $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap)});
+    $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap)});
+    $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap)});
+    $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap)});
+    
+    mustBeSaved = false;    
+    $('[name="saveAllChanges"]').addClass('ui-state-disabled');
+}
+
+function buttonEvents(obj, refresh) {
+    var dataID = obj.data("id");  // Homematic Geräte ID.
+    var urlAttr = '?id=' + dataID;
+    var infoID = "info_" + dataID;  // Info Textfeld neben Button.
+    
+    var value = obj.data("value");
+    
+    if(typeof value === "undefined"){
+        var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
+
+        value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
+        var factor = $("#" + valueID).data("factor"); // Factor auslesen.
+        if (typeof factor !== "undefined") {
+            urlAttr += '&value=' + (parseFloat(value) / factor);
+        } else {
+            urlAttr += '&value=' + value;
+        }
+    }else{
+        urlAttr += '&value=' + value;
+    }
+
+    var durationVal = 0;
+    var durationObj = $("[data-duration-parent='" + obj.data("parent-id") + "']");
+    durationObj.each(function (i) {
+        var dur = $(this).datebox('getLastDur');
+        if (!isNaN(dur)) {
+            durationVal = dur > durationVal ? dur : durationVal;
+            urlAttr += '&durationId' + i + '=' + durationObj.data("id") + '&durationValue' + i + '=' + dur;
+        }
+    });
+
+    if (testSite) {
+        urlAttr += '&debug=true';
+    }
+
+    $("#" + infoID).text(mapText("TRANSFER"));
+    $.get('cgi/set.cgi' + urlAttr, function () {
+        if (refresh) {
+            $("#" + infoID).text(mapText("TRANSFER_OK"));
+            refreshPage(0);
+        } else {
+            $("#" + infoID).text(mapText("DELAY"));
+        }
+
+        if (durationVal > 0) {
+            setTimeout(function () {
+                refreshPage(0);
+            }, (durationVal + 3) * 1000);
+        }
+    });
+}
+
+function reloadList(txt, systemDate, restart, description) {
+    $("#dataListHeader").empty();
+    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>");
+    if(description !== ""){
+         $("#dataListHeader").append("<li class='description'>" + description + "</li>");
+    }
+    $("#dataListHeader").listview("refresh");
+    $("#dataList").listview("refresh");
+    $("#dataList").trigger("create");
+    if (restart) {
+        $("#dataList").fadeIn();
+    }
 }
 
 // ----------------------- Data loading functions ----------------------------
@@ -2110,7 +1835,7 @@ function loadPrograms(restart) {
         var systemDate = programsMap['date'];
         var tmpObj = {};
         $.each(programsMap, function (key, prog) {
-            if(key === "date"){
+            if(key === "date" || key === "size"){
                 return;
             }
             var prgVisible = prog['visible'];
@@ -2134,7 +1859,7 @@ function loadPrograms(restart) {
     loadConfigData(true, 'cgi/programs.cgi', 'programs', 'webmaticprogramsMap', false, true, function (dta) {
         var systemDate = dta['date'];
         $.each(dta, function (key, prog) {
-            if(key === "date"){
+            if(key === "date" || key === "size"){
                 return;
             }
             var prgVisible = prog['visible'];
@@ -2183,8 +1908,7 @@ function loadGraphicIDs(type) {
     loadConfigData(true, 'cgi/' + type + '.cgi', type, 'webmatic' + type + 'Map', false, true);
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText(type) + "</li>");
-    processGraphicID(type);
-    
+    processGraphicID(type);    
     
     $("#dataList").append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
 
@@ -2204,12 +1928,12 @@ function loadGraphicIDs(type) {
     $("#dataList").trigger("create").fadeIn();
 }
 
-function loadOptions() {
+function loadOptionsClient() {
     $("#dataList").empty();
     $("#dataListHeader").empty();
 
-    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS") + "</li>");
-    var html = "<li><h1>" + mapText("GRAPHICS_SIZE") + "</h1><p><div class=ui-field-contain'>";
+    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS_CLIENT") + " (" + client + ")</li>");
+    var html = "<li><h1>" + mapText("GRAPHICS_SIZE") + "</h1><p><div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     var gfxSize = localStorage.getItem("optionsMenuGfxSize");
     var theme1 = "";
@@ -2224,55 +1948,202 @@ function loadOptions() {
     html += "</div></li>";
     $("#dataList").append(html);
 
-    html = "<li><h1>" + mapText("SHOW_TEST") + "</h1><p><div class=ui-field-contain'>";
-    var showTestPages = localStorage.getItem("optionsMenuShowTestpages");
-    if (!showTestPages || showTestPages === "" || showTestPages === "false") {
-        theme1 = "";
+    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1><p><div class='ui-field-contain'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<select id='client_default_theme' data-theme='" + theme + "'>";
+    var clientTheme = optionsClientMap["default_theme"];
+    html += "<option value=''>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value='a' " + (clientTheme === "a"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
+    html += "<option value='b' " + (clientTheme === "b"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
+    html += "<option value='c' " + (clientTheme === "c"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
+    html += "<option value='d' " + (clientTheme === "d"?"selected='selected'":"") + ">" + mapText("GREEN") + "</option>";
+    html += "<option value='e' " + (clientTheme === "e"?"selected='selected'":"") + ">" + mapText("YELLOW") + "</option>";
+    html += "<option value='f' " + (clientTheme === "f"?"selected='selected'":"") + ">" + mapText("GREY") + "</option>";
+    html += "<option value='g' " + (clientTheme === "g"?"selected='selected'":"") + ">" + mapText("BLUE") + "</option>";
+    html += "<option value='h' " + (clientTheme === "h"?"selected='selected'":"") + ">" + mapText("RED") + "</option>";
+    html += "<option value='i' " + (clientTheme === "i"?"selected='selected'":"") + ">" + mapText("BROWN") + "</option>";
+    html += "<option value='j' " + (clientTheme === "j"?"selected='selected'":"") + ">" + mapText("WHITE") + "</option>";
+    html += "<option value='k' " + (clientTheme === "k"?"selected='selected'":"") + ">" + mapText("BRAZIL") + "</option>";
+    html += "<option value='l' " + (clientTheme === "l"?"selected='selected'":"") + ">" + mapText("GERMANY") + "</option>";
+    html += "</select>";
+    html += "<a href='#' name='saveClientOption' data-key='default_theme' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div><br/><br/><br/>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<select id='client_default_font' data-theme='" + theme + "'>";
+    var clientFont = optionsClientMap["default_font"];
+    html += "<option value=''>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value='a' " + (clientFont === "a"?"selected='selected'":"") + ">Normal</a>";
+    html += "<option value='b' " + (clientFont === "b"?"selected='selected'":"") + ">Koch Fraktur</a>";
+    html += "<option value='c' " + (clientFont === "c"?"selected='selected'":"") + ">Planet Benson</a>";
+    html += "<option value='d' " + (clientFont === "d"?"selected='selected'":"") + ">Action Man</a>";
+    html += "<option value='e' " + (clientFont === "e"?"selected='selected'":"") + ">Amadeus</a>";
+    html += "<option value='f' " + (clientFont === "f"?"selected='selected'":"") + ">Vamp</a>";
+    html += "<option value='g' " + (clientFont === "g"?"selected='selected'":"") + ">HennyPenny</a>";
+    html += "<option value='h' " + (clientFont === "h"?"selected='selected'":"") + ">Anglican</a>";
+    html += "<option value='i' " + (clientFont === "i"?"selected='selected'":"") + ">Nosifer</a>";
+    html += "<option value='j' " + (clientFont === "j"?"selected='selected'":"") + ">Pacifico</a>";
+    html += "<option value='k' " + (clientFont === "k"?"selected='selected'":"") + ">Sixties</a>";
+    html += "<option value='l' " + (clientFont === "l"?"selected='selected'":"") + ">Crackman</a>";
+    html += "</select>";
+    html += "<a href='#' name='saveGlobalOption' data-key='default_font' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div></li>";
+    $("#dataList").append(html);
+    
+    html = "<li><h1>Anzeige</h1><p><div class='ui-field-contain'>";
+    html += "<fieldset data-role='controlgroup'>";
+    html += "<legend>Was soll im Menü angezeigt werden</legend>";
+    html += "<input type='checkbox' " + (optionsMap["favorites"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='favorites' id='global_favorites' data-theme='" + theme + "'>";
+    html += "<label for='global_favorites'>" + mapText("FAVORITES") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["rooms"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='rooms' id='global_rooms' data-theme='" + theme + "'>";
+    html += "<label for='global_rooms'>" + mapText("ROOMS") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["functions"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='functions' id='global_functions' data-theme='" + theme + "'>";
+    html += "<label for='global_functions'>" + mapText("FUNCTIONS") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["variables"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='variables' id='global_variables' data-theme='" + theme + "'>";
+    html += "<label for='global_variables'>" + mapText("VARIABLES") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["programs"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='programs' id='global_programs' data-theme='" + theme + "'>";
+    html += "<label for='global_programs'>" + mapText("PROGRAMS") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["others"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='others' id='global_others' data-theme='" + theme + "'>";
+    html += "<label for='global_others'>" + mapText("OTHERS") + "</label>";
+    html += "</fieldset>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<select id='client_collapsed' data-theme='" + theme + "'>";
+    var clientColapsed = optionsClientMap["collapsed"];
+    html += "<option value=''>" + mapText("NOT_SELECTED") + "</a>";
+    html += "<option value='favorites' " + (clientColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
+    html += "<option value='rooms' " + (clientColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
+    html += "<option value='functions' " + (clientColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";
+    html += "<option value='variables' " + (clientColapsed === "variables"?"selected='selected'":"") + ">" + mapText("VARIABLES") + "</a>";
+    html += "<option value='programs' " + (clientColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</a>";
+    html += "<option value='others' " + (clientColapsed === "others"?"selected='selected'":"") + ">" + mapText("OTHERS") + "</a>";
+    html += "</select>";
+    html += "<a href='#' name='saveClientOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div></li>";
+    $("#dataList").append(html);
+    
+    html = "<li><h1>Variablen standardmäßig nur lesbar</h1><p><div class='ui-field-contain'>";
+    html += "<fieldset data-role='controlgroup' data-type='horizontal'>";
+    html += "<input type='radio' " + (!("systemvar_readonly" in optionsClientMap)?"checked='checked'":"") + " name='systemvar_readonly' id='client_systemvar_readonly' data-theme='" + theme + "'>";
+    html += "<label for='client_systemvar_readonly'>" + mapText("NOT_SELECTED") + "</label>";
+    html += "<input type='radio' " + (optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='client_systemvar_readonly_yes' data-theme='" + theme + "'>";
+    html += "<label for='client_systemvar_readonly_yes'>" + mapText("YES") + "</label>";
+    html += "<input type='radio' " + (!optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='client_systemvar_readonly_no' data-theme='" + theme + "'>";
+    html += "<label for='client_systemvar_readonly_no'>" + mapText("NO") + "</label>";
+    html += "</div></li>";
+    $("#dataList").append(html);
+
+    $("#dataListHeader").listview("refresh");
+    $("#dataList").listview("refresh");
+    $("#dataList").trigger("create").fadeIn();
+}
+
+function loadOptions() {
+    $("#dataList").empty();
+    $("#dataListHeader").empty();
+
+    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS") + "</li>");
+    var html = "<li><h1>" + mapText("GRAPHICS_SIZE") + "</h1><p><div class='ui-field-contain'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    var gfxSize = localStorage.getItem("optionsMenuGfxSize");
+    var theme1 = "";
+    var theme2 = "";
+    if (!gfxSize || gfxSize === "" || gfxSize === "large") {
         theme2 = "class='ui-btn-active'";
     } else {
         theme1 = "class='ui-btn-active'";
-        theme2 = "";
     }
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    html += "<a href='#' id='optionsMenuShowTestpages' data-id='optionsMenuShowTestpages' data-role='button' data-inline='true' " + theme1 + ">" + mapText("SHOW") + "</a>";
-    html += "<a href='#' id='optionsMenuHideTestpages' data-id='optionsMenuHideTestpages' data-role='button' data-inline='true' " + theme2 + ">" + mapText("HIDE") + "</a>";
+    html += "<a href='#' id='optionsMenuGfxSizeSmall' data-id='optionsMenuGfxSizeSmall' data-role='button' data-inline='true' " + theme1 + ">" + mapText("SMALL") + "</a>";
+    html += "<a href='#' id='optionsMenuGfxSizeLarge' data-id='optionsMenuGfxSizeLarge' data-role='button' data-inline='true' " + theme2 + ">" + mapText("BIG") + "</a>";
     html += "</div></li>";
     $("#dataList").append(html);
 
-    html = "<li><h1>Theme auswählen</h1><p><div class=ui-field-contain'>";
+    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1><p><div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='a' class='" + (theme === 'a' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("DEFAULT") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='b' class='" + (theme === 'b' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("BLACK") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='c' class='" + (theme === 'c' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("PINK") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='d' class='" + (theme === 'd' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("GREEN") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='e' class='" + (theme === 'e' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("YELLOW") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='f' class='" + (theme === 'f' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("GREY") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='g' class='" + (theme === 'g' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("BLUE") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='h' class='" + (theme === 'h' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("RED") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='i' class='" + (theme === 'i' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("BROWN") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='j' class='" + (theme === 'j' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("WHITE") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='k' class='" + (theme === 'k' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("BRAZIL") + "</a>";
-    html += "<a href='#' name='optionsMenuGfxThemeChooser' data-value='l' class='" + (theme === 'l' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>" + mapText("GERMANY") + "</a>";
+    html += "<select id='global_default_theme' data-theme='" + theme + "'>";
+    var globalTheme = optionsMap["default_theme"];
+    html += "<option value='a' " + (globalTheme === "a"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
+    html += "<option value='b' " + (globalTheme === "b"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
+    html += "<option value='c' " + (globalTheme === "c"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
+    html += "<option value='d' " + (globalTheme === "d"?"selected='selected'":"") + ">" + mapText("GREEN") + "</option>";
+    html += "<option value='e' " + (globalTheme === "e"?"selected='selected'":"") + ">" + mapText("YELLOW") + "</option>";
+    html += "<option value='f' " + (globalTheme === "f"?"selected='selected'":"") + ">" + mapText("GREY") + "</option>";
+    html += "<option value='g' " + (globalTheme === "g"?"selected='selected'":"") + ">" + mapText("BLUE") + "</option>";
+    html += "<option value='h' " + (globalTheme === "h"?"selected='selected'":"") + ">" + mapText("RED") + "</option>";
+    html += "<option value='i' " + (globalTheme === "i"?"selected='selected'":"") + ">" + mapText("BROWN") + "</option>";
+    html += "<option value='j' " + (globalTheme === "j"?"selected='selected'":"") + ">" + mapText("WHITE") + "</option>";
+    html += "<option value='k' " + (globalTheme === "k"?"selected='selected'":"") + ">" + mapText("BRAZIL") + "</option>";
+    html += "<option value='l' " + (globalTheme === "l"?"selected='selected'":"") + ">" + mapText("GERMANY") + "</option>";
+    html += "</select>";
+    html += "<a href='#' name='saveGlobalOption' data-key='default_theme' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
     html += "</div><br/><br/><br/>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='a' class='" + (font === 'a' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Normal</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='b' class='" + (font === 'b' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Koch Fraktur</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='c' class='" + (font === 'c' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Planet Benson</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='d' class='" + (font === 'd' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Action Man</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='e' class='" + (font === 'e' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Amadeus</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='f' class='" + (font === 'f' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Vamp</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='g' class='" + (font === 'g' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>HennyPenny</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='h' class='" + (font === 'h' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Anglican</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='i' class='" + (font === 'i' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Nosifer</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='j' class='" + (font === 'j' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Pacifico</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='k' class='" + (font === 'k' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Sixties</a>";
-    html += "<a href='#' name='optionsMenuGfxFontChooser' data-value='l' class='" + (font === 'l' ? 'ui-btn-active' : '') + "' data-role='button' data-inline='true'>Crackman</a>";
+    html += "<select id='global_default_font' data-theme='" + theme + "'>";
+    var globalFont = optionsMap["default_font"];
+    html += "<option value='a' " + (globalFont === "a"?"selected='selected'":"") + ">Normal</a>";
+    html += "<option value='b' " + (globalFont === "b"?"selected='selected'":"") + ">Koch Fraktur</a>";
+    html += "<option value='c' " + (globalFont === "c"?"selected='selected'":"") + ">Planet Benson</a>";
+    html += "<option value='d' " + (globalFont === "d"?"selected='selected'":"") + ">Action Man</a>";
+    html += "<option value='e' " + (globalFont === "e"?"selected='selected'":"") + ">Amadeus</a>";
+    html += "<option value='f' " + (globalFont === "f"?"selected='selected'":"") + ">Vamp</a>";
+    html += "<option value='g' " + (globalFont === "g"?"selected='selected'":"") + ">HennyPenny</a>";
+    html += "<option value='h' " + (globalFont === "h"?"selected='selected'":"") + ">Anglican</a>";
+    html += "<option value='i' " + (globalFont === "i"?"selected='selected'":"") + ">Nosifer</a>";
+    html += "<option value='j' " + (globalFont === "j"?"selected='selected'":"") + ">Pacifico</a>";
+    html += "<option value='k' " + (globalFont === "k"?"selected='selected'":"") + ">Sixties</a>";
+    html += "<option value='l' " + (globalFont === "l"?"selected='selected'":"") + ">Crackman</a>";
+    html += "</select>";
+    html += "<a href='#' name='saveGlobalOption' data-key='default_font' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div></li>";
+    $("#dataList").append(html);
+    
+    html = "<li><h1>Anzeige</h1><p><div class='ui-field-contain'>";
+    html += "<fieldset data-role='controlgroup'>";
+    html += "<legend>Was soll im Menü angezeigt werden</legend>";
+    html += "<input type='checkbox' " + (optionsMap["favorites"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='favorites' id='global_favorites' data-theme='" + theme + "'>";
+    html += "<label for='global_favorites'>" + mapText("FAVORITES") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["rooms"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='rooms' id='global_rooms' data-theme='" + theme + "'>";
+    html += "<label for='global_rooms'>" + mapText("ROOMS") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["functions"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='functions' id='global_functions' data-theme='" + theme + "'>";
+    html += "<label for='global_functions'>" + mapText("FUNCTIONS") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["variables"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='variables' id='global_variables' data-theme='" + theme + "'>";
+    html += "<label for='global_variables'>" + mapText("VARIABLES") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["programs"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='programs' id='global_programs' data-theme='" + theme + "'>";
+    html += "<label for='global_programs'>" + mapText("PROGRAMS") + "</label>";
+    html += "<input type='checkbox' " + (optionsMap["others"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='others' id='global_others' data-theme='" + theme + "'>";
+    html += "<label for='global_others'>" + mapText("OTHERS") + "</label>";
+    html += "</fieldset>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<select id='global_collapsed' data-theme='" + theme + "'>";
+    var globalColapsed = optionsMap["collapsed"];
+    html += "<option value=''>" + mapText("NOT_SELECTED") + "</a>";
+    html += "<option value='favorites' " + (globalColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
+    html += "<option value='rooms' " + (globalColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
+    html += "<option value='functions' " + (globalColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";
+    html += "<option value='variables' " + (globalColapsed === "variables"?"selected='selected'":"") + ">" + mapText("VARIABLES") + "</a>";
+    html += "<option value='programs' " + (globalColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</a>";
+    html += "<option value='others' " + (globalColapsed === "others"?"selected='selected'":"") + ">" + mapText("OTHERS") + "</a>";
+    html += "</select>";
+    html += "<a href='#' name='saveGlobalOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div></li>";
+    $("#dataList").append(html);
+    
+    html = "<li><h1>Variablen standardmäßig nur lesbar</h1><p><div class='ui-field-contain'>";
+    html += "<fieldset data-role='controlgroup' data-type='horizontal'>";
+    html += "<input type='radio' " + (optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='global_systemvar_readonly_yes' data-theme='" + theme + "'>";
+    html += "<label for='global_systemvar_readonly_yes'>" + mapText("YES") + "</label>";
+    html += "<input type='radio' " + (!optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='global_systemvar_readonly_no' data-theme='" + theme + "'>";
+    html += "<label for='global_systemvar_readonly_no'>" + mapText("NO") + "</label>";
     html += "</div></li>";
     $("#dataList").append(html);
 
-    html = "<li><h1>WebMatic neu laden, damit alle Einstellungen wirksam werden</h1><p><div class=ui-field-contain'>";
-    html += "<a href='#' id='reloadWebMatic' data-id='reloadWebMatic' data-role='button' data-inline='true'>Neu laden</a>";
-    html += "</li>";
+    html = "<li><h1>CCU-Historian</h1><p><div class='ui-field-contain'>";
+    html += "http<input type='text' id='global_ccu_historian' placeholder='://192.168.xx.xxx' />/historioan/index.html ";
+    html += "<a href='#' name='saveGlobalOption' data-key='ccu_historian' data-role='button' data-inline='true'>" + mapText("SAVE") + "</a>";
+    html += "<a href='http://homematic-forum.de/forum/viewforum.php?f=39' target='_blank' class='ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all'>Info</a>";
+    html += "</div></li>";
     $("#dataList").append(html);
 
     $("#dataListHeader").listview("refresh");
@@ -2287,6 +2158,48 @@ $(function () {
     $(document).bind("mobileinit", function () {
         $.mobile.listview.prototype.options.filterPlaceholder = mapText("FILTER");
     });
+    
+    $(document.body).on("click", "[id='global_systemvar_readonly_yes']", function () {
+        optionsMap["systemvar_readonly"] = true;
+        saveOptionsToServer();
+    });
+    
+    $(document.body).on("click", "[id='global_systemvar_readonly_no']", function () {
+        optionsMap["systemvar_readonly"] = false;
+        saveOptionsToServer();
+    });
+    
+    $(document.body).on("click", "[name='saveGlobalOption']", function () {
+        var key = $(this).data("key");
+        optionsMap[key] = $('#global_' + key).val();
+        saveOptionsToServer();
+    });
+    
+    $(document.body).on("click", "[id='client_systemvar_readonly']", function () {
+        delete optionsClientMap["systemvar_readonly"];
+        saveClientOptionsToServer();
+    });
+    
+    $(document.body).on("click", "[id='client_systemvar_readonly_yes']", function () {
+        optionsClientMap["systemvar_readonly"] = true;
+        saveClientOptionsToServer();
+    });
+    
+    $(document.body).on("click", "[id='client_systemvar_readonly_no']", function () {
+        optionsClientMap["systemvar_readonly"] = false;
+        saveClientOptionsToServer();
+    });
+    
+    $(document.body).on("click", "[name='saveClientOption']", function () {
+        var key = $(this).data("key");
+        var value = $('#client_' + key).val();
+        if(value === ""){
+            delete optionsClientMap[key];
+        }else{
+            optionsClientMap[key] = value;
+        }        
+        saveClientOptionsToServer();
+    });
 
     // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
     $(document.body).on("click", "[id^=setButton]", function () {
@@ -2294,12 +2207,135 @@ $(function () {
         buttonEvents(obj, obj.data("refresh"));
     });
     
+    $(document.body).on("click", "[id^=saveHistorianData]", function () {
+        var obj = $(this);
+        var dataID = obj.data("id");
+        obj.attr('data-value', $('#hisHistorianID_' + dataID).val() + ";" + $('#hisHMID_' + dataID).val() + ";" + $('#hisDuration_' + dataID).val() + $("#hisSelector_" + dataID).val());
+        buttonEvents(obj, true);
+    });    
+    
     $(document.body).on("click", "[id^=setValueBigList]", function () {
         var obj = $(this);
         var dataID = obj.data("id");
         obj.attr('data-value', $('#selector_' + dataID).val());
         buttonEvents(obj, obj.data("refresh"));
-    });      
+    }); 
+    
+    $(document.body).on("click", "[id^=setUp]", function () {
+        debugger;
+        var thisId = $(this).data("id");        
+        var thisList = $("#list" + thisId);
+        var height = thisList.height();
+        
+        var before = thisList.prev();
+        var beforeId = before.data("id");
+        
+        var oldPosition = parseInt($("#position" + thisId).val());
+        var isLast = $("#position" + thisId).data("last");
+        var newPosition = parseInt($("#position" + beforeId).val());
+        $("#position" + thisId).val(newPosition);
+        $("#position" + beforeId).val(oldPosition);
+        
+        if(newPosition === 1){
+            $("#setUp" + thisId).addClass("ui-state-disabled").hide();
+            $("#setUp" + beforeId).removeClass("ui-state-disabled").show();
+        }        
+        if(isLast){
+            $("#position" + thisId).data("last", false);
+            $("#position" + beforeId).data("last", true);
+            $("#setDown" + thisId).removeClass("ui-state-disabled").show();
+            $("#setDown" + beforeId).addClass("ui-state-disabled").hide();
+        }        
+        
+        thisList.animate({top: '-' + height + 'px'}, 500, function(){
+            before.animate({top: height + 'px'}, 500, function(){
+                thisList.css('top', '0px');
+                before.css('top', '0px');
+                thisList.insertBefore(before);
+            });
+        }); 
+        
+        var type = $("#position" + thisId).data("type");
+        
+        switch (type) {
+            case "favorites":
+                favoritesMap[thisId]['position'] = newPosition;
+                favoritesMap[beforeId]['position'] = oldPosition;
+                break
+            case "rooms":  
+                roomsMap[thisId]['position'] = newPosition;
+                roomsMap[beforeId]['position'] = oldPosition;
+                break
+            case "functions":
+                functionsMap[thisId]['position'] = newPosition;
+                functionsMap[beforeId]['position'] = oldPosition;
+                break
+            case "programs":
+                programsMap[thisId]['position'] = newPosition;
+                programsMap[beforeId]['position'] = oldPosition;
+                break
+        }
+
+        activateSettingSaveButton();
+    });
+    
+    $(document.body).on("click", "[id^=setDown]", function () {
+        debugger;
+        var thisId = $(this).data("id");        
+        var thisList = $("#list" + thisId);
+        var height = thisList.height();
+        
+        var after = thisList.next();
+        var afterId = after.data("id");
+        
+        var oldPosition = parseInt($("#position" + thisId).val());
+        var isLast = $("#position" + afterId).data("last");
+        var newPosition = parseInt($("#position" + afterId).val());
+        $("#position" + thisId).val(newPosition);
+        $("#position" + afterId).val(oldPosition);
+        
+        if(oldPosition === 1){
+            $("#setUp" + afterId).addClass("ui-state-disabled").hide();
+            $("#setUp" + thisId).removeClass("ui-state-disabled").show();
+        }        
+        if(isLast){
+            $("#position" + thisId).data("last", true);
+            $("#position" + afterId).data("last", false);           
+            $("#setDown" + thisId).addClass("ui-state-disabled").hide();
+            $("#setDown" + afterId).removeClass("ui-state-disabled").show();
+        }   
+        
+        thisList.animate({top: height + 'px'}, 500, function(){
+            after.animate({top: '-' + height + 'px'}, 500, function(){
+                thisList.css('top', '0px');
+                after.css('top', '0px');
+                thisList.insertAfter(after);
+            });
+        });
+        
+        var type = $("#position" + thisId).data("type");
+        
+        switch (type) {
+            case "favorites":
+                favoritesMap[thisId]['position'] = newPosition;
+                favoritesMap[afterId]['position'] = oldPosition;
+                break
+            case "rooms":  
+                roomsMap[thisId]['position'] = newPosition;
+                roomsMap[afterId]['position'] = oldPosition;
+                break
+            case "functions":
+                functionsMap[thisId]['position'] = newPosition;
+                functionsMap[afterId]['position'] = oldPosition;
+                break
+            case "programs":
+                programsMap[thisId]['position'] = newPosition;
+                programsMap[afterId]['position'] = oldPosition;
+                break
+        }
+
+        activateSettingSaveButton();
+    });
 
     // Ein Button, bei dessen drücken ein Bool an die ID übertragen wird.
     $(document.body).on("click", "[id^=setTextButton]", function () {

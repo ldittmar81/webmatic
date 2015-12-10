@@ -26,6 +26,8 @@ sed -i "s/wmmap.de.js/wmmap.de.min.js?${HASHDATE}/" index.html
 sed -i "s/wmmap.de.js/wmmap.de.min.js?${HASHDATE}/" get.html
 sed -i "s/wmmap.js/wmmap.min.js?${HASHDATE}/" index.html
 sed -i "s/wmmap.js/wmmap.min.js?${HASHDATE}/" get.html
+sed -i "s/wmhelper.js/wmhelper.min.js?${HASHDATE}/" index.html
+sed -i "s/wmhelper.js/wmhelper.min.js?${HASHDATE}/" get.html
 sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" index.html
 sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" get.html
 sed -i "s/index.js/index.min.js?${HASHDATE}/" index.html
