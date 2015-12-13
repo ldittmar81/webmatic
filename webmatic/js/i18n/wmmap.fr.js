@@ -665,5 +665,11 @@ var textMap = {
     OPERATABLE: "actionné",
     HISTORIAN_DURATION: "Le dernier...",
     CHOOSE_THEME: "Sélectionnez Thème",
-    NOT_SELECTED: "pas sélectionné"
+    NOT_SELECTED: "pas sélectionné",
+    DESIGN: "apparence",
+    FONT: "la police",
+    MENU: "les entrées de menu",
+    DEFAULT_OPEN: "Afficher le premier appel",
+    DEFAULT_READONLY: "Par défaut, en lecture seule",
+    GLOBAL_SETTINGS_HIDE_WARNING: "Attention! Si vous masquez les paramètres pour tous les appareils, il devrait être explicitement visible au moins pour un dispositif. Si nécessaire, vous devez être transféré directement au réglage de la CCU."
 };

@@ -1,4 +1,63 @@
-/* global theme, debugModus, readModus, optionsMap */
+//Variablen
+var webmaticVersion = '0';
+var newWebmaticVersion = webmaticVersion;
+var storageVersion = 6;
+
+// Globale variablen
+var debugModus = true;
+var testSite = false;
+var lastClickType = -1;
+var oldID = -1;
+var lastClickID = -1;
+var readModus = false;
+var prevItem = 0;
+var saveDataToFile = false;
+var newVersion = false;
+var mustBeSaved = false;
+var client = "";
+
+var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap, recognizeMap;
+var programsClientMap = {}, functionsClientMap = {}, roomsClientMap = {}, favoritesClientMap = {}, optionsClientMap= {}, variablesClientMap = {}, devicesClientMap = {};
+var resultProgramsMap = {}, resultFunctionsMap = {}, resultRoomsMap = {}, resultFavoritesMap = {}, resultVariablesMap = {}, resultOptionsMap = {}, resultDevicesMap = {};
+
+var theme, font, gfxClass;
+var loadedFont = ["a"];
+
+var today = new Date();
+var dateNow = (today.getDate()<10?"0" + today.getDate():today.getDate()) + "." + (today.getMonth()+1<10?"0"+today.getMonth()+1:today.getMonth()+1) + "." + today.getFullYear();
+
+
+// Initialize refresh timer:
+var refreshTimer = setInterval(function () {
+    checkrefreshPage();
+}, 1000);
+var lastTime = -1;
+
+function checkrefreshPage() {
+    // Statt Timer auf 60 Sekunden hier eigener Vergleich alle Sekunde. Nur so geht es, dass nach einem iOS WakeUp
+    // des Browsers sofort ein Reload passiert, wenn mehr als 60 Sekunden vorbei sind.
+    var d = new Date();
+    var t = d.getTime();
+    if (lastTime !== -1)
+    {
+        if (t - lastTime > 60000)
+        {
+            if (lastClickType === 1 || lastClickType === 2 || lastClickType === 3 || lastClickType === 5 || lastClickType === 6) {
+                refreshPage(0); // Kein Refresh bei Optionen.
+            }
+            refreshServiceMessages();
+            lastTime = t;
+        }
+    } else {
+        lastTime = t;
+    }
+}
+
+function restartTimer() {
+    // Zeit zurücksetzen, damit wieder neu gezählt wird:
+    var d = new Date();
+    lastTime = d.getTime();
+}
 
 // ----------------------- HTML Creation Helper ------------------------------
 
@@ -275,6 +334,23 @@ function getDateFromString(strDate) {
     return new Date(yr, mn, dy, hr, mi, sc);
 }
 
+function getResultMap(type){
+     switch (type) {
+        case "variables":
+            return resultVariablesMap;
+        case "programs":
+            return resultProgramsMap;
+        case "favorites":
+            return resultFavoritesMap;
+        case "rooms":               
+            return resultRoomsMap;
+        case "functions":
+            return resultFunctionsMap;
+        case "devices":
+            return resultDevicesMap;
+    }
+}
+
 function getMap(type){
      switch (type) {
         case "variables":
@@ -334,6 +410,70 @@ function loadLocalStorageMap(type, id){
             break 
         case "devices":
             devicesMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map" + id));
+            break
+    }
+}
+
+function createOneMap(type, changedKey, changedValue){
+    switch (type) {
+        case "config":
+            $.each(optionsMap, function (key, val) {
+                if(key in optionsClientMap){
+                    resultOptionsMap[key] = optionsClientMap[key];
+                }else{
+                    resultOptionsMap[key] = val;
+                }
+            });
+            if(changedKey){
+                if(resultOptionsMap[changedKey] === changedValue){
+                    checkAndChange(changedKey, changedValue);
+                }
+            }
+            break;
+        case "variables":
+            $.each(variablesMap, function (key, val) {
+                if(key in variablesClientMap){                    
+                    resultVariablesMap[key] = variablesClientMap[key];
+                }else{
+                    resultVariablesMap[key] = val;
+                }
+            });
+            break;
+        case "programs":
+            $.each(programsMap, function (key, val) {
+                if(key in programsClientMap){                    
+                    resultProgramsMap[key] = programsClientMap[key];
+                }else{
+                    resultProgramsMap[key] = val;
+                }
+            });
+            break
+        case "favorites":
+            $.each(favoritesMap, function (key, val) {
+                if(key in favoritesClientMap){                    
+                    resultFavoritesMap[key] = favoritesClientMap[key];
+                }else{
+                    resultFavoritesMap[key] = val;
+                }
+            });    
+            break
+        case "rooms":               
+            $.each(roomsMap, function (key, val) {
+                if(key in roomsClientMap){                    
+                    resultRoomsMap[key] = roomsClientMap[key];
+                }else{
+                    resultRoomsMap[key] = val;
+                }
+            }); 
+            break
+        case "functions":
+            $.each(functionsMap, function (key, val) {
+                if(key in functionsClientMap){                    
+                    resultFunctionsMap[key] = functionsClientMap[key];
+                }else{
+                    resultFunctionsMap[key] = val;
+                }
+            }); 
             break
     }
 }
@@ -400,4 +540,21 @@ function getTimeDiffString(diffDate, systemDate) {
         }
     }
     return "";
+}
+
+function checkAndChange(key, value){
+    if(key === "default_theme" && value !== theme){
+        changeTheme(value);
+    }else if(key === "default_font" && value !== font){
+        changeFont(value);
+    }else if(key === "default_menugfxsize" && value !== gfxClass){
+        changeMenuGfx(value);
+    }else if(key === "favorites" || key === "rooms" || key === "functions" || key === "variables" || key === "programs" || key === "others"){
+        if(value && $("#" + key + "MainMenu").is(":hidden")){
+            $("#" + key + "MainMenu").fadeIn();
+        }else if(!value && !$("#" + key + "MainMenu").is(":hidden")){
+            $("#" + key + "MainMenu").fadeOut();
+        }
+    }
+   
 }

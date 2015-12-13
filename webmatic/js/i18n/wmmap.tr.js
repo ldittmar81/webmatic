@@ -665,5 +665,11 @@ var textMap = {
     OPERATABLE: "çalıştırılabilir",
     HISTORIAN_DURATION: "Son...",
     CHOOSE_THEME: "seç Tema",
-    NOT_SELECTED: "seçili değil"
+    NOT_SELECTED: "seçili değil",
+    DESIGN: "görünüş",
+    FONT: "yazı",
+    MENU: "Menü girişleri",
+    DEFAULT_OPEN: "İlk aramayı Display",
+    DEFAULT_READONLY: "Varsayılan olarak, salt okunur",
+    GLOBAL_SETTINGS_HIDE_WARNING: "Dikkat! Eğer tüm cihazlar için ayarları gizlerseniz, en azından bir cihaz için açıkça görünür olmalıdır. Gerekirse doğrudan CCU ayarına aktarılacak var."
 };

@@ -165,10 +165,22 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     max-width: 5em;
 }
 
+.text-right {
+    text-align: right;
+    padding-right: 15px !important;
+    padding-top: 10px !important;
+}
+
 @media screen and (max-width: 900px)
 {
     .content-secondary {
         width: 100%;
+    }
+    
+    .text-right {
+        text-align: left;
+        padding-right: 0;
+        padding-top: 0;
     }
 
     .content-primary {

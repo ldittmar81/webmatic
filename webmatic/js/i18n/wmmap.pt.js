@@ -665,7 +665,13 @@ var textMap = {
     OPERATABLE: "operável",
     HISTORIAN_DURATION: "Os últimos...",
     CHOOSE_THEME: "Escolha um tema",
-    NOT_SELECTED: "não selecionado"
+    NOT_SELECTED: "não selecionado",
+    DESIGN: "aparência",
+    FONT: "fonte",
+    MENU: "entradas do menu",
+    DEFAULT_OPEN: "Mostrar a primeira chamada",
+    DEFAULT_READONLY: "Por padrão, somente leitura",
+    GLOBAL_SETTINGS_HIDE_WARNING: "Atenção! Se você ocultar as configurações para todos os dispositivos, deve ser explicitamente visível, pelo menos para um dispositivo. Se necessário, você tem que ser transferido diretamente para a definição CCU."
 };
 
 

@@ -665,5 +665,11 @@ var textMap = {
     OPERATABLE: "operatable",
     HISTORIAN_DURATION: "The last...",
     CHOOSE_THEME: "Choose theme",
-    NOT_SELECTED: "not selected"
+    NOT_SELECTED: "not selected",
+    DESIGN: "design",
+    FONT: "font",
+    MENU: "menu entries",
+    DEFAULT_OPEN: "Display the first call",
+    DEFAULT_READONLY: "By default, read-only",
+    GLOBAL_SETTINGS_HIDE_WARNING: "Attention! If you hide the settings for all devices, it should be explicitly visible at least for a device. If necessary you have to be directly transferred to the CCU setting."
 };

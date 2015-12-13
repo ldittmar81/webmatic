@@ -1,38 +1,9 @@
-// WebMatic
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus */
+
+// WebMatic 2.x
 // by ldittmar
-// ----------------------- Click function handlers ----------------------------
-var webmaticVersion = '0';
-var newWebmaticVersion = webmaticVersion;
-var storageVersion = 5;
 
-// Globale variablen
-var debugModus = true;
-var testSite = false;
-var lastClickType = -1;
-var oldID = -1;
-var lastClickID = -1;
-var readModus = false;
-var prevItem = 0;
-var saveDataToFile = false;
-var newVersion = false;
-var mustBeSaved = false;
-var client = "";
-
-var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap, recognizeMap;
-var optionsClientMap = {};
-
-var theme, font;
-var loadedFont = ["a"];
-
-var today = new Date();
-var dateNow = (today.getDate()<10?"0" + today.getDate():today.getDate()) + "." + (today.getMonth()+1<10?"0"+today.getMonth()+1:today.getMonth()+1) + "." + today.getFullYear();
-
-// Initialize refresh timer:
-var refreshTimer = setInterval(function () {
-    checkrefreshPage();
-}, 1000);
-var lastTime = -1;
-
+//Wiedererkennung von Clients (feste IP zwingend notwendig)
 if (localStorage.getItem("webmaticrecognizeMap") === null) {
     loadRecognization();
 } else {
@@ -41,6 +12,7 @@ if (localStorage.getItem("webmaticrecognizeMap") === null) {
 }
 
 //Initialwerte (Einstellungen) einlesen
+//Global
 if (localStorage.getItem("webmaticoptionsMap") === null) {
     localStorage.clear();
     localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
@@ -56,6 +28,7 @@ if (localStorage.getItem("webmaticoptionsMap") === null) {
     }
     loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);    
 }
+//Lokal
 if (localStorage.getItem("webmaticoptionsclientMap") === null) {
     if(client !== ""){
         loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true);
@@ -63,49 +36,25 @@ if (localStorage.getItem("webmaticoptionsclientMap") === null) {
 } else {
     optionsClientMap = JSON.parse(localStorage.getItem("webmaticoptionsclientMap"));    
 }
+//Kombinieren
+createOneMap("config");
 
+//Webmatic-Version erkennen
 $.get('https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION', function(data){
     newWebmaticVersion = data;
 });
 
 //Design setzen
-theme = ("default_theme" in optionsClientMap?optionsClientMap["default_theme"]:optionsMap["default_theme"]);
-if (theme === "undefined" || $.inArray(theme, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
+theme = resultOptionsMap["default_theme"];
+if ($.inArray(theme, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     theme = "a";
 }
-
-font = ("default_font" in optionsClientMap?optionsClientMap["default_font"]:optionsMap["default_font"]);
-if (font === "undefined" || $.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
+font = resultOptionsMap["default_font"];
+if ($.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     font = "a";
 }
 
 // --------------------- Funktionen --------------------------
-
-function checkrefreshPage() {
-    // Statt Timer auf 60 Sekunden hier eigener Vergleich alle Sekunde. Nur so geht es, dass nach einem iOS WakeUp
-    // des Browsers sofort ein Reload passiert, wenn mehr als 60 Sekunden vorbei sind.
-    var d = new Date();
-    var t = d.getTime();
-    if (lastTime !== -1)
-    {
-        if (t - lastTime > 60000)
-        {
-            if (lastClickType >= 7) {
-                refreshPage(0); // Kein Refresh bei GrafikIDs und Optionen.
-            }
-            refreshServiceMessages();
-            lastTime = t;
-        }
-    } else {
-        lastTime = t;
-    }
-}
-
-function restartTimer() {
-    // Zeit zurücksetzen, damit wieder neu gezählt wird:
-    var d = new Date();
-    lastTime = d.getTime();
-}
 
 function refreshPage(item) {
     // Gleich mal den Timer neu starten, lieber vor dem Reload, damit sich die nicht in die Quere kommen.
@@ -168,6 +117,7 @@ function refreshPage(item) {
                 break;
         }
 
+        //Eventuelle JS nachträglich ausführen
         $(".evalScript").find("script").each(function () {
             var src = $(this).attr('src');
             if (src) {
@@ -283,7 +233,28 @@ function changeTheme(newTheme) {
     }).addClass('control-set-' + newTheme);
 
     theme = newTheme;
-    localStorage.setItem("optionsMenuGfxTheme", theme);
+}
+
+function changeMenuGfx(value){
+    if(value === "small"){
+        $(".menu").removeClass("ui-li-thumb").addClass("ui-li-icon");
+        $(".ui-li-has-thumb").removeClass("ui-li-has-thumb").addClass("ui-li-has-icon");
+        $("#listFavorites").listview("refresh");
+        $("#listRooms").listview("refresh");
+        $("#listFunctions").listview("refresh");
+        $("#listOther").listview("refresh");
+    }
+    if(value === "large"){
+        $(".menu").removeClass("ui-li-icon").addClass("ui-li-thumb");
+        $(".ui-li-has-icon").removeClass("ui-li-has-icon").addClass("ui-li-has-thumb");
+        $("#listFavorites").listview("refresh");
+        $("#listRooms").listview("refresh");
+        $("#listFunctions").listview("refresh");
+        $("#listOther").listview("refresh");
+    }
+    
+    
+    gfxClass = value;
 }
 
 function changeFont(code) {
@@ -359,8 +330,6 @@ function changeFont(code) {
 
     loadedFont.push(code);
     font = code;
-
-    localStorage.setItem("optionsMenuGfxFont", font);
 }
 
 // ------------------------ HTML Erstellung -----------------------------
@@ -420,7 +389,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
 }
 
 function processGraphicID(type) {
-    var map = getMap(type);
+    var map = getResultMap(type);
     
     var tmpObj = {};
     var size = map["size"];
@@ -445,6 +414,9 @@ function processGraphicID(type) {
         html += ")</h1>";
         html += "</div>";
         html += "<div style='float: right;'>";
+        if(debugModus){
+            html += "<span id='positiondebug" + key +"'>Position: " + val['position'] + "</span>";
+        }
         html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key +"' data-type='" + type + "' value='" + val['position'] + "' data-last='" + (size === val['position']) + "'/>";
         html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
         if(val['position'] <= 1){
@@ -1348,6 +1320,22 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
                 optionsClientMap = data;
                 localStorage.setItem(map, JSON.stringify(data));
                 break;
+            case "programsClient":
+                programsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "favoritesClient":
+                favoritesClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));               
+                break
+            case "roomsClient":
+                roomsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "functionsClient":
+                functionsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
         }
 
         if (typeof callback === "function") {
@@ -1364,8 +1352,7 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
    
 }
 
-function saveConfigFile(type, newJsonObj, create, map, actual){
-    
+function saveConfigFile(type, newJsonObj, create, map, actual){    
     if(actual){
         var returnJson = {};
         if( type === "rooms" || type === "favorites" || type === "functions" ){
@@ -1537,13 +1524,19 @@ function refreshJSONObj(type, newJsonObj, create){
         if(!("ccu_historian" in newJsonObj)){
             newJsonObj['ccu_historian'] = "";
         }
+        if(!("default_menugfxsize" in newJsonObj)){
+            newJsonObj['default_menugfxsize'] = "large";
+        }
+        if(!("no_more_settings" in newJsonObj)){
+            newJsonObj['no_more_settings'] = "0";
+        }
     }
     
     setMap(type, newJsonObj);
     return newJsonObj;
 }
 
-function createConfigFile(type, map){    
+function createConfigFile(type, map){  
     saveDataToFile = true;
     if(type === "config"){
         var text = '{';
@@ -1558,28 +1551,55 @@ function createConfigFile(type, map){
         text += '"systemvar_readonly" : true,';
         text += '"default_theme" : "a",';
         text += '"default_font" : "a",';
-        text += '"ccu_historian" : ""';
+        text += '"ccu_historian" : "",';
+        text += '"default_menugfxsize" : "large"',
+        text += '"no_more_settings" : "0"'
         text += '}';
         
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
-    }else if(type === "configClient"){
+    }else if(type.endsWith("Client")){
         var text = '{}';
-        optionsClientMap = saveConfigFile('config' + client, JSON.parse(text), true, map, true);
+        type = type.slice(0, -6);
+        switch(type){
+            case "config":
+                optionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                break;
+            case "variables":
+                variablesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                break;
+            case "programs":
+                programsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                break
+            case "favorites":
+                favoritesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                break
+            case "rooms":               
+                roomsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                break
+            case "functions":
+                functionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                break
+            case "devices":
+                devicesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                break
+        }        
     }else{
         loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);
     }    
 }
 
-function saveOptionsToServer(){
+function saveOptionsToServer(key, value){
     localStorage.setItem("webmaticoptionsMap", JSON.stringify(optionsMap));    
     $.post('cgi/saveconfig.cgi', {name: "config", text: JSON.stringify(optionsMap)});
+    createOneMap("config", key, value);
 }
 
-function saveClientOptionsToServer(){
+function saveClientOptionsToServer(key, value){
     localStorage.setItem("webmaticoptionsclientMap", JSON.stringify(optionsClientMap));    
     if(client !== ""){
         $.post('cgi/saveconfig.cgi', {name: "config" + client, text: JSON.stringify(optionsClientMap)});
     }
+    checkAndChange(key, value);
 }
 
 function saveAllDatasToServer(){
@@ -1776,7 +1796,7 @@ function loadVariables(restart) {
             isActual = true;
         } else {
             loadLocalStorageMap("variables");
-        }
+        }       
 
         var systemDate = variablesMap['date'];
         $.each(variablesMap.entries, function (i, variable) {
@@ -1823,6 +1843,7 @@ function loadPrograms(restart) {
         // "Lade..." anzeigen:
         $("#dataListHeader").append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
+        //Global
         if (localStorage.getItem("webmaticprogramsMap") === null) {
             if(newVersion){
                 saveDataToFile = true;
@@ -1831,7 +1852,17 @@ function loadPrograms(restart) {
         } else {
             loadLocalStorageMap("programs");
         }
-
+        //Lokal
+        if (localStorage.getItem("webmaticprogramsclientMap") === null) {
+            if(client !== ""){
+                loadConfigData(false, '../webmatic_user/programs' + client + '.json', 'programsClient', 'webmaticprogramsclientMap', false, true);
+            }
+        } else {
+            optionsClientMap = JSON.parse(localStorage.getItem("webmaticprogramsclientMap"));    
+        }
+        //Kombinieren
+        createOneMap("programs");
+        
         var systemDate = programsMap['date'];
         var tmpObj = {};
         $.each(programsMap, function (key, prog) {
@@ -1845,7 +1876,7 @@ function loadPrograms(restart) {
             tmpObj[prog['position']] = processProgram(prog, prgID, systemDate, prgActive, (readModus && prgVisible) || !readModus);
         });
         
-        var keys = Object.keys(tmpObj).sort(function(a,b){return a-b});
+        var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
         var len = keys.length;    
         for (var i = 0; i < len; i++) {
             var k = keys[i];
@@ -1857,6 +1888,8 @@ function loadPrograms(restart) {
     }
 
     loadConfigData(true, 'cgi/programs.cgi', 'programs', 'webmaticprogramsMap', false, true, function (dta) {
+        createOneMap("programs");
+        
         var systemDate = dta['date'];
         $.each(dta, function (key, prog) {
             if(key === "date" || key === "size"){
@@ -1896,6 +1929,7 @@ function loadGraphicIDs(type) {
     
     $("#dataList").append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
 
+    //Global
     if (localStorage.getItem("webmatic" + type + "Map") === null) {
         if(newVersion){
             saveDataToFile = true;
@@ -1904,8 +1938,20 @@ function loadGraphicIDs(type) {
     } else {
         loadLocalStorageMap(type);
     }
+    //Lokal
+    if (localStorage.getItem("webmatic" + type + "clientMap") === null) {
+        if(client !== ""){
+            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
+        }
+    } else {
+        optionsClientMap = JSON.parse(localStorage.getItem("webmatic" + type + "clientMap"));    
+    }
+    //Kombinieren
+    createOneMap(type);
 
-    loadConfigData(true, 'cgi/' + type + '.cgi', type, 'webmatic' + type + 'Map', false, true);
+    loadConfigData(true, 'cgi/' + type + '.cgi', type, 'webmatic' + type + 'Map', false, true, function(){
+        createOneMap(type);
+    });
 
     $("#dataList").append("<li data-role='list-divider' role='heading'>" + mapText(type) + "</li>");
     processGraphicID(type);    
@@ -1933,26 +1979,21 @@ function loadOptionsClient() {
     $("#dataListHeader").empty();
 
     $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS_CLIENT") + " (" + client + ")</li>");
-    var html = "<li><h1>" + mapText("GRAPHICS_SIZE") + "</h1><p><div class='ui-field-contain'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    var gfxSize = localStorage.getItem("optionsMenuGfxSize");
-    var theme1 = "";
-    var theme2 = "";
-    if (!gfxSize || gfxSize === "" || gfxSize === "large") {
-        theme2 = "class='ui-btn-active'";
-    } else {
-        theme1 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' id='optionsMenuGfxSizeSmall' data-id='optionsMenuGfxSizeSmall' data-role='button' data-inline='true' " + theme1 + ">" + mapText("SMALL") + "</a>";
-    html += "<a href='#' id='optionsMenuGfxSizeLarge' data-id='optionsMenuGfxSizeLarge' data-role='button' data-inline='true' " + theme2 + ">" + mapText("BIG") + "</a>";
-    html += "</div></li>";
-    $("#dataList").append(html);
+    var html;
 
-    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1><p><div class='ui-field-contain'>";
+    //Themeauswahl
+    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1>";
+    html += "<div class='ui-field-contain'>";
+    html += "<div class='ui-grid-b'>";
+    //Aussehen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("DESIGN") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='client_default_theme' data-theme='" + theme + "'>";
     var clientTheme = optionsClientMap["default_theme"];
-    html += "<option value=''>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";
     html += "<option value='a' " + (clientTheme === "a"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
     html += "<option value='b' " + (clientTheme === "b"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
     html += "<option value='c' " + (clientTheme === "c"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
@@ -1968,11 +2009,16 @@ function loadOptionsClient() {
     html += "</select>";
     html += "<a href='#' name='saveClientOption' data-key='default_theme' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
-    html += "</div><br/><br/><br/>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "</div>";
+    //Schriftart
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("FONT") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";    
     html += "<select id='client_default_font' data-theme='" + theme + "'>";
     var clientFont = optionsClientMap["default_font"];
-    html += "<option value=''>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";
     html += "<option value='a' " + (clientFont === "a"?"selected='selected'":"") + ">Normal</a>";
     html += "<option value='b' " + (clientFont === "b"?"selected='selected'":"") + ">Koch Fraktur</a>";
     html += "<option value='c' " + (clientFont === "c"?"selected='selected'":"") + ">Planet Benson</a>";
@@ -1986,51 +2032,215 @@ function loadOptionsClient() {
     html += "<option value='k' " + (clientFont === "k"?"selected='selected'":"") + ">Sixties</a>";
     html += "<option value='l' " + (clientFont === "l"?"selected='selected'":"") + ">Crackman</a>";
     html += "</select>";
-    html += "<a href='#' name='saveGlobalOption' data-key='default_font' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
-    html += "</div></li>";
+    html += "<a href='#' name='saveClientOption' data-key='default_font' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div>";
+    //Größe der Menübilder
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("GRAPHICS_SIZE") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    var gfxSize = optionsClientMap["default_menugfxsize"];
+    var selected1 = "";
+    var selected2 = "";
+    var selected3 = "";
+    if (gfxSize === "large") {
+        selected3 = "class='ui-btn-active'";
+    } else if(gfxSize === "small"){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected1 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='default_menugfxsize' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='default_menugfxsize' data-value='small' data-role='button' data-inline='true' " + selected2 + ">" + mapText("SMALL") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='default_menugfxsize' data-value='large' data-role='button' data-inline='true' " + selected3 + ">" + mapText("BIG") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
     $("#dataList").append(html);
     
-    html = "<li><h1>Anzeige</h1><p><div class='ui-field-contain'>";
-    html += "<fieldset data-role='controlgroup'>";
-    html += "<legend>Was soll im Menü angezeigt werden</legend>";
-    html += "<input type='checkbox' " + (optionsMap["favorites"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='favorites' id='global_favorites' data-theme='" + theme + "'>";
-    html += "<label for='global_favorites'>" + mapText("FAVORITES") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["rooms"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='rooms' id='global_rooms' data-theme='" + theme + "'>";
-    html += "<label for='global_rooms'>" + mapText("ROOMS") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["functions"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='functions' id='global_functions' data-theme='" + theme + "'>";
-    html += "<label for='global_functions'>" + mapText("FUNCTIONS") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["variables"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='variables' id='global_variables' data-theme='" + theme + "'>";
-    html += "<label for='global_variables'>" + mapText("VARIABLES") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["programs"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='programs' id='global_programs' data-theme='" + theme + "'>";
-    html += "<label for='global_programs'>" + mapText("PROGRAMS") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["others"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='others' id='global_others' data-theme='" + theme + "'>";
-    html += "<label for='global_others'>" + mapText("OTHERS") + "</label>";
-    html += "</fieldset>";
+    //Anzeige
+    html = "<li><h1>" + mapText("MENU") + "</h1>";
+    html += "<div class='ui-field-contain'>";
+    html += "<div class='ui-grid-b'>";
+    //Favoriten anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("FAVORITES") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("favorites" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if(optionsClientMap["favorites"]){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='favorites' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='favorites' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='favorites' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Räume anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("rooms" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if(optionsClientMap["rooms"]){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Gewerke anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("functions" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if(optionsClientMap["functions"]){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='functions' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='functions' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='functions' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Variablen anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("SYS_VAR") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("variables" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if(optionsClientMap["variables"]){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='variables' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='variables' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='variables' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Programme anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("PROGRAMS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("programs" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if(optionsClientMap["programs"]){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='programs' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='programs' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='programs' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Einstellungen anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("SETTINGS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("others" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if(optionsClientMap["others"]){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='others' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='others' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Was ist standardmäßig auf
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("DEFAULT_OPEN") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='client_collapsed' data-theme='" + theme + "'>";
     var clientColapsed = optionsClientMap["collapsed"];
-    html += "<option value=''>" + mapText("NOT_SELECTED") + "</a>";
+    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</a>";
     html += "<option value='favorites' " + (clientColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
     html += "<option value='rooms' " + (clientColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
     html += "<option value='functions' " + (clientColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";
-    html += "<option value='variables' " + (clientColapsed === "variables"?"selected='selected'":"") + ">" + mapText("VARIABLES") + "</a>";
+    html += "<option value='variables' " + (clientColapsed === "variables"?"selected='selected'":"") + ">" + mapText("SYS_VAR") + "</a>";
     html += "<option value='programs' " + (clientColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</a>";
-    html += "<option value='others' " + (clientColapsed === "others"?"selected='selected'":"") + ">" + mapText("OTHERS") + "</a>";
+    html += "<option value='others' " + (clientColapsed === "others"?"selected='selected'":"") + ">" + mapText("SETTINGS") + "</a>";
     html += "</select>";
     html += "<a href='#' name='saveClientOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
-    html += "</div></li>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
     $("#dataList").append(html);
     
-    html = "<li><h1>Variablen standardmäßig nur lesbar</h1><p><div class='ui-field-contain'>";
-    html += "<fieldset data-role='controlgroup' data-type='horizontal'>";
-    html += "<input type='radio' " + (!("systemvar_readonly" in optionsClientMap)?"checked='checked'":"") + " name='systemvar_readonly' id='client_systemvar_readonly' data-theme='" + theme + "'>";
-    html += "<label for='client_systemvar_readonly'>" + mapText("NOT_SELECTED") + "</label>";
-    html += "<input type='radio' " + (optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='client_systemvar_readonly_yes' data-theme='" + theme + "'>";
-    html += "<label for='client_systemvar_readonly_yes'>" + mapText("YES") + "</label>";
-    html += "<input type='radio' " + (!optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='client_systemvar_readonly_no' data-theme='" + theme + "'>";
-    html += "<label for='client_systemvar_readonly_no'>" + mapText("NO") + "</label>";
-    html += "</div></li>";
+    //Variablen
+    html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
+    html += "<div class='ui-field-contain'>"; 
+    html += "<div class='ui-grid-b'>";
+    //Standardmäßig nur lesend
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("DEFAULT_READONLY") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("systemvar_readonly" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if(optionsClientMap["systemvar_readonly"]){
+        selected2 = "class='ui-btn-active'";
+    } else{
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='systemvar_readonly' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='systemvar_readonly' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='systemvar_readonly' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
     $("#dataList").append(html);
 
     $("#dataListHeader").listview("refresh");
@@ -2043,22 +2253,17 @@ function loadOptions() {
     $("#dataListHeader").empty();
 
     $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS") + "</li>");
-    var html = "<li><h1>" + mapText("GRAPHICS_SIZE") + "</h1><p><div class='ui-field-contain'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    var gfxSize = localStorage.getItem("optionsMenuGfxSize");
-    var theme1 = "";
-    var theme2 = "";
-    if (!gfxSize || gfxSize === "" || gfxSize === "large") {
-        theme2 = "class='ui-btn-active'";
-    } else {
-        theme1 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' id='optionsMenuGfxSizeSmall' data-id='optionsMenuGfxSizeSmall' data-role='button' data-inline='true' " + theme1 + ">" + mapText("SMALL") + "</a>";
-    html += "<a href='#' id='optionsMenuGfxSizeLarge' data-id='optionsMenuGfxSizeLarge' data-role='button' data-inline='true' " + theme2 + ">" + mapText("BIG") + "</a>";
-    html += "</div></li>";
-    $("#dataList").append(html);
+    var html;
 
-    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1><p><div class='ui-field-contain'>";
+    //Themeauswahl
+    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1>";
+    html += "<div class='ui-field-contain'>";
+    html += "<div class='ui-grid-b'>";
+    //Aussehen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("DESIGN") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_default_theme' data-theme='" + theme + "'>";
     var globalTheme = optionsMap["default_theme"];
@@ -2077,8 +2282,13 @@ function loadOptions() {
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='default_theme' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
-    html += "</div><br/><br/><br/>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "</div>";
+    //Schriftart
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("FONT") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";    
     html += "<select id='global_default_font' data-theme='" + theme + "'>";
     var globalFont = optionsMap["default_font"];
     html += "<option value='a' " + (globalFont === "a"?"selected='selected'":"") + ">Normal</a>";
@@ -2095,55 +2305,202 @@ function loadOptions() {
     html += "<option value='l' " + (globalFont === "l"?"selected='selected'":"") + ">Crackman</a>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='default_font' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
-    html += "</div></li>";
+    html += "</div>";
+    html += "</div>";
+    //Größe der Menübilder
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("GRAPHICS_SIZE") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    var gfxSize = optionsMap["default_menugfxsize"];
+    var selected1 = "";
+    var selected2 = "";
+    if (gfxSize === "small") {
+        selected1 = "class='ui-btn-active'";
+    } else {
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='default_menugfxsize' data-value='small' data-role='button' data-inline='true' " + selected1 + ">" + mapText("SMALL") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='default_menugfxsize' data-value='large' data-role='button' data-inline='true' " + selected2 + ">" + mapText("BIG") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
     $("#dataList").append(html);
     
-    html = "<li><h1>Anzeige</h1><p><div class='ui-field-contain'>";
-    html += "<fieldset data-role='controlgroup'>";
-    html += "<legend>Was soll im Menü angezeigt werden</legend>";
-    html += "<input type='checkbox' " + (optionsMap["favorites"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='favorites' id='global_favorites' data-theme='" + theme + "'>";
-    html += "<label for='global_favorites'>" + mapText("FAVORITES") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["rooms"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='rooms' id='global_rooms' data-theme='" + theme + "'>";
-    html += "<label for='global_rooms'>" + mapText("ROOMS") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["functions"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='functions' id='global_functions' data-theme='" + theme + "'>";
-    html += "<label for='global_functions'>" + mapText("FUNCTIONS") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["variables"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='variables' id='global_variables' data-theme='" + theme + "'>";
-    html += "<label for='global_variables'>" + mapText("VARIABLES") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["programs"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='programs' id='global_programs' data-theme='" + theme + "'>";
-    html += "<label for='global_programs'>" + mapText("PROGRAMS") + "</label>";
-    html += "<input type='checkbox' " + (optionsMap["others"]?"checked='checked'":"") + " name='saveGlobalOption' value='true' data-key='others' id='global_others' data-theme='" + theme + "'>";
-    html += "<label for='global_others'>" + mapText("OTHERS") + "</label>";
-    html += "</fieldset>";
+    //Anzeige
+    html = "<li><h1>" + mapText("MENU") + "</h1>";
+    html += "<p>" + mapText("GLOBAL_SETTINGS_HIDE_WARNING") + "</p>";
+    html += "<div class='ui-field-contain'>";
+    html += "<div class='ui-grid-b'>";
+    //Favoriten anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("FAVORITES") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["favorites"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='favorites' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='favorites' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Räume anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["rooms"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Gewerke anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["functions"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='functions' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='functions' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Variablen anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("SYS_VAR") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["variables"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='variables' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='variables' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Programme anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("PROGRAMS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["programs"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='programs' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='programs' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Einstellungen anzeigen
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span style='color: red;'>" + mapText("SETTINGS") + " " + mapText("SHOW") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["others"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Was ist standardmäßig auf
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("DEFAULT_OPEN") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_collapsed' data-theme='" + theme + "'>";
     var globalColapsed = optionsMap["collapsed"];
-    html += "<option value=''>" + mapText("NOT_SELECTED") + "</a>";
+    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</a>";
     html += "<option value='favorites' " + (globalColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
     html += "<option value='rooms' " + (globalColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
     html += "<option value='functions' " + (globalColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";
-    html += "<option value='variables' " + (globalColapsed === "variables"?"selected='selected'":"") + ">" + mapText("VARIABLES") + "</a>";
+    html += "<option value='variables' " + (globalColapsed === "variables"?"selected='selected'":"") + ">" + mapText("SYS_VAR") + "</a>";
     html += "<option value='programs' " + (globalColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</a>";
-    html += "<option value='others' " + (globalColapsed === "others"?"selected='selected'":"") + ">" + mapText("OTHERS") + "</a>";
+    html += "<option value='others' " + (globalColapsed === "others"?"selected='selected'":"") + ">" + mapText("SETTINGS") + "</a>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
-    html += "</div></li>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
     $("#dataList").append(html);
     
-    html = "<li><h1>Variablen standardmäßig nur lesbar</h1><p><div class='ui-field-contain'>";
-    html += "<fieldset data-role='controlgroup' data-type='horizontal'>";
-    html += "<input type='radio' " + (optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='global_systemvar_readonly_yes' data-theme='" + theme + "'>";
-    html += "<label for='global_systemvar_readonly_yes'>" + mapText("YES") + "</label>";
-    html += "<input type='radio' " + (!optionsMap["systemvar_readonly"]?"checked='checked'":"") + " name='systemvar_readonly' id='global_systemvar_readonly_no' data-theme='" + theme + "'>";
-    html += "<label for='global_systemvar_readonly_no'>" + mapText("NO") + "</label>";
-    html += "</div></li>";
+    //Variablen
+    html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
+    html += "<div class='ui-field-contain'>"; 
+    html += "<div class='ui-grid-b'>";
+    //Standardmäßig nur lesend
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("DEFAULT_READONLY") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["systemvar_readonly"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='systemvar_readonly' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='systemvar_readonly' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
     $("#dataList").append(html);
 
-    html = "<li><h1>CCU-Historian</h1><p><div class='ui-field-contain'>";
-    html += "http<input type='text' id='global_ccu_historian' placeholder='://192.168.xx.xxx' />/historioan/index.html ";
+    html = "<li><h1 style='white-space: nowrap;'>CCU-Historian <a href='http://homematic-forum.de/forum/viewforum.php?f=39' target='_blank' class='ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all'>Info</a></h1>";
+    html += "<div class='ui-field-contain'>";
+    html += "<div class='ui-grid-b'>";
+    
+    html += "<div class='ui-block-a text-right'>";
+    html += "CCU-Historian Link";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<input type='text' id='global_ccu_historian' placeholder='http://192.168.xx.xxx' />";
+    html += "<span>http://192.168.xx.xxx</span>"
+    html += "</div>";
+    html += "<div class='ui-block-c'>";
+    html += "/historian/index.html ";
     html += "<a href='#' name='saveGlobalOption' data-key='ccu_historian' data-role='button' data-inline='true'>" + mapText("SAVE") + "</a>";
-    html += "<a href='http://homematic-forum.de/forum/viewforum.php?f=39' target='_blank' class='ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all'>Info</a>";
-    html += "</div></li>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
     $("#dataList").append(html);
 
     $("#dataListHeader").listview("refresh");
@@ -2159,48 +2516,45 @@ $(function () {
         $.mobile.listview.prototype.options.filterPlaceholder = mapText("FILTER");
     });
     
-    $(document.body).on("click", "[id='global_systemvar_readonly_yes']", function () {
-        optionsMap["systemvar_readonly"] = true;
-        saveOptionsToServer();
-    });
-    
-    $(document.body).on("click", "[id='global_systemvar_readonly_no']", function () {
-        optionsMap["systemvar_readonly"] = false;
-        saveOptionsToServer();
-    });
-    
-    $(document.body).on("click", "[name='saveGlobalOption']", function () {
-        var key = $(this).data("key");
-        optionsMap[key] = $('#global_' + key).val();
-        saveOptionsToServer();
-    });
-    
-    $(document.body).on("click", "[id='client_systemvar_readonly']", function () {
-        delete optionsClientMap["systemvar_readonly"];
-        saveClientOptionsToServer();
-    });
-    
-    $(document.body).on("click", "[id='client_systemvar_readonly_yes']", function () {
-        optionsClientMap["systemvar_readonly"] = true;
-        saveClientOptionsToServer();
-    });
-    
-    $(document.body).on("click", "[id='client_systemvar_readonly_no']", function () {
-        optionsClientMap["systemvar_readonly"] = false;
-        saveClientOptionsToServer();
-    });
-    
+    //Client Optionen
     $(document.body).on("click", "[name='saveClientOption']", function () {
         var key = $(this).data("key");
-        var value = $('#client_' + key).val();
-        if(value === ""){
-            delete optionsClientMap[key];
-        }else{
-            optionsClientMap[key] = value;
-        }        
-        saveClientOptionsToServer();
+        var value = "";
+        if($('#client_' + key).length){
+            value = $('#client_' + key).val();
+        } else {
+            $(this).parent().find('.ui-btn-active').removeClass('ui-btn-active');
+            value = $(this).addClass('ui-btn-active').data("value");                    
+        }
+        if(value !== ""){
+            if(value === "none"){
+                delete optionsClientMap[key];
+                resultOptionsMap[key] = optionsMap[key];
+                value = optionsMap[key];
+            }else{
+                optionsClientMap[key] = value;
+                resultOptionsMap[key] = value;
+            }        
+            saveClientOptionsToServer(key, value);
+        }
     });
-
+    
+    //Globale Optionen
+    $(document.body).on("click", "[name='saveGlobalOption']", function () {
+        var key = $(this).data("key");
+        var value = "";
+        if($('#global_' + key).length){
+            value = $('#global_' + key).val();
+        } else {
+            $(this).parent().find('.ui-btn-active').removeClass('ui-btn-active');
+            value = $(this).addClass('ui-btn-active').data("value");
+        }
+        if(value !== ""){
+            optionsMap[key] = value;
+            saveOptionsToServer(key, value);
+        }
+    });
+  
     // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
     $(document.body).on("click", "[id^=setButton]", function () {
         var obj = $(this);
@@ -2222,7 +2576,6 @@ $(function () {
     }); 
     
     $(document.body).on("click", "[id^=setUp]", function () {
-        debugger;
         var thisId = $(this).data("id");        
         var thisList = $("#list" + thisId);
         var height = thisList.height();
@@ -2235,7 +2588,10 @@ $(function () {
         var newPosition = parseInt($("#position" + beforeId).val());
         $("#position" + thisId).val(newPosition);
         $("#position" + beforeId).val(oldPosition);
-        
+        if(debugModus){
+            $("#positiondebug" + thisId).text("Debug: " + newPosition);
+            $("#positiondebug" + beforeId).text("Debug: " + oldPosition);
+        }
         if(newPosition === 1){
             $("#setUp" + thisId).addClass("ui-state-disabled").hide();
             $("#setUp" + beforeId).removeClass("ui-state-disabled").show();
@@ -2280,7 +2636,6 @@ $(function () {
     });
     
     $(document.body).on("click", "[id^=setDown]", function () {
-        debugger;
         var thisId = $(this).data("id");        
         var thisList = $("#list" + thisId);
         var height = thisList.height();
@@ -2293,6 +2648,10 @@ $(function () {
         var newPosition = parseInt($("#position" + afterId).val());
         $("#position" + thisId).val(newPosition);
         $("#position" + afterId).val(oldPosition);
+        if(debugModus){
+            $("#positiondebug" + thisId).text("Debug: " + newPosition);
+            $("#positiondebug" + afterId).text("Debug: " + oldPosition);
+        }
         
         if(oldPosition === 1){
             $("#setUp" + afterId).addClass("ui-state-disabled").hide();
@@ -2599,7 +2958,9 @@ $(function () {
         if(mustBeSaved){
             saveAllDatasToServer();
         }
-        return;
+        if(!debugModus){
+            return "Must be saved!";
+        }
     });
 
 });
