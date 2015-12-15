@@ -171,6 +171,11 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     padding-top: 10px !important;
 }
 
+.controlgroup-textinput{
+    padding-top:.22em;
+    padding-bottom:.22em;
+}
+
 @media screen and (max-width: 900px)
 {
     .content-secondary {

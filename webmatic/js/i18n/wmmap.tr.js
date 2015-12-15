@@ -584,7 +584,16 @@ var textMap = {
     ALARMDP__UNREACH: "iletişim anda rahatsız",
     ALARMDP__UPDATE_PENDING: "Mevcut güncelleme",
     ALARMDP__USBH_POWERFAIL: "USB host devre dışı",
-    // Diğer Bezeichnungen
+    //Sprachen
+    DE: "Alman",
+    EN: "İngilizce",
+    ES: "İspanyol",
+    FR: "Fransız",
+    PT: "Portekiz",
+    RU: "Rus",
+    TR: "Türk",
+    ZH: "Çin",
+    //Andere Bezeichnungen
     OPEN: "açmak",
     OPEN_SHORT: "Açık",
     KAPAT: "kapatmak",
@@ -671,5 +680,6 @@ var textMap = {
     MENU: "Menü girişleri",
     DEFAULT_OPEN: "İlk aramayı Display",
     DEFAULT_READONLY: "Varsayılan olarak, salt okunur",
-    GLOBAL_SETTINGS_HIDE_WARNING: "Dikkat! Eğer tüm cihazlar için ayarları gizlerseniz, en azından bir cihaz için açıkça görünür olmalıdır. Gerekirse doğrudan CCU ayarına aktarılacak var."
+    GLOBAL_SETTINGS_HIDE_WARNING: "Dikkat! Eğer tüm cihazlar için ayarları gizlerseniz, en azından bir cihaz için açıkça görünür olmalıdır. Gerekirse doğrudan CCU ayarına aktarılacak var.",
+    HISTORIAN_WARNING: "Ayarlar> Seçenekler URL altında Enter"
 };

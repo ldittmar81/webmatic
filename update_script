@@ -25,7 +25,7 @@ mkdir -p ${USERDIR}/img/ids/favorites
 mkdir -p ${USERDIR}/img/ids/functions
 mkdir -p ${USERDIR}/img/ids/rooms
 mkdir -p ${USERDIR}/img/ids/programs
-mkdir -p ${USERDIR}/img/ids/sysvar
+mkdir -p ${USERDIR}/img/ids/variables
 mkdir -p ${USERDIR}/img/ids/devices
 chmod 755 ${USERDIR}
 

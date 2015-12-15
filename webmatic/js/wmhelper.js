@@ -1,6 +1,7 @@
 //Variablen
-var webmaticVersion = '0';
+var webmaticVersion = "0";
 var newWebmaticVersion = webmaticVersion;
+var isPreRelease = 0;
 var storageVersion = 6;
 
 // Globale variablen
@@ -15,6 +16,8 @@ var saveDataToFile = false;
 var newVersion = false;
 var mustBeSaved = false;
 var client = "";
+
+var excludeFromRefresh = [];
 
 var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap, recognizeMap;
 var programsClientMap = {}, functionsClientMap = {}, roomsClientMap = {}, favoritesClientMap = {}, optionsClientMap= {}, variablesClientMap = {}, devicesClientMap = {};
@@ -231,10 +234,18 @@ function addHTML(parentId, valID, val, vorDate, readonly) {
 }
 
 function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
+    excludeFromRefresh.push(valID);
     if(!val){
         readonly = false;
         val = ";;1D";
     }
+    
+    var warningText = "";
+    if(resultOptionsMap['ccu_historian'] === ""){
+        readonly = false;
+        warningText = mapText("HISTORIAN_WARNING")
+    }
+    
     var optionsArray = val.split(";");
     if(optionsArray.length !== 3){
         readonly = false;
@@ -243,22 +254,45 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
     
     var html = "<div class='ui-field-contain'" + (readonly ? "" : " ui-grid-a") + "'>";
     if(readonly){
-        html += "<div>HIER SOLLTE EIN DIAGRAMM ANGEZEIGT WERDEN</div>"
+        html += "<div id='chart_" + valID + "'></div>";        
+        $.ajax({
+            url: resultOptionsMap['ccu_historian'] + "/query/json.gy?i=" + optionsArray[0] + "&d=" + optionsArray[2],
+            method: 'GET',
+            dataType: 'JSONP',
+            contentType: "application/json",
+            jsonpCallback: 'historian_callback',
+            success: function(data) {
+                if($('#chart_' + valID).length){
+                    reloadHistorianChart(valID, data);
+                }else{            
+                    $("#dataList").one("create", function(){
+                        reloadHistorianChart(valID, data);
+                    });
+                }
+            },
+            error: function(jqXHR, textStatus) { 
+                log("Request Historian chart failed: " + textStatus, 2);
+            }
+        });
+        
     }else{
+        if(warningText !== ""){
+            html += "<div class='ui-block-a'>" + warningText + "</div>";
+        }
         html += "<div class='ui-block-a'>CCU-Historian-ID</div>";
         html += "<div class='ui-block-b'>";
-        html += "<input type='text' id='hisHistorianID_" + valID + "' value=\"" + optionsArray[0] + "\" style='width:20em; display:inline-block;'/>";
+        html += "<input type='text' placeholder='18,19,20...' id='hisHistorianID_" + valID + "' value=\"" + optionsArray[0] + "\" />";
         html += "</div>";
-        html += "<div class='ui-block-a'>Homematic-ID</div>";
-        html += "<input type='text' id='hisHMID_" + valID + "' value=\"" + optionsArray[1] + "\" style='width:20em; display:inline-block;'/>";
+        html += "<div class='ui-block-a'>Homematic-ID</div>";        
         html += "<div class='ui-block-b'>";
+        html += "<input type='text' placeholder='8918,8919,8920...' id='hisHMID_" + valID + "' value=\"" + optionsArray[1] + "\" />";
         html += "</div>";
         html += "<div class='ui-block-a'>" + mapText("HISTORIAN_DURATION") + "</div>";
         html += "<div class='ui-block-b'>";
         html += "<div data-role='controlgroup' data-type='horizontal'>";
         var durCount = optionsArray[2].slice(0, -1);
         var durType = optionsArray[2].substr(optionsArray[2].length - 1);        
-        html += "<input type='number' min='1' max='1000' id='hisDuration_" + valID + "' value=\"" + durCount + "\" style='width:20em; display:inline-block;'/>";
+        html += "<input type='number' min='1' max='100' id='hisDuration_" + valID + "' value=\"" + durCount + "\" data-wrapper-class='controlgroup-textinput ui-btn'/>";
         html += "<select id='hisSelector_" + valID + "' data-theme='" + theme + "'>";
         html += "<option value='s' " + (durType === "s"?"selected='selected'":"") + ">" + mapText("TIME_SEC_PLURAL") + "</option>";
         html += "<option value='m' " + (durType === "m"?"selected='selected'":"") + ">" + mapText("TIME_MIN_PLURAL") + "</option>";
@@ -270,8 +304,10 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
         html += "</select>";
         html += "</div>";
         html += "</div>";
+        html += "<div class='ui-block-a'>";
         html += "<a href='#' id='saveHistorianData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
         html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+        html += "</div>";
     }    
     html += "</div>";
     
@@ -306,6 +342,36 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
     } else {
         return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
     }
+}
+
+function reloadHistorianChart(valID, data){
+    $.jqplot("chart_" + valID, [data], {
+        axes:{
+            xaxis:{
+                renderer:$.jqplot.DateAxisRenderer,
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                tickOptions: {formatString: '%#d %b %#H:%M', angle: -60}
+            }
+        },
+        series:[
+            {   
+                lineWidth:1, 
+                markerOptions:{style:'square'}
+            }
+        ],
+        highlighter: {
+            show: true,
+            sizeAdjust: 5.5
+        },
+        cursor: {
+            zoom: true,
+            show: true
+        },
+        grid: {
+            backgroundColor: "#F4F4F4"
+        },
+        animated: true
+    });
 }
 
 // ----------------------- Helper functions ----------------------------
@@ -348,6 +414,29 @@ function getResultMap(type){
             return resultFunctionsMap;
         case "devices":
             return resultDevicesMap;
+    }
+}
+
+function setResultMap(type, data){
+    switch (type) {
+        case "variables":
+            resultVariablesMap = data;
+            break;
+        case "programs":
+            resultProgramsMap = data;
+            break
+        case "favorites":
+            resultFavoritesMap = data;                
+            break
+        case "rooms":               
+            resultRoomsMap = data;
+            break
+        case "functions":
+            resultFunctionsMap = data;
+            break
+        case "devices":
+            resultDevicesMap = data;
+            break
     }
 }
 
@@ -475,6 +564,15 @@ function createOneMap(type, changedKey, changedValue){
                 }
             }); 
             break
+        case "devices":
+            $.each(devicesMap, function (key, val) {
+                if(key in devicesClientMap){                    
+                    resultDevicesMap[key] = devicesClientMap[key];
+                }else{
+                    resultDevicesMap[key] = val;
+                }
+            }); 
+            break
     }
 }
 
@@ -506,10 +604,127 @@ function isReadOnly(valInfo) {
         return false;
     }
 
-    if (optionsMap["systemvar_readonly"] && readModus) {
+    if (resultOptionsMap["systemvar_readonly"] && readModus) {
         return varOptionsFirst !== "w";
     }
     return varOptionsFirst === "r";
+}
+
+var Base64 = {
+
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+    encode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = Base64._utf8_encode(input);
+
+        while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+
+            if (isNaN(chr2)) {
+                enc3 = enc4 = 64;
+            } else if (isNaN(chr3)) {
+                enc4 = 64;
+            }
+            output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) + this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+        }
+        return output;
+    },
+
+    decode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+        while (i < input.length) {
+
+            enc1 = this._keyStr.indexOf(input.charAt(i++));
+            enc2 = this._keyStr.indexOf(input.charAt(i++));
+            enc3 = this._keyStr.indexOf(input.charAt(i++));
+            enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+
+            output = output + String.fromCharCode(chr1);
+
+            if (enc3 !== 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            if (enc4 !== 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+        output = Base64._utf8_decode(output);
+        return output;
+    },
+
+    _utf8_encode: function(string) {
+        string = string.replace(/\r\n/g, "\n");
+        var utftext = "";
+
+        for (var n = 0; n < string.length; n++) {
+
+            var c = string.charCodeAt(n);
+
+            if (c < 128) {
+                utftext += String.fromCharCode(c);
+            }
+            else if ((c > 127) && (c < 2048)) {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+            else {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+
+        }
+
+        return utftext;
+    },
+
+    _utf8_decode: function(utftext) {
+        var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+
+        while (i < utftext.length) {
+
+            c = utftext.charCodeAt(i);
+
+            if (c < 128) {
+                string += String.fromCharCode(c);
+                i++;
+            }
+            else if ((c > 191) && (c < 224)) {
+                c2 = utftext.charCodeAt(i + 1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            }
+            else {
+                c2 = utftext.charCodeAt(i + 1);
+                c3 = utftext.charCodeAt(i + 2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+        }
+        return string;
+    }
 }
 
 function getTimeDiffString(diffDate, systemDate) {

@@ -584,7 +584,16 @@ var textMap = {
     ALARMDP__UNREACH: "沟通不安的时候",
     ALARMDP__UPDATE_PENDING: "更新",
     ALARMDP__USBH_POWERFAIL: "USB主机禁用",
-    // ANDERE Bezeichnungen
+    //Sprachen
+    DE: "德国",
+    EN: "英语",
+    ES: "西班牙语",
+    FR: "法国人",
+    PT: "葡萄牙",
+    RU: "俄罗斯",
+    TR: "土耳其",
+    ZH: "中国人",
+    //Andere Bezeichnungen
     OPEN: "打开",
     OPEN_SHORT: "开放",
     CLOSE: "关闭",
@@ -671,5 +680,6 @@ var textMap = {
     MENU: "菜单项",
     DEFAULT_OPEN: "显示的第一个电话",
     DEFAULT_READONLY: "默认情况下，只读",
-    GLOBAL_SETTINGS_HIDE_WARNING: "注意！如果隐藏所有设备的设置，它应该是明确可见的至少一个设备。如果需要的话，你必须直接传送到CCU设置。"
+    GLOBAL_SETTINGS_HIDE_WARNING: "注意！如果隐藏所有设备的设置，它应该是明确可见的至少一个设备。如果需要的话，你必须直接传送到CCU设置。",
+    HISTORIAN_WARNING: "在设置>选项URL输入"
 };

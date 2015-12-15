@@ -29,7 +29,7 @@ def sb = new StringBuilder()
 
 def searchList = params.i.split(",")
 def first = true
-sb << '['
+sb << 'historian_callback('
 for(String id: searchList){
     if(first){
         first = false
@@ -47,7 +47,7 @@ for(String id: searchList){
             timeSeries = database.getTimeSeries(dataPoint, begin, end)
 
         // JSON erstellen
-        def dateFormat = new SimpleDateFormat('dd.MM.yyyy HH:mm:ss')
+        def dateFormat = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
         def displayName = (dataPoint.attributes.displayName?:dataPoint.id.address) + '.' + dataPoint.id.identifier        
 
         def valueFormatter
@@ -66,12 +66,12 @@ for(String id: searchList){
             }else{
                 sb << ","
             }
-            sb << '["' << dateFormat.format(it.timestamp) << '","' << valueFormatter(it.value) << '"]'
+            sb << '["' << dateFormat.format(it.timestamp) << '",' << valueFormatter(it.value) << ']'
         }
         sb << ']'        
     }
 }
-sb << ']'
+sb << ');'
 
 // CSV-Datei verschicken
 response.contentType='text/plain'

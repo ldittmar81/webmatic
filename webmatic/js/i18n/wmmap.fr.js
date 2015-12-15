@@ -584,6 +584,15 @@ var textMap = {
     ALARMDP__UNREACH: "la communication perturbée à l'époque",
     ALARMDP__UPDATE_PENDING: "mise à jour disponible",
     ALARMDP__USBH_POWERFAIL: "hôte USB désactivé",
+    //Sprachen
+    DE: "allemand",
+    EN: "english",
+    ES: "espangnol",
+    FR: "français",
+    PT: "portugais",
+    RU: "russe",
+    TR: "turque",
+    ZH: "chinois",
     // Andere Bezeichnungen
     OPEN: "ouvrir",
     OPEN_SHORT: "ouvert",
@@ -671,5 +680,6 @@ var textMap = {
     MENU: "les entrées de menu",
     DEFAULT_OPEN: "Afficher le premier appel",
     DEFAULT_READONLY: "Par défaut, en lecture seule",
-    GLOBAL_SETTINGS_HIDE_WARNING: "Attention! Si vous masquez les paramètres pour tous les appareils, il devrait être explicitement visible au moins pour un dispositif. Si nécessaire, vous devez être transféré directement au réglage de la CCU."
+    GLOBAL_SETTINGS_HIDE_WARNING: "Attention! Si vous masquez les paramètres pour tous les appareils, il devrait être explicitement visible au moins pour un dispositif. Si nécessaire, vous devez être transféré directement au réglage de la CCU.",
+    HISTORIAN_WARNING: "Entrez dans la configuration> Options l'URL"
 };

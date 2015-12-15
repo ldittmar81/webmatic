@@ -10,9 +10,8 @@ cgi_eval {
     array set res [rega_script {
         WriteLine ("{");
         string s_date = system.Date("%d.%m.%Y %H:%M:%S");
-        WriteLine ("-+#+-date-+#+-: -+#+-" # s_date # "-+#+-,");
-        WriteLine ("-+#+-entries-+#+-:[");
-
+        WriteLine ("-+#+-date-+#+-: -+#+-" # s_date # "-+#+-");
+      
         string id;
         object obj;
         boolean isFirst;
@@ -21,12 +20,10 @@ cgi_eval {
         isFirst = true;
         foreach (id, obj.EnumUsedIDs()){
             var sysVar = dom.GetObject(id);
-            if (isFirst) { isFirst = false; } else { WriteLine (","); }
-            Write("{");
+            Write(',-+#+-' # id # '-+#+-:{');
             Write("-+#+-name-+#+-:-+#+-");
             WriteURL(sysVar.Name());
             Write("-+#+-");
-            Write(",-+#+-id-+#+-:-+#+-" # sysVar.ID() # "-+#+-");
             Write(",-+#+-info-+#+-:-+#+-");
             WriteURL(sysVar.DPInfo());
             Write("-+#+-");
@@ -51,12 +48,12 @@ cgi_eval {
             Write(",-+#+-valueType-+#+-:-+#+-" # sysVar.ValueType() # "-+#+-");
             Write(",-+#+-valueUnit-+#+-:-+#+-" # sysVar.ValueUnit() # "-+#+-");
             Write(",-+#+-date-+#+-:-+#+-" # sysVar.Timestamp().Format("%d.%m.%Y %H:%M:%S") # "-+#+-");
-            Write(",-+#+-visible-+#+-:-+#+-" # sysVar.Visible() # "-+#+-");
+            Write(",-+#+-visible-+#+-:" # sysVar.Visible());
             Write("}");
         }
 
         WriteLine ("");
-        WriteLine ("]}");
+        WriteLine ("}");
     }]
 
     set response [string map {\" ' -+#+- \" \n "" \r ""} $res(STDOUT)]

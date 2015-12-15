@@ -1,4 +1,5 @@
 #!/bin/sh
+
 mkdir -p tmp
 cp -a webmatic tmp/
 cp -a ccu1 tmp/
@@ -6,12 +7,22 @@ cp -a ccu2 tmp/
 cp -a ccurm tmp/
 cp -a rc.d tmp/
 cp -a update_script tmp/
-cp -a VERSION tmp/
-cd tmp
 
-VERSION=$(cat ../VERSION)
+ISALPHA=$(cat ISALPHA)
+VERSION=""
+
+if [ ${ISALPHA} = "0" ]; then
+    VERSION=$(cat VERSION)  
+    cp -a VERSION tmp/
+elif [ ${ISALPHA} = "1" ]; then
+    VERSION=$(cat VERSIONALPHA) 
+    cp -a VERSIONALPHA tmp/VERSION
+fi
+
 GERDATE=$(date +"%d.%m.%y")
-HASHDATE=$(date +"%y%m%d") 
+HASHDATE=$(date +"%y%m%d")
+
+cd tmp 
 
 cd webmatic
 sed -i "s/BETAVERSION/${VERSION}/g" index.html
@@ -35,7 +46,8 @@ sed -i "s/get.js/get.min.js?${HASHDATE}/" get.html
 
 cd js
 
-sed -i "s/webmaticVersion='0'/webmaticVersion='${VERSION}'/" wmhelper.min.js
+sed -i "s/webmaticVersion=\"0\"/webmaticVersion=\"${VERSION}\"/" wmhelper.min.js
+sed -i "s/isPreRelease=0/isPreRelease=${ISALPHA}/" wmhelper.min.js
 sed -i "s/debugModus=true/debugModus=false/" wmhelper.min.js
 
 cd ..

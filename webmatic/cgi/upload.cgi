@@ -3,7 +3,6 @@
 source /www/config/cgi.tcl
 load tclrega.so
 
-
 set file ""
 set filename ""
 set path ""

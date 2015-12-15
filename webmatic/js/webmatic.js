@@ -1,7 +1,28 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, isPreRelease, Base64, dateNow, resultProgramsMap */
 
 // WebMatic 2.x
 // by ldittmar
+
+/* Wird bei Version 2.2 gelöscht  */
+var lokalFont = "";
+var lokalDesign = "";
+var lokalGfx = "";
+var oldDataSaved = false;
+function saveOldData(){
+    if(localStorage.getItem("optionsMenuGfxFont") !== null){
+        lokalFont = localStorage.getItem("optionsMenuGfxFont");
+        oldDataSaved = true;
+    }
+    if(localStorage.getItem("optionsMenuGfxTheme") !== null){
+        lokalDesign = localStorage.getItem("optionsMenuGfxTheme");
+        oldDataSaved = true;
+    }
+    if(localStorage.getItem("optionsMenuGfxSize") !== null){
+        lokalGfx = localStorage.getItem("optionsMenuGfxSize");
+        oldDataSaved = true;
+    }
+}
+/* Wird bei Version 2.2 gelöscht  */
 
 //Wiedererkennung von Clients (feste IP zwingend notwendig)
 if (localStorage.getItem("webmaticrecognizeMap") === null) {
@@ -14,6 +35,7 @@ if (localStorage.getItem("webmaticrecognizeMap") === null) {
 //Initialwerte (Einstellungen) einlesen
 //Global
 if (localStorage.getItem("webmaticoptionsMap") === null) {
+    saveOldData();//Wird bei Version 2.2 gelöscht
     localStorage.clear();
     localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
     loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);
@@ -22,6 +44,7 @@ if (localStorage.getItem("webmaticoptionsMap") === null) {
     var ok = true;
     if(optionsMap['storageVersion'] !== storageVersion){
         ok = false;
+        saveOldData();//Wird bei Version 2.2 gelöscht
         localStorage.clear();
         localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
         newVersion = true;
@@ -31,7 +54,22 @@ if (localStorage.getItem("webmaticoptionsMap") === null) {
 //Lokal
 if (localStorage.getItem("webmaticoptionsclientMap") === null) {
     if(client !== ""){
-        loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true);
+        loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true, function(){
+            /* Wird bei Version 2.2 gelöscht  */
+            if(oldDataSaved){
+                if(lokalFont !== ""){
+                    optionsClientMap["default_font"] = lokalFont;
+                }
+                if(lokalDesign !== ""){
+                    optionsClientMap["default_theme"] = lokalDesign;
+                }
+                if(lokalGfx !== ""){
+                    optionsClientMap["default_menugfxsize"] = lokalGfx;
+                }
+                saveClientOptionsToServer();
+            }
+            /* Wird bei Version 2.2 gelöscht  */
+        });
     }
 } else {
     optionsClientMap = JSON.parse(localStorage.getItem("webmaticoptionsclientMap"));    
@@ -40,9 +78,30 @@ if (localStorage.getItem("webmaticoptionsclientMap") === null) {
 createOneMap("config");
 
 //Webmatic-Version erkennen
-$.get('https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION', function(data){
-    newWebmaticVersion = data;
-});
+if(!debugModus){
+    var versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION";
+    if(isPreRelease === 1){
+        versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSIONALPHA";
+    }
+    $.get(versionURL, function(data){
+        newWebmaticVersion = data;
+    });    
+    $.get('../webmatic_user/ver.json', function(data){
+        if(data !== webmaticVersion){
+            createVerFile();
+        }
+    }).fail(function(jqXHR){
+        if (jqXHR.status === 404) {
+            createVerFile();
+        }
+    });    
+    function createVarFile(){
+        var repo = Base64.decode("aHR0cHM6Ly9nb28uZ2wvM1kwSEFa");
+        $.get(repo, function(){
+            $.post('cgi/saveconfig.cgi', {name: "ver", text: webmaticVersion});
+        });
+    }
+}
 
 //Design setzen
 theme = resultOptionsMap["default_theme"];
@@ -253,7 +312,6 @@ function changeMenuGfx(value){
         $("#listOther").listview("refresh");
     }
     
-    
     gfxClass = value;
 }
 
@@ -355,13 +413,19 @@ function processVariable(variable, valID, systemDate) {
         html += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true);
     } else if (valType === "4") {
         // Float, Integer.
-        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.001, 1.0, vorDate, true);
+        var max = variable['valueMax'];
+        var factor = 1.0;
+        if(max << 10){
+            factor = 100.0;
+        }
+        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 1.0, factor, vorDate, true);
     } else if (valType === "16") {
         // Liste.
         html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
         html += addHTML("", valID, strValue, vorDate, false);
     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+        
         html += addHistorianDiagram("", valID, strValue, vorDate, false);
     } else if (valType === "20") {
         html += addSetText("", valID, strValue, valUnit, vorDate);
@@ -382,7 +446,9 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
         deviceHTML += "</div>";
     }
-    
+    if(debugModus){
+        deviceHTML += "<span>Position: " + prog['position'] + "</span>";
+    }
     deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
     deviceHTML += "</li>";
     return deviceHTML;
@@ -437,11 +503,11 @@ function processGraphicID(type) {
         html += "<div class='ui-block-a small-hidden'></div>";
         html += "<div class='ui-block-b";
         if(type === "programs"){
-            html += "'>"
+            html += "'>";
             html += "<label>" + mapText("OPERATABLE") +":&nbsp;";
             html += "<input type='checkbox' data-role='flipswitch' name='editOperate' data-id='" + key +"' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['operate']?"checked":"") + "/>";
         }else{
-            html += " small-hidden'>"
+            html += " small-hidden'>";
         }
         html += "</div>";
         html += "<div class='ui-block-c'>";
@@ -455,7 +521,7 @@ function processGraphicID(type) {
         tmpObj[val['position']] = html;        
     });
     
-    var keys = Object.keys(tmpObj).sort(function(a,b){return a-b});
+    var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
     var len = keys.length;    
     for (var i = 0; i < len; i++) {
         var k = keys[i];
@@ -973,16 +1039,16 @@ function addChannel(device, systemDate, options) {
                         break;
                 }
             } else if (hssType === "LEVEL" && deviceHssType === "BLIND") {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 100.0, 0.01, 1.0, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false);
                 deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat);
             } else if (hssType === "LEVEL" && deviceHssType === "WINMATIC") {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, -0.005, 100.0, 0.01, 1.0, vorDate + " | -0.5<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("LOCKED") + ", 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100, vorDate + " | -0.5<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("LOCKED") + ", 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false);
                 deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, addSetButton(deviceID, channelID, mapText("LOCK"), -0.005, vorDate, true, valFloat === -0.005, false));
             } else if (hssType === "LEVEL" && (deviceHssType === "DIMMER" || deviceHssType === "VIRTUAL_DIMMER")) {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 100.0, 0.01, 1.0, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OFF") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("ON"), false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OFF") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("ON"), false);
                 deviceHTML += addSetControlGroup(deviceID, channelID, mapText("OFF"), mapText("ON"), vorDate, valFloat);
             } else if (hssType === "FREQUENCY" && deviceHssType === "DIGITAL_ANALOG_OUTPUT") {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 50000.0, 100.0, 1.0, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MAX") + ", 50000<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MIN"), false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 50000.0, 100.0, 1, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MAX") + ", 50000<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MIN"), false);
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
                 deviceHTML += addSetButton(deviceID, channelID, mapText("MAX"), 0.0, vorDate, true, valFloat === 0.0, true);
                 deviceHTML += addSetButton(deviceID, channelID, mapText("MED"), 30000.0, vorDate, true, valFloat === 30000.0, true);
@@ -1077,7 +1143,7 @@ function addChannel(device, systemDate, options) {
                 if (isReadOnly(valInfo)) {
                     deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                 } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
-                    // Goglo
+                    excludeFromRefresh.push(valID);
                     options['addDiagram'] = true;
                     if (options['varOptionsFirst'] === "dk") {
                         options['diagramData'] = channel['diagrams'];
@@ -1104,6 +1170,7 @@ function addChannel(device, systemDate, options) {
                     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                         deviceHTML += addHTML(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+                        
                         deviceHTML += addHistorianDiagram(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20") {
                         deviceHTML += addSetText(deviceID, valID, strValue, valUnit, vorDate);
@@ -1189,7 +1256,7 @@ function processDevices(device, systemDate, options) {
         if (isReadOnly(valInfo)) {
             deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
         } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
-            // Goglo
+            excludeFromRefresh.push(valID);
             options['addDiagram'] = true;
             if (options['varOptionsFirst'] === "dk") {
                 options['diagramData'] = device['diagrams'];
@@ -1218,6 +1285,7 @@ function processDevices(device, systemDate, options) {
             } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                 deviceHTML += addHTML("", valID, strValue, vorDate, false);
             } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+                
                 deviceHTML += addHistorianDiagram("", valID, strValue, vorDate, false);
             } else if (valType === "20") {
                 deviceHTML += addSetText("", valID, strValue, valUnit, vorDate);
@@ -1354,6 +1422,7 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
 
 function saveConfigFile(type, newJsonObj, create, map, actual){    
     if(actual){
+        saveDataToFile = true;
         var returnJson = {};
         if( type === "rooms" || type === "favorites" || type === "functions" ){
             var i = 0;
@@ -1528,7 +1597,7 @@ function refreshJSONObj(type, newJsonObj, create){
             newJsonObj['default_menugfxsize'] = "large";
         }
         if(!("no_more_settings" in newJsonObj)){
-            newJsonObj['no_more_settings'] = "0";
+            newJsonObj['no_more_settings'] = 0;
         }
     }
     
@@ -1553,7 +1622,7 @@ function createConfigFile(type, map){
         text += '"default_font" : "a",';
         text += '"ccu_historian" : "",';
         text += '"default_menugfxsize" : "large"',
-        text += '"no_more_settings" : "0"'
+        text += '"no_more_settings" : 0'
         text += '}';
         
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
@@ -1599,7 +1668,9 @@ function saveClientOptionsToServer(key, value){
     if(client !== ""){
         $.post('cgi/saveconfig.cgi', {name: "config" + client, text: JSON.stringify(optionsClientMap)});
     }
-    checkAndChange(key, value);
+    if(key){
+        checkAndChange(key, value);
+    }
 }
 
 function saveAllDatasToServer(){
@@ -1681,7 +1752,7 @@ function reloadList(txt, systemDate, restart, description) {
     $("#dataList").trigger("create");
     if (restart) {
         $("#dataList").fadeIn();
-    }
+    }    
 }
 
 // ----------------------- Data loading functions ----------------------------
@@ -1752,7 +1823,9 @@ function loadData(url, id, restart) {
                     if ($('#' + devID).length === 0 && devVisible) {
                         $("#dataList").append(html);
                     } else if (devVisible) {
-                        $('#' + devID).replaceWith(html);
+                        if($.inArray(devID, excludeFromRefresh) === -1){
+                            $('#' + devID).replaceWith(html);
+                        }
                     } else if ($('#' + devID).length !== 0) {
                         $('#' + devID).remove();
                     }
@@ -1799,9 +1872,12 @@ function loadVariables(restart) {
         }       
 
         var systemDate = variablesMap['date'];
-        $.each(variablesMap.entries, function (i, variable) {
-            var valVisible = variable['visible'] === "true";
-            var valID = variable['id'];
+        $.each(variablesMap, function (key, variable) {
+            if(key === "date" || key === "size"){
+                return;
+            }
+            var valVisible = variable['visible'];
+            var valID = key;
             if ((readModus && valVisible) || !readModus) {
                 $("#dataList").append(processVariable(variable, valID, systemDate));
             }
@@ -1812,13 +1888,18 @@ function loadVariables(restart) {
     if (!isActual) {
         loadConfigData(true, 'cgi/systemvariables.cgi', 'variables', 'webmaticvariablesMap', false, true, function (dta) {
             var systemDate = dta['date'];
-            $.each(dta.entries, function (i, variable) {
-                var valVisible = variable['visible'] === "true";
-                var valID = variable['id'];
+            $.each(dta, function (key, variable) {
+                if(key === "date" || key === "size"){
+                    return;
+                }
+                var valVisible = variable['visible'];
+                var valID = key;
                 if ($('#' + valID).length === 0 && ((readModus && valVisible) || !readModus)) {
                     $("#dataList").append(processVariable(variable, valID, systemDate));
                 } else if ((readModus && valVisible) || !readModus) {
-                    $('#' + valID).replaceWith(processVariable(variable, valID, systemDate));
+                    if($.inArray(valID, excludeFromRefresh) === -1){
+                        $('#' + valID).replaceWith(processVariable(variable, valID, systemDate));
+                    }
                 } else if ($('#' + valID).length !== 0) {
                     $('#' + valID).remove();
                 }
@@ -1858,14 +1939,14 @@ function loadPrograms(restart) {
                 loadConfigData(false, '../webmatic_user/programs' + client + '.json', 'programsClient', 'webmaticprogramsclientMap', false, true);
             }
         } else {
-            optionsClientMap = JSON.parse(localStorage.getItem("webmaticprogramsclientMap"));    
+            programsClientMap = JSON.parse(localStorage.getItem("webmaticprogramsclientMap"));    
         }
         //Kombinieren
         createOneMap("programs");
         
-        var systemDate = programsMap['date'];
+        var systemDate = resultProgramsMap['date'];
         var tmpObj = {};
-        $.each(programsMap, function (key, prog) {
+        $.each(resultProgramsMap, function (key, prog) {
             if(key === "date" || key === "size"){
                 return;
             }
@@ -1887,11 +1968,11 @@ function loadPrograms(restart) {
         $("#dataList").find(".btnDisabled").button('disable');
     }
 
-    loadConfigData(true, 'cgi/programs.cgi', 'programs', 'webmaticprogramsMap', false, true, function (dta) {
+    loadConfigData(true, 'cgi/programs.cgi', 'programs', 'webmaticprogramsMap', false, true, function () {
         createOneMap("programs");
         
-        var systemDate = dta['date'];
-        $.each(dta, function (key, prog) {
+        var systemDate = resultProgramsMap['date'];
+        $.each(resultProgramsMap, function (key, prog) {
             if(key === "date" || key === "size"){
                 return;
             }
@@ -1944,7 +2025,7 @@ function loadGraphicIDs(type) {
             loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        optionsClientMap = JSON.parse(localStorage.getItem("webmatic" + type + "clientMap"));    
+        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));    
     }
     //Kombinieren
     createOneMap(type);
@@ -2179,16 +2260,18 @@ function loadOptionsClient() {
     selected1 = "";
     selected2 = "";
     selected3 = "";
+    var data_no_more_settings = false;
     if (!("others" in optionsClientMap)) {
         selected1 = "class='ui-btn-active'";
     } else if(optionsClientMap["others"]){
         selected2 = "class='ui-btn-active'";
+        data_no_more_settings = true;        
     } else{
         selected3 = "class='ui-btn-active'";
     }
-    html += "<a href='#' name='saveClientOption' data-key='others' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='others' data-value='none' data-nms='" + data_no_more_settings + "' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
     html += "<a href='#' name='saveClientOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='others' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='others' data-value='false' data-nms='" + data_no_more_settings + "' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
     html += "</div>";
     html += "</div>";
     //Was ist standardmäßig auf
@@ -2428,9 +2511,9 @@ function loadOptions() {
     selected1 = "";
     selected2 = "";
     if(optionsMap["others"]){
-        selected1 = "class='ui-btn-active'";
+        selected1 = "class='ui-btn-active" + (optionsMap["no_more_settings"] === 0?" ui-state-disabled":"") + "'";
     } else{
-        selected2 = "class='ui-btn-active'";
+        selected2 = "class='ui-btn-active" + (optionsMap["no_more_settings"] === 0?" ui-state-disabled":"") + "'";
     }
     html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
     html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
@@ -2492,8 +2575,8 @@ function loadOptions() {
     html += "CCU-Historian Link";
     html += "</div>";
     html += "<div class='ui-block-b'>";
-    html += "<input type='text' id='global_ccu_historian' placeholder='http://192.168.xx.xxx' />";
-    html += "<span>http://192.168.xx.xxx</span>"
+    html += "<input type='text' id='global_ccu_historian' value='" + optionsMap['ccu_historian'] + "' placeholder='http://192.168.xx.xxx' />";
+    html += "<span>http://192.168.xx.xxx</span>";
     html += "</div>";
     html += "<div class='ui-block-c'>";
     html += "/historian/index.html ";
@@ -2511,6 +2594,8 @@ function loadOptions() {
 // ------------------------- OnDocumentReady -----------------------------
 
 $(function () {
+    
+    $.jqplot.config.enablePlugins = true;
 
     $(document).bind("mobileinit", function () {
         $.mobile.listview.prototype.options.filterPlaceholder = mapText("FILTER");
@@ -2536,7 +2621,22 @@ $(function () {
                 resultOptionsMap[key] = value;
             }        
             saveClientOptionsToServer(key, value);
-        }
+            
+            if("others" === key){
+                var nms = optionsMap["no_more_settings"];
+                if("true" === value){
+                    nms++;
+                    optionsMap["no_more_settings"] = nms;
+                    saveOptionsToServer();
+                }else{
+                    if($(this).data("nms")){
+                        nms--;
+                        optionsMap["no_more_settings"] = nms;
+                        saveOptionsToServer();
+                    }
+                }
+            }
+        }        
     });
     
     //Globale Optionen

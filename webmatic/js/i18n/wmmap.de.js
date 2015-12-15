@@ -584,6 +584,15 @@ var textMap = {
     ALARMDP__UNREACH: "Kommunikation zur Zeit gestört",
     ALARMDP__UPDATE_PENDING: "Update verfügbar",
     ALARMDP__USBH_POWERFAIL: "USB-Host deaktiviert",
+    //Sprachen
+    DE: "Deutsch",
+    EN: "Englisch",
+    ES: "Spanisch",
+    FR: "Französisch",
+    PT: "Portugisisch",
+    RU: "Russisch",
+    TR: "Türkisch",
+    ZH: "Chinesisch",
     //Andere Bezeichnungen
     OPEN: "offen",
     OPEN_SHORT: "auf",
@@ -671,5 +680,6 @@ var textMap = {
     MENU: "Menüeinträge",
     DEFAULT_OPEN: "Anzeige beim ersten Aufruf",
     DEFAULT_READONLY: "Standardmäßig nur lesbar",
-    GLOBAL_SETTINGS_HIDE_WARNING: "Achtung! Wenn Sie die Einstellungen für alle Geräte ausblenden, sollte es mindestens für ein Gerät explizit sichtbar sein. Notfalls muss man die Einstellung direkt auf der CCU umgestellt werden."
+    GLOBAL_SETTINGS_HIDE_WARNING: "Achtung! Wenn Sie die Einstellungen für alle Geräte ausblenden, sollte es mindestens für ein Gerät explizit sichtbar sein. Notfalls muss man die Einstellung direkt auf der CCU umgestellt werden.",
+    HISTORIAN_WARNING: "Bitte unter Einstellungen > Optionen die URL eingeben"
 };

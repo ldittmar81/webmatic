@@ -584,6 +584,15 @@ var textMap = {
     ALARMDP__UNREACH: "comunicación perturbada en el momento",
     ALARMDP__UPDATE_PENDING: "actualización disponible",
     ALARMDP__USBH_POWERFAIL: "host USB desactivado",
+    //Sprachen
+    DE: "Alemán",
+    EN: "Inglés",
+    ES: "Español",
+    FR: "Francés",
+    PT: "Portugués",
+    RU: "Ruso",
+    TR: "Turco",
+    ZH: "Chino",
     //Andere Bezeichnungen
     OPEN: "abierto",
     OPEN_SHORT: "abierta",
@@ -671,5 +680,6 @@ var textMap = {
     MENU: "entradas del menú",
     DEFAULT_OPEN: "Visualice la primera llamada",
     DEFAULT_READONLY: "Por defecto, sólo lectura",
-    GLOBAL_SETTINGS_HIDE_WARNING: "¡Atención! Si oculta la configuración de todos los dispositivos, debe ser explícitamente visible al menos por un dispositivo. Si es necesario que usted tiene que ser transferido directamente a la configuración de CCU."
+    GLOBAL_SETTINGS_HIDE_WARNING: "¡Atención! Si oculta la configuración de todos los dispositivos, debe ser explícitamente visible al menos por un dispositivo. Si es necesario que usted tiene que ser transferido directamente a la configuración de CCU.",
+    HISTORIAN_WARNING: "Introduzca bajo Ajustes> Opciones de URL"
 };
