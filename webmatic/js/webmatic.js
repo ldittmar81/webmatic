@@ -2226,8 +2226,8 @@ function loadOptionsClient() {
         selected3 = "class='ui-btn-active'";
     }
     html += "<a href='#' name='saveClientOption' data-key='variables' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='variables' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='variables' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='variables' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='variables' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
     html += "</div>";
     html += "</div>";
     //Programme anzeigen
