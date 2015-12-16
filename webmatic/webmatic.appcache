@@ -1,0 +1,36 @@
+CACHE MANIFEST
+ 
+# Version BETAVERSION
+ 
+NETWORK:
+*
+ 
+CACHE:
+index.html
+get.html
+dlgAbout.html
+favicon.ico
+libs/jquery/jquery.mobile.structure-1.4.5.min.css
+libs/jqplot/jquery.jqplot.min.css
+libs/DateBox/css/jtsage-datebox.min.css
+themes/webmatic-theme.min.css
+themes/jquery.mobile.icons.min.css
+themes/webmatic.min.css
+libs/jquery/jquery-2.1.4.min.js
+libs/jquery/jquery.mobile-1.4.5.min.js
+libs/jquery_lazyload/jquery.lazyload.min.js
+libs/Font.js/Font.min.js
+libs/DateBox/js/jtsage-datebox.min.js
+libs/DateBox/js/jtsage-datebox.i18n.de.utf8.min.js
+js/i18n/wmmap.de.min.js
+js/wmmap.min.js
+js/wmhelper.min.js
+js/webmatic.min.js
+js/index.min.js
+libs/jqplot/jquery.jqplot.min.js
+libs/jqplot/plugins/jqplot.dateAxisRenderer.min.js
+libs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js
+libs/jqplot/plugins/jqplot.highlighter.min.js
+libs/jqplot/plugins/jqplot.cursor.min.js
+libs/jqplot/plugins/jqplot.canvasTextRenderer.min.js
+libs/jqplot/plugins/jqplot.meterGaugeRenderer.min.js

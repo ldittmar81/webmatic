@@ -28,6 +28,7 @@ cd webmatic
 sed -i "s/BETAVERSION/${VERSION}/g" index.html
 sed -i "s/BETAVERSION/${VERSION}/g" get.html
 sed -i "s/BETAVERSION/${VERSION}/g" dlgAbout.html
+sed -i "s/BETAVERSION/${VERSION}/g" webmatic.appcache
 sed -i "s/RELEASEDATE/${GERDATE}/g" dlgAbout.html
 
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" index.html
