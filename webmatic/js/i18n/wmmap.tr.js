@@ -684,5 +684,7 @@ var textMap = {
     HISTORIAN_WARNING: "Ayarlar> Seçenekler URL altında Enter",
     NEW_UPDATES_WARNING: "Yeni sürümleri ile ilgili bilgiler",
     STABLE: "Sadece kararlı sürümleri",
-    ALPHA: "Ayrıca alfa sürümleri"
+    ALPHA: "Ayrıca alfa sürümleri",
+    OTHERS: "Diğerleri",
+    DONT_LEAVE: "Sayfa bırakarak yanlışlıkla önleyin"
 };

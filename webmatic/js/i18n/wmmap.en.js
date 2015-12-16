@@ -675,5 +675,7 @@ var textMap = {
     HISTORIAN_WARNING: "Enter under Settings > Options the URL",
     NEW_UPDATES_WARNING: "Information about new releases",
     STABLE: "only stable versions",
-    ALPHA: "also alpha versions"
+    ALPHA: "also alpha versions",
+    OTHERS: "others",
+    DONT_LEAVE: "Prevent accidental leaving the page"
 };

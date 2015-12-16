@@ -25,6 +25,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Unterstützung für Funk-RGBW-LED-Controller
 * "Partymodus" für Heizungen wird unterstützt
 * Unterstützung von Einschaltdauer/Dimmzeit bei bestimmten Geräten
+* Funktion um das versehentliche Verlassen der Seite zu verhindern
 * Bugfix: Installation auf der CCU 1 ist jetzt möglich
 
 2.0

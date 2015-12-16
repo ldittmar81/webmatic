@@ -1,5 +1,7 @@
 //Variablen
 var webmaticVersion = "0";
+var isPreRelease = 0;
+var lastStableVersion = "2.0";
 var newWebmaticVersion = webmaticVersion;
 var storageVersion = 9;
 

@@ -684,7 +684,9 @@ var textMap = {
     HISTORIAN_WARNING: "Digite na Configuração > Opções da URL",
     NEW_UPDATES_WARNING: "Informações sobre novos lançamentos",
     STABLE: "somente versões estáveis",
-    ALPHA: "também versões alfa"
+    ALPHA: "também versões alfa",
+    OTHERS: "outros",
+    DONT_LEAVE: "Prevenir acidental sair da página"
 };
 
 

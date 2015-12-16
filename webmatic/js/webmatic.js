@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion */
 
 // WebMatic 2.x
 // by ldittmar
@@ -89,28 +89,39 @@ if(!debugModus){
                     versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION";
                 }
                 $.get(versionURL, function(data){
-                    newWebmaticVersion = data;
+                    newWebmaticVersion = data.trim();
                 }); 
             });
             versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSIONALPHA";
         }else{
             $.get("https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION", function(data){
-                newWebmaticVersion = data;
+                newWebmaticVersion = data.trim();
+                if(isPreRelease && newWebmaticVersion === lastStableVersion){
+                   newWebmaticVersion = webmaticVersion;
+                }
             });  
         }       
     }
     $.get('../webmatic_user/ver.json', function(data){
-        if(data !== webmaticVersion){
+        if(data.trim() !== webmaticVersion){
             createVerFile();
         }
     }).fail(function(jqXHR){
         if (jqXHR.status === 404) {
             createVerFile();
         }
-    });    
-    function createVarFile(){
-        $.get(Base64.decode("aHR0cHM6Ly9nb28uZ2wvM1kwSEFa"), function(){
-            $.post('cgi/saveconfig.cgi', {name: "ver", text: webmaticVersion});
+    });
+    
+    function createVerFile(){
+        $.ajax({
+            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvdUlmc2p3"),
+            method: 'GET',
+            dataType: 'JSONP',
+            error: function(jqXHR, textStatus) { 
+                if(textStatus === "error"){
+                    $.post('cgi/saveconfig.cgi', {name: "ver", text: webmaticVersion});
+                }
+            }
         });
     }
 }
@@ -1615,6 +1626,9 @@ function refreshJSONObj(type, newJsonObj, create){
         if(!("new_version" in newJsonObj)){
             newJsonObj['new_version'] = "stable";
         }
+        if(!("dont_leave" in newJsonObj)){
+            newJsonObj['dont_leave'] = false;
+        }
     }
     
     setMap(type, newJsonObj);
@@ -1639,7 +1653,8 @@ function createConfigFile(type, map){
         text += '"ccu_historian" : "",';
         text += '"default_menugfxsize" : "large",';
         text += '"no_more_settings" : 0,';
-        text += '"new_version" : "stable"';
+        text += '"new_version" : "stable",';
+        text += '"dont_leave" : false'
         text += '}';
         
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
@@ -2622,6 +2637,31 @@ function loadOptions() {
     
     html += "</div></div></li>";
     $("#dataList").append(html);
+    
+    //Sonstiges
+    html = "<li><h1>" + mapText("OTHERS") + "</h1>";
+    html += "<div class='ui-field-contain'>"; 
+    html += "<div class='ui-grid-b'>";
+    //Versehentliches Verlassen der Seite verhindern
+    html += "<div class='ui-block-a text-right'>";
+    html += "<span>" + mapText("DONT_LEAVE") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["dont_leave"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='dont_leave' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='dont_leave' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    
+    html += "</div></div></li>";
+    $("#dataList").append(html);
 
     $("#dataListHeader").listview("refresh");
     $("#dataList").listview("refresh");
@@ -3141,8 +3181,8 @@ $(function () {
         if(mustBeSaved){
             saveAllDatasToServer();
         }
-        if(!debugModus){
-            return "Must be saved!";
+        if(!debugModus && resultOptionsMap['dont_leave']){
+            return "Don't leave me!";
         }
     });
 

@@ -684,5 +684,7 @@ var textMap = {
     HISTORIAN_WARNING: "在设置>选项URL输入",
     NEW_UPDATES_WARNING: "关于新版本的信息",
     STABLE: "只有稳定的版本",
-    ALPHA: "同时阿尔法版本"
+    ALPHA: "同时阿尔法版本",
+    OTHERS: "其余",
+    DONT_LEAVE: "防止意外离开当前页面"
 };
