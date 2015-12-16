@@ -674,14 +674,17 @@ var textMap = {
     OPERATABLE: "operável",
     HISTORIAN_DURATION: "Os últimos...",
     CHOOSE_THEME: "Escolha um tema",
-    NOT_SELECTED: "não selecionado",
+    NOT_SELECTED: "configuração global",
     DESIGN: "aparência",
     FONT: "fonte",
     MENU: "entradas do menu",
     DEFAULT_OPEN: "Mostrar a primeira chamada",
     DEFAULT_READONLY: "Por padrão, somente leitura",
     GLOBAL_SETTINGS_HIDE_WARNING: "Atenção! Se você ocultar as configurações para todos os dispositivos, deve ser explicitamente visível, pelo menos para um dispositivo. Se necessário, você tem que ser transferido diretamente para a definição CCU.",
-    HISTORIAN_WARNING: "Digite na Configuração> Opções da URL"
+    HISTORIAN_WARNING: "Digite na Configuração > Opções da URL",
+    NEW_UPDATES_WARNING: "Informações sobre novos lançamentos",
+    STABLE: "somente versões estáveis",
+    ALPHA: "também versões alfa"
 };
 
 

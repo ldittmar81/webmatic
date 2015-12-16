@@ -4,8 +4,29 @@ WebMatic ist eine browserbasierte Benutzeroberfläche für HomeMatic. Die Elemen
 ## Haftungsausschluss
 Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsweise der Software und keinerlei Haftung für Schäden, die aus der Benutzung dieser Software resultieren.
 
-
 ## Changelog
+2.1 (erscheint bald)
+* Codereview Teil 2
+* Geschwindigkeitsoptimierung
+* Einstellungen können jetzt direkt in der Oberfläche gemacht werden
+* Einstellungen sowohl global als auch für einzelnen Geräte möglich
+* Einzelnen Menüeinträge ausblenden (Global und pro Gerät)
+* Startauswahl (was soll beim Laden geöffnet angezeigt werden) (Global und pro Gerät)
+* WebMatic Updaten können als Meldung angezeigt werden
+* Verbindung mit CCU-Historian möglich
+* Räume, Gewerke, Favoriten und Programmen können umbenannt werden
+* Visibilität von Räume, Gewerke, Favoriten und Programmen kann direkt in der Oberfläche eingestellt werden
+* Sortierung von Räume, Gewerke, Favoriten und Programmen möglich
+* Bedienbarkeit von Programmen kann direkt in der Oberfläche eingestellt werden
+* Icons für Programmen jetzt möglich
+* Unterstützung für Webcam als CUXD Gerät
+* Dynamische Unterstützung von Geräte (neue Geräte können automatisch richtig dargestellt werden, wenn sie nicht extrem komplex sind)
+* Unterstützung für Wired HMW-IO-12-Sw 14-DR PWM
+* Unterstützung für Funk-RGBW-LED-Controller
+* "Partymodus" für Heizungen wird unterstützt
+* Unterstützung von Einschaltdauer/Dimmzeit bei bestimmten Geräten
+* Bugfix: Installation auf der CCU 1 ist jetzt möglich
+
 2.0
 * Codereview
 * Geräte, Programme und Variablen die als nicht sichtbar deklariert wurden, werden nicht mehr angezeigt

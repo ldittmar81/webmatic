@@ -674,12 +674,15 @@ var textMap = {
     OPERATABLE: "bedienbar",
     HISTORIAN_DURATION: "Die letzen...",
     CHOOSE_THEME: "Motiv auswählen",
-    NOT_SELECTED: "nicht ausgewählt",
+    NOT_SELECTED: "globale Einstellung",
     DESIGN: "Aussehen",
     FONT: "Schriftart",
     MENU: "Menüeinträge",
     DEFAULT_OPEN: "Anzeige beim ersten Aufruf",
     DEFAULT_READONLY: "Standardmäßig nur lesbar",
     GLOBAL_SETTINGS_HIDE_WARNING: "Achtung! Wenn Sie die Einstellungen für alle Geräte ausblenden, sollte es mindestens für ein Gerät explizit sichtbar sein. Notfalls muss man die Einstellung direkt auf der CCU umgestellt werden.",
-    HISTORIAN_WARNING: "Bitte unter Einstellungen > Optionen die URL eingeben"
+    HISTORIAN_WARNING: "Bitte unter Einstellungen > Optionen die URL eingeben",
+    NEW_UPDATES_WARNING: "Informationen über neue Versionen",
+    STABLE: "nur stabile Versionen",
+    ALPHA: "auch über alpha Versionen"
 };

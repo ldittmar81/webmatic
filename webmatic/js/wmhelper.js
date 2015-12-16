@@ -1,8 +1,7 @@
 //Variablen
 var webmaticVersion = "0";
 var newWebmaticVersion = webmaticVersion;
-var isPreRelease = 0;
-var storageVersion = 6;
+var storageVersion = 9;
 
 // Globale variablen
 var debugModus = true;
@@ -66,7 +65,7 @@ function restartTimer() {
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 // onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
-function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh) {
+function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh, special) {
     var html = "";
     if (!onlyButton) {
         html += "<p class='ui-li-desc'>";
@@ -75,7 +74,7 @@ function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, 
     if (noAction) {
         html += "<a href='#' data-value='" + value + "' data-role='button' class='ui-btn-active' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
     } else {
-        html += "<a href='#' id='setButton_" + id + "' data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
+        html += "<a href='#' id='setButton_" + id + "' " + (special?"data-special='" + special + "' ":"") + "data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
     }
 
     if (!onlyButton) {
@@ -243,7 +242,7 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
     var warningText = "";
     if(resultOptionsMap['ccu_historian'] === ""){
         readonly = false;
-        warningText = mapText("HISTORIAN_WARNING")
+        warningText = mapText("HISTORIAN_WARNING");
     }
     
     var optionsArray = val.split(";");
