@@ -36,7 +36,7 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed){
         if(val['pic']){
             html += " lazy" + indexType + "' data-original='../webmatic_user/img/ids/" + indexType + "/" + key + ".png";
         }
-        html += "' src='img/menu/favorites.png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
+        html += "' src='img/menu/" + indexType + ".png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
         tmpObj[val['position']] = html;            
     });
     var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});

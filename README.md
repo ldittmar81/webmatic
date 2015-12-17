@@ -13,7 +13,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Einzelnen Menüeinträge ausblenden (Global und pro Gerät)
 * Startauswahl (was soll beim Laden geöffnet angezeigt werden) (Global und pro Gerät)
 * WebMatic Updaten können als Meldung angezeigt werden
-* Verbindung mit CCU-Historian möglich
+* Verbindung mit CCU-Historian möglich (Variable: "Zeichenkette"; Einheit: "historian")
 * Räume, Gewerke, Favoriten und Programmen können umbenannt werden
 * Visibilität von Räume, Gewerke, Favoriten und Programmen kann direkt in der Oberfläche eingestellt werden
 * Sortierung von Räume, Gewerke, Favoriten und Programmen möglich
@@ -26,13 +26,14 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * "Partymodus" für Heizungen wird unterstützt
 * Unterstützung von Einschaltdauer/Dimmzeit bei bestimmten Geräten
 * Funktion um das versehentliche Verlassen der Seite zu verhindern
+* TuneIn Radio wird unterstützt (Variable: "Zeichenkette"; Einheit: "tuneIn")
 * Bugfix: Installation auf der CCU 1 ist jetzt möglich
 
 2.0
 * Codereview
 * Geräte, Programme und Variablen die als nicht sichtbar deklariert wurden, werden nicht mehr angezeigt
 * Neue Ansicht "get.html" akzeptiert eine ID und zeigt nur den gewünschten Raum oder Gewerk an "get.html?id=12345"
-* Eingabe von HTML-Code in Textvariablen möglich, wenn als Einheit 'html' eingegeben wird. JavaScript wird auch ausgeführt.
+* Eingabe von HTML-Code in Textvariablen möglich, wenn als Einheit 'html' eingegeben wird. JavaScript wird auch ausgeführt.  (Variable: "Zeichenkette"; Einheit: "html")
 * Wenn eine Textvariable zu lang ist, erscheint eine Textarea anstatt eines Input-Feldes
 * Startparameter werden in der Datei webmatic_user/config.json eingegeben
 * Nur ausführbare Programme anzeigen

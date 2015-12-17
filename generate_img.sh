@@ -31,6 +31,10 @@ sed -i "s/BETAVERSION/${VERSION}/g" dlgAbout.html
 sed -i "s/BETAVERSION/${VERSION}/g" webmatic.appcache
 sed -i "s/RELEASEDATE/${GERDATE}/g" dlgAbout.html
 
+sed -i "s/<html lang='de'>/<html lang='de' manifest='webmatic.appcache'>/g" index.html
+sed -i "s/<html lang='de'>/<html lang='de' manifest='webmatic.appcache'>/g" get.html
+sed -i "s/<html lang='de'>/<html lang='de' manifest='webmatic.appcache'>/g" dlgAbout.html
+
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" index.html
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" get.html
 

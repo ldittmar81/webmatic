@@ -201,12 +201,16 @@ function refreshPage(item) {
         }
 
         //Eventuelle JS nachträglich ausführen
-        $(".evalScript").find("script").each(function () {
-            var src = $(this).attr('src');
-            if (src) {
-                $.getScript(src);
-            } else {
-                eval($(this).text());
+        $(".evalScript").each(function () {
+            if($.inArray($(this).data("id"), excludeFromRefresh) === -1){
+                $(this).find("script").each(function(){
+                    var src = $(this).attr('src');
+                    if (src) {
+                        $.getScript(src);
+                    } else {
+                        eval($(this).text());
+                    }
+                });                
             }
         });
 
@@ -448,9 +452,10 @@ function processVariable(variable, valID, systemDate) {
         html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
         html += addHTML("", valID, strValue, vorDate, false);
-    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-        
+    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {        
         html += addHistorianDiagram("", valID, strValue, vorDate, false);
+    } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {        
+        html += addTuneInRadio("", valID, strValue, vorDate, false);
     } else if (valType === "20") {
         html += addSetText("", valID, strValue, valUnit, vorDate);
     } else {
@@ -1194,8 +1199,9 @@ function addChannel(device, systemDate, options) {
                     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                         deviceHTML += addHTML(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-                        
                         deviceHTML += addHistorianDiagram(deviceID, valID, strValue, vorDate, false);
+                    } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {        
+                        deviceHTML += addTuneInRadio(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20") {
                         deviceHTML += addSetText(deviceID, valID, strValue, valUnit, vorDate);
                     } else {
@@ -1308,9 +1314,10 @@ function processDevices(device, systemDate, options) {
                 deviceHTML += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
             } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                 deviceHTML += addHTML("", valID, strValue, vorDate, false);
-            } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-                
+            } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {                
                 deviceHTML += addHistorianDiagram("", valID, strValue, vorDate, false);
+            } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {        
+                deviceHTML += addTuneInRadio("", valID, strValue, vorDate, false);
             } else if (valType === "20") {
                 deviceHTML += addSetText("", valID, strValue, valUnit, vorDate);
             } else {
@@ -2596,7 +2603,7 @@ function loadOptions() {
     html += "</div></div></li>";
     $("#dataList").append(html);
 
-    html = "<li><h1>CCU-Historian <a href='http://homematic-forum.de/forum/viewforum.php?f=39' target='_blank' class='ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all'>Info</a></h1>";
+    html = "<li><h1>CCU-Historian <a href='http://homematic-forum.de/forum/viewtopic.php?f=39&t=28274' target='_blank' class='ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all'>Info</a></h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     
@@ -2789,7 +2796,14 @@ $(function () {
         var dataID = obj.data("id");
         obj.attr('data-value', $('#hisHistorianID_' + dataID).val() + ";" + $('#hisHMID_' + dataID).val() + ";" + $('#hisDuration_' + dataID).val() + $("#hisSelector_" + dataID).val());
         buttonEvents(obj, true);
-    });    
+    }); 
+    
+    $(document.body).on("click", "[id^=saveTuneInRadioData]", function () {
+        var obj = $(this);
+        var dataID = obj.data("id");
+        obj.attr('data-value', $('#tuneInURL_' + dataID).val());
+        buttonEvents(obj, true);
+    });
     
     $(document.body).on("click", "[id^=setValueBigList]", function () {
         var obj = $(this);

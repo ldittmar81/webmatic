@@ -34,3 +34,11 @@ libs/jqplot/plugins/jqplot.highlighter.min.js
 libs/jqplot/plugins/jqplot.cursor.min.js
 libs/jqplot/plugins/jqplot.canvasTextRenderer.min.js
 libs/jqplot/plugins/jqplot.meterGaugeRenderer.min.js
+img/menu/debug.png
+img/menu/favorites.png
+img/menu/functions.png
+img/menu/graphics.png
+img/menu/options.png
+img/menu/programs.png
+img/menu/rooms.png
+img/menu/variables.png

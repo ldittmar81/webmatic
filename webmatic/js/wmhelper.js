@@ -222,8 +222,9 @@ function addSetText(parentId, valID, val, valUnit, vorDate) {
 }
 
 function addHTML(parentId, valID, val, vorDate, readonly) {
-    var html = "<div class='ui-field-contain'" + (readonly ? "" : " ui-grid-a") + "'>";
-    html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "'>" + val + "</div>";
+    excludeFromRefresh.push(valID);
+    var html = "<div class='ui-field-contain" + (readonly ? "" : " ui-grid-a") + "'>";
+    html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "' data-id='" + valID + "'>" + val + "</div>";
     if (!readonly) {
         html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
         html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
@@ -232,6 +233,38 @@ function addHTML(parentId, valID, val, vorDate, readonly) {
     }
     html += "</div>";
     return html;
+}
+
+function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1) {
+    // Bestimmen, wie der sichtbare Werte aussehen soll:
+    var visVal = "";
+    if (valType === "2") {
+        // Bool.
+        if (strValue === "true") {
+            visVal = val1;
+        } else {
+            visVal = val0;
+        }
+    } else if (valType === "4") {
+        // Float, Integer.
+        visVal = parseFloat(strValue);
+    } else if (valType === "16") {
+        // Liste.
+        var optionsArray = valList.split(";");
+        visVal = optionsArray[parseInt(strValue)];
+    } else {
+        // String oder unbekannt.
+        visVal = strValue;
+    }
+    if (valType === "20" && valUnit.toUpperCase() === "HTML") {
+        return addHTML("", valID, strValue, vorDate, true);
+    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+        return addHistorianDiagram("", valID, strValue, vorDate, true);
+    } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
+        return addTuneInRadio("", valID, strValue, vorDate, true);
+    } else {
+        return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+    }
 }
 
 function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
@@ -253,7 +286,7 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
         optionsArray = ['','','1D'];
     }
     
-    var html = "<div class='ui-field-contain'" + (readonly ? "" : " ui-grid-a") + "'>";
+    var html = "<div class='ui-field-contain" + (readonly ? "" : " ui-grid-a") + "'>";
     if(readonly){
         html += "<div id='chart_" + valID + "'></div>";        
         $.ajax({
@@ -315,36 +348,6 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
     return html;
 }
 
-function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1) {
-    // Bestimmen, wie der sichtbare Werte aussehen soll:
-    var visVal = "";
-    if (valType === "2") {
-        // Bool.
-        if (strValue === "true") {
-            visVal = val1;
-        } else {
-            visVal = val0;
-        }
-    } else if (valType === "4") {
-        // Float, Integer.
-        visVal = parseFloat(strValue);
-    } else if (valType === "16") {
-        // Liste.
-        var optionsArray = valList.split(";");
-        visVal = optionsArray[parseInt(strValue)];
-    } else {
-        // String oder unbekannt.
-        visVal = strValue;
-    }
-    if (valType === "20" && valUnit.toUpperCase() === "HTML") {
-        return addHTML("", valID, strValue, vorDate, true);
-    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-        return addHistorianDiagram("", valID, strValue, vorDate, true);
-    } else {
-        return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
-    }
-}
-
 function reloadHistorianChart(valID, data){
     $.jqplot("chart_" + valID, [data], {
         axes:{
@@ -373,6 +376,54 @@ function reloadHistorianChart(valID, data){
         },
         animated: true
     });
+}
+
+function addTuneInRadio(parentId, valID, val, vorDate, readonly) {
+    excludeFromRefresh.push(valID);
+    if(!val || !val.startsWith("http")){
+        readonly = false;
+    }
+       
+    var html = "";
+    if(readonly){
+        var tuneID = "";
+        if(val.indexOf("topicId") > -1){
+            tuneID = "t" + val.substr(val.lastIndexOf("=") + 1, val.length);
+        }else{
+            tuneID =  val.substr(val.lastIndexOf("-") + 1, val.length);
+        }
+        if(tuneID.indexOf("/") === -1){
+            tuneID += "/";
+        }
+        
+        var height = "100px";
+        if(tuneID.startsWith("p")){
+            height = "350px";
+        }else if(tuneID.startsWith("t")){
+            height = "110px";
+        }
+        html += "<div style='float: right;'>";
+        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-edit ui-btn-icon-notext ui-corner-all' name='editTuneIn' id='editTuneIn" + valID + "' data-id='" + valID + "' />";
+        html += "</div>";
+        html += "<div class='ui-field-contain ui-grid-a'>";
+        html += "<div class='ui-block-a'>";
+        html += "<iframe src='http://tunein.com/embed/player/" + tuneID + "' style='width:100%;height:" + height + ";' scrolling='no' frameborder='no'></iframe>";
+        html += "</div>";
+        
+    }else{
+        html += "<div class='ui-field-contain ui-grid-a'>";
+        html += "<div class='ui-block-a'>TuneIn-URL</div>";
+        html += "<div class='ui-block-b'>";
+        html += "<input type='text' placeholder='http://tunein.com/radio/Farstuff-The-Internet-of-Things-Podcast-p575427/' id='tuneInURL_" + valID + "' value=\"" + val + "\" />";
+        html += "</div>";
+        html += "<div class='ui-block-a'>";
+        html += "<a href='#' id='saveTuneInRadioData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
+        html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+        html += "</div>";
+    }    
+    html += "</div>";
+    
+    return html;
 }
 
 // ----------------------- Helper functions ----------------------------
