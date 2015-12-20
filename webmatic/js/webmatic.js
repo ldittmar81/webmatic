@@ -475,9 +475,6 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
         deviceHTML += "</div>";
     }
-    if(debugModus){
-        deviceHTML += "<span>Position: " + prog['position'] + "</span>";
-    }
     deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
     deviceHTML += "</li>";
     return deviceHTML;
@@ -509,9 +506,6 @@ function processGraphicID(type) {
         html += ")</h1>";
         html += "</div>";
         html += "<div style='float: right;'>";
-        if(debugModus){
-            html += "<span id='positiondebug" + key +"'>Position: " + val['position'] + "</span>";
-        }
         html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key +"' data-type='" + type + "' value='" + val['position'] + "' data-last='" + (size === val['position']) + "'/>";
         html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
         if(val['position'] <= 1){
@@ -547,7 +541,7 @@ function processGraphicID(type) {
         html += "</div>";
         html += "</form>";
         html += "</li>";
-        tmpObj[val['position']] = html;        
+        tmpObj[parseInt(val['position'])] = html;        
     });
     
     var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
@@ -1995,7 +1989,7 @@ function loadPrograms(restart) {
             var prgActive = prog['active'];
             var prgID = key;
 
-            tmpObj[prog['position']] = processProgram(prog, prgID, systemDate, prgActive, (readModus && prgVisible) || !readModus);
+            tmpObj[parseInt(prog['position'])] = processProgram(prog, prgID, systemDate, prgActive, (readModus && prgVisible) || !readModus);
         });
         
         var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
@@ -2788,7 +2782,6 @@ $(function () {
         buttonEvents(obj, true);
     });    
     $(document.body).on("click", "[name=showTuneIn]", function () {
-        debugger;
         var obj = $(this);
         var valID = obj.data("id");
         var val = $("#saveTuneInRadioData_" + valID).data("value");
@@ -2808,7 +2801,6 @@ $(function () {
         });
     });
     $(document.body).on("click", "[name=editTuneIn]", function () {
-        debugger;
         var obj = $(this);
         obj.fadeOut(500, function () {
             obj.attr("name", "showTuneIn");
@@ -2839,10 +2831,6 @@ $(function () {
         var newPosition = parseInt($("#position" + beforeId).val());
         $("#position" + thisId).val(newPosition);
         $("#position" + beforeId).val(oldPosition);
-        if(debugModus){
-            $("#positiondebug" + thisId).text("Debug: " + newPosition);
-            $("#positiondebug" + beforeId).text("Debug: " + oldPosition);
-        }
         if(newPosition === 1){
             $("#setUp" + thisId).addClass("ui-state-disabled").hide();
             $("#setUp" + beforeId).removeClass("ui-state-disabled").show();
@@ -2899,10 +2887,6 @@ $(function () {
         var newPosition = parseInt($("#position" + afterId).val());
         $("#position" + thisId).val(newPosition);
         $("#position" + afterId).val(oldPosition);
-        if(debugModus){
-            $("#positiondebug" + thisId).text("Debug: " + newPosition);
-            $("#positiondebug" + afterId).text("Debug: " + oldPosition);
-        }
         
         if(oldPosition === 1){
             $("#setUp" + afterId).addClass("ui-state-disabled").hide();

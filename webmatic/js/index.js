@@ -28,16 +28,16 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed){
     
     var tmpObj = {};
     $.each(getResultMap(indexType), function (key, val) {
-        var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key + "' " + (val['visible']?"":"style='display: none;'") + ">";
-        if(debugModus){
-            html += "<span>Position: " + val['position'] + "</span>";
+        if(key === "date" || key === "size"){
+            return;
         }
+        var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key + "' " + (val['visible']?"":"style='display: none;'") + ">";
         html += "<a href='#'><img id='menuImg" + key + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
         if(val['pic']){
             html += " lazy" + indexType + "' data-original='../webmatic_user/img/ids/" + indexType + "/" + key + ".png";
         }
         html += "' src='img/menu/" + indexType + ".png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
-        tmpObj[val['position']] = html;            
+        tmpObj[parseInt(val['position'])] = html;            
     });
     var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
     var len = keys.length;    
