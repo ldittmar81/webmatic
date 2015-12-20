@@ -101,7 +101,7 @@ if(!debugModus){
                 }
             });  
         }       
-    }
+    }    
     $.get('../webmatic_user/ver.json', function(data){
         if(data.trim() !== webmaticVersion){
             createVerFile();
@@ -110,11 +110,10 @@ if(!debugModus){
         if (jqXHR.status === 404) {
             createVerFile();
         }
-    });
-    
+    });  
     function createVerFile(){
         $.ajax({
-            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvdUlmc2p3"),
+            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvTDVxRXRG"),
             method: 'GET',
             dataType: 'JSONP',
             error: function(jqXHR, textStatus) { 
@@ -124,6 +123,7 @@ if(!debugModus){
             }
         });
     }
+    
 }
 
 //Design setzen
@@ -1368,7 +1368,7 @@ function loadRecognization(){
     })
     .fail(function (jqXHR, textStatus) {
         recognizeMap = {};
-        clint = "";
+        client = "";
         log("Recognization failed: " + textStatus, 2);
     });
 }
@@ -1668,29 +1668,31 @@ function createConfigFile(type, map){
     }else if(type.endsWith("Client")){
         var text = '{}';
         type = type.slice(0, -6);
-        switch(type){
-            case "config":
-                optionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                break;
-            case "variables":
-                variablesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                break;
-            case "programs":
-                programsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                break
-            case "favorites":
-                favoritesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                break
-            case "rooms":               
-                roomsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                break
-            case "functions":
-                functionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                break
-            case "devices":
-                devicesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                break
-        }        
+        if(client !== ""){
+            switch(type){
+                case "config":
+                    optionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                    break;
+                case "variables":
+                    variablesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                    break;
+                case "programs":
+                    programsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                    break
+                case "favorites":
+                    favoritesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                    break
+                case "rooms":               
+                    roomsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                    break
+                case "functions":
+                    functionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                    break
+                case "devices":
+                    devicesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
+                    break
+            } 
+        }
     }else{
         loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);
     }    
@@ -2106,10 +2108,10 @@ function loadOptionsClient() {
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Aussehen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DESIGN") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='client_default_theme' data-theme='" + theme + "'>";
     var clientTheme = optionsClientMap["default_theme"];
@@ -2131,10 +2133,10 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Schriftart
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FONT") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";    
     html += "<select id='client_default_font' data-theme='" + theme + "'>";
     var clientFont = optionsClientMap["default_font"];
@@ -2156,10 +2158,10 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Größe der Menübilder
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("GRAPHICS_SIZE") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     var gfxSize = optionsClientMap["default_menugfxsize"];
     var selected1 = "";
@@ -2186,10 +2188,10 @@ function loadOptionsClient() {
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Favoriten anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FAVORITES") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2207,10 +2209,10 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Räume anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2228,10 +2230,10 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Gewerke anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2249,10 +2251,10 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Variablen anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("SYS_VAR") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2270,10 +2272,10 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Programme anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("PROGRAMS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2291,33 +2293,42 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Einstellungen anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("SETTINGS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    selected3 = "";
+    selected1 = "class='";
+    selected2 = "class='";
+    selected3 = "class='";
     var data_no_more_settings = "false";
     if (!("others" in optionsClientMap)) {
-        selected1 = "class='ui-btn-active'";
+        selected1 = "ui-btn-active";
     } else if(optionsClientMap["others"]){
-        selected2 = "class='ui-btn-active'";
-        data_no_more_settings = "true";        
+        selected2 = "ui-btn-active";
+        data_no_more_settings = "true";
+        if(optionsMap["no_more_settings"] === 1 && !optionsMap["others"]){
+            selected1 = "ui-state-disabled";
+            selected2 = " ui-state-disabled";
+            selected3 = "ui-state-disabled";
+        }
     } else{
-        selected3 = "class='ui-btn-active'";
+        selected3 = "ui-btn-active";
     }
+    selected1 = "'";
+    selected2 = "'";
+    selected3 = "'";
+    
     html += "<a href='#' name='saveClientOption' data-key='others' data-value='none' id='others_none_selector' data-nms='" + data_no_more_settings + "' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
     html += "<a href='#' name='saveClientOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
     html += "<a href='#' name='saveClientOption' data-key='others' data-value='false' id='others_no_selector' data-nms='" + data_no_more_settings + "' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
     html += "</div>";
     html += "</div>";
     //Was ist standardmäßig auf
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DEFAULT_OPEN") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='client_collapsed' data-theme='" + theme + "'>";
     var clientColapsed = optionsClientMap["collapsed"];
@@ -2341,10 +2352,10 @@ function loadOptionsClient() {
     html += "<div class='ui-field-contain'>"; 
     html += "<div class='ui-grid-b'>";
     //Standardmäßig nur lesend
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DEFAULT_READONLY") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2382,10 +2393,10 @@ function loadOptions() {
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Aussehen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DESIGN") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_default_theme' data-theme='" + theme + "'>";
     var globalTheme = optionsMap["default_theme"];
@@ -2406,10 +2417,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Schriftart
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FONT") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";    
     html += "<select id='global_default_font' data-theme='" + theme + "'>";
     var globalFont = optionsMap["default_font"];
@@ -2430,10 +2441,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Größe der Menübilder
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("GRAPHICS_SIZE") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     var gfxSize = optionsMap["default_menugfxsize"];
     var selected1 = "";
@@ -2457,10 +2468,10 @@ function loadOptions() {
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Favoriten anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FAVORITES") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2474,10 +2485,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Räume anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2491,10 +2502,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Gewerke anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2508,10 +2519,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Variablen anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("SYS_VAR") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2525,10 +2536,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Programme anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("PROGRAMS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2542,10 +2553,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Einstellungen anzeigen
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span style='color: red;'>" + mapText("SETTINGS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     
     selected1 = "class='" + (optionsMap["others"]?"ui-btn-active":"") + (optionsMap["no_more_settings"] === 0?" ui-state-disabled":"") + "'";
@@ -2556,10 +2567,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Was ist standardmäßig auf
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DEFAULT_OPEN") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_collapsed' data-theme='" + theme + "'>";
     var globalColapsed = optionsMap["collapsed"];
@@ -2583,10 +2594,10 @@ function loadOptions() {
     html += "<div class='ui-field-contain'>"; 
     html += "<div class='ui-grid-b'>";
     //Standardmäßig nur lesend
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DEFAULT_READONLY") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2627,10 +2638,10 @@ function loadOptions() {
     html += "<div class='ui-field-contain'>"; 
     html += "<div class='ui-grid-b'>";
     //Meldung über neue Updates
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("NEW_UPDATES_WARNING") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_new_version' data-theme='" + theme + "'>";
     var globalNewUpdates = optionsMap["new_version"];
@@ -2650,10 +2661,10 @@ function loadOptions() {
     html += "<div class='ui-field-contain'>"; 
     html += "<div class='ui-grid-b'>";
     //Versehentliches Verlassen der Seite verhindern
-    html += "<div class='ui-block-a text-right'>";
+    html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DONT_LEAVE") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-b'>";
+    html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     selected1 = "";
     selected2 = "";
@@ -2684,85 +2695,8 @@ $(function () {
     $(document).bind("mobileinit", function () {
         $.mobile.listview.prototype.options.filterPlaceholder = mapText("FILTER");
     });
-    
-    //Client Optionen
-    $(document.body).on("click", "[name='saveClientOption']", function () {
-        var key = $(this).data("key");
-        var value = "";
-        if($('#client_' + key).length){
-            value = $('#client_' + key).val();
-        } else {
-            $(this).parent().find('.ui-btn-active').removeClass('ui-btn-active');
-            value = $(this).addClass('ui-btn-active').data("value");                    
-        }
-        
-        if("others" === key){
-            var nms = optionsMap["no_more_settings"];
-            if(value){
-                nms++;
-                optionsMap["no_more_settings"] = nms;
-                saveOptionsToServer();
-            }else{
-                if($(this).data("nms") === "true"){
-                    $("#others_none_selector").attr("data-nms", "false");
-                    $("#others_no_selector").attr("data-nms", "false");
-                    nms--;
-                    optionsMap["no_more_settings"] = nms;
-                    saveOptionsToServer();
-                }
-            }
-        }
-        
-        if(value !== ""){
-            
-            if(value === "true"){
-                value = true;
-            }else if(value === "false"){
-                value = false;
-            }else if($.isNumeric(value)){
-                value = parseInt(value);
-            }
-            
-            if(value === "none"){
-                delete optionsClientMap[key];
-                resultOptionsMap[key] = optionsMap[key];
-                value = optionsMap[key];
-            }else{
-                optionsClientMap[key] = value;
-                resultOptionsMap[key] = value;
-            }        
-            saveClientOptionsToServer(key, value);
-            
-        }        
-        
-    });
-    
-    //Globale Optionen
-    $(document.body).on("click", "[name='saveGlobalOption']", function () {
-        var key = $(this).data("key");
-        var value = "";
-        if($('#global_' + key).length){
-            value = $('#global_' + key).val();          
-        } else {
-            $(this).parent().find('.ui-btn-active').removeClass('ui-btn-active');
-            value = $(this).addClass('ui-btn-active').data("value");
-        }
-        
-        if(value !== ""){
-            if(value === "true"){
-                value = true;
-            }else if(value === "false"){
-                value = false;
-            }else if($.isNumeric(value)){
-                value = parseInt(value);
-            }
-            
-            optionsMap[key] = value;
-            saveOptionsToServer(key, value);
-        }
-    });
-  
-    // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
+   
+    // Irgendwas durch Klicken ausführen/speichern
     $(document.body).on("click", "[id^=setButton]", function () {
         var obj = $(this);
         var special = obj.data("special");
@@ -2791,6 +2725,54 @@ $(function () {
         buttonEvents(obj, obj.data("refresh"), special);        
     });
     
+    // Selectbox-Funktion ausführen/speichern
+    $(document.body).on("click", "[id^=setValueBigList]", function () {
+        var obj = $(this);
+        var dataID = obj.data("id");
+        obj.attr('data-value', $('#selector_' + dataID).val());
+        buttonEvents(obj, obj.data("refresh"));
+    }); 
+   
+    // Ausgewählter Kopffunktion ausführen/speichern
+    $(document.body).on("click", "[id^=setTextButton]", function () {
+        var dataID = $(this).data("id");  // Homematic Geräte ID.
+        var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
+        var infoID = "info_" + dataID;  // Info Textfeld neben Button.
+        var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
+        // Alle " durch ' ersetzen, da sonst Probleme an verschiedenen Stellen:
+        value = value.replace(/\"/g, "'");
+        // Dann noch enocden, damit alles übertragen wird:
+        value = encodeURIComponent(value);
+        var urlAttr = "";
+
+        if (testSite) {
+            urlAttr += '&debug=true';
+        }
+
+        $("#" + infoID).text(mapText("TRANSFER"));
+        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value + urlAttr, function () {
+            $("#" + infoID).text(mapText("TRANSFER_OK"));
+            refreshPage(0);
+        });
+    });
+
+    // Programm ausführen
+    $(document.body).on("click", "[id^=startProgramButton]", function () {
+        var dataID = $(this).data("id");  // Homematic Geräte ID.
+        var infoID = "info_" + dataID;  // Info Textfeld neben Button.
+        var urlAttr = "";
+
+        if (testSite) {
+            urlAttr += '&debug=true';
+        }
+
+        $("#" + infoID).text("START");
+        $.get('cgi/startprogram.cgi?id=' + dataID + urlAttr, function () {
+            $("#" + infoID).text(mapText("TRANSFER_OK"));
+        });
+    });
+    
+    // Historian
     $(document.body).on("click", "[id^=saveHistorianData]", function () {
         var obj = $(this);
         var dataID = obj.data("id");
@@ -2798,20 +2780,52 @@ $(function () {
         buttonEvents(obj, true);
     }); 
     
+    // TuneIn
     $(document.body).on("click", "[id^=saveTuneInRadioData]", function () {
         var obj = $(this);
         var dataID = obj.data("id");
         obj.attr('data-value', $('#tuneInURL_' + dataID).val());
         buttonEvents(obj, true);
+    });    
+    $(document.body).on("click", "[name=showTuneIn]", function () {
+        debugger;
+        var obj = $(this);
+        var valID = obj.data("id");
+        var val = $("#saveTuneInRadioData_" + valID).data("value");
+        obj.fadeOut(500, function () {
+            obj.attr("name", "editTuneIn");
+            if(val !== undefined){
+                obj.attr("data-val", val);
+            }
+            obj.removeClass("ui-icon-eye").addClass("ui-icon-edit").fadeIn(1000);
+        });                
+        var parentId = obj.data("parentId");
+        var vorDate = obj.data("vorDate");
+        $('#tuneInField_' + valID).fadeOut(500, function () {
+            $('#tuneInField_' + valID).html(getTuneIn(parentId, valID, val, vorDate));
+            $('#' + valID).trigger('create');
+            $('#tuneInField_' + valID).fadeIn(1000);
+        });
+    });
+    $(document.body).on("click", "[name=editTuneIn]", function () {
+        debugger;
+        var obj = $(this);
+        obj.fadeOut(500, function () {
+            obj.attr("name", "showTuneIn");
+            obj.removeClass("ui-icon-edit").addClass("ui-icon-eye").fadeIn(1000);
+        });
+        var parentId = obj.data("parentId");
+        var valID = obj.data("id");
+        var val = obj.data("val");
+        var vorDate = obj.data("vorDate");
+        $('#tuneInField_' + valID).fadeOut(500, function () {
+            $('#tuneInField_' + valID).html(editTuneIn(parentId, valID, val, vorDate))
+            $('#' + valID).trigger('create');
+            $('#tuneInField_' + valID).fadeIn(1000);
+        });
     });
     
-    $(document.body).on("click", "[id^=setValueBigList]", function () {
-        var obj = $(this);
-        var dataID = obj.data("id");
-        obj.attr('data-value', $('#selector_' + dataID).val());
-        buttonEvents(obj, obj.data("refresh"));
-    }); 
-    
+    // Settings  
     $(document.body).on("click", "[id^=setUp]", function () {
         var thisId = $(this).data("id");        
         var thisList = $("#list" + thisId);
@@ -2931,45 +2945,6 @@ $(function () {
         }
 
         activateSettingSaveButton();
-    });
-
-    // Ein Button, bei dessen drücken ein Bool an die ID übertragen wird.
-    $(document.body).on("click", "[id^=setTextButton]", function () {
-        var dataID = $(this).data("id");  // Homematic Geräte ID.
-        var valueID = "setValue_" + dataID; // Wertfeld, dessen Inhalt gesetzt werden soll.
-        var infoID = "info_" + dataID;  // Info Textfeld neben Button.
-        var value = $("#" + valueID).val(); // Wert aus Wertfeld auslesen.
-        // Alle " durch ' ersetzen, da sonst Probleme an verschiedenen Stellen:
-        value = value.replace(/\"/g, "'");
-        // Dann noch enocden, damit alles übertragen wird:
-        value = encodeURIComponent(value);
-        var urlAttr = "";
-
-        if (testSite) {
-            urlAttr += '&debug=true';
-        }
-
-        $("#" + infoID).text(mapText("TRANSFER"));
-        $.get('cgi/set.cgi?id=' + dataID + '&value=' + value + urlAttr, function () {
-            $("#" + infoID).text(mapText("TRANSFER_OK"));
-            refreshPage(0);
-        });
-    });
-
-    // Ein Button, bei dessen drücken ein "true" an die ID übertragen wird.
-    $(document.body).on("click", "[id^=startProgramButton]", function () {
-        var dataID = $(this).data("id");  // Homematic Geräte ID.
-        var infoID = "info_" + dataID;  // Info Textfeld neben Button.
-        var urlAttr = "";
-
-        if (testSite) {
-            urlAttr += '&debug=true';
-        }
-
-        $("#" + infoID).text("START");
-        $.get('cgi/startprogram.cgi?id=' + dataID + urlAttr, function () {
-            $("#" + infoID).text(mapText("TRANSFER_OK"));
-        });
     });
     
     $(document.body).on("click", "[name='deletePic']", function(){
@@ -3189,6 +3164,83 @@ $(function () {
             $("#deletePic" + key).removeClass("ui-state-disabled");
         };
         reader.readAsDataURL(file);
+    });
+    
+    //Client Optionen
+    $(document.body).on("click", "[name='saveClientOption']", function () {
+        var key = $(this).data("key");
+        var value = "";
+        if($('#client_' + key).length){
+            value = $('#client_' + key).val();
+        } else {
+            $(this).parent().find('.ui-btn-active').removeClass('ui-btn-active');
+            value = $(this).addClass('ui-btn-active').data("value");                    
+        }
+        
+        if("others" === key){
+            var nms = optionsMap["no_more_settings"];
+            if(value){
+                nms++;
+                optionsMap["no_more_settings"] = nms;
+                saveOptionsToServer();
+            }else{
+                if($(this).data("nms") === "true"){
+                    $("#others_none_selector").attr("data-nms", "false");
+                    $("#others_no_selector").attr("data-nms", "false");
+                    nms--;
+                    optionsMap["no_more_settings"] = nms;
+                    saveOptionsToServer();
+                }
+            }
+        }
+        
+        if(value !== ""){
+            
+            if(value === "true"){
+                value = true;
+            }else if(value === "false"){
+                value = false;
+            }else if($.isNumeric(value)){
+                value = parseInt(value);
+            }
+            
+            if(value === "none"){
+                delete optionsClientMap[key];
+                resultOptionsMap[key] = optionsMap[key];
+                value = optionsMap[key];
+            }else{
+                optionsClientMap[key] = value;
+                resultOptionsMap[key] = value;
+            }        
+            saveClientOptionsToServer(key, value);
+            
+        }        
+        
+    });
+    
+    //Globale Optionen
+    $(document.body).on("click", "[name='saveGlobalOption']", function () {
+        var key = $(this).data("key");
+        var value = "";
+        if($('#global_' + key).length){
+            value = $('#global_' + key).val();          
+        } else {
+            $(this).parent().find('.ui-btn-active').removeClass('ui-btn-active');
+            value = $(this).addClass('ui-btn-active').data("value");
+        }
+        
+        if(value !== ""){
+            if(value === "true"){
+                value = true;
+            }else if(value === "false"){
+                value = false;
+            }else if($.isNumeric(value)){
+                value = parseInt(value);
+            }
+            
+            optionsMap[key] = value;
+            saveOptionsToServer(key, value);
+        }
     });
     
     $(window).on('beforeunload', function() {

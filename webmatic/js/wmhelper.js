@@ -19,6 +19,7 @@ var mustBeSaved = false;
 var client = "";
 
 var excludeFromRefresh = [];
+var tempExcludeFromRefresh = 0;
 
 var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap, recognizeMap;
 var programsClientMap = {}, functionsClientMap = {}, roomsClientMap = {}, favoritesClientMap = {}, optionsClientMap= {}, variablesClientMap = {}, devicesClientMap = {};
@@ -383,46 +384,53 @@ function addTuneInRadio(parentId, valID, val, vorDate, readonly) {
     if(!val || !val.startsWith("http")){
         readonly = false;
     }
-       
-    var html = "";
-    if(readonly){
-        var tuneID = "";
-        if(val.indexOf("topicId") > -1){
-            tuneID = "t" + val.substr(val.lastIndexOf("=") + 1, val.length);
-        }else{
-            tuneID =  val.substr(val.lastIndexOf("-") + 1, val.length);
-        }
-        if(tuneID.indexOf("/") === -1){
-            tuneID += "/";
-        }
-        
-        var height = "100px";
-        if(tuneID.startsWith("p")){
-            height = "350px";
-        }else if(tuneID.startsWith("t")){
-            height = "110px";
-        }
-        html += "<div style='float: right;'>";
-        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-edit ui-btn-icon-notext ui-corner-all' name='editTuneIn' id='editTuneIn" + valID + "' data-id='" + valID + "' />";
-        html += "</div>";
-        html += "<div class='ui-field-contain ui-grid-a'>";
-        html += "<div class='ui-block-a'>";
-        html += "<iframe src='http://tunein.com/embed/player/" + tuneID + "' style='width:100%;height:" + height + ";' scrolling='no' frameborder='no'></iframe>";
-        html += "</div>";
-        
+    
+    var html = "<div class='editButton'>";
+    html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-" + (readonly?"edit":"eye") + " ui-btn-icon-notext ui-corner-all' name='" + (readonly?"edit":"show") + "TuneIn' data-id='" + valID + "' data-val='" + val + "' data-parent-id='" + parentId + "' data-vor-date='" + vorDate + "' />";
+    html += "</div>";
+    html += "<div class='ui-field-contain ui-grid-a' id='tuneInField_" + valID + "'>";
+    html += readonly?getTuneIn(parentId, valID, val, vorDate):editTuneIn(parentId, valID, val, vorDate);
+    html += "</div>";
+    return html;    
+}
+
+function getTuneIn(parentId, valID, val, vorDate){
+    if(!val || !val.startsWith("http")){
+        return editTuneIn(parentId, valID, val, vorDate);
+    }
+    var tuneID = "";
+    if(val.indexOf("topicId") > -1){
+        tuneID = "t" + val.substr(val.lastIndexOf("=") + 1, val.length);
     }else{
-        html += "<div class='ui-field-contain ui-grid-a'>";
-        html += "<div class='ui-block-a'>TuneIn-URL</div>";
-        html += "<div class='ui-block-b'>";
-        html += "<input type='text' placeholder='http://tunein.com/radio/Farstuff-The-Internet-of-Things-Podcast-p575427/' id='tuneInURL_" + valID + "' value=\"" + val + "\" />";
-        html += "</div>";
-        html += "<div class='ui-block-a'>";
-        html += "<a href='#' id='saveTuneInRadioData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-        html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-        html += "</div>";
-    }    
+        tuneID =  val.substr(val.lastIndexOf("-") + 1, val.length);
+    }
+    if(tuneID.indexOf("/") === -1){
+        tuneID += "/";
+    }
+
+    var height = "100px";
+    if(tuneID.startsWith("p")){
+        height = "350px";
+    }else if(tuneID.startsWith("t")){
+        height = "110px";
+    }
+        
+    var html = "<div class='ui-block-a'>";
+    html += "<iframe src='http://tunein.com/embed/player/" + tuneID + "' style='width:100%;height:" + height + ";' scrolling='no' frameborder='no'></iframe>";
     html += "</div>";
     
+    return html;
+}
+
+function editTuneIn(parentId, valID, val, vorDate){    
+    var html = "<div class='ui-block-a'>TuneIn-URL</div>";
+    html += "<div class='ui-block-b'>";
+    html += "<input type='text' placeholder='http://tunein.com/radio/Farstuff-The-Internet-of-Things-Podcast-p575427/' id='tuneInURL_" + valID + "' value=\"" + val + "\" />";
+    html += "</div>";
+    html += "<div class='ui-block-a'>";
+    html += "<a href='#' id='saveTuneInRadioData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-value='" + val + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
+    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+    html += "</div>";
     return html;
 }
 
@@ -777,7 +785,7 @@ var Base64 = {
         }
         return string;
     }
-}
+};
 
 function getTimeDiffString(diffDate, systemDate) {
     var timeDiff = (getDateFromString(systemDate) - getDateFromString(diffDate)) / 1000;  // In Sekunden konvertieren.

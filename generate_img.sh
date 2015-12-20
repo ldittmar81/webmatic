@@ -1,7 +1,17 @@
 #!/bin/sh
 
-mkdir -p tmp
-cp -a webmatic tmp/
+mkdir -p tmp/webmatic
+cp webmatic/*.* tmp/webmatic/
+cp -a webmatic/cgi tmp/webmatic/
+cp -a webmatic/img tmp/webmatic/
+cp -a webmatic/libs tmp/webmatic/
+mkdir -p tmp/webmatic/js/i18n
+cp -a webmatic/js/*.min.js tmp/webmatic/js/
+cp -a webmatic/js/i18n/*.min.js tmp/webmatic/js/i18n/
+mkdir -p tmp/webmatic/themes
+cp -a webmatic/themes/*.min.* tmp/webmatic/themes/
+cp -a webmatic/themes/images tmp/webmatic/themes/
+cp -a webmatic/themes/fonts tmp/webmatic/fonts/
 cp -a ccu1 tmp/
 cp -a ccu2 tmp/
 cp -a ccurm tmp/
@@ -31,9 +41,8 @@ sed -i "s/BETAVERSION/${VERSION}/g" dlgAbout.html
 sed -i "s/BETAVERSION/${VERSION}/g" webmatic.appcache
 sed -i "s/RELEASEDATE/${GERDATE}/g" dlgAbout.html
 
-sed -i "s/<html lang='de'>/<html lang='de' manifest='webmatic.appcache'>/g" index.html
-sed -i "s/<html lang='de'>/<html lang='de' manifest='webmatic.appcache'>/g" get.html
-sed -i "s/<html lang='de'>/<html lang='de' manifest='webmatic.appcache'>/g" dlgAbout.html
+sed -i "s/<html lang=\"de\">/<html lang=\"de\" manifest=\"webmatic.appcache\">/g" index.html
+sed -i "s/<html lang=\"de\">/<html lang=\"de\" manifest=\"webmatic.appcache\">/g" get.html
 
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" index.html
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" get.html

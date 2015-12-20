@@ -176,6 +176,55 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     padding-bottom:.22em;
 }
 
+.editButton{
+    float: right;
+    margin-top: -40px;
+    position: relative;
+    top: -30px;
+    right: -15px;
+}
+
+.ui-block-a,
+    .ui-block-b,
+    .ui-block-c,
+    .ui-block-d,
+    .ui-block-e,
+    .ui-block-f,
+    .ui-block-g{
+	white-space: normal !important;        
+    }
+
+.ui-block-f,
+.ui-block-g {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	float: left;
+	min-height: 1px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+li.ui-block-f,
+li.ui-block-g {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ui-grid-b > .ui-block-f {
+	/* width: 33.25%; IE7 */
+	/* margin-right: -.5px; BB5 */
+	width: 33.333%;
+}
+.ui-grid-b > .ui-block-g {
+	/* width: 66.5%; IE7 */
+	/* margin-right: -.5px; BB5 */
+	width: 66.666%;
+}
+
 @media screen and (max-width: 900px)
 {
     .content-secondary {
@@ -202,9 +251,11 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     .ui-block-b,
     .ui-block-c,
     .ui-block-d,
-    .ui-block-e {
+    .ui-block-e,
+    .ui-block-f,
+    .ui-block-g{
 	width: 100% !important;
-	float: none;
+	float: none;      
     }
     
     .small-hidden{
