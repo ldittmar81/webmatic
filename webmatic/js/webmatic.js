@@ -441,12 +441,7 @@ function processVariable(variable, valID, systemDate) {
         html += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true);
     } else if (valType === "4") {
         // Float, Integer.
-        var max = variable['valueMax'];
-        var factor = 1.0;
-        if(max << 10){
-            factor = 100.0;
-        }
-        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 1.0, factor, vorDate, true);
+        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.01, 1.0, vorDate, true);
     } else if (valType === "16") {
         // Liste.
         html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
