@@ -658,7 +658,7 @@ var textMap = {
     GERMANY: "Almanya",
     SHOW: "show",
     HIDE: "gizlemek",
-    SHOW_TEST: "Göster sınama sayfaları",
+    NO_VALUE: "hayır",
     SMALL: "Küçük", 
     BIG: "büyük",
     GRAPHICS_SIZE: "grafik Boyut",

@@ -658,7 +658,7 @@ var textMap = {
     GERMANY: "Deutschland",
     SHOW: "anzeigen",
     HIDE: "Verstecken",
-    SHOW_TEST: "Testseiten anzeigen",
+    NO_VALUE: "Keine",
     SMALL: "Klein",
     BIG: "Groß",
     GRAPHICS_SIZE: "Größe der Menügrafiken",

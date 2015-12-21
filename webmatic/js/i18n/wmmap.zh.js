@@ -658,7 +658,7 @@ var textMap = {
     GERMANY: "德国",
     SHOW: "秀",
     HIDE: "隐藏",
-    SHOW_TEST: "显示测试页面",
+    NO_VALUE: "否",
     SMALL: "小",
     BIG: "大",
     GRAPHICS_SIZE: "大小的图形",

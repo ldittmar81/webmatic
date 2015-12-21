@@ -2109,7 +2109,8 @@ function loadOptionsClient() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='client_default_theme' data-theme='" + theme + "'>";
     var clientTheme = optionsClientMap["default_theme"];
-    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value=''>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value='none'>" + mapText("NO_VALUE") + "</option>";
     html += "<option value='a' " + (clientTheme === "a"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
     html += "<option value='b' " + (clientTheme === "b"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
     html += "<option value='c' " + (clientTheme === "c"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
@@ -2134,7 +2135,7 @@ function loadOptionsClient() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";    
     html += "<select id='client_default_font' data-theme='" + theme + "'>";
     var clientFont = optionsClientMap["default_font"];
-    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value='none'>" + mapText("NO_VALUE") + "</option>";
     html += "<option value='a' " + (clientFont === "a"?"selected='selected'":"") + ">Normal</a>";
     html += "<option value='b' " + (clientFont === "b"?"selected='selected'":"") + ">Koch Fraktur</a>";
     html += "<option value='c' " + (clientFont === "c"?"selected='selected'":"") + ">Planet Benson</a>";
@@ -2297,21 +2298,21 @@ function loadOptionsClient() {
     selected3 = "class='";
     var data_no_more_settings = "false";
     if (!("others" in optionsClientMap)) {
-        selected1 = "ui-btn-active";
+        selected1 += "ui-btn-active";
     } else if(optionsClientMap["others"]){
-        selected2 = "ui-btn-active";
+        selected2 += "ui-btn-active";
         data_no_more_settings = "true";
         if(optionsMap["no_more_settings"] === 1 && !optionsMap["others"]){
-            selected1 = "ui-state-disabled";
-            selected2 = " ui-state-disabled";
-            selected3 = "ui-state-disabled";
+            selected1 += "ui-state-disabled";
+            selected2 += " ui-state-disabled";
+            selected3 += "ui-state-disabled";
         }
     } else{
-        selected3 = "ui-btn-active";
+        selected3 += "ui-btn-active";
     }
-    selected1 = "'";
-    selected2 = "'";
-    selected3 = "'";
+    selected1 += "'";
+    selected2 += "'";
+    selected3 += "'";
     
     html += "<a href='#' name='saveClientOption' data-key='others' data-value='none' id='others_none_selector' data-nms='" + data_no_more_settings + "' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
     html += "<a href='#' name='saveClientOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";

@@ -658,7 +658,7 @@ var textMap = {
     GERMANY: "Alemania",
     SHOW: "Show",
     HIDE: "esconder",
-    SHOW_TEST: "páginas Mostrar prueba",
+    NO_VALUE: "Sin",
     SMALL: "pequeño",
     BIG: "gran",
     GRAPHICS_SIZE: "El tamaño de los gráficos",
