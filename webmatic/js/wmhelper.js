@@ -312,18 +312,18 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
         
     }else{
         if(warningText !== ""){
-            html += "<div class='ui-block-a'>" + warningText + "</div>";
+            html += "<div class='ui-block-g'>" + warningText + "</div>";
         }
-        html += "<div class='ui-block-a'>CCU-Historian-ID</div>";
-        html += "<div class='ui-block-b'>";
+        html += "<div class='ui-block-f'>CCU-Historian-ID</div>";
+        html += "<div class='ui-block-g'>";
         html += "<input type='text' placeholder='18,19,20...' id='hisHistorianID_" + valID + "' value=\"" + optionsArray[0] + "\" />";
         html += "</div>";
-        html += "<div class='ui-block-a'>Homematic-ID</div>";        
-        html += "<div class='ui-block-b'>";
+        html += "<div class='ui-block-f'>Homematic-ID</div>";        
+        html += "<div class='ui-block-g'>";
         html += "<input type='text' placeholder='8918,8919,8920...' id='hisHMID_" + valID + "' value=\"" + optionsArray[1] + "\" />";
         html += "</div>";
-        html += "<div class='ui-block-a'>" + mapText("HISTORIAN_DURATION") + "</div>";
-        html += "<div class='ui-block-b'>";
+        html += "<div class='ui-block-f'>" + mapText("HISTORIAN_DURATION") + "</div>";
+        html += "<div class='ui-block-g'>";
         html += "<div data-role='controlgroup' data-type='horizontal'>";
         var durCount = optionsArray[2].slice(0, -1);
         var durType = optionsArray[2].substr(optionsArray[2].length - 1);        
@@ -339,7 +339,7 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
         html += "</select>";
         html += "</div>";
         html += "</div>";
-        html += "<div class='ui-block-a'>";
+        html += "<div class='ui-block-f'>";
         html += "<a href='#' id='saveHistorianData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
         html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
         html += "</div>";
@@ -537,6 +537,9 @@ function setMap(type, data){
         case "devices":
             devicesMap = data;
             break
+        case "config":
+            optionsMap = data;
+            break;
     }
 }
 

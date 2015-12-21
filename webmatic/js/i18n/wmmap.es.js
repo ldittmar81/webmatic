@@ -680,7 +680,6 @@ var textMap = {
     MENU: "entradas del menú",
     DEFAULT_OPEN: "Visualice la primera llamada",
     DEFAULT_READONLY: "Por defecto, sólo lectura",
-    GLOBAL_SETTINGS_HIDE_WARNING: "¡Atención! Si oculta la configuración de todos los dispositivos, debe ser explícitamente visible al menos por un dispositivo. Si es necesario que usted tiene que ser transferido directamente a la configuración de CCU.",
     HISTORIAN_WARNING: "Introduzca bajo Ajustes > Opciones de URL",
     NEW_UPDATES_WARNING: "Información sobre nuevos lanzamientos",
     STABLE: "sólo versiones estables",

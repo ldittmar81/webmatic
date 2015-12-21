@@ -671,7 +671,6 @@ var textMap = {
     MENU: "menu entries",
     DEFAULT_OPEN: "Display the first call",
     DEFAULT_READONLY: "By default, read-only",
-    GLOBAL_SETTINGS_HIDE_WARNING: "Attention! If you hide the settings for all devices, it should be explicitly visible at least for a device. If necessary you have to be directly transferred to the CCU setting.",
     HISTORIAN_WARNING: "Enter under Settings > Options the URL",
     NEW_UPDATES_WARNING: "Information about new releases",
     STABLE: "only stable versions",

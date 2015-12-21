@@ -2459,7 +2459,6 @@ function loadOptions() {
     
     //Anzeige
     html = "<li><h1>" + mapText("MENU") + "</h1>";
-    html += "<p>" + mapText("GLOBAL_SETTINGS_HIDE_WARNING") + "</p>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Favoriten anzeigen
@@ -2609,16 +2608,18 @@ function loadOptions() {
     html += "</div></div></li>";
     $("#dataList").append(html);
 
-    html = "<li><h1>CCU-Historian <a href='http://homematic-forum.de/forum/viewtopic.php?f=39&t=28274' target='_blank' class='ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all'>Info</a></h1>";
+    html = "<li><h1>CCU-Historian</h1>";
+    html += "<p>&nbsp;</p>";
     html += "<div class='ui-field-contain'>";
+    html += "<div class='editButton'>";
+    html += "<a href='http://homematic-forum.de/forum/viewtopic.php?f=39&t=28274' class='ui-btn ui-btn-inline ui-icon-info ui-btn-icon-notext ui-corner-all' />";
+    html += "</div>";
     html += "<div class='ui-grid-b'>";
-    
     html += "<div class='ui-block-a text-right'>";
     html += "CCU-Historian Link";
     html += "</div>";
     html += "<div class='ui-block-b'>";
     html += "<input type='text' id='global_ccu_historian' value='" + optionsMap['ccu_historian'] + "' placeholder='http://192.168.xx.xxx' />";
-    html += "<span>http://192.168.xx.xxx</span>";
     html += "</div>";
     html += "<div class='ui-block-c'>";
     html += "/historian/index.html ";

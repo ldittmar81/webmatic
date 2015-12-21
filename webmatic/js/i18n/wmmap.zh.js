@@ -680,7 +680,6 @@ var textMap = {
     MENU: "菜单项",
     DEFAULT_OPEN: "显示的第一个电话",
     DEFAULT_READONLY: "默认情况下，只读",
-    GLOBAL_SETTINGS_HIDE_WARNING: "注意！如果隐藏所有设备的设置，它应该是明确可见的至少一个设备。如果需要的话，你必须直接传送到CCU设置。",
     HISTORIAN_WARNING: "在设置>选项URL输入",
     NEW_UPDATES_WARNING: "关于新版本的信息",
     STABLE: "只有稳定的版本",
