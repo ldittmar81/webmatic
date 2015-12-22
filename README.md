@@ -5,7 +5,7 @@ WebMatic ist eine browserbasierte Benutzeroberfläche für HomeMatic. Die Elemen
 Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsweise der Software und keinerlei Haftung für Schäden, die aus der Benutzung dieser Software resultieren.
 
 ## Changelog
-2.1 (erscheint bald)
+2.1
 * Codereview Teil 2
 * Geschwindigkeitsoptimierung
 * Einstellungen können jetzt direkt in der Oberfläche gemacht werden
