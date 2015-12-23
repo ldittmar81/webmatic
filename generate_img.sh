@@ -11,7 +11,7 @@ cp -a webmatic/js/i18n/*.min.js tmp/webmatic/js/i18n/
 mkdir -p tmp/webmatic/themes
 cp -a webmatic/themes/*.min.* tmp/webmatic/themes/
 cp -a webmatic/themes/images tmp/webmatic/themes/
-cp -a webmatic/themes/fonts tmp/webmatic/fonts/
+cp -a webmatic/themes/fonts tmp/webmatic/themes/
 cp -a ccu1 tmp/
 cp -a ccu2 tmp/
 cp -a ccurm tmp/
