@@ -514,6 +514,8 @@ function getMap(type){
             return functionsMap;
         case "devices":
             return devicesMap;
+        case "config":
+            return optionsMap;
     }
 }
 

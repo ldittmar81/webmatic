@@ -78,11 +78,11 @@ $(function () {
     
     //Menüpunkt Räume
     indexType = "rooms";
-    loadMainMenu(indexType, gfxClassParent, gfxClassSelected);
+    loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
     
     //Menüpunkt Gewerke
     indexType = "functions";
-    loadMainMenu(indexType, gfxClassParent, gfxClassSelected);
+    loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
     
     $("img").trigger("lazyLoadInstantly");
     
@@ -112,13 +112,11 @@ $(function () {
     $("#listOther").listview().listview("refresh");
 
     $("#main_menu").collapsibleset("refresh");
-
+    
     refreshServiceMessages();
     restartTimer();
     changeTheme(theme);
     changeFont(font);
-
-    $("#main_menu").children("div[data-collapsed='true']").collapsible("expand");
 
     $(document.body).on("click", ".scrollToList", function () {
         $('html, body').animate({scrollTop: $('#prim').offset().top - 60}, 200);
@@ -137,7 +135,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("collapsibleexpand", ".listPrograms", function () {
@@ -146,7 +144,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", ".menuListItem", function () {
@@ -154,7 +152,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", ".menuItemVariables", function () {
@@ -162,7 +160,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = false;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", ".menuItemPrograms", function () {
@@ -170,7 +168,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = false;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", ".menuItemGraphicIDs", function () {
@@ -178,7 +176,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", ".menuItemDebug", function () {
@@ -186,7 +184,7 @@ $(function () {
         lastClickID = 0;
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", ".menuItemDebugCUxD", function () {
@@ -194,7 +192,7 @@ $(function () {
         lastClickID = 0;
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", ".menuItemOptions", function () {
@@ -202,7 +200,7 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
     
     $(document.body).on("click", ".menuItemOptionsClient", function () {
@@ -210,11 +208,11 @@ $(function () {
         lastClickID = $(this).attr("id");
         $('.ui-input-search .ui-input-text').val("");
         readModus = true;
-        refreshPage($(this), false);
+        refreshPage($(this));
     });
 
     $(document.body).on("click", "#buttonRefresh", function () {
-        refreshPage(0, true);
+        refreshPage(0);
         refreshServiceMessages();
     });
 
@@ -238,5 +236,7 @@ $(function () {
     $(document.body).on("click", "#reloadWebMatic", function () {
         window.location.reload();
     });
+    
+    $("#main_menu").children("div[data-collapsed='true']").collapsible("expand");
 
 });

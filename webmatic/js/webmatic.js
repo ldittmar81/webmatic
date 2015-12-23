@@ -113,7 +113,7 @@ if(!debugModus){
     });  
     function createVerFile(){
         $.ajax({
-            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvTDVxRXRG"),
+            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wva3lMYUpK"),
             method: 'GET',
             dataType: 'JSONP',
             error: function(jqXHR, textStatus) { 
@@ -143,21 +143,21 @@ function refreshPage(item) {
     // Später dann besser nur einen Refresh zur selben Zeit zulassen:
     restartTimer();
     testSite = false;
-    // Markieren von selektiertem Menueintrag:
-    if (item !== 0) {
-        if (prevItem !== 0) {
-            prevItem.removeClass("ui-btn-active");
-        }
-        item.addClass("ui-btn-active");
     
-        prevItem = item;
-    }
-
     if (lastClickType !== -1 && lastClickID !== -1) {
         var restart = oldID !== lastClickID;
         oldID = lastClickID;
 
         if (restart) {
+            // Markieren von selektiertem Menueintrag:
+            if (item !== 0) {
+                if (prevItem !== 0) {
+                    prevItem.find(".ui-btn").removeClass("ui-btn-active");
+                }
+                item.find(".ui-btn").addClass("ui-btn-active");
+
+                prevItem = item;
+            }
             excludeFromRefresh.length = 0;
             $("#dataList").hide();
         }
@@ -1346,7 +1346,7 @@ function loadRecognization(){
         async: false
     })
     .done(function (data) {
-        if(data['REMOTE_ADDR'].match("^192.168.") || data['REMOTE_ADDR'].match("^10.")){
+        if(data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")){
             recognizeMap = data;
             client = data['REMOTE_ADDR'];
             localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
@@ -2104,8 +2104,7 @@ function loadOptionsClient() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='client_default_theme' data-theme='" + theme + "'>";
     var clientTheme = optionsClientMap["default_theme"];
-    html += "<option value=''>" + mapText("NOT_SELECTED") + "</option>";
-    html += "<option value='none'>" + mapText("NO_VALUE") + "</option>";
+    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";    
     html += "<option value='a' " + (clientTheme === "a"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
     html += "<option value='b' " + (clientTheme === "b"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
     html += "<option value='c' " + (clientTheme === "c"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
@@ -2130,7 +2129,7 @@ function loadOptionsClient() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";    
     html += "<select id='client_default_font' data-theme='" + theme + "'>";
     var clientFont = optionsClientMap["default_font"];
-    html += "<option value='none'>" + mapText("NO_VALUE") + "</option>";
+    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";
     html += "<option value='a' " + (clientFont === "a"?"selected='selected'":"") + ">Normal</a>";
     html += "<option value='b' " + (clientFont === "b"?"selected='selected'":"") + ">Koch Fraktur</a>";
     html += "<option value='c' " + (clientFont === "c"?"selected='selected'":"") + ">Planet Benson</a>";
@@ -2323,6 +2322,7 @@ function loadOptionsClient() {
     html += "<select id='client_collapsed' data-theme='" + theme + "'>";
     var clientColapsed = optionsClientMap["collapsed"];
     html += "<option value='none'>" + mapText("NOT_SELECTED") + "</a>";
+    html += "<option value=''>" + mapText("NO_VALUE") + "</option>";
     html += "<option value='favorites' " + (clientColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
     html += "<option value='rooms' " + (clientColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
     html += "<option value='functions' " + (clientColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";
@@ -2563,7 +2563,6 @@ function loadOptions() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_collapsed' data-theme='" + theme + "'>";
     var globalColapsed = optionsMap["collapsed"];
-    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</a>";
     html += "<option value='favorites' " + (globalColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
     html += "<option value='rooms' " + (globalColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
     html += "<option value='functions' " + (globalColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";

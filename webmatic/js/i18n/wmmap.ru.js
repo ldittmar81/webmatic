@@ -496,6 +496,7 @@ var textMap = {
     VIRTUAL_DIMMER__LEVEL_REAL: "реальная стоимость",
     VIRTUAL_KEY__PRESS_SHORT: "короткое нажатие",
     VIRTUAL_KEY__PRESS_LONG: "долгое нажатие",
+    VIRTUAL_KEY__LEVEL: "-",
     WATERDETECTIONSENSOR__STATE__0: "сухой",
     WATERDETECTIONSENSOR__STATE__1: "влажный",
     WATERDETECTIONSENSOR__STATE__2: "мокрый",

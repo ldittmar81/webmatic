@@ -496,6 +496,7 @@ var textMap = {
     VIRTUAL_DIMMER__LEVEL_REAL: "gerçek değeri",
     VIRTUAL_KEY__PRESS_SHORT: "Kısa basın",
     VIRTUAL_KEY__PRESS_LONG: "Uzun basın",
+    VIRTUAL_KEY__LEVEL: "-",
     WATERDETECTIONSENSOR__STATE__0: "kuru",
     WATERDETECTIONSENSOR__STATE__1: "nemli",
     WATERDETECTIONSENSOR__STATE__2: "ıslak",

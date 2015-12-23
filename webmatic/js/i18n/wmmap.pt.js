@@ -496,6 +496,7 @@ var textMap = {
     VIRTUAL_DIMMER__LEVEL_REAL: "valor real",
     VIRTUAL_KEY__PRESS_SHORT: "toque curto",
     VIRTUAL_KEY__PRESS_LONG: "pressão longa",
+    VIRTUAL_KEY__LEVEL: "-",
     WATERDETECTIONSENSOR__STATE__0: "seco",
     WATERDETECTIONSENSOR__STATE__1: "úmido",
     WATERDETECTIONSENSOR__STATE__2: "wet",
