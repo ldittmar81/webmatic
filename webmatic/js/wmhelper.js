@@ -1,3 +1,5 @@
+/* global errorsDebugger */
+
 //Variablen
 var webmaticVersion = "0";
 var isPreRelease = 0;
@@ -31,6 +33,17 @@ var loadedFont = ["a"];
 var today = new Date();
 var dateNow = (today.getDate()<10?"0" + today.getDate():today.getDate()) + "." + (today.getMonth()+1<10?"0"+today.getMonth()+1:today.getMonth()+1) + "." + today.getFullYear();
 
+if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+}
+if (typeof String.prototype.startsWith !== 'function') {
+    String.prototype.startsWith = function(searchString, position) {
+        position = position || 0;
+        return this.indexOf(searchString, position) === position;
+    };
+}
 
 // Initialize refresh timer:
 var refreshTimer = setInterval(function () {
@@ -222,8 +235,7 @@ function addSetText(parentId, valID, val, valUnit, vorDate) {
     return html;
 }
 
-function addHTML(parentId, valID, val, vorDate, readonly) {
-    excludeFromRefresh.push(valID);
+function addHTML(parentId, valID, val, vorDate, readonly) {    
     var html = "<div class='ui-field-contain" + (readonly ? "" : " ui-grid-a") + "'>";
     html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "' data-id='" + valID + "'>" + val + "</div>";
     if (!readonly) {
@@ -269,7 +281,7 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
 }
 
 function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
-    excludeFromRefresh.push(valID);
+    excludeFromRefresh.push(valID.toString());
     if(!val){
         readonly = false;
         val = ";;1D";
@@ -380,7 +392,7 @@ function reloadHistorianChart(valID, data){
 }
 
 function addTuneInRadio(parentId, valID, val, vorDate, readonly) {
-    excludeFromRefresh.push(valID);
+    excludeFromRefresh.push(valID.toString());
     if(!val || !val.startsWith("http")){
         readonly = false;
     }
@@ -436,7 +448,7 @@ function editTuneIn(parentId, valID, val, vorDate){
 
 // ----------------------- Helper functions ----------------------------
 
-function log(txt, type) {
+function log(txt, type, linenumber) {
     if (debugModus) {
         if (type === 0) {
             console.info(txt);
@@ -444,6 +456,13 @@ function log(txt, type) {
             console.warn(txt);
         } else if (type === 2) {
             console.error(txt);
+        } else if (type === 3) {
+            if($('#errorsDebugger').length){
+                $('#errorsDebugger').append("<li>" + linenumber + ": " + txt + "</li>");
+            }else{
+                alert(linenumber + ": " + txt);
+                errorsDebugger.push("<li>" + linenumber + ": " + txt + "</li>");
+            }           
         } else {
             console.log(txt);
         }

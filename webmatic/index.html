@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
     <head> 
-        <title>WebMatic VBETAVERSION</title> 
+        <title>WebMatic VBETAVERSION</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
         <meta charset="utf-8">
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -23,26 +23,26 @@
         <link rel="icon" type="image/png" sizes="96x96" href="img/icons/favicon-96x96.png"/>
         <link rel="icon" type="image/png" sizes="16x16" href="img/icons/favicon-16x16.png"/>
         <link rel="manifest" href="img/icons/manifest.json"/>
-        
+
         <link rel="stylesheet" href="libs/jquery/jquery.mobile.structure-1.4.5.min.css" />
         <link rel="stylesheet" href="libs/jqplot/jquery.jqplot.min.css" />
-        <link rel="stylesheet" href="libs/DateBox/css/jtsage-datebox.min.css" />  
+        <link rel="stylesheet" href="libs/DateBox/css/jtsage-datebox.min.css" />
         <link rel="stylesheet" href="themes/webmatic-theme.min.css" />
-        <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />  
+        <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
         <link rel="stylesheet" href="themes/webmatic.css" />
 
-        <script type="text/javascript" src="libs/jquery/jquery-2.1.4.min.js"></script>		
-        <script type="text/javascript" src="libs/jquery/jquery.mobile-1.4.5.min.js"></script>		
+        <script type="text/javascript" src="libs/jquery/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="libs/jquery/jquery.mobile-1.4.5.min.js"></script>
         <script type="text/javascript" src="libs/jquery_lazyload/jquery.lazyload.min.js"></script>
         <script type="text/javascript" src="libs/Font.js/Font.min.js"></script>
         <script type="text/javascript" src="libs/DateBox/js/jtsage-datebox.min.js"></script>
         <script type="text/javascript" src="libs/DateBox/js/jtsage-datebox.i18n.de.utf8.min.js"></script>
-       
+
         <script type="text/javascript" src="js/i18n/wmmap.de.js"></script>
         <script type="text/javascript" src="js/wmmap.js"></script>
         <script type="text/javascript" src="js/wmhelper.js"></script>
         <script type="text/javascript" src="js/webmatic.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>		
+        <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript" src="libs/jqplot/jquery.jqplot.min.js"></script>
         <script type="text/javascript" src="libs/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
@@ -50,11 +50,11 @@
         <script type="text/javascript" src="libs/jqplot/plugins/jqplot.highlighter.min.js"></script>
         <script type="text/javascript" src="libs/jqplot/plugins/jqplot.cursor.min.js"></script>
         <script type="text/javascript" src="libs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-        <script type="text/javascript" src="libs/jqplot/plugins/jqplot.meterGaugeRenderer.min.js"></script>		
+        <script type="text/javascript" src="libs/jqplot/plugins/jqplot.meterGaugeRenderer.min.js"></script>
 
     </head> 
     <body>
-        <div data-role="page" data-theme="a">		
+        <div data-role="page" data-theme="a">
             <div data-role="popup" id="popupService" data-theme="a" data-overlay-theme="a">
                 <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
                 <div data-role="content" id="popupDiv">
@@ -68,8 +68,8 @@
 
             <div data-role="header" data-position="fixed" data-theme="a">
                 <h1 style="text-align: left;margin-left: 20px;">WebMatic VBETAVERSION</h1>
-                <div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">  
-                    <a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert"> 
+                <div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">
+                    <a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert">
                         <span class="ui-btn-inner ui-btn-corner-all">
                             <span class="ui-btn-text">&nbsp;</span>
                         </span>
@@ -84,6 +84,7 @@
             </div>
 
             <div data-role="content" data-theme="a">
+                <div><ul id="errorsDebugger" style="display: none;"></ul></div>
 
                 <div class="content-secondary">
                     <div id="main_menu" data-role="collapsible-set" data-theme="a"></div>

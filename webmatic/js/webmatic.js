@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger */
 
 // WebMatic 2.x
 // by ldittmar
@@ -202,13 +202,23 @@ function refreshPage(item) {
 
         //Eventuelle JS nachträglich ausführen
         $(".evalScript").each(function () {
-            if($.inArray($(this).data("id"), excludeFromRefresh) === -1){
+            var valID = $(this).data("id");
+            if($.inArray(valID.toString(), excludeFromRefresh) === -1){
+                excludeFromRefresh.push(valID.toString());
                 $(this).find("script").each(function(){
                     var src = $(this).attr('src');
                     if (src) {
-                        $.getScript(src);
+                        try{
+                            $.getScript(src);
+                        }catch(err){
+                            log(err, 2);
+                        }
                     } else {
-                        eval($(this).text());
+                        try{
+                            eval($(this).text());
+                        }catch(err) {
+                            log(err, 2);
+                        }
                     }
                 });                
             }
@@ -1161,7 +1171,7 @@ function addChannel(device, systemDate, options) {
                 if (isReadOnly(valInfo)) {
                     deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                 } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
-                    excludeFromRefresh.push(valID);
+                    excludeFromRefresh.push(valID.toString());
                     options['addDiagram'] = true;
                     if (options['varOptionsFirst'] === "dk") {
                         options['diagramData'] = channel['diagrams'];
@@ -1275,7 +1285,7 @@ function processDevices(device, systemDate, options) {
         if (isReadOnly(valInfo)) {
             deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
         } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
-            excludeFromRefresh.push(valID);
+            excludeFromRefresh.push(valID.toString());
             options['addDiagram'] = true;
             if (options['varOptionsFirst'] === "dk") {
                 options['diagramData'] = device['diagrams'];
@@ -1355,10 +1365,9 @@ function loadRecognization(){
             client = "";
         }
     })
-    .fail(function (jqXHR, textStatus) {
+    .fail(function () {
         recognizeMap = {};
         client = "";
-        log("Recognization failed: " + textStatus, 2);
     });
 }
 
@@ -1853,7 +1862,7 @@ function loadData(url, id, restart) {
                     if ($('#' + devID).length === 0 && devVisible) {
                         $("#dataList").append(html);
                     } else if (devVisible) {
-                        if($.inArray(devID, excludeFromRefresh) === -1){
+                        if($.inArray(devID.toString(), excludeFromRefresh) === -1){
                             $('#' + devID).replaceWith(html);
                         }
                     } else if ($('#' + devID).length !== 0) {
@@ -1927,7 +1936,7 @@ function loadVariables(restart) {
                 if ($('#' + valID).length === 0 && ((readModus && valVisible) || !readModus)) {
                     $("#dataList").append(processVariable(variable, valID, systemDate));
                 } else if ((readModus && valVisible) || !readModus) {
-                    if($.inArray(valID, excludeFromRefresh) === -1){
+                    if($.inArray(valID.toString(), excludeFromRefresh) === -1){
                         $('#' + valID).replaceWith(processVariable(variable, valID, systemDate));
                     }
                 } else if ($('#' + valID).length !== 0) {
@@ -2679,6 +2688,13 @@ function loadOptions() {
 // ------------------------- OnDocumentReady -----------------------------
 
 $(function () {
+    
+    if(debugModus){
+        $('#errorsDebugger').show();
+        $.each(errorsDebugger, function(error){
+            $('#errorsDebugger').append(errorsDebugger[error]);
+        });
+    }
     
     $.jqplot.config.enablePlugins = true;
 
