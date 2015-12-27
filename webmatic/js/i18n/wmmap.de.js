@@ -638,7 +638,7 @@ var textMap = {
     TIME_W_SINGULAR: "Woche",
     TIME_W_PLURAL: "Wochen",
     TIME_MON_SINGULAR: "Monat",
-    TIME_MON_PLURAL: "Monate",
+    TIME_MON_PLURAL: "Monaten",
     TIME_Y_SINGULAR: "Jahr",
     TIME_Y_PLURAL: "Jahre",
     TIME_PREFIX: "Vor",

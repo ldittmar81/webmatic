@@ -113,7 +113,7 @@ if(!debugModus){
     });  
     function createVerFile(){
         $.ajax({
-            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wva3lMYUpK"),
+            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvMXJNQ1RG"),
             method: 'GET',
             dataType: 'JSONP',
             error: function(jqXHR, textStatus) { 
