@@ -594,6 +594,7 @@ var textMap = {
     RU: "俄罗斯",
     TR: "土耳其",
     ZH: "中国人",
+    LANGUAGE: "语言",
     //Andere Bezeichnungen
     OPEN: "打开",
     OPEN_SHORT: "开放",
@@ -686,5 +687,14 @@ var textMap = {
     STABLE: "只有稳定的版本",
     ALPHA: "同时阿尔法版本",
     OTHERS: "其余",
-    DONT_LEAVE: "防止意外离开当前页面"
+    DONT_LEAVE: "防止意外离开当前页面",
+    CHOOSE: "请选择",
+    DELETE_SETTINGS: "删除设置",
+    RELOAD: "重装",
+    CLIENT_SETTINGS: "客户端设置",
+    CLIENT_TITLE: "客户端的名称",
+    DEFAULT_SORT: "标准分类",
+    ALPHABETICAL: "按字母顺序",
+    MANUALLY: "手动",
+    DELETE_SETTINGS_WARNING: "注意所选客户端的所有设置都将被删除"
 };

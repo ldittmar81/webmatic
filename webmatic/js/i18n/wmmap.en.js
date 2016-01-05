@@ -585,6 +585,16 @@ var textMap = {
     ALARMDP__UNREACH: "communication disturbed at the time",
     ALARMDP__UPDATE_PENDING: "update available",
     ALARMDP__USBH_POWERFAIL: "USB host disabled",
+    //Sprachen
+    DE: "German",
+    EN: "English",
+    ES: "Spanish",
+    FR: "French",
+    PT: "Portuguese",
+    RU: "Russian",
+    TR: "Turkish",
+    ZH: "Chinese",
+    LANGUAGE: "language",
     //Andere Bezeichnungen
     OPEN: "open",
     OPEN_SHORT: "open",
@@ -677,5 +687,14 @@ var textMap = {
     STABLE: "only stable versions",
     ALPHA: "also alpha versions",
     OTHERS: "others",
-    DONT_LEAVE: "Prevent accidental leaving the page"
+    DONT_LEAVE: "Prevent accidental leaving the page",
+    CHOOSE: "please choose",
+    DELETE_SETTINGS: "clear settings",
+    RELOAD: "reload",
+    CLIENT_SETTINGS: "settings of the client",
+    CLIENT_TITLE: "name of the client",
+    DEFAULT_SORT: "standard sorting",
+    ALPHABETICAL: "alphabetical",
+    MANUALLY: "manuelly",
+    DELETE_SETTINGS_WARNING: "Attention! All settings of the selected client will be deleted."
 };

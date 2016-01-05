@@ -1,5 +1,5 @@
-/* global theme, font */
-
+/* global theme, font, isGetSite */
+isGetSite = true;
 // ------------------------- Initial call after page loading ------------------------
 $(function () {
     var getUrlParameter = function getUrlParameter(sParam) {
@@ -28,5 +28,5 @@ $(function () {
     restartTimer();
     changeTheme(theme);
     changeFont(font);
-    readModus = true;
+    readModus = true;    
 });

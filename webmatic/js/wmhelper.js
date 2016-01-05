@@ -3,9 +3,10 @@
 //Variablen
 var webmaticVersion = "0";
 var isPreRelease = 0;
-var lastStableVersion = "2.0";
+var lastStableVersion = "2.1.3";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 9;
+var storageVersion = 12;
+var wmLang="de";//genau so lassen
 
 // Globale variablen
 var debugModus = true;
@@ -18,7 +19,13 @@ var prevItem = 0;
 var saveDataToFile = false;
 var newVersion = false;
 var mustBeSaved = false;
+var isGetSite = false;
 var client = "";
+var isTempClient = false;
+var clientsList = {};
+
+var picturesList = [];
+var picturesListError = false;
 
 var excludeFromRefresh = [];
 var tempExcludeFromRefresh = 0;
@@ -44,6 +51,18 @@ if (typeof String.prototype.startsWith !== 'function') {
         return this.indexOf(searchString, position) === position;
     };
 }
+
+// Check if a new cache is available on page load.
+window.addEventListener('load', function() {
+    window.applicationCache.addEventListener('updateready', function() {
+        if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+            // Browser downloaded a new app cache.
+            // Swap it in and reload the page to get the new hotness.
+            window.applicationCache.swapCache();
+            window.location.reload(true);
+        }
+    }, false);
+}, false);
 
 // Initialize refresh timer:
 var refreshTimer = setInterval(function () {

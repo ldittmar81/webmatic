@@ -594,6 +594,7 @@ var textMap = {
     RU: "Rus",
     TR: "Türk",
     ZH: "Çin",
+    LANGUAGE: "Dil",
     //Andere Bezeichnungen
     OPEN: "açmak",
     OPEN_SHORT: "Açık",
@@ -686,5 +687,14 @@ var textMap = {
     STABLE: "Sadece kararlı sürümleri",
     ALPHA: "Ayrıca alfa sürümleri",
     OTHERS: "Diğerleri",
-    DONT_LEAVE: "Sayfa bırakarak yanlışlıkla önleyin"
+    DONT_LEAVE: "Sayfa bırakarak yanlışlıkla önleyin",
+    CHOOSE: "seçiniz",
+    DELETE_SETTINGS: "Ayarları silmek",
+    RELOAD: "yeniden",
+    CLIENT_SETTINGS: "müşterinin ayarlar",
+    CLIENT_TITLE: "müşteri adı",
+    DEFAULT_SORT: "Standart sıralama",
+    ALPHABETICAL: "alfabetik",
+    MANUALLY: "elle",
+    DELETE_SETTINGS_WARNING: "Dikkat, seçilen istemci tüm ayarlar silinecektir."
 };

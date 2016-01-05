@@ -1,4 +1,4 @@
-/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap */
+/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError */
 
 function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed){
     $("#main_menu").append("<div " + (resultOptionsMap[indexType]?"":"style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3><ul id='list" + indexType + "' data-role='listview' data-inset='true'></ul></div>");
@@ -33,18 +33,28 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed){
         }
         var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key + "' " + (val['visible']?"":"style='display: none;'") + ">";
         html += "<a href='#'><img id='menuImg" + key + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
-        if(val['pic']){
+        if($.inArray(key, picturesList) !== -1 || picturesListError){
             html += " lazy" + indexType + "' data-original='../webmatic_user/img/ids/" + indexType + "/" + key + ".png";
         }
         html += "' src='img/menu/" + indexType + ".png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
-        tmpObj[parseInt(val['position'])] = html;            
+        if(resultOptionsMap['default_sort_manually']){
+            tmpObj[parseInt(val['position'])] = html;
+        }else{
+            tmpObj[val['name']] = html;
+        }
     });
-    var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
+    var keys;
+    if(resultOptionsMap['default_sort_manually']){
+        keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
+    }else{
+        keys = Object.keys(tmpObj).sort();
+    }
     var len = keys.length;    
     for (var i = 0; i < len; i++) {
         var k = keys[i];
         $("#list" + indexType).append(tmpObj[k]);
     }
+        
     $("#list" + indexType).listview().listview("refresh");
     $("img.lazy" + indexType).lazyload({event: "lazyLoadInstantly"});    
 }
@@ -93,7 +103,7 @@ $(function () {
     $("#main_menu").append("<div " + (resultOptionsMap["programs"]?"":"style='display:none;'") + " id='programsMainMenu' class='scrollToList listPrograms' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (collapsed === "programs") + "'><h3>" + mapText("PROGRAMS") + "</h3></div>");
   
     //Menüpunkt Sonstiges
-    $("#main_menu").append("<div " + (resultOptionsMap["others"]?"":"style='display:none;'") + " id='othersMainMenu' class='menuListRow' data-role='collapsible' data-collapsed='" + (collapsed === "others") + "'><h3>" + mapText("SETTINGS") + "</h3><ul id='listOther' data-role='listview' data-inset='true'></ul></div>");
+    $("#main_menu").append("<div " + (resultOptionsMap["others"] || isTempClient?"":"style='display:none;'") + " id='othersMainMenu' class='menuListRow' data-role='collapsible' data-collapsed='" + (collapsed === "others") + "'><h3>" + mapText("SETTINGS") + "</h3><ul id='listOther' data-role='listview' data-inset='true'></ul></div>");
     $("#listOther").append("<li id='menuItemVariables' class='menuItemVariables " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>" + mapText("SYS_VAR") + "</span></a></li>");
     $("#listOther").append("<li id='menuItemPrograms' class='menuItemPrograms " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>" + mapText("PROGRAMS") + "</span></a></li>");
     $("#listOther").append("<li id='menuItemOptions' class='menuItemOptions " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>" + mapText("OPTIONS") + "</span></a></li>");

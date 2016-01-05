@@ -594,6 +594,7 @@ var textMap = {
     RU: "Russo",
     TR: "Turco",
     ZH: "Chinês",
+    LANGUAGE: "Idioma",
     // Andere Bezeichnungen
     OPEN: "aberto",
     OPEN_SHORT: "aberto",
@@ -686,7 +687,16 @@ var textMap = {
     STABLE: "somente versões estáveis",
     ALPHA: "também versões alfa",
     OTHERS: "outros",
-    DONT_LEAVE: "Prevenir acidental sair da página"
+    DONT_LEAVE: "Prevenir acidental sair da página",
+    CHOOSE: "escolha",
+    DELETE_SETTINGS: "eliminar as definições",
+    RELOAD: "reload",
+    CLIENT_SETTINGS: "As configurações do cliente",
+    CLIENT_TITLE: "nome do cliente",
+    DEFAULT_SORT: "ordenação padrão",
+    ALPHABETICAL: "alfabética",
+    MANUALLY: "manualmente",
+    DELETE_SETTINGS_WARNING: "Atenção Todas as configurações do cliente selecionado será excluído."
 };
 
 

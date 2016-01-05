@@ -1,28 +1,7 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite */
 
 // WebMatic 2.x
 // by ldittmar
-
-/* Wird bei Version 2.2 gelöscht  */
-var lokalFont = "";
-var lokalDesign = "";
-var lokalGfx = "";
-var oldDataSaved = false;
-function saveOldData(){
-    if(localStorage.getItem("optionsMenuGfxFont") !== null){
-        lokalFont = localStorage.getItem("optionsMenuGfxFont");
-        oldDataSaved = true;
-    }
-    if(localStorage.getItem("optionsMenuGfxTheme") !== null){
-        lokalDesign = localStorage.getItem("optionsMenuGfxTheme");
-        oldDataSaved = true;
-    }
-    if(localStorage.getItem("optionsMenuGfxSize") !== null){
-        lokalGfx = localStorage.getItem("optionsMenuGfxSize");
-        oldDataSaved = true;
-    }
-}
-/* Wird bei Version 2.2 gelöscht  */
 
 //Wiedererkennung von Clients (feste IP zwingend notwendig)
 if (localStorage.getItem("webmaticrecognizeMap") === null) {
@@ -31,11 +10,33 @@ if (localStorage.getItem("webmaticrecognizeMap") === null) {
     recognizeMap = JSON.parse(localStorage.getItem("webmaticrecognizeMap"));
     client = ("REMOTE_ADDR" in recognizeMap?recognizeMap["REMOTE_ADDR"]:"");
 }
+if (localStorage.getItem("tempOptionsForClient") !== null) {
+    client = localStorage.getItem("tempOptionsForClient");
+    isTempClient = true;
+    localStorage.removeItem("tempOptionsForClient");
+}
+//Language
+$.get('../webmatic_user/lang.json', function(data){
+    wmLang = data.trim();    
+}).fail(function(){
+    wmLang = "de";
+    $.post('cgi/saveconfig.cgi', {name: "lang", text: wmLang});
+});
+//Check Icons
+$.ajax({
+    type: 'GET',
+    url: 'cgi/check-image.cgi',
+    dataType: 'json',
+    async: false
+}).done(function(data){
+    picturesList = data;
+}).fail(function(){
+    picturesListError = true;
+});
 
 //Initialwerte (Einstellungen) einlesen
 //Global
 if (localStorage.getItem("webmaticoptionsMap") === null) {
-    saveOldData();//Wird bei Version 2.2 gelöscht
     localStorage.clear();
     localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
     loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);
@@ -44,38 +45,37 @@ if (localStorage.getItem("webmaticoptionsMap") === null) {
     var ok = true;
     if(optionsMap['storageVersion'] !== storageVersion){
         ok = false;
-        saveOldData();//Wird bei Version 2.2 gelöscht
         localStorage.clear();
         localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
         newVersion = true;
     }
-    loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);    
+    loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);     
 }
+/* LÖSCHEN MIT 2.3 */
+var tmpTheme = optionsMap["default_theme"];
+if(tmpTheme && tmpTheme.length === 1){
+    optionsMap["default_theme"] = "wm" + tmpTheme;
+    saveOptionsToServer("default_theme", "wm" + tmpTheme);
+}
+/* LÖSCHEN MIT 2.3 */
 //Lokal
 if (localStorage.getItem("webmaticoptionsclientMap") === null) {
     if(client !== ""){
-        loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true, function(){
-            /* Wird bei Version 2.2 gelöscht  */
-            if(oldDataSaved){
-                if(lokalFont !== ""){
-                    optionsClientMap["default_font"] = lokalFont;
-                }
-                if(lokalDesign !== ""){
-                    optionsClientMap["default_theme"] = lokalDesign;
-                }
-                if(lokalGfx !== ""){
-                    optionsClientMap["default_menugfxsize"] = lokalGfx;
-                }
-                saveClientOptionsToServer();
-            }
-            /* Wird bei Version 2.2 gelöscht  */
-        });
+        loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true);
     }
 } else {
     optionsClientMap = JSON.parse(localStorage.getItem("webmaticoptionsclientMap"));    
 }
+/* LÖSCHEN MIT 2.3 */
+var tmpClientTheme = optionsClientMap["default_theme"];
+if(tmpClientTheme && tmpClientTheme.length === 1){    
+    optionsClientMap["default_theme"] = "wm" + tmpClientTheme;
+    saveClientOptionsToServer("default_theme", "wm" + tmpClientTheme);
+}
+/* LÖSCHEN MIT 2.3 */
 //Kombinieren
 createOneMap("config");
+clientsList = optionsMap["clientsList"];
 
 //Webmatic-Version erkennen
 if(!debugModus){
@@ -113,7 +113,7 @@ if(!debugModus){
     });  
     function createVerFile(){
         $.ajax({
-            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvMXJNQ1RG"),
+            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvbE95ak1i"),
             method: 'GET',
             dataType: 'JSONP',
             error: function(jqXHR, textStatus) { 
@@ -128,8 +128,8 @@ if(!debugModus){
 
 //Design setzen
 theme = resultOptionsMap["default_theme"];
-if ($.inArray(theme, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
-    theme = "a";
+if ($.inArray(theme, ["wma", "wmb", "wmc", "wmd", "wme", "wmf", "wmg", "wmh", "wmi", "wmj", "wmk", "wml"]) === -1) {
+    theme = "wma";
 }
 font = resultOptionsMap["default_font"];
 if ($.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
@@ -475,7 +475,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
     var deviceHTML = "<li class='dataListItem' id='" + prgID + "' " + (visible?"":"style='display: none;'") + ">";
     deviceHTML += "<h2 class='ui-li-heading'>" + prog['name'] + "</h2>";
     deviceHTML += "<p>" + prog['info'] + (!active?" (" + mapText("MANUAL") + ")":"") + "</p>";
-    if(prog['pic']){
+    if($.inArray(prgID, picturesList) !== -1){
         deviceHTML += "<div style='float: left; text-align: center;'>";
         deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
         deviceHTML += "</div>";
@@ -497,11 +497,11 @@ function processGraphicID(type) {
         var html = "<li id='list" + key +"' data-id='" + key + "'>";
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
-        if(val['pic']){
+        if($.inArray(key, picturesList) !== -1){
             html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + key + ".png";
         }
         html += "' src='img/menu/" + type + ".png'/>";
-        html += "<a href='#' " + (!val['pic'] ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
+        html += "<a href='#' " + ($.inArray(key, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
         html += "<h1>(";
         if(type === "rooms" || type === "functions" || type === "favorites"){
             html += "<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>";
@@ -510,19 +510,21 @@ function processGraphicID(type) {
         }
         html += ")</h1>";
         html += "</div>";
-        html += "<div style='float: right;'>";
-        html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key +"' data-type='" + type + "' value='" + val['position'] + "' data-last='" + (size === val['position']) + "'/>";
-        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
-        if(val['position'] <= 1){
-            html += " ui-state-disabled' style='display: none;";
+        if(resultOptionsMap['default_sort_manually']){
+            html += "<div style='float: right;'>";
+            html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key +"' data-type='" + type + "' value='" + val['position'] + "' data-last='" + (size === val['position']) + "'/>";
+            html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
+            if(val['position'] <= 1){
+                html += " ui-state-disabled' style='display: none;";
+            }
+            html += "' name='setUp' id='setUp" + key + "' data-id='" + key + "' />";
+            html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext ui-corner-all";
+            if(val['position'] >= size){
+                html += " ui-state-disabled' style='display: none;";
+            }
+            html += "' name='setDown' id='setDown" + key + "' data-id='" + key + "' />";
+            html += "</div>";
         }
-        html += "' name='setUp' id='setUp" + key + "' data-id='" + key + "' />";
-        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext ui-corner-all";
-        if(val['position'] >= size){
-            html += " ui-state-disabled' style='display: none;";
-        }
-        html += "' name='setDown' id='setDown" + key + "' data-id='" + key + "' />";
-        html += "</div>";
         html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key + "'>";
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><input name='editName' data-id='" + key +"' data-type='" + type + "' type='text' value='" + val['name'] + "' /></div>";
@@ -546,15 +548,25 @@ function processGraphicID(type) {
         html += "</div>";
         html += "</form>";
         html += "</li>";
-        tmpObj[parseInt(val['position'])] = html;        
+        if(resultOptionsMap['default_sort_manually']){
+            tmpObj[parseInt(val['position'])] = html;
+        }else{
+            tmpObj[val['name']] = html;
+        }
     });
     
-    var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
+    var keys;
+    if(resultOptionsMap['default_sort_manually']){
+        keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
+    }else{
+        keys = Object.keys(tmpObj).sort();
+    }
     var len = keys.length;    
     for (var i = 0; i < len; i++) {
         var k = keys[i];
         $("#dataList").append(tmpObj[k]);
     }
+    
 }
 
 function getErrorMessage(errType, error, errValue, deviceHssType) {
@@ -1171,7 +1183,7 @@ function addChannel(device, systemDate, options) {
                 if (isReadOnly(valInfo)) {
                     deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                 } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
-                    excludeFromRefresh.push(valID.toString());
+                    excludeFromRefresh.push(valID);
                     options['addDiagram'] = true;
                     if (options['varOptionsFirst'] === "dk") {
                         options['diagramData'] = channel['diagrams'];
@@ -1359,7 +1371,7 @@ function loadRecognization(){
         if(data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")){
             recognizeMap = data;
             client = data['REMOTE_ADDR'];
-            localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
+            localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));            
         }else{
             recognizeMap = {};
             client = "";
@@ -1387,7 +1399,7 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
                     processedData = saveConfigFile(type, data, create, map, true);
                 }else{
                     processedData = data;
-                    optionsMap = data;
+                    optionsMap = data;                    
                     localStorage.setItem(map, JSON.stringify(data));
                 }                
                 break;
@@ -1464,7 +1476,6 @@ function saveConfigFile(type, newJsonObj, create, map, actual){
                 obj['name'] = val;
                 obj['oldname'] = val;
                 obj['visible'] = true;
-                obj['pic'] = false;
                 obj['position'] = i;
                 returnJson[key] = obj;
             });
@@ -1482,7 +1493,6 @@ function saveConfigFile(type, newJsonObj, create, map, actual){
                 obj['oldname'] = val['name'];
                 obj['visible'] = val['visible'];
                 obj['oldvisible'] = val['visible'];
-                obj['pic'] = false;
                 obj['position'] = i;
                 obj['active'] = val['active'];
                 obj['operate'] = val['operate'];
@@ -1513,24 +1523,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual){
 function refreshJSONObj(type, newJsonObj, create){
    var oldMap = getMap(type);
    if(type === "rooms" || type === "favorites" || type === "functions" ){
-        if(create){
-            var returnJson = {};
-            $.each(newJsonObj, function(key, val){
-                $.ajax({
-                    type: 'GET',
-                    url: '../webmatic_user/img/ids/' + type + '/' + key + '.png',
-                    async: false
-                })
-                .done(function(){
-                    val['pic'] = true;
-                })
-                .fail(function() {                         
-                    val['pic'] = false;
-                });
-                returnJson[key] = val;
-            });
-            newJsonObj = returnJson;
-        } else {
+        if(!create){
             var returnJson = {};
             var size = newJsonObj["size"];
             $.each(newJsonObj, function(key, val){
@@ -1541,7 +1534,6 @@ function refreshJSONObj(type, newJsonObj, create){
                 if(key in oldMap){
                     var savedVal = oldMap[key];
                     val['visible'] = savedVal['visible'];
-                    val['pic'] = savedVal['pic'];
                     val['position'] = savedVal['position'];
                     if(val['oldname'] === savedVal['oldname']){
                         val['name'] = savedVal['name'];                        
@@ -1559,28 +1551,7 @@ function refreshJSONObj(type, newJsonObj, create){
             newJsonObj = returnJson;
         }      
     } else if(type === "programs" ) {
-        if(create){
-            var returnJson = {};            
-            $.each(newJsonObj, function(key, val){
-                if(key === "date" || key === "size"){
-                    returnJson[key] = val;
-                    return;
-                }
-                $.ajax({
-                    type: 'GET',
-                    url: '../webmatic_user/img/ids/' + type + '/' + key + '.png',
-                    async: false
-                })
-                .done(function(){
-                    val['pic'] = true;
-                })
-                .fail(function() {                         
-                    val['pic'] = false;
-                });
-                returnJson[key] = val;
-            });
-            newJsonObj = returnJson;
-        } else {
+        if(!create){
             var returnJson = {};
             var size = newJsonObj["size"];
             $.each(newJsonObj, function(key, val){
@@ -1590,7 +1561,6 @@ function refreshJSONObj(type, newJsonObj, create){
                 }
                 if(key in oldMap){
                     var savedVal = oldMap[key];
-                    val['pic'] = savedVal['pic'];
                     val['position'] = savedVal['position'];
                     if(val['oldname'] === savedVal['oldname']){
                         val['name'] = savedVal['name'];                        
@@ -1634,6 +1604,17 @@ function refreshJSONObj(type, newJsonObj, create){
         if(!("dont_leave" in newJsonObj)){
             newJsonObj['dont_leave'] = false;
         }
+        if(!("clientsList" in newJsonObj)){
+            newJsonObj['clientsList'] = !isTempClient?clientsList:new Object();
+        }
+        if(!("default_sort_manually" in newJsonObj)){
+            newJsonObj['default_sort_manually'] = true;
+        }
+        clientsList = newJsonObj['clientsList'];
+        if(client !== "" && !isTempClient && !(client in clientsList)){
+            clientsList[client] = client;
+            newJsonObj['clientsList'] = clientsList;
+        }
     }
     
     setMap(type, newJsonObj);
@@ -1653,13 +1634,15 @@ function createConfigFile(type, map){
         text += '"others" : true,';
         text += '"collapsed" : "rooms",';
         text += '"systemvar_readonly" : true,';
-        text += '"default_theme" : "a",';
+        text += '"default_theme" : "wma",';
         text += '"default_font" : "a",';
         text += '"ccu_historian" : "",';
         text += '"default_menugfxsize" : "large",';
         text += '"no_more_settings" : 0,';
         text += '"new_version" : "stable",';
-        text += '"dont_leave" : false'
+        text += '"dont_leave" : false,';
+        text += '"clientsList" : {' + (client !== "" && !isTempClient?'"' + client + '":"' + client + '"':'') + '},';
+        text += '"default_sort_manually" : true';
         text += '}';
         
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
@@ -1696,9 +1679,13 @@ function createConfigFile(type, map){
     }    
 }
 
-function saveOptionsToServer(key, value){
+function saveOptionsToServer(key, value, reload){
     localStorage.setItem("webmaticoptionsMap", JSON.stringify(optionsMap));    
-    $.post('cgi/saveconfig.cgi', {name: "config", text: JSON.stringify(optionsMap)});
+    $.post('cgi/saveconfig.cgi', {name: "config", text: JSON.stringify(optionsMap)}).done(function(){
+        if(reload){
+            location.reload(true);
+        }
+    });
     createOneMap("config", key, value);
 }
 
@@ -1836,6 +1823,10 @@ function loadData(url, id, restart) {
             }
             addDiagram(options);
         });
+        
+        if(isGetSite){
+            document.title = devicesMap['name'];
+        }
 
         reloadList(devicesMap['name'], systemDate, restart, devicesMap['description']);
     }
@@ -1992,11 +1983,20 @@ function loadPrograms(restart) {
             var prgVisible = prog['visible'];
             var prgActive = prog['active'];
             var prgID = key;
-
-            tmpObj[parseInt(prog['position'])] = processProgram(prog, prgID, systemDate, prgActive, (readModus && prgVisible) || !readModus);
+            var html = processProgram(prog, prgID, systemDate, prgActive, (readModus && prgVisible) || !readModus);
+            if(resultOptionsMap['default_sort_manually']){
+                tmpObj[parseInt(prog['position'])] = html;
+            }else{
+                tmpObj[prog['name']] = html;
+            }                
         });
         
-        var keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
+        var keys;
+        if(resultOptionsMap['default_sort_manually']){
+            keys = Object.keys(tmpObj).sort(function(a,b){return a-b;});
+        }else{
+            keys = Object.keys(tmpObj).sort();
+        }
         var len = keys.length;    
         for (var i = 0; i < len; i++) {
             var k = keys[i];
@@ -2098,7 +2098,7 @@ function loadOptionsClient() {
     $("#dataList").empty();
     $("#dataListHeader").empty();
 
-    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS_CLIENT") + " (" + client + ")</li>");
+    $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS_CLIENT") + " (" + clientsList[client] + ")</li>");
     var html;
 
     //Themeauswahl
@@ -2114,18 +2114,18 @@ function loadOptionsClient() {
     html += "<select id='client_default_theme' data-theme='" + theme + "'>";
     var clientTheme = optionsClientMap["default_theme"];
     html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";    
-    html += "<option value='a' " + (clientTheme === "a"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
-    html += "<option value='b' " + (clientTheme === "b"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
-    html += "<option value='c' " + (clientTheme === "c"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
-    html += "<option value='d' " + (clientTheme === "d"?"selected='selected'":"") + ">" + mapText("GREEN") + "</option>";
-    html += "<option value='e' " + (clientTheme === "e"?"selected='selected'":"") + ">" + mapText("YELLOW") + "</option>";
-    html += "<option value='f' " + (clientTheme === "f"?"selected='selected'":"") + ">" + mapText("GREY") + "</option>";
-    html += "<option value='g' " + (clientTheme === "g"?"selected='selected'":"") + ">" + mapText("BLUE") + "</option>";
-    html += "<option value='h' " + (clientTheme === "h"?"selected='selected'":"") + ">" + mapText("RED") + "</option>";
-    html += "<option value='i' " + (clientTheme === "i"?"selected='selected'":"") + ">" + mapText("BROWN") + "</option>";
-    html += "<option value='j' " + (clientTheme === "j"?"selected='selected'":"") + ">" + mapText("WHITE") + "</option>";
-    html += "<option value='k' " + (clientTheme === "k"?"selected='selected'":"") + ">" + mapText("BRAZIL") + "</option>";
-    html += "<option value='l' " + (clientTheme === "l"?"selected='selected'":"") + ">" + mapText("GERMANY") + "</option>";
+    html += "<option value='wma' " + (clientTheme === "wma"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
+    html += "<option value='wmb' " + (clientTheme === "wmb"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
+    html += "<option value='wmc' " + (clientTheme === "wmc"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
+    html += "<option value='wmd' " + (clientTheme === "wmd"?"selected='selected'":"") + ">" + mapText("GREEN") + "</option>";
+    html += "<option value='wme' " + (clientTheme === "wme"?"selected='selected'":"") + ">" + mapText("YELLOW") + "</option>";
+    html += "<option value='wmf' " + (clientTheme === "wmf"?"selected='selected'":"") + ">" + mapText("GREY") + "</option>";
+    html += "<option value='wmg' " + (clientTheme === "wmg"?"selected='selected'":"") + ">" + mapText("BLUE") + "</option>";
+    html += "<option value='wmh' " + (clientTheme === "wmh"?"selected='selected'":"") + ">" + mapText("RED") + "</option>";
+    html += "<option value='wmi' " + (clientTheme === "wmi"?"selected='selected'":"") + ">" + mapText("BROWN") + "</option>";
+    html += "<option value='wmj' " + (clientTheme === "wmj"?"selected='selected'":"") + ">" + mapText("WHITE") + "</option>";
+    html += "<option value='wmk' " + (clientTheme === "wmk"?"selected='selected'":"") + ">" + mapText("BRAZIL") + "</option>";
+    html += "<option value='wml' " + (clientTheme === "wml"?"selected='selected'":"") + ">" + mapText("GERMANY") + "</option>";
     html += "</select>";
     html += "<a href='#' name='saveClientOption' data-key='default_theme' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
@@ -2139,18 +2139,18 @@ function loadOptionsClient() {
     html += "<select id='client_default_font' data-theme='" + theme + "'>";
     var clientFont = optionsClientMap["default_font"];
     html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";
-    html += "<option value='a' " + (clientFont === "a"?"selected='selected'":"") + ">Normal</a>";
-    html += "<option value='b' " + (clientFont === "b"?"selected='selected'":"") + ">Koch Fraktur</a>";
-    html += "<option value='c' " + (clientFont === "c"?"selected='selected'":"") + ">Planet Benson</a>";
-    html += "<option value='d' " + (clientFont === "d"?"selected='selected'":"") + ">Action Man</a>";
-    html += "<option value='e' " + (clientFont === "e"?"selected='selected'":"") + ">Amadeus</a>";
-    html += "<option value='f' " + (clientFont === "f"?"selected='selected'":"") + ">Vamp</a>";
-    html += "<option value='g' " + (clientFont === "g"?"selected='selected'":"") + ">HennyPenny</a>";
-    html += "<option value='h' " + (clientFont === "h"?"selected='selected'":"") + ">Anglican</a>";
-    html += "<option value='i' " + (clientFont === "i"?"selected='selected'":"") + ">Nosifer</a>";
-    html += "<option value='j' " + (clientFont === "j"?"selected='selected'":"") + ">Pacifico</a>";
-    html += "<option value='k' " + (clientFont === "k"?"selected='selected'":"") + ">Sixties</a>";
-    html += "<option value='l' " + (clientFont === "l"?"selected='selected'":"") + ">Crackman</a>";
+    html += "<option value='a' " + (clientFont === "a"?"selected='selected'":"") + ">Normal</option>";
+    html += "<option value='b' " + (clientFont === "b"?"selected='selected'":"") + ">Koch Fraktur</option>";
+    html += "<option value='c' " + (clientFont === "c"?"selected='selected'":"") + ">Planet Benson</option>";
+    html += "<option value='d' " + (clientFont === "d"?"selected='selected'":"") + ">Action Man</option>";
+    html += "<option value='e' " + (clientFont === "e"?"selected='selected'":"") + ">Amadeus</option>";
+    html += "<option value='f' " + (clientFont === "f"?"selected='selected'":"") + ">Vamp</option>";
+    html += "<option value='g' " + (clientFont === "g"?"selected='selected'":"") + ">HennyPenny</option>";
+    html += "<option value='h' " + (clientFont === "h"?"selected='selected'":"") + ">Anglican</option>";
+    html += "<option value='i' " + (clientFont === "i"?"selected='selected'":"") + ">Nosifer</option>";
+    html += "<option value='j' " + (clientFont === "j"?"selected='selected'":"") + ">Pacifico</option>";
+    html += "<option value='k' " + (clientFont === "k"?"selected='selected'":"") + ">Sixties</option>";
+    html += "<option value='l' " + (clientFont === "l"?"selected='selected'":"") + ">Crackman</option>";
     html += "</select>";
     html += "<a href='#' name='saveClientOption' data-key='default_font' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
@@ -2332,12 +2332,12 @@ function loadOptionsClient() {
     var clientColapsed = optionsClientMap["collapsed"];
     html += "<option value='none'>" + mapText("NOT_SELECTED") + "</a>";
     html += "<option value=''>" + mapText("NO_VALUE") + "</option>";
-    html += "<option value='favorites' " + (clientColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
-    html += "<option value='rooms' " + (clientColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
-    html += "<option value='functions' " + (clientColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";
-    html += "<option value='variables' " + (clientColapsed === "variables"?"selected='selected'":"") + ">" + mapText("SYS_VAR") + "</a>";
-    html += "<option value='programs' " + (clientColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</a>";
-    html += "<option value='others' " + (clientColapsed === "others"?"selected='selected'":"") + ">" + mapText("SETTINGS") + "</a>";
+    html += "<option value='favorites' " + (clientColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</option>";
+    html += "<option value='rooms' " + (clientColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</option>";
+    html += "<option value='functions' " + (clientColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</option>";
+    html += "<option value='variables' " + (clientColapsed === "variables"?"selected='selected'":"") + ">" + mapText("SYS_VAR") + "</option>";
+    html += "<option value='programs' " + (clientColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</option>";
+    html += "<option value='others' " + (clientColapsed === "others"?"selected='selected'":"") + ">" + mapText("SETTINGS") + "</option>";
     html += "</select>";
     html += "<a href='#' name='saveClientOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
@@ -2399,18 +2399,18 @@ function loadOptions() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_default_theme' data-theme='" + theme + "'>";
     var globalTheme = optionsMap["default_theme"];
-    html += "<option value='a' " + (globalTheme === "a"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
-    html += "<option value='b' " + (globalTheme === "b"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
-    html += "<option value='c' " + (globalTheme === "c"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
-    html += "<option value='d' " + (globalTheme === "d"?"selected='selected'":"") + ">" + mapText("GREEN") + "</option>";
-    html += "<option value='e' " + (globalTheme === "e"?"selected='selected'":"") + ">" + mapText("YELLOW") + "</option>";
-    html += "<option value='f' " + (globalTheme === "f"?"selected='selected'":"") + ">" + mapText("GREY") + "</option>";
-    html += "<option value='g' " + (globalTheme === "g"?"selected='selected'":"") + ">" + mapText("BLUE") + "</option>";
-    html += "<option value='h' " + (globalTheme === "h"?"selected='selected'":"") + ">" + mapText("RED") + "</option>";
-    html += "<option value='i' " + (globalTheme === "i"?"selected='selected'":"") + ">" + mapText("BROWN") + "</option>";
-    html += "<option value='j' " + (globalTheme === "j"?"selected='selected'":"") + ">" + mapText("WHITE") + "</option>";
-    html += "<option value='k' " + (globalTheme === "k"?"selected='selected'":"") + ">" + mapText("BRAZIL") + "</option>";
-    html += "<option value='l' " + (globalTheme === "l"?"selected='selected'":"") + ">" + mapText("GERMANY") + "</option>";
+    html += "<option value='wma' " + (globalTheme === "wma"?"selected='selected'":"") + ">" + mapText("DEFAULT") + "</option>";
+    html += "<option value='wmb' " + (globalTheme === "wmb"?"selected='selected'":"") + ">" + mapText("BLACK") + "</option>";
+    html += "<option value='wmc' " + (globalTheme === "wmc"?"selected='selected'":"") + ">" + mapText("PINK") + "</option>";
+    html += "<option value='wmd' " + (globalTheme === "wmd"?"selected='selected'":"") + ">" + mapText("GREEN") + "</option>";
+    html += "<option value='wme' " + (globalTheme === "wme"?"selected='selected'":"") + ">" + mapText("YELLOW") + "</option>";
+    html += "<option value='wmf' " + (globalTheme === "wmf"?"selected='selected'":"") + ">" + mapText("GREY") + "</option>";
+    html += "<option value='wmg' " + (globalTheme === "wmg"?"selected='selected'":"") + ">" + mapText("BLUE") + "</option>";
+    html += "<option value='wmh' " + (globalTheme === "wmh"?"selected='selected'":"") + ">" + mapText("RED") + "</option>";
+    html += "<option value='wmi' " + (globalTheme === "wmi"?"selected='selected'":"") + ">" + mapText("BROWN") + "</option>";
+    html += "<option value='wmj' " + (globalTheme === "wmj"?"selected='selected'":"") + ">" + mapText("WHITE") + "</option>";
+    html += "<option value='wmk' " + (globalTheme === "wmk"?"selected='selected'":"") + ">" + mapText("BRAZIL") + "</option>";
+    html += "<option value='wml' " + (globalTheme === "wml"?"selected='selected'":"") + ">" + mapText("GERMANY") + "</option>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='default_theme' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
@@ -2423,20 +2423,39 @@ function loadOptions() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";    
     html += "<select id='global_default_font' data-theme='" + theme + "'>";
     var globalFont = optionsMap["default_font"];
-    html += "<option value='a' " + (globalFont === "a"?"selected='selected'":"") + ">Normal</a>";
-    html += "<option value='b' " + (globalFont === "b"?"selected='selected'":"") + ">Koch Fraktur</a>";
-    html += "<option value='c' " + (globalFont === "c"?"selected='selected'":"") + ">Planet Benson</a>";
-    html += "<option value='d' " + (globalFont === "d"?"selected='selected'":"") + ">Action Man</a>";
-    html += "<option value='e' " + (globalFont === "e"?"selected='selected'":"") + ">Amadeus</a>";
-    html += "<option value='f' " + (globalFont === "f"?"selected='selected'":"") + ">Vamp</a>";
-    html += "<option value='g' " + (globalFont === "g"?"selected='selected'":"") + ">HennyPenny</a>";
-    html += "<option value='h' " + (globalFont === "h"?"selected='selected'":"") + ">Anglican</a>";
-    html += "<option value='i' " + (globalFont === "i"?"selected='selected'":"") + ">Nosifer</a>";
-    html += "<option value='j' " + (globalFont === "j"?"selected='selected'":"") + ">Pacifico</a>";
-    html += "<option value='k' " + (globalFont === "k"?"selected='selected'":"") + ">Sixties</a>";
-    html += "<option value='l' " + (globalFont === "l"?"selected='selected'":"") + ">Crackman</a>";
+    html += "<option value='a' " + (globalFont === "a"?"selected='selected'":"") + ">Normal</option>";
+    html += "<option value='b' " + (globalFont === "b"?"selected='selected'":"") + ">Koch Fraktur</option>";
+    html += "<option value='c' " + (globalFont === "c"?"selected='selected'":"") + ">Planet Benson</option>";
+    html += "<option value='d' " + (globalFont === "d"?"selected='selected'":"") + ">Action Man</option>";
+    html += "<option value='e' " + (globalFont === "e"?"selected='selected'":"") + ">Amadeus</option>";
+    html += "<option value='f' " + (globalFont === "f"?"selected='selected'":"") + ">Vamp</option>";
+    html += "<option value='g' " + (globalFont === "g"?"selected='selected'":"") + ">HennyPenny</option>";
+    html += "<option value='h' " + (globalFont === "h"?"selected='selected'":"") + ">Anglican</option>";
+    html += "<option value='i' " + (globalFont === "i"?"selected='selected'":"") + ">Nosifer</option>";
+    html += "<option value='j' " + (globalFont === "j"?"selected='selected'":"") + ">Pacifico</option>";
+    html += "<option value='k' " + (globalFont === "k"?"selected='selected'":"") + ">Sixties</option>";
+    html += "<option value='l' " + (globalFont === "l"?"selected='selected'":"") + ">Crackman</option>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='default_font' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div>";
+    //Sprache
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("LANGUAGE") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";    
+    html += "<select id='change_lang' data-theme='" + theme + "'>";
+    html += "<option value='de' " + (wmLang === "de"?"selected='selected'":"") + ">" + mapText("DE") + "</option>";
+    html += "<option value='en' " + (wmLang === "en"?"selected='selected'":"") + ">" + mapText("EN") + "</option>";
+    html += "<option value='es' " + (wmLang === "es"?"selected='selected'":"") + ">" + mapText("ES") + "</option>";
+    html += "<option value='fr' " + (wmLang === "fr"?"selected='selected'":"") + ">" + mapText("FR") + "</option>";
+    html += "<option value='pt' " + (wmLang === "pt"?"selected='selected'":"") + ">" + mapText("PT") + "</option>";
+    html += "<option value='ru' " + (wmLang === "ru"?"selected='selected'":"") + ">" + mapText("RU") + "</option>";
+    html += "<option value='tr' " + (wmLang === "tr"?"selected='selected'":"") + ">" + mapText("TR") + "</option>";
+    html += "<option value='zh' " + (wmLang === "zh"?"selected='selected'":"") + ">" + mapText("ZH") + "</option>";
+    html += "</select>";
+    html += "<a href='#' name='change_lang' data-role='button' data-inline='true' data-icon='refresh'>" + mapText("RELOAD") + "</a>";
     html += "</div>";
     html += "</div>";
     //Größe der Menübilder
@@ -2572,14 +2591,32 @@ function loadOptions() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_collapsed' data-theme='" + theme + "'>";
     var globalColapsed = optionsMap["collapsed"];
-    html += "<option value='favorites' " + (globalColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</a>";
+    html += "<option value='favorites' " + (globalColapsed === "favorites"?"selected='selected'":"") + ">" + mapText("FAVORITES") + "</option>";
     html += "<option value='rooms' " + (globalColapsed === "rooms"?"selected='selected'":"") + ">" + mapText("ROOMS") + "</a>";
-    html += "<option value='functions' " + (globalColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</a>";
-    html += "<option value='variables' " + (globalColapsed === "variables"?"selected='selected'":"") + ">" + mapText("SYS_VAR") + "</a>";
-    html += "<option value='programs' " + (globalColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</a>";
-    html += "<option value='others' " + (globalColapsed === "others"?"selected='selected'":"") + ">" + mapText("SETTINGS") + "</a>";
+    html += "<option value='functions' " + (globalColapsed === "functions"?"selected='selected'":"") + ">" + mapText("FUNCTIONS") + "</option>";
+    html += "<option value='variables' " + (globalColapsed === "variables"?"selected='selected'":"") + ">" + mapText("SYS_VAR") + "</option>";
+    html += "<option value='programs' " + (globalColapsed === "programs"?"selected='selected'":"") + ">" + mapText("PROGRAMS") + "</option>";
+    html += "<option value='others' " + (globalColapsed === "others"?"selected='selected'":"") + ">" + mapText("SETTINGS") + "</option>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div>";
+    
+    //Standardmäßig nur lesend
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("DEFAULT_SORT") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    if(optionsMap["default_sort_manually"]){
+        selected1 = "class='ui-btn-active'";
+    } else{
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='default_sort_manually' data-reload='true' data-value='true' data-role='button' data-icon='refresh' data-inline='true' " + selected1 + ">" + mapText("MANUALLY") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='default_sort_manually' data-reload='true' data-value='false' data-role='button' data-icon='refresh' data-inline='true' " + selected2 + ">" + mapText("ALPHABETICAL") + "</a>";
     html += "</div>";
     html += "</div>";
     
@@ -2610,7 +2647,60 @@ function loadOptions() {
     
     html += "</div></div></li>";
     $("#dataList").append(html);
+    
+    //Clients
+    if(Object.keys(clientsList).length > 1){
+        html = "<li><h1>Clients</h1>";
+        html += "<div class='ui-field-contain'>";        
+        html += "<div class='ui-grid-b'>";
+        
+        $.each(clientsList, function( key, value ) {
+            html += "<div class='ui-block-a text-right'>";
+            html += "<span>" + mapText("CLIENT_TITLE") + ": " + key + "</span>";
+            html += "</div>";
+            html += "<div class='ui-block-b'>";
+            html += "<input type='text' id='title_client_" + key + "' value='" + value + "' />";
+            html += "</div>";
+            html += "<div class='ui-block-c'>";
+            html += "<a href='#' name='title_client' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("SAVE") + "</a>";
+            html += "</div>";
+        });
+        
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText("CLIENT_SETTINGS") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        html += "<select id='choose_tmp_client' data-theme='" + theme + "'>";
+        html += "<option value=''>" + mapText("CHOOSE") + "</option>";
+        $.each(clientsList, function( key, value ) {
+            html += "<option value='" + key + "' " + (client === key?"selected='selected'":"") + ">" + value + "</option>";
+        });
+        html += "</select>";
+        html += "<a href='#' name='choose_tmp_client' data-role='button' data-inline='true' data-icon='refresh'>" + mapText("RELOAD") + "</a>";
+        html += "</div>";
+        html += "</div>";
+        
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText("DELETE_SETTINGS") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        html += "<select id='delete_client' data-theme='" + theme + "'>";
+        html += "<option value=''>" + mapText("CHOOSE") + "</option>";
+        $.each(clientsList, function( key, value ) {
+            html += "<option value='" + key + "'>" + value + "</option>";
+        });
+        html += "</select>";
+        html += "<a href='#' name='delete_client' data-role='button' data-inline='true' data-icon='delete'>" + mapText("DELETE") + "</a>";
+        html += "</div>";
+        html += "</div>";
 
+        html += "</div></div></li>";
+        $("#dataList").append(html);
+    }
+
+    //CCU-Historian
     html = "<li><h1>CCU-Historian</h1>";
     html += "<p>&nbsp;</p>";
     html += "<div class='ui-field-contain'>";
@@ -2632,8 +2722,8 @@ function loadOptions() {
     html += "</div></div></li>";
     $("#dataList").append(html);
     
-    //Updates
-    html = "<li><h1>WebMatic updates</h1>";
+    //Sonstiges
+    html = "<li><h1>" + mapText("OTHERS") + "</h1>";
     html += "<div class='ui-field-contain'>"; 
     html += "<div class='ui-grid-b'>";
     //Meldung über neue Updates
@@ -2644,21 +2734,13 @@ function loadOptions() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_new_version' data-theme='" + theme + "'>";
     var globalNewUpdates = optionsMap["new_version"];
-    html += "<option value='no'>" + mapText("NO") + "</a>";
-    html += "<option value='stable' " + (globalNewUpdates === "stable"?"selected='selected'":"") + ">" + mapText("STABLE") + "</a>";
-    html += "<option value='alpha' " + (globalNewUpdates === "alpha"?"selected='selected'":"") + ">" + mapText("ALPHA") + "</a>";
+    html += "<option value='no'>" + mapText("NO") + "</option>";
+    html += "<option value='stable' " + (globalNewUpdates === "stable"?"selected='selected'":"") + ">" + mapText("STABLE") + "</option>";
+    html += "<option value='alpha' " + (globalNewUpdates === "alpha"?"selected='selected'":"") + ">" + mapText("ALPHA") + "</option>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='new_version' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
-    html += "</div>";
-    
-    html += "</div></div></li>";
-    $("#dataList").append(html);
-    
-    //Sonstiges
-    html = "<li><h1>" + mapText("OTHERS") + "</h1>";
-    html += "<div class='ui-field-contain'>"; 
-    html += "<div class='ui-grid-b'>";
+    html += "</div>";    
     //Versehentliches Verlassen der Seite verhindern
     html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DONT_LEAVE") + "</span>";
@@ -2689,7 +2771,7 @@ function loadOptions() {
 
 $(function () {
     
-    if(debugModus){
+    if(debugModus && false){
         $('#errorsDebugger').show();
         $.each(errorsDebugger, function(error){
             $('#errorsDebugger').append(errorsDebugger[error]);
@@ -2823,7 +2905,7 @@ $(function () {
         var val = obj.data("val");
         var vorDate = obj.data("vorDate");
         $('#tuneInField_' + valID).fadeOut(500, function () {
-            $('#tuneInField_' + valID).html(editTuneIn(parentId, valID, val, vorDate))
+            $('#tuneInField_' + valID).html(editTuneIn(parentId, valID, val, vorDate));
             $('#' + valID).trigger('create');
             $('#tuneInField_' + valID).fadeIn(1000);
         });
@@ -2955,21 +3037,6 @@ $(function () {
             $("#menuImg" + id).fadeOut(500, function () {
                 $("#menuImg" + id).attr("src", "img/menu/" + type + ".png").fadeIn(1000);
             });
-            
-            switch (type) {
-                case "favorites":
-                    favoritesMap[id]['pic'] = false;                
-                    break
-                case "rooms":               
-                    roomsMap[id]['pic'] = false; 
-                    break
-                case "functions":
-                    functionsMap[id]['pic'] = false; 
-                    break
-                case "programs":
-                    programsMap[id]['pic'] = false; 
-                    break
-            }
             
             obj.addClass("ui-state-disabled");
         });
@@ -3126,22 +3193,7 @@ $(function () {
                 $("#menuImg" + key).fadeOut(500, function () {
                     $("#menuImg" + key).attr("src", dataURL).fadeIn(1000);
                 });
-                
-                switch (type) {
-                    case "favorites":
-                        favoritesMap[key]['pic'] = true;                
-                        break
-                    case "rooms":               
-                        roomsMap[key]['pic'] = true; 
-                        break
-                    case "functions":
-                        functionsMap[key]['pic'] = true; 
-                        break
-                    case "programs":
-                        programsMap[key]['pic'] = true; 
-                        break
-                }
-
+                                
                 formData.append('file', blob, key + '.png');
                 formData.append('filename', key + '.png');
                 formData.append('path', '/usr/local/etc/config/addons/www/webmatic_user/img/ids/' + type + '/');
@@ -3233,9 +3285,56 @@ $(function () {
             }else if($.isNumeric(value)){
                 value = parseInt(value);
             }
-            
+            var reload = $(this).data("reload");
             optionsMap[key] = value;
-            saveOptionsToServer(key, value);
+            saveOptionsToServer(key, value, reload);
+        }
+    });
+    
+    //Language
+    $(document.body).on("click", "[name='change_lang']", function () {
+        $.get("cgi/changeLang.cgi", { old: wmLang, new: $('#change_lang').val(), debug: debugModus })
+        .done(function() {
+            location.reload(true);
+        });
+    });
+    
+    //Clients
+    $(document.body).on("click", "[name='title_client']", function(){
+        var key = $(this).data("key");
+        var title = $('#title_client_' + key).val();
+        if(!title){
+            title = key;
+        }
+        
+        $("#delete_client option[value='" + key + "']").text(title);
+        $("#choose_tmp_client option[value='" + key + "']").text(title);
+        
+        clientsList[key] = title;        
+        optionsMap["clientsList"] = clientsList;
+        saveOptionsToServer("clientsList", clientsList);
+    });
+    $(document.body).on("click", "[name='choose_tmp_client']", function(){
+        var ip = $('#choose_tmp_client').val();
+        if(ip){
+            localStorage.setItem("tempOptionsForClient", ip);
+            location.reload(true);
+        }
+    });
+    $(document.body).on("click", "[name='delete_client']", function(){
+        var ip = $('#delete_client').val();
+        if(ip){
+            if (confirm(mapText("DELETE_SETTINGS_WARNING"))) {
+                $.post("cgi/deleteOptions.cgi", { client: ip })
+                .done(function() {
+                    if(ip === client){
+                        location.reload(true);
+                    }else{
+                        $("#delete_client option[value='" + ip + "']").remove();
+                        $("#choose_tmp_client option[value='" + ip + "']").remove();
+                    }
+                });
+            }
         }
     });
     
@@ -3247,5 +3346,5 @@ $(function () {
             return "Don't leave me!";
         }
     });
-
+    
 });
