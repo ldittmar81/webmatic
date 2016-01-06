@@ -14,5 +14,4 @@ catch {
     }
 }
 
-set directory "/usr/local/etc/config/addons/www/webmatic_user"
-file delete {*} [glob $directory/*$client.json]
+file delete {*} [glob -nocomplain "/usr/local/etc/config/addons/www/webmatic_user/*$client.json"]

@@ -254,7 +254,7 @@ function refreshServiceMessages() {
         $('#buttonService .ui-btn-text').text("(" + errNr + ")");
         if (errNr === 0) {
             $('#buttonService, #popupDiv').removeClass(function (i, css) {
-                return (css.match(/(^|\s)valueService-\S{1}/g) || []).join(' ');
+                return (css.match(/(^|\s)valueService-(\S{3}|\S{1})/g) || []).join(' ');
             });
             $('#headerButtonGroup').controlgroup('refresh', true);
             $("#serviceList").append("<li><p>" + mapText("NO_SERVICE_MESSAGES") + "</p></li>");
@@ -274,59 +274,61 @@ function removeMessages() {
 function changeTheme(newTheme) {
 
     $('body, .ui-popup-screen').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-overlay-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)ui-overlay-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('ui-overlay-' + newTheme);
 
     $('.ui-page').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-page-theme-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)ui-page-theme-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('ui-page-theme-' + newTheme).attr('data-theme', newTheme);
 
     $('.ui-header').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-bar-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)ui-bar-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('ui-bar-' + newTheme).attr('data-theme', newTheme);
 
     $('.ui-content').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-body-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)ui-body-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('ui-body-' + newTheme).attr('data-theme', newTheme);
 
     $('.ui-collapsible-set, .ui-listview').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-group-theme-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)ui-group-theme-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
 
     $('.ui-btn').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-btn-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)ui-btn-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('ui-btn-' + newTheme).attr('data-theme', newTheme);
 
     $('.valueNoError').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueNoError-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)valueNoError-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('valueNoError-' + newTheme);
 
     $('.valueInfo').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueInfo-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)valueInfo-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('valueInfo-' + newTheme);
 
     $('.valueWarning').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueWarning-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)valueWarning-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('valueWarning-' + newTheme);
 
     $('.valueError').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueError-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)valueError-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('valueError-' + newTheme);
 
     $('.valueOK').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueOK-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)valueOK-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('valueOK-' + newTheme);
 
-    $('#buttonService, #popupDiv').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueService-\S{1}/g) || []).join(' ');
+    $('#buttonService, #popupDiv').filter(function () {
+        return this.className.match(/\bvalueService-/);
+    }).removeClass(function (i, css) {
+        return (css.match(/(^|\s)valueService-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('valueService-' + newTheme);
 
     $('img').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-img-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)ui-img-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('ui-img-' + newTheme);
 
     $('.control-set').removeClass(function (i, css) {
-        return (css.match(/(^|\s)control-set-\S{1}/g) || []).join(' ');
+        return (css.match(/(^|\s)control-set-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('control-set-' + newTheme);
 
     theme = newTheme;
@@ -2655,13 +2657,13 @@ function loadOptions() {
         html += "<div class='ui-grid-b'>";
         
         $.each(clientsList, function( key, value ) {
-            html += "<div class='ui-block-a text-right'>";
+            html += "<div class='ui-block-a text-right' name='title_client_div_" + key.replace(/\./g , "_") + "'>";
             html += "<span>" + mapText("CLIENT_TITLE") + ": " + key + "</span>";
             html += "</div>";
-            html += "<div class='ui-block-b'>";
-            html += "<input type='text' id='title_client_" + key + "' value='" + value + "' />";
+            html += "<div class='ui-block-b' name='title_client_div_" + key.replace(/\./g , "_") + "'>";
+            html += "<input type='text' id='title_client_" + key.replace(/\./g , "_") + "' value='" + value + "' />";
             html += "</div>";
-            html += "<div class='ui-block-c'>";
+            html += "<div class='ui-block-c' name='title_client_div_" + key.replace(/\./g , "_") + "'>";
             html += "<a href='#' name='title_client' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("SAVE") + "</a>";
             html += "</div>";
         });
@@ -3302,7 +3304,7 @@ $(function () {
     //Clients
     $(document.body).on("click", "[name='title_client']", function(){
         var key = $(this).data("key");
-        var title = $('#title_client_' + key).val();
+        var title = $('#title_client_' + key.replace(/\./g , "_")).val();
         if(!title){
             title = key;
         }
@@ -3325,13 +3327,18 @@ $(function () {
         var ip = $('#delete_client').val();
         if(ip){
             if (confirm(mapText("DELETE_SETTINGS_WARNING"))) {
-                $.post("cgi/deleteOptions.cgi", { client: ip })
+                $.get("cgi/deleteOptions.cgi", { client: ip })
                 .done(function() {
+                    delete clientsList[ip];
+                    optionsMap["clientsList"] = clientsList;
                     if(ip === client){
-                        location.reload(true);
+                        saveOptionsToServer("clientsList", clientsList, true);
                     }else{
                         $("#delete_client option[value='" + ip + "']").remove();
                         $("#choose_tmp_client option[value='" + ip + "']").remove();
+                        $("[name='title_client_div_" + ip.replace(/\./g , "_") + "']").remove();
+                        $("#delete_client").val("").selectmenu('refresh');
+                        saveOptionsToServer("clientsList", clientsList);
                     }
                 });
             }
