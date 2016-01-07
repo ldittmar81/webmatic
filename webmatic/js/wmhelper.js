@@ -100,7 +100,7 @@ function restartTimer() {
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 // onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
-function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh, special) {
+function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh, operate, special) {
     var html = "";
     if (!onlyButton) {
         html += "<p class='ui-li-desc'>";
@@ -109,7 +109,7 @@ function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, 
     if (noAction) {
         html += "<a href='#' data-value='" + value + "' data-role='button' class='ui-btn-active' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
     } else {
-        html += "<a href='#' id='setButton_" + id + "' " + (special?"data-special='" + special + "' ":"") + "data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' data-role='button' data-inline='true'>" + text + "</a>";
+        html += "<a href='#' id='setButton_" + id + "' " + (special?"data-special='" + special + "' ":"") + "data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + ">" + text + "</a>";
     }
 
     if (!onlyButton) {
@@ -119,18 +119,18 @@ function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, 
     return html;
 }
 
-function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, addFirst, addLast) {
+function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, operate, addFirst, addLast) {
     var html = "";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     if (addFirst) {
         html += addFirst;
     }
-    html += addSetButton(paretnId, id, txt0, 0.0, vorDate, true, valFloat === 0.0, false);
-    html += addSetButton(paretnId, id, "20%", 0.2, vorDate, true, valFloat === 0.2, false);
-    html += addSetButton(paretnId, id, "40%", 0.4, vorDate, true, valFloat === 0.4, false);
-    html += addSetButton(paretnId, id, "60%", 0.6, vorDate, true, valFloat === 0.6, false);
-    html += addSetButton(paretnId, id, "80%", 0.8, vorDate, true, valFloat === 0.8, false);
-    html += addSetButton(paretnId, id, txt1, 1.0, vorDate, true, valFloat === 1.0, false);
+    html += addSetButton(paretnId, id, txt0, 0.0, vorDate, true, valFloat === 0.0, false, operate);
+    html += addSetButton(paretnId, id, "20%", 0.2, vorDate, true, valFloat === 0.2, false, operate);
+    html += addSetButton(paretnId, id, "40%", 0.4, vorDate, true, valFloat === 0.4, false, operate);
+    html += addSetButton(paretnId, id, "60%", 0.6, vorDate, true, valFloat === 0.6, false, operate);
+    html += addSetButton(paretnId, id, "80%", 0.8, vorDate, true, valFloat === 0.8, false, operate);
+    html += addSetButton(paretnId, id, txt1, 1.0, vorDate, true, valFloat === 1.0, false, operate);
     if (addLast) {
         html += addLast;
     }
@@ -151,35 +151,35 @@ function addStartProgramButton(parentId, id, text, vorDate, operate) {
 // ist aber 0 - 100 schöner.
 //
 // TODO: Was mit Float/Integer Unterscheidung? Slider evtl. aus, wenn der Bereich zu groß ist?
-function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate, refresh) {
+function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate, refresh, operate) {
     var html = "<div class='ui-field-contain'>";
     html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
     html += " (" + min * factor + " - " + max * factor + " <span id='unit_ " + id + "'>" + unit + "</span>) ";
-    html += "<a href='#' id='setButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
+    html += "<a href='#' id='setButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     return html;
 }
 
-function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vorDate, refresh) {
+function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vorDate, refresh, operate) {
     var html = "<div class=ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
 
     var idString = "";
     // Leerstring heißt wohl auch false, z.B. bei Alarmzone.
     if (strValue === "false" || strValue === "") {
-        idString = "class='ui-btn-active'";
+        idString = "class='ui-btn-active' data-role='button' data-inline='true'";        
     } else {
-        idString = "id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
+        idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + " id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     }
-    html += "<a href='#' " + idString + " data-value='false' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val0 + "</a>";
+    html += "<a href='#' " + idString + " data-value='false' data-theme='" + theme + "'>" + val0 + "</a>";
 
     if (strValue === "true") {
-        idString = "class='ui-btn-active'";
+        idString = "class='ui-btn-active' data-role='button' data-inline='true'";
     } else {
-        idString = "id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
+        idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + "id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     }
-    html += "<a href='#' " + idString + " data-value='true' data-role='button' data-inline='true' data-theme='" + theme + "'>" + val1 + "</a>";
+    html += "<a href='#' " + idString + " data-value='true' data-theme='" + theme + "'>" + val1 + "</a>";
 
     html += "</div>";
     html += "</div>";
@@ -189,27 +189,27 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     return html;
 }
 
-function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh, forceList) {
+function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh, operate, forceList) {
     
     var selIndex = parseInt(strValue);
     var optionsArray = valList.split(";");
     
     if(forceList === "small" || (optionsArray.length < 6 && forceList !== "big")){
-        return addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh);
+        return addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate);
     }else{
-        return addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh);
+        return addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate);
     }
     
 }
 
-function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh){
+function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate){
     var html = "<div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";    
     for (var i = 0; i < optionsArray.length; i++) {
         if (selIndex === i) {
             html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' class='ui-btn-active' data-theme='" + theme + "'>" + optionsArray[i] + "</a>";
         } else {
-            html += "<a href='#' id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' data-role='button' data-inline='true'>" + optionsArray[i] + "</a>";
+            html += "<a href='#' id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + ">" + optionsArray[i] + "</a>";
         }
     }
     html += "</div>";
@@ -220,7 +220,7 @@ function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate,
     return html;
 }
 
-function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh) {
+function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate) {
     var html = "<div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='selector_" + valID + "' data-theme='" + theme + "'>";
@@ -232,14 +232,14 @@ function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, r
         }
     }
     html += "</select>";    
-    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">&nbsp;</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     html += "</div>";
     return html;
 }
 
-function addSetText(parentId, valID, val, valUnit, vorDate) {
+function addSetText(parentId, valID, val, valUnit, vorDate, operate) {
     var html = "<div class=ui-field-contain'>";
     // Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
     val = val.replace(/\"/g, "&quot;");
@@ -248,7 +248,7 @@ function addSetText(parentId, valID, val, valUnit, vorDate) {
     } else {
         html += "<input type='text' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
     }
-    html += " <span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
+    html += " <span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     return html;

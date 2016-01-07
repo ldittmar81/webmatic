@@ -21,6 +21,7 @@ mkdir -p ${WWWDIR}
 chmod 755 ${WWWDIR}
 mkdir -p ${RCDDIR}
 chmod 755 ${RCDDIR}
+mkdir -p ${USERDIR}/themes
 mkdir -p ${USERDIR}/img/ids/favorites
 mkdir -p ${USERDIR}/img/ids/functions
 mkdir -p ${USERDIR}/img/ids/rooms
@@ -28,6 +29,10 @@ mkdir -p ${USERDIR}/img/ids/programs
 mkdir -p ${USERDIR}/img/ids/variables
 mkdir -p ${USERDIR}/img/ids/devices
 chmod 755 ${USERDIR}
+
+if [ ! -e ${USERDIR}/themes/wm-user-theme.css]; then
+    touch ${USERDIR}/themes/wm-user-theme.css
+fi
 
 # lang
 LANG=${cat ${USERDIR}/lang.json}

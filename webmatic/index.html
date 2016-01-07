@@ -27,6 +27,7 @@
         <link rel="stylesheet" href="libs/jquery/jquery.mobile.structure-1.4.5.min.css" />
         <link rel="stylesheet" href="libs/jqplot/jquery.jqplot.min.css" />
         <link rel="stylesheet" href="libs/DateBox/css/jtsage-datebox.min.css" />
+        <link rel="stylesheet" href="../webmatic_user/themes/wm-user-theme.css" />
         <link rel="stylesheet" href="themes/webmatic-theme.min.css" />
         <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
         <link rel="stylesheet" href="themes/webmatic.css" />
@@ -54,19 +55,19 @@
 
     </head> 
     <body>
-        <div data-role="page" data-theme="a">
-            <div data-role="popup" id="popupService" data-theme="a" data-overlay-theme="a">
-                <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
+        <div data-role="page" data-theme="wma">
+            <div data-role="popup" id="popupService" data-theme="wma" data-overlay-theme="wma">
+                <a href="#" data-rel="back" data-role="button" data-theme="wma" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
                 <div data-role="content" id="popupDiv">
                     <h3>Servicemeldungen</h3>
-                    <ul id="serviceList" data-role="listview" data-inset="true" data-theme="a">
+                    <ul id="serviceList" data-role="listview" data-inset="true" data-theme="wma">
                         <li>Keine Servicemeldungen vorhanden</li>
                     </ul>
-                    <a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="a" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
+                    <a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="wma" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
                 </div>
             </div>
 
-            <div data-role="header" data-position="fixed" data-theme="a">
+            <div data-role="header" data-position="fixed" data-theme="wma">
                 <h1 style="text-align: left;margin-left: 20px;">WebMatic VBETAVERSION</h1>
                 <div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">
                     <a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert">
@@ -83,11 +84,11 @@
                 </div>
             </div>
 
-            <div data-role="content" data-theme="a">
+            <div data-role="content" data-theme="wma">
                 <div><ul id="errorsDebugger" style="display: none;"></ul></div>
 
                 <div class="content-secondary">
-                    <div id="main_menu" data-role="collapsible-set" data-theme="a"></div>
+                    <div id="main_menu" data-role="collapsible-set" data-theme="wma"></div>
                 </div>
 
                 <div id="prim" class="content-primary">

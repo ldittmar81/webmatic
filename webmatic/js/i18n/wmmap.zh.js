@@ -696,5 +696,6 @@ var textMap = {
     DEFAULT_SORT: "标准分类",
     ALPHABETICAL: "按字母顺序",
     MANUALLY: "手动",
-    DELETE_SETTINGS_WARNING: "注意所选客户端的所有设置都将被删除"
+    DELETE_SETTINGS_WARNING: "注意所选客户端的所有设置都将被删除",
+    END_CLIENT_MODUS: "最终客户端安装模式"
 };

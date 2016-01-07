@@ -688,13 +688,14 @@ var textMap = {
     ALPHA: "también versiones alfa",
     OTHERS: "Otros",
     DONT_LEAVE: "Prevenir accidental salir de la página",
-    CHOOSE: "Bitte wählen",
-    DELETE_SETTINGS: "Einstellungen löschen",
+    CHOOSE: "Seleccione",
+    DELETE_SETTINGS: "Cómo eliminar Ajustes",
     RELOAD: "Reload",
-    CLIENT_SETTINGS: "Einstellungen der Clients",
-    CLIENT_TITLE: "Name des Clients",
-    DEFAULT_SORT: "Standardsortierung",
-    ALPHABETICAL: "Alphabetisch",
-    MANUALLY: "Händisch",
-    DELETE_SETTINGS_WARNING: "Acuhtung! Alle Einstellungen des ausgewählten Clients werden gelöscht."
+    CLIENT_SETTINGS: "Actitudes de los clientes",
+    CLIENT_TITLE: "Nombre del cliente",
+    DEFAULT_SORT: "clasificación Standard",
+    ALPHABETICAL: "alfabético",
+    MANUALLY: "manual",
+    DELETE_SETTINGS_WARNING: "¡Atención! Se borrarán todos los ajustes de los clientes seleccionados.",
+    END_CLIENT_MODUS: "Modo de instalación del cliente final"
 };

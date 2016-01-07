@@ -81,6 +81,9 @@ $(function () {
     // ----------------------- Menüpunkte -----------------------
 
     var collapsed = resultOptionsMap["collapsed"];
+    if(isTempClient){
+        collapsed = "others";
+    }
     
     //Menüpunkt Favoriten
     var indexType = "favorites";
@@ -248,5 +251,14 @@ $(function () {
     });
     
     $("#main_menu").children("div[data-collapsed='true']").collapsible("expand");
+    
+    if(isTempClient){
+        collapsed = "others";
+        lastClickType = 11;
+        lastClickID = "menuItemOptionsClient";
+        $('.ui-input-search .ui-input-text').val("");
+        readModus = true;
+        refreshPage($(this));
+    }
 
 });

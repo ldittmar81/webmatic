@@ -696,5 +696,6 @@ var textMap = {
     DEFAULT_SORT: "Standart sıralama",
     ALPHABETICAL: "alfabetik",
     MANUALLY: "elle",
-    DELETE_SETTINGS_WARNING: "Dikkat, seçilen istemci tüm ayarlar silinecektir."
+    DELETE_SETTINGS_WARNING: "Dikkat, seçilen istemci tüm ayarlar silinecektir.",
+    END_CLIENT_MODUS: "Bitiş Client Ayar Modu"
 };

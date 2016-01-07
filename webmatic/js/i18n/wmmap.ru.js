@@ -696,5 +696,6 @@ var textMap = {
     DEFAULT_SORT: "Стандарт сортировка",
     ALPHABETICAL: "алфавитный",
     MANUALLY: "вручную",
-    DELETE_SETTINGS_WARNING: "Внимание Все настройки выбранного клиентом, будут удалены."
+    DELETE_SETTINGS_WARNING: "Внимание Все настройки выбранного клиентом, будут удалены.",
+    END_CLIENT_MODUS: "Режим конца установки клиента"
 };

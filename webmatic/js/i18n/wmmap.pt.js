@@ -696,7 +696,8 @@ var textMap = {
     DEFAULT_SORT: "ordenação padrão",
     ALPHABETICAL: "alfabética",
     MANUALLY: "manualmente",
-    DELETE_SETTINGS_WARNING: "Atenção Todas as configurações do cliente selecionado será excluído."
+    DELETE_SETTINGS_WARNING: "Atenção Todas as configurações do cliente selecionado será excluído.",
+    END_CLIENT_MODUS: "End Modo de configuração do cliente"
 };
 
 

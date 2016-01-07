@@ -696,5 +696,6 @@ var textMap = {
     DEFAULT_SORT: "tri standard",
     ALPHABETICAL: "alphabétique",
     MANUALLY: "manuelly",
-    DELETE_SETTINGS_WARNING: "Attention Tous les paramètres du client sélectionné sera supprimé."
+    DELETE_SETTINGS_WARNING: "Attention Tous les paramètres du client sélectionné sera supprimé.",
+    END_CLIENT_MODUS: "Mode de configuration de Client Final"
 };

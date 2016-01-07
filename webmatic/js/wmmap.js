@@ -211,7 +211,7 @@ function mapState(hssType, deviceHssType, valFloat, valBool) {
 }
 
 //Eingabefelder und Buttons erstellen
-function mapInput(deviceHssType, channel, vorDate, deviceID) {
+function mapInput(deviceHssType, channel, vorDate, deviceID, operate) {
     var channelId = channel['id'];
     var hssType = channel['hssType'];
     var valString = channel['value'];
@@ -223,11 +223,11 @@ function mapInput(deviceHssType, channel, vorDate, deviceID) {
     if (input) {
         switch (input) {
             case "BoolButtonList":
-                return addSetBoolButtonList(deviceID, channelId, valString, mapText(deviceHssType + "__" + hssType + "__false"), mapText(deviceHssType + "__" + hssType + "__true"), "", vorDate, true);
+                return addSetBoolButtonList(deviceID, channelId, valString, mapText(deviceHssType + "__" + hssType + "__false"), mapText(deviceHssType + "__" + hssType + "__true"), "", vorDate, true, operate);
             case "Button":
-                return addSetButton(deviceID, channelId, mapText(deviceHssType + "__" + hssType), true, vorDate, false, false, true);
+                return addSetButton(deviceID, channelId, mapText(deviceHssType + "__" + hssType), true, vorDate, false, false, true, operate);
             case "ButtonNoRefresh":
-                return addSetButton(deviceID, channelId, mapText(deviceHssType + "__" + hssType), true, vorDate, false, false, false);
+                return addSetButton(deviceID, channelId, mapText(deviceHssType + "__" + hssType), true, vorDate, false, false, false, operate);
         }
     } else if (channel['writeable'] === "true" && (!txt || txt !== "-")) {
 
@@ -237,18 +237,18 @@ function mapInput(deviceHssType, channel, vorDate, deviceID) {
         var valUnit = channel['valueUnit'];
 
         if (valType === "2" && valRead) {
-            return addSetBoolButtonList(deviceID, channelId, valString, mapText(deviceHssType + "__" + hssType + "__false", textMap['OFF']), mapText(deviceHssType + "__" + hssType + "__true", textMap['ON']), "", vorDate, true);
+            return addSetBoolButtonList(deviceID, channelId, valString, mapText(deviceHssType + "__" + hssType + "__false", textMap['OFF']), mapText(deviceHssType + "__" + hssType + "__true", textMap['ON']), "", vorDate, true, operate);
         }
         if (valType === "2" && !valRead) {
-            return addSetButton(deviceID, channelId, mapText(deviceHssType + "__" + hssType, textMap['RUN']), true, vorDate, false, false, true);
+            return addSetButton(deviceID, channelId, mapText(deviceHssType + "__" + hssType, textMap['RUN']), true, vorDate, false, false, true, operate);
         }
         if (valType === "4" && valRead) {
             var valMin = parseFloat(channel['valueMin']);
             var valMax = parseFloat(channel['valueMax']);
-            return addSetNumber(deviceID, channelId, valString, valUnit, valMin, valMax, 0.001, 1.0, vorDate + " | " + valMin + " " + valUnit + " = " + mapText("OFF") + ", " + valMax + " " + valUnit + " = " + mapText("ON"), false);
+            return addSetNumber(deviceID, channelId, valString, valUnit, valMin, valMax, 0.001, 1.0, vorDate + " | " + valMin + " " + valUnit + " = " + mapText("OFF") + ", " + valMax + " " + valUnit + " = " + mapText("ON"), false, operate);
         }
         if (valType === "16" && valRead) {
-            return addSetValueList(deviceID, channelId, valString, channel['valueList'], valUnit, vorDate, true);
+            return addSetValueList(deviceID, channelId, valString, channel['valueList'], valUnit, vorDate, true, operate);
         }
     }
 

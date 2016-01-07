@@ -696,5 +696,6 @@ var textMap = {
     DEFAULT_SORT: "standard sorting",
     ALPHABETICAL: "alphabetical",
     MANUALLY: "manuelly",
-    DELETE_SETTINGS_WARNING: "Attention! All settings of the selected client will be deleted."
+    DELETE_SETTINGS_WARNING: "Attention! All settings of the selected client will be deleted.",
+    END_CLIENT_MODUS: "End Client Setup Mode"
 };

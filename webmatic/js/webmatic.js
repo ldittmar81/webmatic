@@ -10,34 +10,39 @@ if (localStorage.getItem("webmaticrecognizeMap") === null) {
     recognizeMap = JSON.parse(localStorage.getItem("webmaticrecognizeMap"));
     client = ("REMOTE_ADDR" in recognizeMap?recognizeMap["REMOTE_ADDR"]:"");
 }
+
+var reloadClient = false;
+$.ajax({
+    type: 'GET',
+    url: '../webmatic_user/reload' + client + '.json',
+    async: false
+}).done(function(data){
+    reloadClient = (data.trim() === "true");
+    if(reloadClient){
+        $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "false"});
+    }
+}).fail(function(){
+    $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "false"});
+});
+
+if (localStorage.getItem("clearCache") !== null || reloadClient) {
+    localStorage.clear();
+}
+
 if (localStorage.getItem("tempOptionsForClient") !== null) {
     client = localStorage.getItem("tempOptionsForClient");
     isTempClient = true;
-    localStorage.removeItem("tempOptionsForClient");
+    localStorage.clear();    
+    $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "true"});
 }
-//Language
-$.get('../webmatic_user/lang.json', function(data){
-    wmLang = data.trim();    
-}).fail(function(){
-    wmLang = "de";
-    $.post('cgi/saveconfig.cgi', {name: "lang", text: wmLang});
-});
-//Check Icons
-$.ajax({
-    type: 'GET',
-    url: 'cgi/check-image.cgi',
-    dataType: 'json',
-    async: false
-}).done(function(data){
-    picturesList = data;
-}).fail(function(){
-    picturesListError = true;
-});
 
 //Initialwerte (Einstellungen) einlesen
 //Global
 if (localStorage.getItem("webmaticoptionsMap") === null) {
     localStorage.clear();
+    if(isTempClient){
+        localStorage.setItem("clearCache", true);
+    }
     localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
     loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);
 } else {
@@ -76,6 +81,27 @@ if(tmpClientTheme && tmpClientTheme.length === 1){
 //Kombinieren
 createOneMap("config");
 clientsList = optionsMap["clientsList"];
+
+//Check Icons
+if (localStorage.getItem("picturesList") === null) {
+    $.ajax({
+        type: 'GET',
+        url: 'cgi/check-image.cgi',
+        dataType: 'json',
+        async: false
+    }).done(function(data){
+        picturesList = data;
+        localStorage.setItem("picturesList", JSON.stringify(picturesList));
+    }).fail(function(){
+        picturesListError = true;
+    });
+}else{
+    picturesList = JSON.parse(localStorage.getItem("picturesList"));
+    $.getJSON('cgi/check-image.cgi', function(data){
+        picturesList = data;
+        localStorage.setItem("picturesList", JSON.stringify(picturesList));
+    });
+}
 
 //Webmatic-Version erkennen
 if(!debugModus){
@@ -441,6 +467,7 @@ function processVariable(variable, valID, systemDate) {
     var valInfo = unescape(variable['info']);
     var val0 = variable['valueName0'];
     var val1 = variable['valueName1'];
+    var operate = true;
 
     var html = "<li class='dataListItem' id='" + valID + "'><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
     html += "<p>" + valInfo + "</p>";
@@ -450,13 +477,13 @@ function processVariable(variable, valID, systemDate) {
         html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
     } else if (valType === "2") {
         // Bool.
-        html += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true);
+        html += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true, operate);
     } else if (valType === "4") {
         // Float, Integer.
-        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.01, 1.0, vorDate, true);
+        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.01, 1.0, vorDate, true, operate);
     } else if (valType === "16") {
         // Liste.
-        html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
+        html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true, operate);
     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
         html += addHTML("", valID, strValue, vorDate, false);
     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {        
@@ -464,7 +491,7 @@ function processVariable(variable, valID, systemDate) {
     } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {        
         html += addTuneInRadio("", valID, strValue, vorDate, false);
     } else if (valType === "20") {
-        html += addSetText("", valID, strValue, valUnit, vorDate);
+        html += addSetText("", valID, strValue, valUnit, vorDate, operate);
     } else {
         html += mapText("UNKNOWN_VAR_TYPE") + "!";
     }
@@ -966,7 +993,7 @@ function addDiagram(options) {
     }
 }
 
-function addChannel(device, systemDate, options) {
+function addChannel(device, systemDate, options, operate) {
     var deviceHssType = device['hssType'];
     var deviceID = device['id'];
     var hasChannel = false;
@@ -993,7 +1020,7 @@ function addChannel(device, systemDate, options) {
             var valMax = parseFloat(channel['valueMax']);
 
             if (hssType === "SETPOINT" || hssType === "SET_TEMPERATURE") {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 6, 30, 0.5, 1.0, vorDate, false, operate);
 
                 var lowTemp = valFloat - 3.0;
                 var highTemp = lowTemp + 6.0;
@@ -1007,26 +1034,26 @@ function addChannel(device, systemDate, options) {
                 }
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
                 if (hssType === "SETPOINT") {
-                    deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__VENT_CLOSED"), 0.0, vorDate, true, 0.0 === valFloat, false);
+                    deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__VENT_CLOSED"), 0.0, vorDate, true, 0.0 === valFloat, false, operate);
                 }
                 for (i = lowTemp; i <= highTemp; i += 1.0) {
-                    deviceHTML += addSetButton(deviceID, channelID, i + valUnit, i, vorDate, true, i === valFloat, false);
+                    deviceHTML += addSetButton(deviceID, channelID, i + valUnit, i, vorDate, true, i === valFloat, false, operate);
                 }
                 if (hssType === "SETPOINT") {
-                    deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__VENT_OPEN"), 100.0, vorDate, true, 100.0 === valFloat, false);
+                    deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__VENT_OPEN"), 100.0, vorDate, true, 100.0 === valFloat, false, operate);
                 }
                 deviceHTML += "</div>";
             } else if (deviceHssType === "CLIMATECONTROL_RT_TRANSCEIVER" && (hssType.endsWith("MODE") || hssType.startsWith("PARTY"))) {
                 if (hssType === "CONTROL_MODE") {
                     crt['deviceHTMLPostChannelGroupMode'] = valFloat;
                 } else if (hssType === "AUTO_MODE") {
-                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 0.0, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 0.0, true, operate);
                 } else if (hssType === "MANU_MODE") {
-                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 1.0, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 1.0, true, operate);
                 } else if (hssType === "BOOST_MODE") {
-                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 3.0, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, crt['deviceHTMLPostChannelGroupMode'] === 3.0, true, operate);
                 } else if (hssType === "LOWERING_MODE" || hssType === "COMFORT_MODE") {
-                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, false, true);
+                    crt['deviceHTMLPostChannelGroup'] += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType), true, vorDate, true, false, true, operate);
                 } else if (hssType === "PARTY_TEMPERATURE") {
                     crt['PARTY_TEMPERATURE'] = valFloat;
                 } else if (hssType === "PARTY_START_TIME") {
@@ -1052,18 +1079,18 @@ function addChannel(device, systemDate, options) {
             } else if (hssType === "PROGRAM" && deviceHssType === "RGBW_AUTOMATIC") {
                 //mrlee HM-LC-RGBW-WM
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__0"), 0, vorDate, true, valFloat === 0.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__1"), 1, vorDate, true, valFloat === 1.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__2"), 2, vorDate, true, valFloat === 2.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__3"), 3, vorDate, true, valFloat === 3.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__4"), 4, vorDate, true, valFloat === 4.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__5"), 5, vorDate, true, valFloat === 5.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__6"), 6, vorDate, true, valFloat === 6.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__0"), 0, vorDate, true, valFloat === 0.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__1"), 1, vorDate, true, valFloat === 1.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__2"), 2, vorDate, true, valFloat === 2.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__3"), 3, vorDate, true, valFloat === 3.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__4"), 4, vorDate, true, valFloat === 4.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__5"), 5, vorDate, true, valFloat === 5.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText(deviceHssType + "__" + hssType + "__6"), 6, vorDate, true, valFloat === 6.0, true, operate);
                 deviceHTML += "</div>";
             } else if (hssType === "COLOR" && deviceHssType === "RGBW_COLOR") {
                 //mrlee HM-LC-RGBW-WM
                 deviceHTML += "<span class='RGBW-Color'>";
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 200.0, 1, 1, vorDate, true);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 200.0, 1, 1, vorDate, true, operate);
                 deviceHTML += "</span>";
             } else if (hssType === "LED_STATUS" && deviceHssType === "KEY") {
                 switch (valFloat) {
@@ -1081,20 +1108,20 @@ function addChannel(device, systemDate, options) {
                         break;
                 }
             } else if (hssType === "LEVEL" && deviceHssType === "BLIND") {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false);
-                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false, operate);
+                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, operate);
             } else if (hssType === "LEVEL" && deviceHssType === "WINMATIC") {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100, vorDate + " | -0.5<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("LOCKED") + ", 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false);
-                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, addSetButton(deviceID, channelID, mapText("LOCK"), -0.005, vorDate, true, valFloat === -0.005, false));
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, -0.005, 1.0, 0.01, 100, vorDate + " | -0.5<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("LOCKED") + ", 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("CLOSE") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OPEN"), false, operate);
+                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("CLOSE_SHORT"), mapText("OPEN_SHORT"), vorDate, valFloat, operate, addSetButton(deviceID, channelID, mapText("LOCK"), -0.005, vorDate, true, valFloat === -0.005, false, operate));
             } else if (hssType === "LEVEL" && (deviceHssType === "DIMMER" || deviceHssType === "VIRTUAL_DIMMER")) {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OFF") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("ON"), false);
-                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("OFF"), mapText("ON"), vorDate, valFloat);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 1.0, 0.01, 100, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("OFF") + ", 100<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("ON"), false, operate);
+                deviceHTML += addSetControlGroup(deviceID, channelID, mapText("OFF"), mapText("ON"), vorDate, valFloat, operate);
             } else if (hssType === "FREQUENCY" && deviceHssType === "DIGITAL_ANALOG_OUTPUT") {
-                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 50000.0, 100.0, 1, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MAX") + ", 50000<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MIN"), false);
+                deviceHTML += addSetNumber(deviceID, channelID, valFloat, valUnit, 0.0, 50000.0, 100.0, 1, vorDate + " | 0<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MAX") + ", 50000<span id='unit_ " + id + "'>" + valUnit + "</span> = " + mapText("MIN"), false, operate);
                 deviceHTML += "<div data-role='controlgroup' data-type='horizontal'>";
-                deviceHTML += addSetButton(deviceID, channelID, mapText("MAX"), 0.0, vorDate, true, valFloat === 0.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText("MED"), 30000.0, vorDate, true, valFloat === 30000.0, true);
-                deviceHTML += addSetButton(deviceID, channelID, mapText("MIN"), 50000.0, vorDate, true, valFloat === 50000.0, true);
+                deviceHTML += addSetButton(deviceID, channelID, mapText("MAX"), 0.0, vorDate, true, valFloat === 0.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText("MED"), 30000.0, vorDate, true, valFloat === 30000.0, true, operate);
+                deviceHTML += addSetButton(deviceID, channelID, mapText("MIN"), 50000.0, vorDate, true, valFloat === 50000.0, true, operate);
                 deviceHTML += "</div>";
             } else if (hssType === "SUBMIT" && (deviceHssType === "SIGNAL_LED" || deviceHssType === "SIGNAL_CHIME")) {
                 //TODO SIGNAL_LED SIGNAL_CHIME
@@ -1108,7 +1135,7 @@ function addChannel(device, systemDate, options) {
                 deviceHTML += "</div>";
                 deviceHTML += "</div>";
             } else {
-                var inputType = mapInput(deviceHssType, channel, vorDate, deviceID);
+                var inputType = mapInput(deviceHssType, channel, vorDate, deviceID, operate);
 
                 if (inputType !== "") {
                     deviceHTML += inputType;
@@ -1202,13 +1229,13 @@ function addChannel(device, systemDate, options) {
                 } else {
                     if (valType === "2") {
                         // Bool.
-                        deviceHTML += addSetBoolButtonList(deviceID, valID, strValue, val0, val1, valUnit, vorDate, true);
+                        deviceHTML += addSetBoolButtonList(deviceID, valID, strValue, val0, val1, valUnit, vorDate, true, operate);
                     } else if (valType === "4") {
                         // Float, Integer.
-                        deviceHTML += addSetNumber(deviceID, valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+                        deviceHTML += addSetNumber(deviceID, valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true, operate);
                     } else if (valType === "16") {
                         // Liste.
-                        deviceHTML += addSetValueList(deviceID, valID, strValue, valList, valUnit, vorDate, true);
+                        deviceHTML += addSetValueList(deviceID, valID, strValue, valList, valUnit, vorDate, true, operate);
                     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                         deviceHTML += addHTML(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
@@ -1216,7 +1243,7 @@ function addChannel(device, systemDate, options) {
                     } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {        
                         deviceHTML += addTuneInRadio(deviceID, valID, strValue, vorDate, false);
                     } else if (valType === "20") {
-                        deviceHTML += addSetText(deviceID, valID, strValue, valUnit, vorDate);
+                        deviceHTML += addSetText(deviceID, valID, strValue, valUnit, vorDate, operate);
                     } else {
                         deviceHTML += mapText("UNKNOWN_VAR_TYPE") + "!";
                     }
@@ -1250,7 +1277,7 @@ function addChannel(device, systemDate, options) {
         deviceHTML += "<div class='ui-block-b'><input type='text' data-parent-id='" + deviceID + "' data-datebox-default-value='" + endDate + "' id='setEndDate_" + id + "' data-theme='" + theme + "' data-role='datebox' data-datebox-mode='calbox' data-datebox-use-lang='de'/></div>";
         deviceHTML += "<div class='ui-block-c'><input type='text' data-parent-id='" + deviceID + "' data-datebox-default-value='" + endTime + "' id='setEndTime_" + id + "' data-theme='" + theme + "' data-role='datebox' data-datebox-mode='timebox' data-datebox-minute-step='30' data-datebox-use-lang='de'/></div>";
         deviceHTML += "<div class='ui-block-d'></div>";
-        deviceHTML += "<div class='ui-block-a'>" + addSetButton(deviceID, id, mapText("CLIMATECONTROL_RT_TRANSCEIVER__PARTY_MODE"), "", crt['VORDATE'], true, crt['deviceHTMLPostChannelGroupMode'] === 2.0, true, "CLIMATECONTROL_RT_TRANSCEIVER") + "</div>";
+        deviceHTML += "<div class='ui-block-a'>" + addSetButton(deviceID, id, mapText("CLIMATECONTROL_RT_TRANSCEIVER__PARTY_MODE"), "", crt['VORDATE'], true, crt['deviceHTMLPostChannelGroupMode'] === 2.0, true, operate, "CLIMATECONTROL_RT_TRANSCEIVER") + "</div>";
         deviceHTML += "</div>";
     } else if (!hasChannel) {
         deviceHTML = "";  // Nicht anzeigen, z.B. Raumthermostat:3, wenn kein Fensterkontakt vorhanden.
@@ -1259,11 +1286,11 @@ function addChannel(device, systemDate, options) {
     return deviceHTML;
 }
 
-function processDevices(device, systemDate, options) {
+function processDevices(device, systemDate, options, operate) {
     var deviceHTML = "<li class='dataListItem' id='" + device['id'] + "'><h2 class='ui-li-heading'>" + unescape(device['name']) + "</h2>";
 
     if (device['type'] === "CHANNEL") {
-        deviceHTML += addChannel(device, systemDate, options);
+        deviceHTML += addChannel(device, systemDate, options, operate);
     } else if (device['type'] === "VARDP") {
         var valID = device['id'];
         var valInfo = unescape(device['info']);
@@ -1318,13 +1345,13 @@ function processDevices(device, systemDate, options) {
         } else {
             if (valType === "2") {
                 // Bool.
-                deviceHTML += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true);
+                deviceHTML += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true, operate);
             } else if (valType === "4") {
                 // Float, Integer.
-                deviceHTML += addSetNumber('', valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true);
+                deviceHTML += addSetNumber('', valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true, operate);
             } else if (valType === "16") {
                 // Liste.
-                deviceHTML += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true);
+                deviceHTML += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true, operate);
             } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
                 deviceHTML += addHTML("", valID, strValue, vorDate, false);
             } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {                
@@ -1332,7 +1359,7 @@ function processDevices(device, systemDate, options) {
             } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {        
                 deviceHTML += addTuneInRadio("", valID, strValue, vorDate, false);
             } else if (valType === "20") {
-                deviceHTML += addSetText("", valID, strValue, valUnit, vorDate);
+                deviceHTML += addSetText("", valID, strValue, valUnit, vorDate, operate);
             } else {
                 deviceHTML += mapText("UNKNOWN_VAR_TYPE") + "!";
             }
@@ -1818,7 +1845,7 @@ function loadData(url, id, restart) {
             options['varOptions'] = {};
             options['varOptionsFirst'] = "";
             if (device['visible'] !== "false") {
-                var html = processDevices(device, systemDate, options);
+                var html = processDevices(device, systemDate, options, device['operate'] === "true");
                 if (html !== "") {
                     $("#dataList").append(html);
                 }
@@ -1836,7 +1863,8 @@ function loadData(url, id, restart) {
     if (!isActual) {
         loadConfigData(true, url + '?list=' + id, 'devices', 'webmaticdevicesMap' + id, false, true, function (dta) {
             var systemDate = dta['date'];
-
+            var devVisible = dta['visible'] !== "false";
+            
             $.each(dta.entries, function (i, device) {
                 var options = new Object();
                 options['addDiagram'] = false;
@@ -1846,24 +1874,27 @@ function loadData(url, id, restart) {
                 options['varOptions'] = {};
                 options['varOptionsFirst'] = "";
 
-                var html = processDevices(device, systemDate, options);
+                var html = ""
+                
+                if (device['visible'] !== "false") {
+                    html = processDevices(device, systemDate, options, device['operate'] === "true");
 
-                if (html !== "") {
-                    var devVisible = device['visible'] !== "false";
-                    var devID = device['id'];
+                    if (html !== "") {
+                        var devID = device['id'];
 
-                    if ($('#' + devID).length === 0 && devVisible) {
-                        $("#dataList").append(html);
-                    } else if (devVisible) {
-                        if($.inArray(devID.toString(), excludeFromRefresh) === -1){
-                            $('#' + devID).replaceWith(html);
+                        if ($('#' + devID).length === 0 && devVisible) {
+                            $("#dataList").append(html);
+                        } else if (devVisible) {
+                            if($.inArray(devID.toString(), excludeFromRefresh) === -1){
+                                $('#' + devID).replaceWith(html);
+                            }
+                        } else if ($('#' + devID).length !== 0) {
+                            $('#' + devID).remove();
                         }
-                    } else if ($('#' + devID).length !== 0) {
-                        $('#' + devID).remove();
                     }
-                }
 
-                addDiagram(options);
+                    addDiagram(options);
+                }
             });
 
             reloadList(dta['name'], systemDate, restart, dta['description']);
@@ -2102,6 +2133,10 @@ function loadOptionsClient() {
 
     $("#dataListHeader").append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS_CLIENT") + " (" + clientsList[client] + ")</li>");
     var html;
+    
+    if(isTempClient){
+        $("#dataList").append("<li sytle='text-align:center;'><a href='#' data-role='button' data-inline='true' onclick='location.reload(true);' data-icon='refresh'>" + mapText("END_CLIENT_MODUS") + "</a></li>");
+    }
 
     //Themeauswahl
     html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1>";
@@ -2459,6 +2494,7 @@ function loadOptions() {
     html += "</select>";
     html += "<a href='#' name='change_lang' data-role='button' data-inline='true' data-icon='refresh'>" + mapText("RELOAD") + "</a>";
     html += "</div>";
+    html += "<a href='http://homematic-forum.de/forum/viewtopic.php?f=39&t=28751' target='_blank' class='ui-btn ui-btn-inline ui-icon-info ui-btn-icon-notext ui-corner-all' />";
     html += "</div>";
     //Größe der Menübilder
     html += "<div class='ui-block-f text-right'>";
@@ -2707,7 +2743,7 @@ function loadOptions() {
     html += "<p>&nbsp;</p>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='editButton'>";
-    html += "<a href='http://homematic-forum.de/forum/viewtopic.php?f=39&t=28274' class='ui-btn ui-btn-inline ui-icon-info ui-btn-icon-notext ui-corner-all' />";
+    html += "<a href='http://homematic-forum.de/forum/viewtopic.php?f=39&t=28274' target='_blank' class='ui-btn ui-btn-inline ui-icon-info ui-btn-icon-notext ui-corner-all' />";
     html += "</div>";
     html += "<div class='ui-grid-b'>";
     html += "<div class='ui-block-a text-right'>";
