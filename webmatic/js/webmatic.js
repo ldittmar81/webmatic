@@ -1874,7 +1874,7 @@ function loadData(url, id, restart) {
                 options['varOptions'] = {};
                 options['varOptionsFirst'] = "";
 
-                var html = ""
+                var html = "";
                 
                 if (device['visible'] !== "false") {
                     html = processDevices(device, systemDate, options, device['operate'] === "true");
