@@ -30,22 +30,24 @@ mkdir -p ${USERDIR}/img/ids/variables
 mkdir -p ${USERDIR}/img/ids/devices
 chmod 755 ${USERDIR}
 
-if [ ! -e ${USERDIR}/themes/wm-user-theme.css]; then
+if [ ! -e $USERDIR/themes/wm-user-theme.css]; then
     touch ${USERDIR}/themes/wm-user-theme.css
 fi
 
 # lang
-LANG=${cat ${USERDIR}/lang.json}
-if [ ! "$LANG" = "" ] && [ ! "$LANG" = "de" ]; then 
-    sed -i "s/html lang=\"de\"/html lang=\"${LANG}\"/g" ${WWWDIR}/index.html
-    sed -i "s/html lang=\"de\"/html lang=\"${LANG}\"/g" ${WWWDIR}/get.html
-    sed -i "s/wmmap.de.min.js/wmmap.${LANG}.min.js/g" ${WWWDIR}/webmatic.appcache
-    sed -i "s/wmmap.de.min.js/wmmap.${LANG}.min.js/g" ${WWWDIR}/index.html
-    sed -i "s/wmmap.de.min.js/wmmap.${LANG}.min.js/g" ${WWWDIR}/get.html
-    sed -i "s/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.${LANG}.utf8.min.js/g" ${WWWDIR}/webmatic.appcache
-    sed -i "s/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.${LANG}.utf8.min.js/g" ${WWWDIR}/index.html
-    sed -i "s/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.${LANG}.utf8.min.js/g" ${WWWDIR}/get.html
-    sed -i "s/wmLang=\"de\"/wmLang=\"${LANG}\"/" ${WWWDIR}/js/wmhelper.min.js
+if [ ! -e $USERDIR/lang.json]; then
+    LANG=cat ${USERDIR}/lang.json
+    if [ ! "$LANG" = "" ] && [ ! "$LANG" = "de" ]; then 
+        sed -i "s/html lang=\"de\"/html lang=\"${LANG}\"/g" ${WWWDIR}/index.html
+        sed -i "s/html lang=\"de\"/html lang=\"${LANG}\"/g" ${WWWDIR}/get.html
+        sed -i "s/wmmap.de.min.js/wmmap.${LANG}.min.js/g" ${WWWDIR}/webmatic.appcache
+        sed -i "s/wmmap.de.min.js/wmmap.${LANG}.min.js/g" ${WWWDIR}/index.html
+        sed -i "s/wmmap.de.min.js/wmmap.${LANG}.min.js/g" ${WWWDIR}/get.html
+        sed -i "s/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.${LANG}.utf8.min.js/g" ${WWWDIR}/webmatic.appcache
+        sed -i "s/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.${LANG}.utf8.min.js/g" ${WWWDIR}/index.html
+        sed -i "s/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.${LANG}.utf8.min.js/g" ${WWWDIR}/get.html
+        sed -i "s/wmLang=\"de\"/wmLang=\"${LANG}\"/" ${WWWDIR}/js/wmhelper.min.js
+    fi
 fi
 
 # cleanup
