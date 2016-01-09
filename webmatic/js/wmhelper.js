@@ -3,7 +3,7 @@
 //Variablen
 var webmaticVersion = "0";
 var isPreRelease = 0;
-var lastStableVersion = "2.1.3";
+var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
 var storageVersion = 14;
 var wmLang="de";//genau so lassen
@@ -50,6 +50,15 @@ if (typeof String.prototype.startsWith !== 'function') {
         position = position || 0;
         return this.indexOf(searchString, position) === position;
     };
+}
+if (typeof String.prototype.trim !== 'function') {
+    (function() {
+        // Make sure we trim BOM and NBSP
+        var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+        String.prototype.trim = function() {
+            return this.replace(rtrim, '');
+        };
+    })();
 }
 
 // Check if a new cache is available on page load.

@@ -17,7 +17,7 @@ $.ajax({
     url: '../webmatic_user/reload' + client + '.json',
     async: false
 }).done(function(data){
-    reloadClient = (data.trim() === "true");
+    reloadClient = (String(data).trim() === "true");
     if(reloadClient){
         $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "false"});
     }
@@ -115,13 +115,13 @@ if(!debugModus){
                     versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION";
                 }
                 $.get(versionURL, function(data){
-                    newWebmaticVersion = data.trim();
+                    newWebmaticVersion = String(data).trim();
                 }); 
             });
             versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSIONALPHA";
         }else{
             $.get("https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION", function(data){
-                newWebmaticVersion = data.trim();
+                newWebmaticVersion = String(data).trim();
                 if(isPreRelease && newWebmaticVersion === lastStableVersion){
                    newWebmaticVersion = webmaticVersion;
                 }
@@ -129,7 +129,7 @@ if(!debugModus){
         }       
     }    
     $.get('../webmatic_user/ver.json', function(data){
-        if(data.trim() !== webmaticVersion){
+        if(String(data).trim() !== webmaticVersion){
             createVerFile();
         }
     }).fail(function(jqXHR){
@@ -139,7 +139,7 @@ if(!debugModus){
     });  
     function createVerFile(){
         $.ajax({
-            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvbE95ak1i"),
+            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvVW5ZM1RC"),
             method: 'GET',
             dataType: 'JSONP',
             error: function(jqXHR, textStatus) { 
