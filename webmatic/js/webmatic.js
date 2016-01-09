@@ -1292,6 +1292,7 @@ function processDevices(device, systemDate, options, operate) {
     if (device['type'] === "CHANNEL") {
         deviceHTML += addChannel(device, systemDate, options, operate);
     } else if (device['type'] === "VARDP") {
+        operate = true;
         var valID = device['id'];
         var valInfo = unescape(device['info']);
         var strValue = unescape(device['value']);
@@ -1369,9 +1370,10 @@ function processDevices(device, systemDate, options, operate) {
         var prgInfo = device['info'];
         var prgDate = device['date'];
         vorDate = getTimeDiffString(prgDate, systemDate);
+        operate = true;
 
         deviceHTML += "<p>" + prgInfo + "</p>";
-        deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, device['operate'] === "true");
+        deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, operate);
     }
 
     // Ist leer, wenn (nv) oder ein leerer Channel.
@@ -1845,7 +1847,7 @@ function loadData(url, id, restart) {
             options['varOptions'] = {};
             options['varOptionsFirst'] = "";
             if (device['visible'] !== "false") {
-                var html = processDevices(device, systemDate, options, device['operate'] === "true");
+                var html = processDevices(device, systemDate, options, device['operate'] !== "false");
                 if (html !== "") {
                     $("#dataList").append(html);
                 }
@@ -1877,7 +1879,7 @@ function loadData(url, id, restart) {
                 var html = "";
                 
                 if (device['visible'] !== "false") {
-                    html = processDevices(device, systemDate, options, device['operate'] === "true");
+                    html = processDevices(device, systemDate, options, device['operate'] !== "false");
 
                     if (html !== "") {
                         var devID = device['id'];
