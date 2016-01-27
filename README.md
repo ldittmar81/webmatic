@@ -172,3 +172,11 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Fixed Titlebar.
 * Datum bei Programmliste (Vereinfacht, später schöner).
 * Datum bei Variablenliste (Vereinfacht, später schöner).
+
+#License
+
+Copyright (c) 2016 ldittmar https://github.com/ldittmar81
+
+This Software is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License Version 3 as published by the Free Software Foundation. http://www.gnu.org/licenses/gpl.html
+
+This software comes without any warranty, use it at your own risk

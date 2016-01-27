@@ -112,12 +112,27 @@ cgi_eval {
 
                     ! Im Falle einer Variable die allgemeinen Werte setzen und Inhalt auslesen:
                     Write("    {");
+                    
+                    string description = objObject.DPInfo();
+                        
                     Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
                     Write(", -+#+-type-+#+-:-+#+-VARDP-+#+-");
                     Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");
-                    Write(", -+#+-info-+#+-:-+#+-" # objObject.DPInfo() # "-+#+-");
+                    Write(", -+#+-info-+#+-:-+#+-" # description # "-+#+-");
                     Write(", -+#+-value-+#+-:-+#+-" # objObject.Value() # "-+#+-");
                     Write(", -+#+-visible-+#+-:-+#+-" # objObject.Visible() # "-+#+-");
+                    
+                    Write(",-+#+-operate-+#+-:-+#+-")
+                    string readonly1 = "(r)";
+                    string readonly2 = "(R)";
+                    string readonly3 = "(r,";
+                    string readonly4 = "(R,";
+                    if(description.Find(readonly1) != -1 || description.Find(readonly2) != -1 || description.Find(readonly3) != -1 || description.Find(readonly4) != -1){
+                        WriteHTML('false');
+                    }else{
+                        WriteURL('true');
+                    }
+                    Write("-+#+-");
                     
                     if (objObject.ValueType() == 16){
                         Write(",-+#+-valueList-+#+-:-+#+-" # objObject.ValueList() # "-+#+-");

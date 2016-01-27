@@ -43,6 +43,7 @@
         <script type="text/javascript" src="js/wmmap.js"></script>
         <script type="text/javascript" src="js/wmhelper.js"></script>
         <script type="text/javascript" src="js/webmatic.js"></script>
+        <script type="text/javascript" src="js/options.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript" src="libs/jqplot/jquery.jqplot.min.js"></script>
@@ -55,39 +56,41 @@
 
     </head> 
     <body>
-        <div data-role="page" data-theme="wma">
+
+        <div id="page1" data-role="page" data-theme="wma">
+
             <div data-role="popup" id="popupService" data-theme="wma" data-overlay-theme="wma">
                 <a href="#" data-rel="back" data-role="button" data-theme="wma" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>
                 <div data-role="content" id="popupDiv">
-                    <h3>Servicemeldungen</h3>
+                    <h3 id="serviceText">Servicemeldungen</h3>
                     <ul id="serviceList" data-role="listview" data-inset="true" data-theme="wma">
-                        <li>Keine Servicemeldungen vorhanden</li>
+                        <li id="serviceTextNone">Keine Servicemeldungen vorhanden</li>
                     </ul>
                     <a href="#" id="removeMessages" data-rel="back" data-role="button" data-theme="wma" data-icon="delete">Veraltete St&ouml;rungen entfernen</a>
                 </div>
             </div>
 
-            <div data-role="header" data-position="fixed" data-theme="wma">
+            <div data-role="header" data-id="persistent" data-position="fixed" data-theme="wma">
                 <h1 style="text-align: left;margin-left: 20px;">WebMatic VBETAVERSION</h1>
                 <div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup" class="ui-btn-right">
-                    <a href="#popupService" id="buttonService" data-rel="popup" data-role="button" data-icon="alert">
+                    <a href="#popupService" class="buttonService" data-rel="popup" data-role="button" data-icon="alert">
                         <span class="ui-btn-inner ui-btn-corner-all">
                             <span class="ui-btn-text">&nbsp;</span>
                         </span>
                     </a>
-                    <a href="#" id="buttonRefresh" data-role="button" data-icon="refresh">
+                    <a href="#" class="buttonRefresh" data-role="button" data-icon="refresh">
                         <span class="ui-btn-inner ui-btn-corner-all">
                             <span class="ui-btn-text">&nbsp;</span>
                         </span>
                     </a>
-                    <a href="dlgAbout.html" data-transition="flip" data-role="button" data-icon="info" data-iconpos="notext">&Uuml;ber</a>
+                    <a href="dlgAbout.html" class="dlgAbout" data-transition="flip" data-role="button" data-icon="info" data-iconpos="notext">&Uuml;ber</a>
                 </div>
             </div>
 
             <div data-role="content" data-theme="wma">
                 <div><ul id="errorsDebugger" style="display: none;"></ul></div>
 
-                <div class="content-secondary">
+                <div id="second" class="content-secondary">
                     <div id="main_menu" data-role="collapsible-set" data-theme="wma"></div>
                 </div>
 
@@ -100,6 +103,36 @@
 
             <div id="testcase"></div>
 
+        </div>
+        <div id="page2" data-role="page" data-theme="wma">
+
+            <div data-role="header" data-id="persistent" data-position="fixed" data-theme="wma">
+                <h1 style="text-align: left;margin-left: 20px;">WebMatic VBETAVERSION</h1>
+                <div data-type="horizontal" data-role="controlgroup" id="headerButtonGroup2" class="ui-btn-right">
+                    <a href="#popupService" class="buttonService" data-rel="popup" data-role="button" data-icon="alert">
+                        <span class="ui-btn-inner ui-btn-corner-all">
+                            <span class="ui-btn-text">&nbsp;</span>
+                        </span>
+                    </a>
+                    <a href="#" class="buttonRefresh" data-role="button" data-icon="refresh">
+                        <span class="ui-btn-inner ui-btn-corner-all">
+                            <span class="ui-btn-text">&nbsp;</span>
+                        </span>
+                    </a>
+                    <a href="dlgAbout.html" class="dlgAbout" data-transition="flip" data-role="button" data-icon="info" data-iconpos="notext">&Uuml;ber</a>
+                </div>
+            </div>
+
+            <a href="#prim1" class="backText" data-role="button" data-rel="back" data-icon="back" data-theme="wma">Back</a>
+            <div data-role="content" data-theme="wma">
+
+                <div id="prim2" class="content-secondary-two-pages">
+                    <ul id="dataListHeader2" data-role="listview" data-inset="true"></ul>
+                    <ul id="dataList2" data-role="listview" data-inset="true" data-filter="true"></ul>
+                </div>
+
+            </div>
+            <a href="#prim1" class="backText" data-role="button" data-rel="back" data-icon="back" data-theme="wma">Back</a>
         </div>
 
     </body>

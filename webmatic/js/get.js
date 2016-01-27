@@ -19,8 +19,23 @@ $(function () {
     // Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
     $.ajaxSetup({cache: false});
 
-    lastClickType = 1;
-    lastClickID = getUrlParameter('id');
+    var id = getUrlParameter('id');
+
+    var type = getUrlParameter('type');
+    if (!type) {
+        type = 1;
+    }
+
+    var read = getUrlParameter('read');
+    if (read === undefined) {
+        readModus = true;
+    } else {
+        readModus = read;
+    }
+
+    lastClickType = type;
+    lastClickID = id;
+
     $('.ui-input-search .ui-input-text').val("");
     refreshPage($(this), false);
 
@@ -28,5 +43,5 @@ $(function () {
     restartTimer();
     changeTheme(theme);
     changeFont(font);
-    readModus = true;    
+    changeTwoPage(false);
 });

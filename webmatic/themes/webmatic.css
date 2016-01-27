@@ -158,6 +158,10 @@ img.ui-img-wmf{
     padding-right: 1%;
 }
 
+.content-secondary-two-pages {
+    width: 100%;    
+}
+
 .content-primary {
     width: 69%;
     float: left;
@@ -237,12 +241,16 @@ li.ui-block-g {
     width: 66.666%;
 }
 
+.ui-dialog-contain {
+    margin-top: 5% !important;
+}
+
 @media screen and (max-width: 50em)
 {
     .content-secondary {
         width: 100%;
     }
-    
+
     .text-right {
         text-align: left;
         padding-right: 0;
@@ -253,12 +261,12 @@ li.ui-block-g {
         width: 100%;
         float: left;
     }
-    
+
     .grid-text{
         padding-top: 0;
         padding-left: 5px;
     }
-    
+
     .ui-block-a,
     .ui-block-b,
     .ui-block-c,
@@ -266,10 +274,11 @@ li.ui-block-g {
     .ui-block-e,
     .ui-block-f,
     .ui-block-g{
-	width: 100% !important;
+        width: 100% !important;
     }
-    
+
     .small-hidden{
         display: none;
     }
+
 }
