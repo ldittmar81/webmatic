@@ -729,5 +729,7 @@ var textMap = {
     SERVICE_NOTE: "Обслуживание Уведомления",
     NO_DISORDERS: "Нет служебные сообщения, доступные",
     TWO_SITES_VERSION: "Показать на 2 страницах",
-    BACK: "назад"
+    TWO_SITES_TRANSITION: "Влияние на изменение страницы",
+    BACK: "назад",
+    NUMBER_OF_COLUMNS: "Количество колонок"
 };

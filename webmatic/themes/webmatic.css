@@ -9,6 +9,7 @@
     border-radius: 1em;
     border-style: solid;
     border-width: 1px;
+    border-bottom-width: 1px !important;
 }
 
 .valueNoError-wma { color:#909090; }
@@ -211,12 +212,14 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
 .ui-block-e,
 .ui-block-f,
 .ui-block-g{
-    white-space: normal !important;        
+    white-space: normal !important;
+    margin-top: 2px;    
 }
 
 .ui-block-f,
 .ui-block-g {
     margin: 0;
+    margin-top: 2px;
     padding: 0;
     border: 0;
     float: left;
@@ -229,7 +232,7 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
 li.ui-block-f,
 li.ui-block-g {
     margin-left: 0;
-    margin-right: 0;
+    margin-right: 0;    
     padding: 0;
     list-style: none;
 }
@@ -243,6 +246,67 @@ li.ui-block-g {
 
 .ui-dialog-contain {
     margin-top: 5% !important;
+}
+
+.column-1 > li{
+    
+}
+.column-2 > li{
+    width: 47%;
+    float: left;
+    margin: 3px !important;
+    -webkit-border-top-right-radius: inherit;
+    border-top-right-radius: inherit;
+    -webkit-border-top-left-radius: inherit;
+    border-top-left-radius: inherit;
+    -webkit-border-bottom-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+    -webkit-border-bottom-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+    border-width: 1px !important;
+}
+.column-3 > li{
+    width: 31%;
+    float: left;
+    margin: 3px !important;
+    -webkit-border-top-right-radius: inherit;
+    border-top-right-radius: inherit;
+    -webkit-border-top-left-radius: inherit;
+    border-top-left-radius: inherit;
+    -webkit-border-bottom-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+    -webkit-border-bottom-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+    border-width: 1px !important;
+}
+.column-4 > li{
+    width: 22%;
+    float: left;
+    margin: 3px !important;
+    -webkit-border-top-right-radius: inherit;
+    border-top-right-radius: inherit;
+    -webkit-border-top-left-radius: inherit;
+    border-top-left-radius: inherit;
+    -webkit-border-bottom-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+    -webkit-border-bottom-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+    border-width: 1px !important;
+}
+
+.column-5 > li{
+    width: auto;
+    float: left;
+    margin: 3px !important;
+    -webkit-border-top-right-radius: inherit;
+    border-top-right-radius: inherit;
+    -webkit-border-top-left-radius: inherit;
+    border-top-left-radius: inherit;
+    -webkit-border-bottom-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+    -webkit-border-bottom-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+    border-width: 1px !important;
 }
 
 @media screen and (max-width: 50em)

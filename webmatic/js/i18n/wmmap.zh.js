@@ -729,5 +729,7 @@ var textMap = {
     SERVICE_NOTE: "服务通知",
     NO_DISORDERS: "没有可用的服务信息",
     TWO_SITES_VERSION: "显示2页",
-    BACK: "背部"
+    TWO_SITES_TRANSITION: "作者在页面的变化",
+    BACK: "背部",
+    NUMBER_OF_COLUMNS: "列数"
 };

@@ -145,11 +145,11 @@ theme = resultOptionsMap["default_theme"];
 if ($.inArray(theme, ["wma", "wmb", "wmc", "wmd", "wme", "wmf", "wmg", "wmh", "wmi", "wmj", "wmk", "wml"]) === -1) {
     theme = "wma";
 }
-
 font = resultOptionsMap["default_font"];
 if ($.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     font = "a";
 }
+columns = resultOptionsMap["columns"];
 
 // --------------------- Funktionen --------------------------
 
@@ -274,11 +274,11 @@ function refreshServiceMessages() {
             $('.buttonService, #popupDiv').removeClass(function (i, css) {
                 return (css.match(/(^|\s)valueService-(\S{3}|\S{1})/g) || []).join(' ');
             });
-            $('#headerButtonGroup' + (page2?"2":"")).controlgroup('refresh', true);
+            $('#headerButtonGroup' + (page2 ? "2" : "")).controlgroup('refresh', true);
             $("#serviceList").append("<li><p>" + mapText("NO_SERVICE_MESSAGES") + "</p></li>");
         } else {
             $('.buttonService, #popupDiv').addClass('valueService-' + theme);
-            $('#headerButtonGroup' + (page2?"2":"")).controlgroup('refresh', true);
+            $('#headerButtonGroup' + (page2 ? "2" : "")).controlgroup('refresh', true);
         }
         $('#serviceList').listview('refresh', true);
     });
@@ -388,6 +388,13 @@ function changeTwoPage(value) {
         prim = "prim";
     }
     twoPage = value;
+}
+
+function changeNumberOfColumns(value, savechange) {
+    $(".column-" + columns).removeClass(".column-" + columns).addClass(".column-" + value);
+    if (savechange) {
+        columns = value;
+    }
 }
 
 function changeFont(code) {
@@ -1483,14 +1490,14 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 obj['info'] = val['info'];
                 var valueType = val['valueType'];
                 obj['valueType'] = valueType;
-                obj['valueUnit'] = val['valueUnit']; 
-                if(valueType === "16"){
+                obj['valueUnit'] = val['valueUnit'];
+                if (valueType === "16") {
                     obj['valueList'] = val['valueList'];
                     obj['listType'] = "auto";
-                }else if(valueType === "2"){
+                } else if (valueType === "2") {
                     obj['valueName0'] = val['valueName0'];
                     obj['valueName1'] = val['valueName1'];
-                }else if(valueType === "4"){
+                } else if (valueType === "4") {
                     obj['valueMin'] = val['valueMin'];
                     obj['valueMax'] = val['valueMax'];
                     obj['step'] = 0.01;
@@ -1655,6 +1662,9 @@ function refreshJSONObj(type, newJsonObj, create) {
         if (!("transition" in newJsonObj)) {
             newJsonObj['transition'] = "flip";
         }
+        if (!("column" in newJsonObj)) {
+            newJsonObj['column'] = 1;
+        }
     }
 
     setMap(type, newJsonObj);
@@ -1684,7 +1694,8 @@ function createConfigFile(type, map) {
         text += '"clientsList" : {' + (client !== "" && !isTempClient ? '"' + client + '":"' + client + '"' : '') + '},';
         text += '"default_sort_manually" : true,';
         text += '"two_sites" : false,';
-        text += '"transition" : "flip"';
+        text += '"transition" : "flip",';
+        text += '"column" : 1';
         text += '}';
 
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
@@ -1905,7 +1916,7 @@ function loadVariables(restart) {
             if (newVersion) {
                 saveDataToFile = true;
             }
-            loadConfigData(false, 'cgi/systemvariables.cgi', 'variables', 'webmaticvariablesMap', false, true);
+            loadConfigData(false, 'cgi/variables.cgi', 'variables', 'webmaticvariablesMap', false, true);
             isActual = true;
         } else {
             loadLocalStorageMap("variables");
@@ -1926,7 +1937,7 @@ function loadVariables(restart) {
     }
 
     if (!isActual) {
-        loadConfigData(true, 'cgi/systemvariables.cgi', 'variables', 'webmaticvariablesMap', false, true, function (dta) {
+        loadConfigData(true, 'cgi/variables.cgi', 'variables', 'webmaticvariablesMap', false, true, function (dta) {
             var systemDate = dta['date'];
             $.each(dta, function (key, variable) {
                 if (key === "date" || key === "size") {

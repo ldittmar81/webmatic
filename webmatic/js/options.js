@@ -58,10 +58,99 @@ function loadOptions() {
     $("#" + dataListHeader).empty();
 
     $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS") + "</li>");
-    var html;
+
+    $("#" + dataList).append(processOptionsGlobalTheme());
+    $("#" + dataList).append(processOptionsGlobalAnzeige());
+    $("#" + dataList).append(processOptionsGlobalVariables());
+    $("#" + dataList).append(processOptionsGlobalClients());
+    $("#" + dataList).append(processOptionsGlobalHistorian());
+    $("#" + dataList).append(processOptionsGlobalOthers());
+
+    $("#" + dataListHeader).listview("refresh");
+    $("#" + dataList).listview("refresh");
+    $("#" + dataList).trigger("create").fadeIn();
+}
+
+function loadOptionsClient() {
+    $("#" + dataList).empty();
+    $("#" + dataListHeader).empty();
+
+    $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS_CLIENT") + " (" + clientsList[client] + ")</li>");
+
+    if (isTempClient) {
+        $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' data-role='button' data-inline='true' onclick='location.reload(true);' data-icon='refresh'>" + mapText("END_CLIENT_MODUS") + "</a></li>");
+    }
+
+    $("#" + dataList).append(processOptionsClientTheme());
+    $("#" + dataList).append(processOptionsClientAnzeige());
+    $("#" + dataList).append(processOptionsClientVariables());
+
+    $("#" + dataListHeader).listview("refresh");
+    $("#" + dataList).listview("refresh");
+    $("#" + dataList).trigger("create").fadeIn();
+}
+
+function loadGraphicIDs(type) {
+    $("#" + dataList).empty();
+    $("#" + dataListHeader).empty();
+    // "Lade..." anzeigen:
+    $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
+    // Icon Animation in Refresh Button:
+    $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
+
+    $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved ? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
+
+    //Global
+    if (localStorage.getItem("webmatic" + type + "Map") === null) {
+        if (newVersion) {
+            saveDataToFile = true;
+        }
+        loadConfigData(false, '../webmatic_user/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
+    } else {
+        loadLocalStorageMap(type);
+    }
+    //Lokal
+    if (localStorage.getItem("webmatic" + type + "clientMap") === null) {
+        if (client !== "") {
+            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
+        }
+    } else {
+        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+    }
+    //Kombinieren
+    createOneMap(type);
+
+    loadConfigData(true, 'cgi/' + type + '.cgi', type, 'webmatic' + type + 'Map', false, true, function () {
+        createOneMap(type);
+    });
+
+    $("#" + dataList).append("<li data-role='list-divider' role='heading'>" + mapText(type) + "</li>");
+    processGraphicID(type);
+
+    $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved ? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
+
+    $("#" + dataList).listview("refresh");
+    $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
+    $("img").trigger("lazyLoadInstantly");
+
+    // "Lade..." wieder entfernen und Überschrift anzeigen:
+    $("#" + dataListHeader).empty();
+    $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + mapText("EDIT") + "</li>");
+    $("#" + dataListHeader).listview("refresh");
+
+    // Animated Icon aus Refresh wieder entfernen:
+    $('.buttonRefresh .ui-btn-text').html("&nbsp;");
+
+    $("#" + dataList).listview("refresh");
+    $("#" + dataList).trigger("create").fadeIn();
+}
+
+// ------------------------- Prozessors ---------------------------------
+
+function processOptionsGlobalTheme() {
 
     //Themeauswahl
-    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1>";
+    var html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Aussehen
@@ -169,10 +258,10 @@ function loadOptions() {
     html += "</div>";
     html += "</div>";
     //Two Sites Transition
-    html += "<div id='globalTwoSitesTransitionDiv' class='ui-block-f text-right' " + (globalTwoSites ? "" : "style='display: none;'") + ">";
+    html += "<div name='globalTwoSitesTransitionDiv' class='ui-block-f text-right' " + (globalTwoSites ? "" : "style='display: none;'") + ">";
     html += "<span>" + mapText("TWO_SITES_TRANSITION") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-g'>";
+    html += "<div name='globalTwoSitesTransitionDiv' class='ui-block-g' " + (globalTwoSites ? "" : "style='display: none;'") + ">";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_transition' data-theme='" + theme + "'>";
     var globalTransition = optionsMap["transition"];
@@ -186,12 +275,33 @@ function loadOptions() {
     html += "<a href='#' name='saveGlobalOption' data-key='transition' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
     html += "</div>";
+    //Columns
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("NUMBER_OF_COLUMNS") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<select id='global_columns' data-theme='" + theme + "'>";
+    var globalColumns = optionsMap["columns"];
+    html += "<option value='1' " + (globalColumns === "1" ? "selected='selected'" : "") + ">1</option>";
+    html += "<option value='2' " + (globalColumns === "2" ? "selected='selected'" : "") + ">2</option>";
+    html += "<option value='3' " + (globalColumns === "3" ? "selected='selected'" : "") + ">3</option>";
+    html += "<option value='4' " + (globalColumns === "4" ? "selected='selected'" : "") + ">4</option>";
+    html += "<option value='5' " + (globalColumns === "5" ? "selected='selected'" : "") + ">auto</option>";
+    html += "</select>";
+    html += "<a href='#' name='saveGlobalOption' data-key='columns' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
+    return html;
+
+}
+
+function processOptionsGlobalAnzeige() {
 
     //Anzeige
-    html = "<li><h1>" + mapText("MENU") + "</h1>";
+    var html = "<li><h1>" + mapText("MENU") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Favoriten anzeigen
@@ -200,8 +310,8 @@ function loadOptions() {
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
+    var selected1 = "";
+    var selected2 = "";
     if (optionsMap["favorites"]) {
         selected1 = "class='ui-btn-active'";
     } else {
@@ -285,10 +395,8 @@ function loadOptions() {
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-
     selected1 = "class='" + (optionsMap["others"] ? "ui-btn-active" : "") + (optionsMap["no_more_settings"] === 0 ? " ui-state-disabled" : "") + "'";
     selected2 = "class='" + (!optionsMap["others"] ? "ui-btn-active" : "") + (optionsMap["no_more_settings"] === 0 ? " ui-state-disabled" : "") + "'";
-
     html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
     html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
     html += "</div>";
@@ -311,7 +419,6 @@ function loadOptions() {
     html += "<a href='#' name='saveGlobalOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
     html += "</div>";
-
     //Standardmäßig nur lesend
     html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("DEFAULT_SORT") + "</span>";
@@ -331,10 +438,14 @@ function loadOptions() {
     html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
+    return html;
+
+}
+
+function processOptionsGlobalVariables() {
 
     //Variablen
-    html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
+    var html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Standardmäßig nur lesend
@@ -343,8 +454,8 @@ function loadOptions() {
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
+    var selected1 = "";
+    var selected2 = "";
     if (optionsMap["systemvar_readonly"]) {
         selected1 = "class='ui-btn-active'";
     } else {
@@ -356,8 +467,11 @@ function loadOptions() {
     html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
+    return html;
+}
 
+function processOptionsGlobalClients() {
+    var html = "";
     //Clients
     if (Object.keys(clientsList).length > 1) {
         html = "<li><h1>Clients</h1>";
@@ -407,11 +521,14 @@ function loadOptions() {
         html += "</div>";
 
         html += "</div></div></li>";
-        $("#" + dataList).append(html);
     }
+    return html;
+}
+
+function processOptionsGlobalHistorian() {
 
     //CCU-Historian
-    html = "<li><h1>CCU-Historian</h1>";
+    var html = "<li><h1>CCU-Historian</h1>";
     html += "<p>&nbsp;</p>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='editButton'>";
@@ -430,10 +547,14 @@ function loadOptions() {
     html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
+
+    return html;
+}
+
+function processOptionsGlobalOthers() {
 
     //Sonstiges
-    html = "<li><h1>" + mapText("OTHERS") + "</h1>";
+    var html = "<li><h1>" + mapText("OTHERS") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Meldung über neue Updates
@@ -457,8 +578,8 @@ function loadOptions() {
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
+    var selected1 = "";
+    var selected2 = "";
     if (optionsMap["dont_leave"]) {
         selected1 = "class='ui-btn-active'";
     } else {
@@ -470,26 +591,14 @@ function loadOptions() {
     html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
+    return html;
 
-    $("#" + dataListHeader).listview("refresh");
-    $("#" + dataList).listview("refresh");
-    $("#" + dataList).trigger("create").fadeIn();
 }
 
-function loadOptionsClient() {
-    $("#" + dataList).empty();
-    $("#" + dataListHeader).empty();
-
-    $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + mapText("OPTIONS_CLIENT") + " (" + clientsList[client] + ")</li>");
-    var html;
-
-    if (isTempClient) {
-        $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' data-role='button' data-inline='true' onclick='location.reload(true);' data-icon='refresh'>" + mapText("END_CLIENT_MODUS") + "</a></li>");
-    }
+function processOptionsClientTheme() {
 
     //Themeauswahl
-    html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1>";
+    var html = "<li><h1>" + mapText("CHOOSE_THEME") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Aussehen
@@ -588,10 +697,10 @@ function loadOptionsClient() {
     html += "</div>";
     html += "</div>";
     //Two Sites Transition
-    html += "<div id='clientTwoSitesTransitionDiv' class='ui-block-f text-right' " + (clientTwoSites ? "" : "style='display: none;'") + ">";
+    html += "<div name='clientTwoSitesTransitionDiv' class='ui-block-f text-right' " + (clientTwoSites ? "" : "style='display: none;'") + ">";
     html += "<span>" + mapText("TWO_SITES_TRANSITION") + "</span>";
     html += "</div>";
-    html += "<div class='ui-block-g'>";
+    html += "<div name='clientTwoSitesTransitionDiv' class='ui-block-g' " + (clientTwoSites ? "" : "style='display: none;'") + ">";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='client_transition' data-theme='" + theme + "'>";
     var clientTransition = optionsClientMap["transition"];
@@ -606,12 +715,33 @@ function loadOptionsClient() {
     html += "<a href='#' name='saveClientOption' data-key='transition' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";
     html += "</div>";
+    //Columns
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("NUMBER_OF_COLUMNS") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<select id='client_columns' data-theme='" + theme + "'>";
+    var clientColumns = optionsClientMap["columns"];
+    html += "<option value='none'>" + mapText("NOT_SELECTED") + "</option>";
+    html += "<option value='1' " + (clientColumns === "1" ? "selected='selected'" : "") + ">1</option>";
+    html += "<option value='2' " + (clientColumns === "2" ? "selected='selected'" : "") + ">2</option>";
+    html += "<option value='3' " + (clientColumns === "3" ? "selected='selected'" : "") + ">3</option>";
+    html += "<option value='4' " + (clientColumns === "4" ? "selected='selected'" : "") + ">4</option>";
+    html += "<option value='5' " + (clientColumns === "5" ? "selected='selected'" : "") + ">auto</option>";
+    html += "</select>";
+    html += "<a href='#' name='saveClientOption' data-key='columns' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
+    return html;
+}
+
+function processOptionsClientAnzeige() {
 
     //Anzeige
-    html = "<li><h1>" + mapText("MENU") + "</h1>";
+    var html = "<li><h1>" + mapText("MENU") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Favoriten anzeigen
@@ -620,9 +750,9 @@ function loadOptionsClient() {
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    selected3 = "";
+    var selected1 = "";
+    var selected2 = "";
+    var selected3 = "";
     if (!("favorites" in optionsClientMap)) {
         selected1 = "class='ui-btn-active'";
     } else if (optionsClientMap["favorites"]) {
@@ -773,10 +903,13 @@ function loadOptionsClient() {
     html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
+    return html;
+}
+
+function processOptionsClientVariables() {
 
     //Variablen
-    html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
+    var html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Standardmäßig nur lesend
@@ -785,9 +918,9 @@ function loadOptionsClient() {
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    selected3 = "";
+    var selected1 = "";
+    var selected2 = "";
+    var selected3 = "";
     if (!("systemvar_readonly" in optionsClientMap)) {
         selected1 = "class='ui-btn-active'";
     } else if (optionsClientMap["systemvar_readonly"]) {
@@ -802,66 +935,7 @@ function loadOptionsClient() {
     html += "</div>";
 
     html += "</div></div></li>";
-    $("#" + dataList).append(html);
-
-    $("#" + dataListHeader).listview("refresh");
-    $("#" + dataList).listview("refresh");
-    $("#" + dataList).trigger("create").fadeIn();
-}
-
-function loadGraphicIDs(type) {
-    $("#" + dataList).empty();
-    $("#" + dataListHeader).empty();
-    // "Lade..." anzeigen:
-    $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
-    // Icon Animation in Refresh Button:
-    $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
-
-    $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved ? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
-
-    //Global
-    if (localStorage.getItem("webmatic" + type + "Map") === null) {
-        if (newVersion) {
-            saveDataToFile = true;
-        }
-        loadConfigData(false, '../webmatic_user/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
-    } else {
-        loadLocalStorageMap(type);
-    }
-    //Lokal
-    if (localStorage.getItem("webmatic" + type + "clientMap") === null) {
-        if (client !== "") {
-            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
-        }
-    } else {
-        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
-    }
-    //Kombinieren
-    createOneMap(type);
-
-    loadConfigData(true, 'cgi/' + type + '.cgi', type, 'webmatic' + type + 'Map', false, true, function () {
-        createOneMap(type);
-    });
-
-    $("#" + dataList).append("<li data-role='list-divider' role='heading'>" + mapText(type) + "</li>");
-    processGraphicID(type);
-
-    $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved ? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
-
-    $("#" + dataList).listview("refresh");
-    $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
-    $("img").trigger("lazyLoadInstantly");
-
-    // "Lade..." wieder entfernen und Überschrift anzeigen:
-    $("#" + dataListHeader).empty();
-    $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + mapText("EDIT") + "</li>");
-    $("#" + dataListHeader).listview("refresh");
-
-    // Animated Icon aus Refresh wieder entfernen:
-    $('.buttonRefresh .ui-btn-text').html("&nbsp;");
-
-    $("#" + dataList).listview("refresh");
-    $("#" + dataList).trigger("create").fadeIn();
+    return html;
 }
 
 function processGraphicID(type) {
@@ -1116,9 +1190,9 @@ $(function () {
 
         if ("two_sites" === key) {
             if (value === "true") {
-                $('#clientTwoSitesTransitionDiv').show();
+                $('[name=clientTwoSitesTransitionDiv]').show();
             } else {
-                $('#clientTwoSitesTransitionDiv').hide();
+                $('[name=clientTwoSitesTransitionDiv]').hide();
             }
         }
 
@@ -1159,9 +1233,9 @@ $(function () {
 
         if ("two_sites" === key) {
             if (value === "true") {
-                $('#globalTwoSitesTransitionDiv').show();
+                $('[name=globalTwoSitesTransitionDiv]').show();
             } else {
-                $('#globalTwoSitesTransitionDiv').hide();
+                $('[name=globalTwoSitesTransitionDiv]').hide();
             }
         }
 

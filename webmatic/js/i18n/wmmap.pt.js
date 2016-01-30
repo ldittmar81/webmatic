@@ -729,7 +729,9 @@ var textMap = {
     SERVICE_NOTE: "Notificações de Serviços",
     NO_DISORDERS: "Nenhuma mensagem de serviços disponíveis",
     TWO_SITES_VERSION: "Exibição em 2 páginas",
-    BACK: "Voltar"
+    TWO_SITES_TRANSITION: "Efeito na mudança de página",
+    BACK: "Voltar",
+    NUMBER_OF_COLUMNS: "Número de colunas"
 };
 
 

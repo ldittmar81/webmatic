@@ -729,5 +729,7 @@ var textMap = {
     SERVICE_NOTE: "servis Bildirimleri",
     NO_DISORDERS: "Henüz servis mesajları",
     TWO_SITES_VERSION: "2 sayfada Ekran",
-    BACK: "sırt"
+    TWO_SITES_TRANSITION: "Sayfanın değişiminde etkisi",
+    BACK: "sırt",
+    NUMBER_OF_COLUMNS: "Sütun sayısı"
 };

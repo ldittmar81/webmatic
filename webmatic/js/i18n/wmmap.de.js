@@ -729,5 +729,7 @@ var textMap = {
     SERVICE_NOTE: "Servicemeldungen",
     NO_DISORDERS: "Keine Servicemeldungen vorhanden",
     TWO_SITES_VERSION: "Anzeige auf 2 Seiten",
-    BACK: "Zurück"
+    TWO_SITES_TRANSITION: "Effekt beim Seitenwechsel",
+    BACK: "Zurück",
+    NUMBER_OF_COLUMNS: "Anzahl der Spalten"
 };

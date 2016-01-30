@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 16;
+var storageVersion = 17;
 var wmLang="de";//genau so lassen
 
 // Globale variablen
@@ -36,6 +36,8 @@ var resultProgramsMap = {}, resultFunctionsMap = {}, resultRoomsMap = {}, result
 
 var theme, font, gfxClass;
 var loadedFont = ["a"];
+
+var columns = 1;
 
 //Two Pages
 var twoPage;
@@ -883,6 +885,8 @@ function checkAndChange(key, value) {
         changeMenuGfx(value);
     } else if (key === "two_sites" && value !== twoPage) {
         changeTwoPage(value);
+    } else if (key === "columns" && value !== columns) {
+        changeNumberOfColumns(value, true);
     } else if (key === "favorites" || key === "rooms" || key === "functions" || key === "variables" || key === "programs" || key === "others") {
         if (value && $("#" + key + "MainMenu").is(":hidden")) {
             $("#" + key + "MainMenu").fadeIn();

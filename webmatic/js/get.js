@@ -1,4 +1,4 @@
-/* global theme, font, isGetSite */
+/* global theme, font, isGetSite, columns */
 isGetSite = true;
 // ------------------------- Initial call after page loading ------------------------
 $(function () {
@@ -44,4 +44,5 @@ $(function () {
     changeTheme(theme);
     changeFont(font);
     changeTwoPage(false);
+    changeNumberOfColumns(columns, true);
 });

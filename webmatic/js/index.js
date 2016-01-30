@@ -1,4 +1,4 @@
-/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim */
+/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim, columns */
 
 function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3><ul id='list" + indexType + "' data-role='listview' data-inset='true'></ul></div>");
@@ -156,6 +156,7 @@ $(function () {
     changeTheme(theme);
     changeFont(font);
     changeTwoPage(twoPage);
+    changeNumberOfColumns(columns, true);
 
     $(document.body).on("click", ".scrollToList", function () {
         $('html, body').animate({scrollTop: $('#' + prim).offset().top - 60}, 200);
