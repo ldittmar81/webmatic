@@ -99,8 +99,8 @@ $(function () {
         gfxClassSelected = "ui-li-icon";
         gfxClassParent = "ui-li-has-icon";
     }
-
     twoPage = resultOptionsMap['two_sites'];
+    columns = resultOptionsMap['columns'];
 
     // ----------------------- Menüpunkte -----------------------
 

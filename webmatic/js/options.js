@@ -48,6 +48,9 @@ function createExecutationField(key, map) {
         return addSetBoolButtonList(0, key, "false", map["valueName0"], map["valueName1"], valueUnit, null, false, true, true);
     } else if (valueType === "4") {
         return addSetNumber(0, key, map["valueMin"], valueUnit, map["valueMin"], map["valueMax"], map["step"], map["faktor"], null, false, true, true);
+    } else if (valueType === "16") {
+        var valList = map['valueList'];
+        return addSetValueList(0, key, valList[0], valList, valueUnit, null, false, true, null, true);
     }
 }
 
@@ -942,6 +945,7 @@ function processGraphicID(type) {
     var map = getResultMap(type);
 
     var isVariables = type === "variables";
+    var isTextVariables = false;
     var isPrograms = type === "programs";
     var isRFF = type === "rooms" || type === "functions" || type === "favorites";
 
@@ -951,13 +955,27 @@ function processGraphicID(type) {
         if (key === "date" || key === "size") {
             return;
         }
+        var picKey = key;
+        if (isVariables) {
+            var valueType = val["valueType"];
+            if (valueType === "2") {
+                picKey += "_true";
+            } else if (valueType === "4") {
+                picKey += "_" + val["valueMin"];
+            } else if (valueType === "16") {
+                var valList = val['valueList'];
+                picKey += "_" + valList[0];
+            } else if (valueType === "20") {
+                isTextVariables = true;
+            }
+        }
         var html = "<li id='list" + key + "' data-id='" + key + "'>";
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
-        if ($.inArray(key, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + key + (isVariables ? "" : "") + ".png";
+        if ($.inArray(picKey, picturesList) !== -1) {
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
         }
-        html += "' src='img/menu/" + type + ".png'/>";
+        html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
         html += "<a href='#' " + ($.inArray(key, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
         html += "<h1>(";
         if (isRFF) {
@@ -985,13 +1003,13 @@ function processGraphicID(type) {
         html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key + "'>";
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><input name='editName' data-id='" + key + "' data-type='" + type + "' type='text' value='" + val['name'] + "' /></div>";
-        if (isVariables) {
+        if (isVariables && !isTextVariables) {
             html += "<div class='ui-block-b small-hidden'></div>";
             html += "<div class='ui-block-c small-hidden'></div>";
             html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
         }
-        html += "<div class='ui-block-b'><input name='file' id='file" + key + (isVariables ? "" : "") + "' type='file' accept='image/*' /></div>";
-        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + (isVariables ? "" : "") + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("UPLOAD") + "</a></div>";
+        html += "<div class='ui-block-b'><input name='file' id='file" + key + "' data-pickey='" + picKey + "' type='file' accept='image/*' /></div>";
+        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("UPLOAD") + "</a></div>";
 
         html += "<div class='ui-block-a small-hidden'></div>";
         html += "<div class='ui-block-b";
@@ -1397,6 +1415,52 @@ $(function () {
         activateSettingSaveButton();
     });
 
+    // ------------------------- Bilder -----------------------------
+
+    $(document.body).on("click", "[id^=optionssetButton],[id^=optionssetValueBigList]", function () {
+        var dataID = $(this).data("id");
+        var value = $(this).data("value");
+        if (typeof value === "undefined") {
+            var valueID = "setValue_" + dataID;
+            value = $("#" + valueID).val();
+            var factor = $("#" + valueID).data("factor");
+            if (typeof factor !== "undefined") {
+                value = parseFloat(value);
+                var testList = $.grep(picturesList, function (item) {
+                    var regex = new RegExp("^" + dataID, "i");
+                    return item.trim().match(regex);
+                });
+
+                var myValue = "not_exist";
+                if (typeof testList !== 'undefined' && testList.length > 0) {
+                    $.each(testList, function (i, val) {
+                        var tmp_val = parseFloat(val.split("_")[1]);
+                        if (tmp_val <= value) {
+                            myValue = tmp_val;
+                        }
+                    });
+                }
+                value = myValue;
+            }
+        }
+        var picKey = dataID + "_" + value;
+        $("#file" + dataID).attr("data-pickey", picKey);
+        var type = $("#img" + dataID).data("type");
+
+        if ($(this).data("icon") !== "check") {
+            $(this).parent().children().removeClass("ui-btn-active");
+            $(this).addClass("ui-btn-active");
+        }
+
+        $("#img" + dataID).fadeOut(500, function () {
+            var url = "img/menu/" + type + ".png";
+            if ($.inArray(picKey, picturesList) !== -1) {
+                url = "../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
+            }
+            $("#img" + dataID).attr("src", url).fadeIn(1000);
+        });
+    });
+
     $(document.body).on("click", "[name='deletePic']", function () {
         var obj = $(this);
         var type = obj.data("type");
@@ -1432,6 +1496,7 @@ $(function () {
         var id = $(this).attr('id');
         var key = id.substr(13, id.length);
         var type = $(this).data('type');
+        var picKey = $("#file" + key).attr("data-pickey");
 
         var formData = new FormData();
 
@@ -1488,8 +1553,8 @@ $(function () {
                     $("#menuImg" + key).attr("src", dataURL).fadeIn(1000);
                 });
 
-                formData.append('file', blob, key + '.png');
-                formData.append('filename', key + '.png');
+                formData.append('file', blob, picKey + '.png');
+                formData.append('filename', picKey + '.png');
                 formData.append('path', '/usr/local/etc/config/addons/www/webmatic_user/img/ids/' + type + '/');
 
                 $.ajax({
@@ -1499,7 +1564,11 @@ $(function () {
                     cache: false,
                     contentType: false,
                     processData: false
-                }, 'json');
+                }, 'json').done(function () {
+                    if ($.inArray(picKey, picturesList) === -1) {
+                        picturesList.push(picKey);
+                    }
+                });
 
             };
             $("#uploadPicture" + key).addClass("ui-state-disabled");

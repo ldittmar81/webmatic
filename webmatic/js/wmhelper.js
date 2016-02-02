@@ -185,23 +185,20 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     var html = "<div class=ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
 
-    var idString = "";
+    var active = "";
     // Leerstring heißt wohl auch false, z.B. bei Alarmzone.
-    if (strValue === "false" || strValue === "") {
-        idString = "class='ui-btn-active' data-role='button' data-inline='true'";
-    } else {
-        idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + " id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
-    }
+    if ((strValue === "false" || strValue === "") && !options) {
+        active = "ui-btn-active";
+    }    
+    var idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "class='" + active + "' data-role='button' data-inline='true'") + " id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     html += "<a href='#' " + idString + " data-value='false' data-theme='" + theme + "'>" + val0 + "</a>";
 
+    active = "";
     if (strValue === "true" || options) {
-        if (!options) {
-            idString = "class='ui-btn-active' ";
-        }
-        idString += "data-role='button' data-inline='true'";
-    } else {
-        idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + "id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
+        active = "ui-btn-active";
     }
+    
+    idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "class='" + active + "' data-role='button' data-inline='true'") + "id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     html += "<a href='#' " + idString + " data-value='true' data-theme='" + theme + "'>" + val1 + "</a>";
 
     html += "</div>";
@@ -214,28 +211,27 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     return html;
 }
 
-function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh, operate, forceList) {
+// ValueType 16 (Liste)
+function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh, operate, forceList, options) {
 
     var selIndex = parseInt(strValue);
     var optionsArray = valList.split(";");
 
     if (forceList === "small" || (optionsArray.length < 6 && forceList !== "big")) {
-        return addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate);
+        return addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options);
     } else {
-        return addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate);
+        return addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options);
     }
 
 }
 
-function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate) {
+// ValueType 16 (Liste-Buttons)
+function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options) {
     var html = "<div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     for (var i = 0; i < optionsArray.length; i++) {
-        if (selIndex === i) {
-            html += "<a href='#' data-value='" + i + "' data-role='button' data-inline='true' class='ui-btn-active' data-theme='" + theme + "'>" + optionsArray[i] + "</a>";
-        } else {
-            html += "<a href='#' id='setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + ">" + optionsArray[i] + "</a>";
-        }
+        var active = (selIndex === i?"ui-btn-active":"");
+        html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "data-role='button' class='" + active + "' data-inline='true'") + ">" + optionsArray[i] + "</a>";
     }
     html += "</div>";
     html += "</div>";
@@ -245,7 +241,8 @@ function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate,
     return html;
 }
 
-function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate) {
+// ValueType 16 (Liste-Select)
+function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options) {
     var html = "<div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='selector_" + valID + "' data-theme='" + theme + "'>";
@@ -257,7 +254,7 @@ function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, r
         }
     }
     html += "</select>";
-    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">&nbsp;</a>";
+    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='" + (options ? "options" : "") + "setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">&nbsp;</a>";
     html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     html += "</div>";
