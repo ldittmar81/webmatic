@@ -100,7 +100,6 @@ $(function () {
         gfxClassParent = "ui-li-has-icon";
     }
     twoPage = resultOptionsMap['two_sites'];
-    columns = resultOptionsMap['columns'];
 
     // ----------------------- Menüpunkte -----------------------
 
@@ -156,7 +155,7 @@ $(function () {
     changeTheme(theme);
     changeFont(font);
     changeTwoPage(twoPage);
-    changeNumberOfColumns(columns, true);
+    changeNumberOfColumns(columns, false);
 
     $(document.body).on("click", ".scrollToList", function () {
         $('html, body').animate({scrollTop: $('#' + prim).offset().top - 60}, 200);

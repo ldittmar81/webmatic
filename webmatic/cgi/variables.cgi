@@ -35,17 +35,6 @@ cgi_eval {
                 WriteURL(sysVar.Value());
             }
             Write("-+#+-");
-            Write(",-+#+-operate-+#+-:-+#+-")
-            string readonly1 = "(r)";
-            string readonly2 = "(R)";
-            string readonly3 = "(r,";
-            string readonly4 = "(R,";
-            if(description.Find(readonly1) != -1 || description.Find(readonly2) != -1 || description.Find(readonly3) != -1 || description.Find(readonly4) != -1){
-                WriteHTML('false');
-            }else{
-                WriteURL('true');
-            }
-            Write("-+#+-");
             if (sysVar.ValueType() == 16){
                 Write(",-+#+-valueList-+#+-:-+#+-" # sysVar.ValueList() # "-+#+-");
             }

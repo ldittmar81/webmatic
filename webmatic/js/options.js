@@ -286,11 +286,11 @@ function processOptionsGlobalTheme() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_columns' data-theme='" + theme + "'>";
     var globalColumns = optionsMap["columns"];
-    html += "<option value='1' " + (globalColumns === "1" ? "selected='selected'" : "") + ">1</option>";
-    html += "<option value='2' " + (globalColumns === "2" ? "selected='selected'" : "") + ">2</option>";
-    html += "<option value='3' " + (globalColumns === "3" ? "selected='selected'" : "") + ">3</option>";
-    html += "<option value='4' " + (globalColumns === "4" ? "selected='selected'" : "") + ">4</option>";
-    html += "<option value='5' " + (globalColumns === "5" ? "selected='selected'" : "") + ">auto</option>";
+    html += "<option value='1' " + (globalColumns === 1 ? "selected='selected'" : "") + ">1</option>";
+    html += "<option value='2' " + (globalColumns === 2 ? "selected='selected'" : "") + ">2</option>";
+    html += "<option value='3' " + (globalColumns === 3 ? "selected='selected'" : "") + ">3</option>";
+    html += "<option value='4' " + (globalColumns === 4 ? "selected='selected'" : "") + ">4</option>";
+    html += "<option value='5' " + (globalColumns === 5 ? "selected='selected'" : "") + ">auto</option>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='columns' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
     html += "</div>";

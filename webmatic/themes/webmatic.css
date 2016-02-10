@@ -252,7 +252,7 @@ li.ui-block-g {
     
 }
 .column-2 > li{
-    width: 47%;
+    width: 46%;
     float: left;
     margin: 3px !important;
     -webkit-border-top-right-radius: inherit;
@@ -266,7 +266,7 @@ li.ui-block-g {
     border-width: 1px !important;
 }
 .column-3 > li{
-    width: 31%;
+    width: 30%;
     float: left;
     margin: 3px !important;
     -webkit-border-top-right-radius: inherit;
@@ -280,7 +280,7 @@ li.ui-block-g {
     border-width: 1px !important;
 }
 .column-4 > li{
-    width: 22%;
+    width: 21%;
     float: left;
     margin: 3px !important;
     -webkit-border-top-right-radius: inherit;

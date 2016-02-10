@@ -149,8 +149,7 @@ font = resultOptionsMap["default_font"];
 if ($.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     font = "a";
 }
-columns = resultOptionsMap["columns"];
-
+columns = resultOptionsMap['columns'];
 // --------------------- Funktionen --------------------------
 
 function refreshPage(item) {
@@ -348,7 +347,10 @@ function changeTheme(newTheme) {
     $('.control-set').removeClass(function (i, css) {
         return (css.match(/(^|\s)control-set-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('control-set-' + newTheme);
-
+    
+    $('#page2').attr("data-theme", newTheme);
+    $('#page2').find('[data-theme]').attr("data-theme", newTheme);
+    
     theme = newTheme;
 }
 
@@ -391,7 +393,11 @@ function changeTwoPage(value) {
 }
 
 function changeNumberOfColumns(value, savechange) {
-    $(".column-" + columns).removeClass(".column-" + columns).addClass(".column-" + value);
+    $('#dataList, #dataList2').filter(function () {
+        return this.className.match(/(^|\s)column-/);
+    }).removeClass(function (i, css) {
+        return (css.match(/(^|\s)column-/g) || []).join(' ');
+    }).addClass("column-" + value);
     if (savechange) {
         columns = value;
     }
@@ -1662,8 +1668,8 @@ function refreshJSONObj(type, newJsonObj, create) {
         if (!("transition" in newJsonObj)) {
             newJsonObj['transition'] = "flip";
         }
-        if (!("column" in newJsonObj)) {
-            newJsonObj['column'] = 1;
+        if (!("columns" in newJsonObj)) {
+            newJsonObj['columns'] = 1;
         }
     }
 
@@ -1695,7 +1701,7 @@ function createConfigFile(type, map) {
         text += '"default_sort_manually" : true,';
         text += '"two_sites" : false,';
         text += '"transition" : "flip",';
-        text += '"column" : 1';
+        text += '"columns" : 1';
         text += '}';
 
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
