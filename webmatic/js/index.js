@@ -1,4 +1,4 @@
-/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim, columns */
+/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim */
 
 function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3><ul id='list" + indexType + "' data-role='listview' data-inset='true'></ul></div>");
@@ -61,7 +61,7 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("img.lazy" + indexType).lazyload({event: "lazyLoadInstantly"});
 }
 
-executeButtons = function (lct, lcid, rm, $this) {
+executeButtons = function (lct, lcid, rm, $this, col) {
     if (twoPage) {
         $.mobile.changePage("#page2", {transition: resultOptionsMap['transition'], changeHash: true});
         page2 = true;
@@ -70,8 +70,7 @@ executeButtons = function (lct, lcid, rm, $this) {
     lastClickID = lcid;
     $('.ui-input-search .ui-input-text').val("");
     readModus = rm;
-    refreshPage($this);
-    
+    refreshPage($this, col);
 };
 
 // ------------------------- Initial call after page loading ------------------------
@@ -155,7 +154,7 @@ $(function () {
     changeTheme(theme);
     changeFont(font);
     changeTwoPage(twoPage);
-    changeNumberOfColumns(columns, false);
+    changeNumberOfColumns(resultOptionsMap['colums'], false);
 
     $(document.body).on("click", ".scrollToList", function () {
         $('html, body').animate({scrollTop: $('#' + prim).offset().top - 60}, 200);
@@ -191,7 +190,7 @@ $(function () {
     });
 
     $(document.body).on("click", ".menuItemGraphicIDs", function () {
-        executeButtons($(this).data("refresh-id"), $(this).attr("id"), true, $(this));
+        executeButtons($(this).data("refresh-id"), $(this).attr("id"), true, $(this), 1);
     });
 
     $(document.body).on("click", ".menuItemDebug", function () {
@@ -203,11 +202,11 @@ $(function () {
     });
 
     $(document.body).on("click", ".menuItemOptions", function () {
-        executeButtons(7, $(this).attr("id"), true, $(this));
+        executeButtons(7, $(this).attr("id"), true, $(this), 1);
     });
 
     $(document.body).on("click", ".menuItemOptionsClient", function () {
-        executeButtons(11, $(this).attr("id"), true, $(this));
+        executeButtons(11, $(this).attr("id"), true, $(this), 1);
     });
 
     $(document.body).on("click", ".buttonRefresh", function () {
@@ -228,11 +227,11 @@ $(function () {
 
     if (isTempClient) {
         collapsed = "others";
-        executeButtons(11, "menuItemOptionsClient", true, $(this));
+        executeButtons(11, "menuItemOptionsClient", true, $(this), 1);
     }
-    
-    $(".backText").on("click", function(){
-        page2 = false; 
+
+    $(".backText").on("click", function () {
+        page2 = false;
     });
 
 });

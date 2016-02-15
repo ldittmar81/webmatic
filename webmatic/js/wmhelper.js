@@ -6,7 +6,7 @@ var isPreRelease = 0;
 var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
 var storageVersion = 18;
-var wmLang="de";//genau so lassen
+var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
 var debugModus = true;
@@ -37,7 +37,7 @@ var resultProgramsMap = {}, resultFunctionsMap = {}, resultRoomsMap = {}, result
 var theme, font, gfxClass;
 var loadedFont = ["a"];
 
-var columns = 1;
+var actColumn = 1;
 
 //Two Pages
 var twoPage;
@@ -189,7 +189,7 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     // Leerstring heißt wohl auch false, z.B. bei Alarmzone.
     if ((strValue === "false" || strValue === "") && !options) {
         active = "ui-btn-active";
-    }    
+    }
     var idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "class='" + active + "' data-role='button' data-inline='true'") + " id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     html += "<a href='#' " + idString + " data-value='false' data-theme='" + theme + "'>" + val0 + "</a>";
 
@@ -197,7 +197,7 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     if (strValue === "true" || options) {
         active = "ui-btn-active";
     }
-    
+
     idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "class='" + active + "' data-role='button' data-inline='true'") + "id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     html += "<a href='#' " + idString + " data-value='true' data-theme='" + theme + "'>" + val1 + "</a>";
 
@@ -230,7 +230,7 @@ function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate,
     var html = "<div class='ui-field-contain'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     for (var i = 0; i < optionsArray.length; i++) {
-        var active = (selIndex === i?"ui-btn-active":"");
+        var active = (selIndex === i ? "ui-btn-active" : "");
         html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "data-role='button' class='" + active + "' data-inline='true'") + ">" + optionsArray[i] + "</a>";
     }
     html += "</div>";
@@ -489,6 +489,51 @@ function editTuneIn(parentId, valID, val, vorDate) {
 
 // ----------------------- Helper functions ----------------------------
 
+function getPicKey(key, type, map, options) {
+    var picKey = key;
+    if (type === "variables") {
+
+        var value = unescape(map['value']);
+
+        if (!options) {
+            if (valueType === "4") {
+                value = parseFloat(value);
+                var testList = $.grep(picturesList, function (item) {
+                    var regex = new RegExp("^" + key, "i");
+                    return item.trim().match(regex);
+                });
+
+                var myValue = "not_exist";
+                if (typeof testList !== 'undefined' && testList.length > 0) {
+                    $.each(testList, function (i, val) {
+                        var tmp_val = parseFloat(val.split("_")[1]);
+                        if (tmp_val <= value) {
+                            myValue = tmp_val;
+                        }
+                    });
+                }
+                value = myValue;
+            }
+            if (valueType !== "20") {
+                picKey += "_" + value;
+            }
+
+        } else {
+
+            var valueType = map["valueType"];
+            if (valueType === "2") {
+                picKey += "_true";
+            } else if (valueType === "4") {
+                picKey += "_" + map["valueMin"];
+            } else if (valueType === "16") {
+                var valList = map['valueList'];
+                picKey += "_" + valList[0];
+            }
+        }
+    }
+    return picKey;
+}
+
 function log(txt, type, linenumber) {
     if (debugModus) {
         if (type === 0) {
@@ -701,6 +746,35 @@ function createOneMap(type, changedKey, changedValue) {
     }
 }
 
+function isReadOnlyVariable(valInfo) {
+
+    var bracketOpen = valInfo.indexOf("(");
+    if (bracketOpen !== -1) {
+        var bracketClose = valInfo.indexOf(")", bracketOpen);
+        if (bracketClose !== -1) {
+            var optionsString = valInfo.substring(bracketOpen + 1, bracketClose);
+            var varOptions = optionsString.split(",");
+            if (varOptions.length >= 1) {
+                var varOptionsFirst = varOptions[0].toLowerCase();
+                if (varOptionsFirst === "r") {
+                    return false;
+                } else if (varOptionsFirst === "w") {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return "none";
+}
+
+function checkReadonly(status) {
+    if (status === "none") {
+        return resultOptionsMap["systemvar_readonly"] && readModus;
+    }
+    return status;
+}
+
 function isReadOnly(valInfo) {
     if (!readModus) {
         return false;
@@ -891,5 +965,5 @@ function checkAndChange(key, value) {
             $("#" + key + "MainMenu").fadeOut();
         }
     }
-
 }
+

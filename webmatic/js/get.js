@@ -1,4 +1,4 @@
-/* global theme, font, isGetSite, columns, resultOptionsMap */
+/* global theme, font, isGetSite, resultOptionsMap */
 isGetSite = true;
 
 var getUrlParameter = function getUrlParameter(sParam) {
@@ -17,7 +17,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
 
 // ------------------------- Initial call after page loading ------------------------
 $(function () {
-    
+
     // Disable all caching. Default in most browsers, but not in IE and Android (at least 2.2):
     $.ajaxSetup({cache: false});
 
@@ -39,12 +39,9 @@ $(function () {
     lastClickID = id;
 
     $('.ui-input-search .ui-input-text').val("");
-    refreshPage($(this), false);
+    refreshPage($(this));
 
-    // Update Timer loslaufen lassen:
-    restartTimer();
     changeTheme(theme);
     changeFont(font);
     changeTwoPage(false);
-    changeNumberOfColumns(resultOptionsMap['columns'], true);
 });

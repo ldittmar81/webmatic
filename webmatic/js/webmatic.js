@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2 */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns */
 
 // WebMatic 2.x
 // by ldittmar
@@ -149,20 +149,24 @@ font = resultOptionsMap["default_font"];
 if ($.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     font = "a";
 }
-columns = resultOptionsMap['columns'];
+
 // --------------------- Funktionen --------------------------
 
-function refreshPage(item) {
+function refreshPage(item, col) {
     // Gleich mal den Timer neu starten, lieber vor dem Reload, damit sich die nicht in die Quere kommen.
     // Später dann besser nur einen Refresh zur selben Zeit zulassen:
     restartTimer();
     testSite = false;
 
     if (lastClickType !== -1 && lastClickID !== -1) {
-        var restart = oldID !== lastClickID;
+        var restart = oldID !== lastClickID && item !== 0;
         oldID = lastClickID;
 
         if (restart) {
+            if (!col) {
+                col = resultOptionsMap['columns'];
+            }
+            changeNumberOfColumns(col, false);
             // Markieren von selektiertem Menueintrag:
             if (item !== 0) {
                 if (prevItem !== 0) {
@@ -240,7 +244,6 @@ function refreshPage(item) {
                 });
             }
         });
-
     }
 }
 
@@ -347,10 +350,10 @@ function changeTheme(newTheme) {
     $('.control-set').removeClass(function (i, css) {
         return (css.match(/(^|\s)control-set-(\S{3}|\S{1})/g) || []).join(' ');
     }).addClass('control-set-' + newTheme);
-    
+
     $('#page2').attr("data-theme", newTheme);
     $('#page2').find('[data-theme]').attr("data-theme", newTheme);
-    
+
     theme = newTheme;
 }
 
@@ -392,14 +395,12 @@ function changeTwoPage(value) {
     twoPage = value;
 }
 
-function changeNumberOfColumns(value, savechange) {
-    $('#dataList, #dataList2').filter(function () {
-        return this.className.match(/(^|\s)column-/);
-    }).removeClass(function (i, css) {
-        return (css.match(/(^|\s)column-/g) || []).join(' ');
-    }).addClass("column-" + value);
-    if (savechange) {
-        columns = value;
+function changeNumberOfColumns(value) {
+    if (value !== actColumn) {
+        $('#dataList, #dataList2').removeClass(function (i, css) {
+            return (css.match(/(^|\s)column-(\d)/g) || []).join(' ');
+        }).addClass("column-" + value);
+        actColumn = value;
     }
 }
 
@@ -489,13 +490,19 @@ function processVariable(variable, valID, systemDate) {
     var valInfo = unescape(variable['info']);
     var val0 = variable['valueName0'];
     var val1 = variable['valueName1'];
-    var operate = true;
+    var operate = checkReadonly(variable['operate']);
+    var picKey = getPicKey(valID, "variables", variable, false);
 
     var html = "<li class='dataListItem' id='" + valID + "'><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
     html += "<p>" + valInfo + "</p>";
+    if ($.inArray(picKey, picturesList) !== -1) {
+        html += "<div style='float: left; text-align: center;'>";
+        html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+        html += "</div>";
+    }
 
     // In der Variablenliste editieren zulassen:
-    if (isReadOnly(valInfo)) {
+    if (!operate) {
         html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
     } else if (valType === "2") {
         // Bool.
@@ -1490,10 +1497,11 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 obj['oldvisible'] = val['visible'];
                 obj['position'] = i;
                 obj['active'] = val['active'];
-                obj['operate'] = val['operate'];
-                obj['oldoperate'] = val['operate'];
+                var valInfo = val['info'];
+                obj['operate'] = isReadOnlyVariable(valInfo);
+                obj['oldoperate'] = obj['operate'];
                 obj['date'] = val['date'];
-                obj['info'] = val['info'];
+                obj['info'] = valInfo;
                 var valueType = val['valueType'];
                 obj['valueType'] = valueType;
                 obj['valueUnit'] = val['valueUnit'];
@@ -1798,10 +1806,10 @@ function reloadList(txt, systemDate, restart, description) {
     }
     $("#" + dataListHeader).listview("refresh");
     $("#" + dataList).listview("refresh");
-    $("#" + dataList).trigger("create");
     if (restart) {
         $("#" + dataList).fadeIn();
     }
+    $("#" + dataList).enhanceWithin().trigger("fertig");
 }
 
 // ----------------------- Data loading functions ----------------------------
@@ -1902,8 +1910,8 @@ function loadData(url, id, restart) {
     // Filter Update:
     $(".ui-input-search .ui-input-text").trigger("change");
 
-    $("[id^=button]").trigger("create");
-    $("[id^=input]").trigger("create");
+    $("[id^=button]").enhanceWithin();
+    $("[id^=input]").enhanceWithin();
     $("textarea").textinput("refresh");
 }
 
@@ -1962,6 +1970,8 @@ function loadVariables(restart) {
                 }
             });
             reloadList(mapText("SYS_VAR"), systemDate, restart, "");
+            $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
+            $("img").trigger("lazyLoadInstantly");
         });
     }
     // Animated Icon aus Refresh wieder entfernen:
@@ -1969,6 +1979,8 @@ function loadVariables(restart) {
     // Filter Update:
     $(".ui-input-search .ui-input-text").trigger("change");
     $("textarea").textinput("refresh");
+    $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
+    $("img").trigger("lazyLoadInstantly");
 }
 
 function loadPrograms(restart) {
@@ -2191,7 +2203,7 @@ $(function () {
         var vorDate = obj.data("vorDate");
         $('#tuneInField_' + valID).fadeOut(500, function () {
             $('#tuneInField_' + valID).html(getTuneIn(parentId, valID, val, vorDate));
-            $('#' + valID).trigger('create');
+            $('#' + valID).enhanceWithin();
             $('#tuneInField_' + valID).fadeIn(1000);
         });
     });
@@ -2207,7 +2219,7 @@ $(function () {
         var vorDate = obj.data("vorDate");
         $('#tuneInField_' + valID).fadeOut(500, function () {
             $('#tuneInField_' + valID).html(editTuneIn(parentId, valID, val, vorDate));
-            $('#' + valID).trigger('create');
+            $('#' + valID).enhanceWithin();
             $('#tuneInField_' + valID).fadeIn(1000);
         });
     });
@@ -2218,6 +2230,45 @@ $(function () {
         }
         if (!debugModus && resultOptionsMap['dont_leave']) {
             return "Don't leave me!";
+        }
+    });
+
+    $(document.body).on("fertig", "#dataList,#dataList2", function () {
+        if (!$('#' + dataList).hasClass("column-1")) {
+            var currentTallest = 0;
+            var currentRowStart = 0;
+            var rowLis = new Array();
+            var $el;
+            var topPosition = 0;
+            var $dataListItems = $('.dataListItem');
+            var len = $dataListItems.length;
+
+            $dataListItems.each(function (index) {
+                $el = $(this);
+                topPosition = $el.position().top;
+
+                if (currentRowStart !== topPosition) {
+                    for (var currentLi = 0; currentLi < rowLis.length; currentLi++) {
+                        rowLis[currentLi].height(currentTallest);
+                    }
+                    topPosition = $el.position().top;
+                    rowLis.length = 0; // empty the array
+                    currentRowStart = topPosition;
+                    currentTallest = $el.height();
+                    rowLis.push($el);
+                } else {
+                    rowLis.push($el);
+                    currentTallest = (currentTallest < $el.height()) ? ($el.height()) : (currentTallest);
+                }
+
+                console.log("id: " + $el.attr("id") + ", topPos: " + topPosition + ", current: " + currentRowStart + ", tall: " + currentTallest + ", height: " + $el.height());
+
+                if (index === len - 1) {
+                    for (var currentLi = 0; currentLi < rowLis.length; currentLi++) {
+                        rowLis[currentLi].height(currentTallest);
+                    }
+                }
+            });
         }
     });
 

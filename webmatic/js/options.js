@@ -71,7 +71,7 @@ function loadOptions() {
 
     $("#" + dataListHeader).listview("refresh");
     $("#" + dataList).listview("refresh");
-    $("#" + dataList).trigger("create").fadeIn();
+    $("#" + dataList).fadeIn().enhanceWithin().trigger("fertig");
 }
 
 function loadOptionsClient() {
@@ -90,7 +90,7 @@ function loadOptionsClient() {
 
     $("#" + dataListHeader).listview("refresh");
     $("#" + dataList).listview("refresh");
-    $("#" + dataList).trigger("create").fadeIn();
+    $("#" + dataList).fadeIn().enhanceWithin().trigger("fertig");
 }
 
 function loadGraphicIDs(type) {
@@ -145,7 +145,7 @@ function loadGraphicIDs(type) {
     $('.buttonRefresh .ui-btn-text').html("&nbsp;");
 
     $("#" + dataList).listview("refresh");
-    $("#" + dataList).trigger("create").fadeIn();
+    $("#" + dataList).fadeIn().enhanceWithin().trigger("fertig");
 }
 
 // ------------------------- Prozessors ---------------------------------
@@ -955,20 +955,9 @@ function processGraphicID(type) {
         if (key === "date" || key === "size") {
             return;
         }
-        var picKey = key;
-        if (isVariables) {
-            var valueType = val["valueType"];
-            if (valueType === "2") {
-                picKey += "_true";
-            } else if (valueType === "4") {
-                picKey += "_" + val["valueMin"];
-            } else if (valueType === "16") {
-                var valList = val['valueList'];
-                picKey += "_" + valList[0];
-            } else if (valueType === "20") {
-                isTextVariables = true;
-            }
-        }
+        isTextVariables = isVariables && val["valueType"] === "20";
+
+        var picKey = getPicKey(key, type, val, true);
         var html = "<li id='list" + key + "' data-id='" + key + "'>";
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
@@ -1016,7 +1005,25 @@ function processGraphicID(type) {
         if (isPrograms || isVariables) {
             html += "'>";
             html += "<label>" + mapText("OPERATABLE") + ":&nbsp;";
-            html += "<input type='checkbox' data-role='flipswitch' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['operate'] ? "checked" : "") + "/>";
+            if (!isVariables) {
+                html += "<input type='checkbox' data-role='flipswitch' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['operate'] ? "checked" : "") + "/>";
+            } else {
+                html += "<div data-role='controlgroup' data-type='horizontal'>";
+                var selected1 = "";
+                var selected2 = "";
+                var selected3 = "";
+                if (val['operate'] === "none") {
+                    selected1 = "class='ui-btn-active'";
+                } else if (val['operate']) {
+                    selected2 = "class='ui-btn-active'";
+                } else {
+                    selected3 = "class='ui-btn-active'";
+                }
+                html += "<a href='#' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("OPTIONS") + "</a>";
+                html += "<a href='#' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+                html += "<a href='#' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+                html += "</div>";
+            }
         } else {
             html += " small-hidden'>";
         }
