@@ -45,12 +45,11 @@ function createExecutationField(key, map) {
     var valueUnit = map["valueUnit"];
 
     if (valueType === "2") {
-        return addSetBoolButtonList(0, key, "false", map["valueName0"], map["valueName1"], valueUnit, null, false, true, true);
+        return addSetBoolButtonList(0, key, "false", map["valueName0"], map["valueName1"], valueUnit, "", false, true, true);
     } else if (valueType === "4") {
-        return addSetNumber(0, key, map["valueMin"], valueUnit, map["valueMin"], map["valueMax"], map["step"], map["faktor"], null, false, true, true);
+        return addSetNumber(0, key, parseFloat(map["valueMin"]), valueUnit, parseFloat(map["valueMin"]), parseFloat(map["valueMax"]), map["step"] ? map["step"] : 1, map["faktor"] ? map["faktor"] : 1, "", false, true, true);
     } else if (valueType === "16") {
-        var valList = map['valueList'];
-        return addSetValueList(0, key, valList[0], valList, valueUnit, null, false, true, null, true);
+        return addSetValueList(0, key, "0", map['valueList'], valueUnit, "", false, true, map['listType'], true);
     }
 }
 
@@ -946,6 +945,8 @@ function processGraphicID(type) {
 
     var isVariables = type === "variables";
     var isTextVariables = false;
+    var isListVariables = false;
+    var isFloatVariables = false;
     var isPrograms = type === "programs";
     var isRFF = type === "rooms" || type === "functions" || type === "favorites";
 
@@ -956,6 +957,8 @@ function processGraphicID(type) {
             return;
         }
         isTextVariables = isVariables && val["valueType"] === "20";
+        isListVariables = isVariables && val["valueType"] === "16";
+        isFloatVariables = isVariables && val["valueType"] === "4";
 
         var picKey = getPicKey(key, type, val, true);
         var html = "<li id='list" + key + "' data-id='" + key + "'>";
@@ -997,10 +1000,47 @@ function processGraphicID(type) {
             html += "<div class='ui-block-c small-hidden'></div>";
             html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
         }
-        html += "<div class='ui-block-b'><input name='file' id='file" + key + "' data-pickey='" + picKey + "' type='file' accept='image/*' /></div>";
+        html += "<div class='ui-block-b'>";
+        html += "<input name='file' id='file" + key + "' data-pickey='" + picKey + "' type='file' accept='image/*' />";
+        html += "</div>";
         html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("UPLOAD") + "</a></div>";
+        if (isListVariables) {
+            html += "<div class='ui-block-a'>"
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            html += "<select data-theme='" + theme + "'>";
+            html += "<option>auto</option>";
+            html += "<option>button</option>";
+            html += "<option>select</option>";
+            html += "</select>";
+            html += "<a href='#' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "</div>";
+            html += "</div>";
+        } else if (isFloatVariables) {
+            html += "<div class='ui-block-a'>";
+            html += "<div class='ui-grid-a'>";
+            html += "<div class='ui-block-a'>";
+            html += "step: ";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            html += "<input type='number' class='ui-no-corner-right' style='width: 50px;' value='" + val["step"] + "' data-wrapper-class='controlgroup-textinput ui-btn'/>";
+            html += "<a href='#' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "</div>";
+            html += "</div>";
+            html += "<div class='ui-block-b'>";
+            html += "factor: ";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            html += "<input type='number' class='ui-no-corner-left' style='width: 50px;' value='" + val["faktor"] + "' data-wrapper-class='controlgroup-textinput ui-btn'/>";
+            html += "<a href='#' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "</div>";
+            html += "</div>";
+            html += "<div class='ui-block-c'>";
+            html += "<span>&nbsp;</span>";
 
-        html += "<div class='ui-block-a small-hidden'></div>";
+            html += "</div>";
+            html += "</div>";
+            html += "</div>";
+        } else {
+            html += "<div class='ui-block-a small-hidden'></div>";
+        }
         html += "<div class='ui-block-b";
         if (isPrograms || isVariables) {
             html += "'>";
@@ -1308,6 +1348,7 @@ $(function () {
             location.reload(true);
         }
     });
+
     $(document.body).on("click", "[name='delete_client']", function () {
         var ip = $('#delete_client').val();
         if (ip) {
@@ -1426,23 +1467,32 @@ $(function () {
 
     $(document.body).on("click", "[id^=optionssetButton],[id^=optionssetValueBigList]", function () {
         var dataID = $(this).data("id");
-        var value = $(this).data("value");
-        if (typeof value === "undefined") {
-            var valueID = "setValue_" + dataID;
-            value = $("#" + valueID).val();
+        var orgValue = $(this).data("value");
+        var value = orgValue;
+        if (typeof orgValue === "undefined") {
+            var valueID = "optionssetValue_" + dataID;
+            orgValue = $("#" + valueID).val();
+            value = orgValue;
+            if (typeof orgValue === "undefined") {
+                orgValue = $('#selector_' + dataID).val();
+                value = orgValue;
+            }
             var factor = $("#" + valueID).data("factor");
             if (typeof factor !== "undefined") {
-                value = parseFloat(value);
+                orgValue = parseFloat(orgValue);
+                factor = parseFloat(factor);
+                orgValue = orgValue / factor;
+                value = orgValue;
                 var testList = $.grep(picturesList, function (item) {
                     var regex = new RegExp("^" + dataID, "i");
                     return item.trim().match(regex);
                 });
 
-                var myValue = "not_exist";
+                var myValue = 0;
                 if (typeof testList !== 'undefined' && testList.length > 0) {
                     $.each(testList, function (i, val) {
                         var tmp_val = parseFloat(val.split("_")[1]);
-                        if (tmp_val <= value) {
+                        if (tmp_val <= value && tmp_val > myValue) {
                             myValue = tmp_val;
                         }
                     });
@@ -1451,7 +1501,7 @@ $(function () {
             }
         }
         var picKey = dataID + "_" + value;
-        $("#file" + dataID).attr("data-pickey", picKey);
+        $("#file" + dataID).attr("data-pickey", dataID + "_" + orgValue);
         var type = $("#img" + dataID).data("type");
 
         if ($(this).data("icon") !== "check") {

@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap */
 
 // WebMatic 2.x
 // by ldittmar
@@ -1342,21 +1342,19 @@ function loadRecognization() {
         url: 'cgi/recognizer.cgi',
         dataType: 'json',
         async: false
-    })
-            .done(function (data) {
-                if (data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")) {
-                    recognizeMap = data;
-                    client = data['REMOTE_ADDR'];
-                    localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
-                } else {
-                    recognizeMap = {};
-                    client = "";
-                }
-            })
-            .fail(function () {
-                recognizeMap = {};
-                client = "";
-            });
+    }).done(function (data) {
+        if (data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")) {
+            recognizeMap = data;
+            client = data['REMOTE_ADDR'];
+            localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
+        } else {
+            recognizeMap = {};
+            client = "";
+        }
+    }).fail(function () {
+        recognizeMap = {};
+        client = "";
+    });
 }
 
 function loadConfigData(async, url, type, map, create, actual, callback) {
@@ -1365,75 +1363,75 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
         url: url,
         dataType: 'json',
         async: async
-    })
-            .done(function (data) {
-                var processedData;
-                switch (type) {
-                    case "config":
-                        if (!async) {
-                            saveDataToFile = true;
-                            processedData = saveConfigFile(type, data, create, map, true);
-                        } else {
-                            processedData = data;
-                            optionsMap = data;
-                            localStorage.setItem(map, JSON.stringify(data));
-                        }
-                        break;
-                    case "variables":
-                        processedData = data;
-                        variablesMap = data;
-                        localStorage.setItem(map, JSON.stringify(data));
-                        break;
-                    case "programs":
-                        processedData = saveConfigFile(type, data, create, map, actual);
-                        break
-                    case "favorites":
-                        processedData = saveConfigFile(type, data, create, map, actual);
-                        break
-                    case "rooms":
-                        processedData = saveConfigFile(type, data, create, map, actual);
-                        break
-                    case "functions":
-                        processedData = saveConfigFile(type, data, create, map, actual);
-                        break
-                    case "devices":
-                        processedData = data;
-                        devicesMap = data;
-                        localStorage.setItem(map, JSON.stringify(data));
-                        break
-                    case "configClient":
-                        optionsClientMap = data;
-                        localStorage.setItem(map, JSON.stringify(data));
-                        break;
-                    case "programsClient":
-                        programsClientMap = data;
-                        localStorage.setItem(map, JSON.stringify(data));
-                        break
-                    case "favoritesClient":
-                        favoritesClientMap = data;
-                        localStorage.setItem(map, JSON.stringify(data));
-                        break
-                    case "roomsClient":
-                        roomsClientMap = data;
-                        localStorage.setItem(map, JSON.stringify(data));
-                        break
-                    case "functionsClient":
-                        functionsClientMap = data;
-                        localStorage.setItem(map, JSON.stringify(data));
-                        break
-                }
-
-                if (typeof callback === "function") {
-                    callback(processedData);
-                }
-            })
-            .fail(function (jqXHR, textStatus) {
-                if (jqXHR.status === 404) {
-                    createConfigFile(type, map);
+    }).done(function (data) {
+        var processedData;
+        switch (type) {
+            case "config":
+                if (!async) {
+                    saveDataToFile = true;
+                    processedData = saveConfigFile(type, data, create, map, true);
                 } else {
-                    log("Request failed: " + textStatus, 2);
+                    processedData = data;
+                    optionsMap = data;
+                    localStorage.setItem(map, JSON.stringify(data));
                 }
-            });
+                break;
+            case "variables":
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break;
+            case "programs":
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break
+            case "favorites":
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break
+            case "rooms":
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break
+            case "functions":
+                processedData = saveConfigFile(type, data, create, map, actual);
+                break
+            case "devices":
+                processedData = data;
+                devicesMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "configClient":
+                optionsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break;
+            case "programsClient":
+                programsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "favoritesClient":
+                favoritesClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "roomsClient":
+                roomsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "functionsClient":
+                functionsClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+            case "variablesClient":
+                variablesClientMap = data;
+                localStorage.setItem(map, JSON.stringify(data));
+                break
+        }
+
+        if (typeof callback === "function") {
+            callback(processedData);
+        }
+    }).fail(function (jqXHR, textStatus) {
+        if (jqXHR.status === 404) {
+            createConfigFile(type, map);
+        } else {
+            log("Request failed: " + textStatus, 2);
+        }
+    });
 
 }
 
@@ -1514,7 +1512,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 } else if (valueType === "4") {
                     obj['valueMin'] = val['valueMin'];
                     obj['valueMax'] = val['valueMax'];
-                    obj['step'] = 0.01;
+                    obj['step'] = 1;
                     obj['faktor'] = 1;
                 }
                 returnJson[key] = obj;
@@ -1614,6 +1612,7 @@ function refreshJSONObj(type, newJsonObj, create) {
                     returnJson[key] = val;
                     return;
                 }
+                var valueType = val['valueType'];
                 if (key in oldMap) {
                     var savedVal = oldMap[key];
                     val['position'] = savedVal['position'];
@@ -1631,6 +1630,27 @@ function refreshJSONObj(type, newJsonObj, create) {
                         val['operate'] = savedVal['operate'];
                     } else {
                         saveDataToFile = true;
+                    }
+                    if (valueType === "16") {
+                        if('listType' in savedVal){
+                            val['listType'] = savedVal['listType'];
+                        } else {
+                            val['listType'] = "auto";
+                            saveDataToFile = true;
+                        }
+                    } else if (valueType === "4") {
+                        if('step' in savedVal){
+                            val['step'] = savedVal['step'];
+                        } else {
+                            val['step'] = 1;
+                            saveDataToFile = true;
+                        }
+                        if('faktor' in savedVal){
+                            val['faktor'] = savedVal['faktor'];
+                        } else {
+                            val['faktor'] = 1;
+                            saveDataToFile = true;
+                        }
                     }
                 } else {
                     size++;
@@ -1919,61 +1939,90 @@ function loadVariables(restart) {
 
     // Icon Animation in Refresh Button:
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
-    var isActual = false;
     if (restart) {
         $("#" + dataList).empty();
         $("#" + dataListHeader).empty();
         // "Lade..." anzeigen:
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
+        //Global
         if (localStorage.getItem("webmaticvariablesMap") === null) {
             if (newVersion) {
                 saveDataToFile = true;
             }
-            loadConfigData(false, 'cgi/variables.cgi', 'variables', 'webmaticvariablesMap', false, true);
-            isActual = true;
+            loadConfigData(false, '../webmatic_user/variables.json', 'variables', 'webmaticvariablesMap', false, false);
         } else {
             loadLocalStorageMap("variables");
         }
-
-        var systemDate = variablesMap['date'];
-        $.each(variablesMap, function (key, variable) {
+        //Lokal
+        if (localStorage.getItem("webmaticvariablesclientMap") === null) {
+            if (client !== "") {
+                loadConfigData(false, '../webmatic_user/variables' + client + '.json', 'variablesClient', 'webmaticvariablesclientMap', false, true);
+            }
+        } else {
+            variablesClientMap = JSON.parse(localStorage.getItem("webmaticvariablesclientMap"));
+        }
+        //Kombinieren
+        createOneMap("variables");
+        
+        var systemDate = resultVariablesMap['date'];
+        var tmpObj = {};
+        $.each(resultVariablesMap, function (key, variable) {
             if (key === "date" || key === "size") {
                 return;
             }
             var valVisible = variable['visible'];
+            var valActive = variable['active'];
             var valID = key;
-            if ((readModus && valVisible) || !readModus) {
-                $("#" + dataList).append(processVariable(variable, valID, systemDate));
+            var html = processVariable(variable, valID, systemDate, valActive, (readModus && valVisible) || !readModus);
+            if (resultOptionsMap['default_sort_manually']) {
+                tmpObj[parseInt(variable['position'])] = html;
+            } else {
+                tmpObj[variable['name']] = html;
+            }            
+        });
+        
+        var keys;
+        if (resultOptionsMap['default_sort_manually']) {
+            keys = Object.keys(tmpObj).sort(function (a, b) {
+                return a - b;
+            });
+        } else {
+            keys = Object.keys(tmpObj).sort();
+        }
+        var len = keys.length;
+        for (var i = 0; i < len; i++) {
+            var k = keys[i];
+            $("#" + dataList).append(tmpObj[k]);
+        }
+        
+        reloadList(mapText("SYS_VAR"), systemDate, restart, "");
+    }    
+
+    loadConfigData(true, 'cgi/variables.cgi', 'variables', 'webmaticvariablesMap', false, true, function () {
+        createOneMap("variables");
+        
+        var systemDate = resultVariablesMap['date'];
+        $.each(resultVariablesMap, function (key, variable) {
+            if (key === "date" || key === "size") {
+                return;
             }
+            var valVisible = variable['visible'];
+            var valActive = variable['active'];
+            var valID = key;
+            
+            if ($('#' + valID).length === 0) {
+                $("#" + dataList).append(processVariable(variable, valID, systemDate, valActive, (readModus && valVisible) || !readModus));
+            } else {
+                $('#' + valID).replaceWith(processVariable(variable, valID, systemDate, valActive, (readModus && valVisible) || !readModus));
+            }
+            
         });
         reloadList(mapText("SYS_VAR"), systemDate, restart, "");
-    }
+        $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
+        $("img").trigger("lazyLoadInstantly");
+    });
 
-    if (!isActual) {
-        loadConfigData(true, 'cgi/variables.cgi', 'variables', 'webmaticvariablesMap', false, true, function (dta) {
-            var systemDate = dta['date'];
-            $.each(dta, function (key, variable) {
-                if (key === "date" || key === "size") {
-                    return;
-                }
-                var valVisible = variable['visible'];
-                var valID = key;
-                if ($('#' + valID).length === 0 && ((readModus && valVisible) || !readModus)) {
-                    $("#" + dataList).append(processVariable(variable, valID, systemDate));
-                } else if ((readModus && valVisible) || !readModus) {
-                    if ($.inArray(valID.toString(), excludeFromRefresh) === -1) {
-                        $('#' + valID).replaceWith(processVariable(variable, valID, systemDate));
-                    }
-                } else if ($('#' + valID).length !== 0) {
-                    $('#' + valID).remove();
-                }
-            });
-            reloadList(mapText("SYS_VAR"), systemDate, restart, "");
-            $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
-            $("img").trigger("lazyLoadInstantly");
-        });
-    }
     // Animated Icon aus Refresh wieder entfernen:
     $('.buttonRefresh .ui-btn-text').html("&nbsp;");
     // Filter Update:
@@ -2260,8 +2309,6 @@ $(function () {
                     rowLis.push($el);
                     currentTallest = (currentTallest < $el.height()) ? ($el.height()) : (currentTallest);
                 }
-
-                console.log("id: " + $el.attr("id") + ", topPos: " + topPosition + ", current: " + currentRowStart + ", tall: " + currentTallest + ", height: " + $el.height());
 
                 if (index === len - 1) {
                     for (var currentLi = 0; currentLi < rowLis.length; currentLi++) {

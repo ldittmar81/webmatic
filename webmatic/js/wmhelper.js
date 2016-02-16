@@ -342,7 +342,7 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
 
     var html = "<div class='ui-field-contain" + (readonly ? "" : " ui-grid-a") + "'>";
     if (readonly) {
-        html += "<div id='chart_" + valID + "'></div>";
+        html += "<div id='chart_" + valID + "' ></div>";
         $.ajax({
             url: resultOptionsMap['ccu_historian'] + "/query/json.gy?i=" + optionsArray[0] + "&d=" + optionsArray[2],
             method: 'GET',
@@ -494,6 +494,7 @@ function getPicKey(key, type, map, options) {
     if (type === "variables") {
 
         var value = unescape(map['value']);
+        var valueType = map['valueType'];
 
         if (!options) {
             if (valueType === "4") {
@@ -507,14 +508,16 @@ function getPicKey(key, type, map, options) {
                 if (typeof testList !== 'undefined' && testList.length > 0) {
                     $.each(testList, function (i, val) {
                         var tmp_val = parseFloat(val.split("_")[1]);
-                        if (tmp_val <= value) {
+                        if (tmp_val <= value && tmp_val > myValue) {
                             myValue = tmp_val;
                         }
                     });
                 }
                 value = myValue;
             }
-            if (valueType !== "20") {
+            else if(valueType === "2"){
+                picKey += "_" + (value === "true");
+            }else if (valueType !== "20") {
                 picKey += "_" + value;
             }
 
@@ -956,7 +959,7 @@ function checkAndChange(key, value) {
         changeMenuGfx(value);
     } else if (key === "two_sites" && value !== twoPage) {
         changeTwoPage(value);
-    } else if (key === "columns" && value !== columns) {
+    } else if (key === "columns") {
         changeNumberOfColumns(value, true);
     } else if (key === "favorites" || key === "rooms" || key === "functions" || key === "variables" || key === "programs" || key === "others") {
         if (value && $("#" + key + "MainMenu").is(":hidden")) {
