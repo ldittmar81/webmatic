@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 18;
+var storageVersion = 19;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
@@ -771,9 +771,12 @@ function isReadOnlyVariable(valInfo) {
     return "none";
 }
 
-function checkReadonly(status) {
+function checkOperate(status) {
+    if(!readModus){
+        return true;
+    }
     if (status === "none") {
-        return resultOptionsMap["systemvar_readonly"] && readModus;
+        return !(resultOptionsMap["systemvar_readonly"] && readModus);
     }
     return status;
 }

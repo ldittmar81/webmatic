@@ -485,15 +485,12 @@ function processVariable(variable, valID, systemDate) {
     var strValue = unescape(variable['value']);
     var valType = variable['valueType'];
     var valUnit = variable['valueUnit'];
-    var valList = variable['valueList'];
     var vorDate = getTimeDiffString(variable['date'], systemDate);
     var valInfo = unescape(variable['info']);
-    var val0 = variable['valueName0'];
-    var val1 = variable['valueName1'];
-    var operate = checkReadonly(variable['operate']);
+    var operate = checkOperate(variable['operate']);
     var picKey = getPicKey(valID, "variables", variable, false);
 
-    var html = "<li class='dataListItem' id='" + valID + "'><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
+    var html = "<li class='dataListItem' id='" + valID + "' " + (variable['visible'] ? "" : "style='display: none;'") + "><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
     html += "<p>" + valInfo + "</p>";
     if ($.inArray(picKey, picturesList) !== -1) {
         html += "<div style='float: left; text-align: center;'>";
@@ -503,16 +500,16 @@ function processVariable(variable, valID, systemDate) {
 
     // In der Variablenliste editieren zulassen:
     if (!operate) {
-        html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
+        html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, variable['valueList'], variable['valueName0'], variable['valueName1']);
     } else if (valType === "2") {
         // Bool.
-        html += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true, operate);
+        html += addSetBoolButtonList('', valID, strValue, variable['valueName0'], variable['valueName1'], valUnit, vorDate, true, operate);
     } else if (valType === "4") {
         // Float, Integer.
         html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.01, 1.0, vorDate, true, operate);
     } else if (valType === "16") {
         // Liste.
-        html += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true, operate);
+        html += addSetValueList('', valID, strValue, variable['valueList'], valUnit, vorDate, true, operate);
     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
         html += addHTML("", valID, strValue, vorDate, false);
     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
@@ -1494,6 +1491,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 obj['visible'] = val['visible'];
                 obj['oldvisible'] = val['visible'];
                 obj['position'] = i;
+                obj['value'] = val['value'];
                 obj['active'] = val['active'];
                 var valInfo = val['info'];
                 obj['operate'] = isReadOnlyVariable(valInfo);
@@ -1971,10 +1969,7 @@ function loadVariables(restart) {
             if (key === "date" || key === "size") {
                 return;
             }
-            var valVisible = variable['visible'];
-            var valActive = variable['active'];
-            var valID = key;
-            var html = processVariable(variable, valID, systemDate, valActive, (readModus && valVisible) || !readModus);
+            var html = processVariable(variable, key, systemDate);
             if (resultOptionsMap['default_sort_manually']) {
                 tmpObj[parseInt(variable['position'])] = html;
             } else {
@@ -2007,14 +2002,11 @@ function loadVariables(restart) {
             if (key === "date" || key === "size") {
                 return;
             }
-            var valVisible = variable['visible'];
-            var valActive = variable['active'];
-            var valID = key;
             
-            if ($('#' + valID).length === 0) {
-                $("#" + dataList).append(processVariable(variable, valID, systemDate, valActive, (readModus && valVisible) || !readModus));
+            if ($('#' + key).length === 0) {
+                $("#" + dataList).append(processVariable(variable, key, systemDate));
             } else {
-                $('#' + valID).replaceWith(processVariable(variable, valID, systemDate, valActive, (readModus && valVisible) || !readModus));
+                $('#' + key).replaceWith(processVariable(variable, key, systemDate));
             }
             
         });
