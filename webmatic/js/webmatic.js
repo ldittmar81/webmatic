@@ -491,7 +491,7 @@ function processVariable(variable, valID, systemDate) {
     var picKey = getPicKey(valID, "variables", variable, false);
 
     var html = "<li class='dataListItem' id='" + valID + "' " + (variable['visible'] ? "" : "style='display: none;'") + "><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
-    html += "<p>" + valInfo + "</p>";
+    html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
     if ($.inArray(picKey, picturesList) !== -1) {
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
@@ -529,7 +529,7 @@ function processVariable(variable, valID, systemDate) {
 function processProgram(prog, prgID, systemDate, active, visible) {
     var deviceHTML = "<li class='dataListItem' id='" + prgID + "' " + (visible ? "" : "style='display: none;'") + ">";
     deviceHTML += "<h2 class='ui-li-heading'>" + prog['name'] + "</h2>";
-    deviceHTML += "<p>" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
+    deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
     if ($.inArray(prgID, picturesList) !== -1) {
         deviceHTML += "<div style='float: left; text-align: center;'>";
         deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
@@ -1037,16 +1037,16 @@ function addChannel(device, systemDate, options, operate) {
             } else if (hssType === "LED_STATUS" && deviceHssType === "KEY") {
                 switch (valFloat) {
                     case 0: // Off
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/off_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__0") + " | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/off_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__0") + " <span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></span></p>";
                         break;
                     case 1: // Red
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/red_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__1") + " | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/red_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__1") + " <span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></span></p>";
                         break;
                     case 2: // Green
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/green_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__2") + " | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/green_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__2") + " <span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></span></p>";
                         break;
                     case 3: // Orange
-                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/orange_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__3") + " | <span><i>" + vorDate + "</i></span></p>";
+                        deviceHTML += "<p><img class='ui-img-" + theme + "' src='img/channels/orange_lamp.png' style='max-height:40px'> " + mapText(deviceHssType + "__" + hssType + "__3") + " <span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></span></p>";
                         break;
                 }
             } else if (hssType === "LEVEL" && deviceHssType === "BLIND") {
@@ -1107,8 +1107,8 @@ function addChannel(device, systemDate, options, operate) {
                         if (name !== "-") {
                             deviceHTML += "<p class='ui-li-desc'>";
                             deviceHTML += "<img class='ui-img-" + theme + "' src='img/channels/" + mapImage(hssType) + "' style='max-height:20px'>";
-                            deviceHTML += "<span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span>&nbsp;" + name + "&nbsp;|&nbsp;";
-                            deviceHTML += "<span><i>" + vorDate + "</i></span>";
+                            deviceHTML += "<span class='valueInfo valueInfo-" + theme + "'>" + stateText + " </span>&nbsp;" + name + "&nbsp;";
+                            deviceHTML += "<span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></span>";
                             deviceHTML += "</p>";
                         }
                     }
@@ -1150,7 +1150,7 @@ function addChannel(device, systemDate, options, operate) {
             if (options['varOptionsFirst'] !== "nv") {
                 // <br> davor, weil es an der Stelle eine mit Gerät verknüpfte Variable ist:
                 deviceHTML += "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
-                deviceHTML += "<p>" + valInfo + "</p>";
+                deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
                 if (isReadOnly(valInfo)) {
                     deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                 } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -1164,9 +1164,9 @@ function addChannel(device, systemDate, options, operate) {
                     options['diagramID'] = "chart_" + valID;
                     options['diagramUnit'] = valUnit;
                     if (options['varOptionsFirst'] === "g") {
-                        deviceHTML += "<div id='" + options['diagramID'] + "' style='height:200px; width:300px;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+                        deviceHTML += "<div id='" + options['diagramID'] + "' style='height:200px; width:300px;'></div>" + " <i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i>";
                     } else {
-                        deviceHTML += "<div id='" + options['diagramID'] + "' style='height:300px; width:90%;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+                        deviceHTML += "<div id='" + options['diagramID'] + "' style='height:300px; width:90%;'></div>" + " <i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i>";
                     }
                 } else {
                     if (valType === "2") {
@@ -1265,7 +1265,7 @@ function processDevices(device, systemDate, options, operate) {
             }
         }
 
-        deviceHTML += "<p>" + valInfo + "</p>";
+        deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
         if (isReadOnly(valInfo)) {
             deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
         } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -1279,9 +1279,9 @@ function processDevices(device, systemDate, options, operate) {
             options['diagramID'] = "chart_" + valID;
             options['diagramUnit'] = valUnit;
             if (options['varOptionsFirst'] === "g") {
-                deviceHTML += "<div id='" + options['diagramID'] + "' style='height:200px; width:300px;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+                deviceHTML += "<div id='" + options['diagramID'] + "' style='height:200px; width:300px;'></div>" + " <i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i>";
             } else {
-                deviceHTML += "<div id='" + options['diagramID'] + "' style='height:300px; width:90%;'></div>" + " <i class='ui-li-desc'>" + vorDate + "</i>";
+                deviceHTML += "<div id='" + options['diagramID'] + "' style='height:300px; width:90%;'></div>" + " <i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i>";
             }
         } else if (options['varOptionsFirst'] === "nv") {
             deviceHTML = "";  // Leeren.
@@ -1314,7 +1314,7 @@ function processDevices(device, systemDate, options, operate) {
         vorDate = getTimeDiffString(prgDate, systemDate);
         operate = true;
 
-        deviceHTML += "<p>" + prgInfo + "</p>";
+        deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prgInfo + "</p>";
         deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, operate);
     }
 
@@ -1697,6 +1697,12 @@ function refreshJSONObj(type, newJsonObj, create) {
         if (!("columns" in newJsonObj)) {
             newJsonObj['columns'] = 1;
         }
+         if (!("show_description" in newJsonObj)) {
+            newJsonObj['show_description'] = true;
+        }
+         if (!("show_lastUsedTime" in newJsonObj)) {
+            newJsonObj['show_lastUsedTime'] = true;
+        }
     }
 
     setMap(type, newJsonObj);
@@ -1727,7 +1733,9 @@ function createConfigFile(type, map) {
         text += '"default_sort_manually" : true,';
         text += '"two_sites" : false,';
         text += '"transition" : "flip",';
-        text += '"columns" : 1';
+        text += '"columns" : 1,';
+        text += '"show_description" : true,';
+        text += '"show_lastUsedTime" : true';
         text += '}';
 
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);

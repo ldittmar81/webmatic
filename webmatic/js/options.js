@@ -467,6 +467,40 @@ function processOptionsGlobalVariables() {
     html += "<a href='#' name='saveGlobalOption' data-key='systemvar_readonly' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
     html += "</div>";
     html += "</div>";
+    //Beschreibung ausblenden
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("SHOW_DESCRIPTION") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    var selected1 = "";
+    var selected2 = "";
+    if (optionsMap["show_description"]) {
+        selected1 = "class='ui-btn-active'";
+    } else {
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='show_description' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='show_description' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Beschreibung ausblenden
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("SHOW_LAST_TIME_USED") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    var selected1 = "";
+    var selected2 = "";
+    if (optionsMap["show_lastUsedTime"]) {
+        selected1 = "class='ui-btn-active'";
+    } else {
+        selected2 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveGlobalOption' data-key='show_lastUsedTime' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-key='show_lastUsedTime' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
 
     html += "</div></div></li>";
     return html;

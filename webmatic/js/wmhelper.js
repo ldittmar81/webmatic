@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 19;
+var storageVersion = 20;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
@@ -131,7 +131,7 @@ function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, 
     }
 
     if (!onlyButton) {
-        html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
+        html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
     }
 
     return html;
@@ -160,7 +160,7 @@ function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, operate
 // Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
 function addStartProgramButton(parentId, id, text, vorDate, operate) {
     var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "'>" + text + "</a></div>";
-    html += "<i>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
+    html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
     return html;
 }
 
@@ -174,7 +174,7 @@ function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate
     html += " (" + min * factor + " - " + max * factor + " <span id='unit_ " + id + "'>" + unit + "</span>) ";
     html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
     if (!options) {
-        html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
+        html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
     }
     html += "</div>";
     return html;
@@ -201,13 +201,13 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     idString = (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "class='" + active + "' data-role='button' data-inline='true'") + "id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "'";
     html += "<a href='#' " + idString + " data-value='true' data-theme='" + theme + "'>" + val1 + "</a>";
 
-    html += "</div>";
-    html += "</div>";
     if (!options) {
-        html += " <span id='unit_ " + valID + "'>" + valUnit + "</span> ";
-        html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+        html += "&nbsp;<span id='unit_ " + valID + "'>" + valUnit + "</span> ";
+        html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     }
-
+    html += "</div>";
+    html += "</div>";
+   
     return html;
 }
 
@@ -232,12 +232,12 @@ function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate,
     for (var i = 0; i < optionsArray.length; i++) {
         var active = (selIndex === i ? "ui-btn-active" : "");
         html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "data-role='button' class='" + active + "' data-inline='true'") + ">" + optionsArray[i] + "</a>";
-    }
+    }        
+    html += "&nbsp;<span id='unit_ " + valID + "'>" + valUnit + "</span> ";
+    html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     html += "</div>";
-    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> ";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-
+    
     return html;
 }
 
@@ -255,7 +255,7 @@ function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, r
     }
     html += "</select>";
     html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='" + (options ? "options" : "") + "setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">&nbsp;</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+    html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     html += "</div>";
     return html;
@@ -271,7 +271,7 @@ function addSetText(parentId, valID, val, valUnit, vorDate, operate) {
         html += "<input type='text' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
     }
     html += " <span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+    html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     return html;
 }
@@ -282,7 +282,7 @@ function addHTML(parentId, valID, val, vorDate, readonly) {
     if (!readonly) {
         html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
         html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-        html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+        html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
         html += "</div>";
     }
     html += "</div>";
@@ -317,7 +317,7 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
     } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
         return addTuneInRadio("", valID, strValue, vorDate, true);
     } else {
-        return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span></p><i class='ui-li-desc'>" + vorDate + "</i>";
+        return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></p>";
     }
 }
 
@@ -394,7 +394,7 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
         html += "</div>";
         html += "<div class='ui-block-f'>";
         html += "<a href='#' id='saveHistorianData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-        html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+        html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
         html += "</div>";
     }
     html += "</div>";
@@ -482,7 +482,7 @@ function editTuneIn(parentId, valID, val, vorDate) {
     html += "</div>";
     html += "<div class='ui-block-a'>";
     html += "<a href='#' id='saveTuneInRadioData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-value='" + val + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-    html += "<i class='ui-li-desc'>" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+    html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     return html;
 }
@@ -931,23 +931,23 @@ function getTimeDiffString(diffDate, systemDate) {
         return "";
     } else if (timeDiff < 60) {
         result = Math.floor(timeDiff + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_SEC_SINGULAR") : mapText("TIME_SEC_PLURAL")) + " " + mapText("TIME_SUFFIX");
+        return "(" + mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_SEC_SINGULAR") : mapText("TIME_SEC_PLURAL")) + " " + mapText("TIME_SUFFIX") + ")";
     } else if (timeDiff < 60 * 60) {
         result = Math.floor(timeDiff / 60 + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_MIN_SINGULAR") : mapText("TIME_MIN_PLURAL")) + " " + mapText("TIME_SUFFIX");
+        return "(" + mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_MIN_SINGULAR") : mapText("TIME_MIN_PLURAL")) + " " + mapText("TIME_SUFFIX") + ")";
     } else if (timeDiff < 60 * 60 * 24) {
         result = Math.floor(timeDiff / (60 * 60) + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_H_SINGULAR") : mapText("TIME_H_PLURAL")) + " " + mapText("TIME_SUFFIX");
+        return "(" + mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_H_SINGULAR") : mapText("TIME_H_PLURAL")) + " " + mapText("TIME_SUFFIX") + ")";
     } else if (timeDiff < 60 * 60 * 24 * 30.5) {
         result = Math.floor(timeDiff / (60 * 60 * 24) + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_DAY_SINGULAR") : mapText("TIME_DAY_PLURAL")) + " " + mapText("TIME_SUFFIX");
+        return "(" + mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_DAY_SINGULAR") : mapText("TIME_DAY_PLURAL")) + " " + mapText("TIME_SUFFIX") + ")";
     } else if (timeDiff < 60 * 60 * 24 * 30.5 * 12) {
         result = Math.floor(timeDiff / (60 * 60 * 24 * 30.5) + 0.5);
-        return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_MON_SINGULAR") : mapText("TIME_MON_PLURAL")) + " " + mapText("TIME_SUFFIX");
+        return "(" + mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_MON_SINGULAR") : mapText("TIME_MON_PLURAL")) + " " + mapText("TIME_SUFFIX") + ")";
     } else {
         result = Math.floor(timeDiff / (60 * 60 * 24 * 30.5 * 12) + 0.5);
         if (result < 40) {
-            return mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_Y_SINGULAR") : mapText("TIME_Y_PLURAL")) + " " + mapText("TIME_SUFFIX");
+            return "(" + mapText("TIME_PREFIX") + " " + result + " " + (result === 1 ? mapText("TIME_Y_SINGULAR") : mapText("TIME_Y_PLURAL")) + " " + mapText("TIME_SUFFIX") + ")";
         }
     }
     return "";

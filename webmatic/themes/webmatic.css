@@ -1,8 +1,8 @@
-.valueNoError { font-size: 16px; font-style: italic; }
-.valueInfo { font-size: 16px; font-style: italic; }
-.valueWarning { font-size: 16px; font-weight: bold; font-style: italic; }
-.valueError { font-size: 16px; font-weight: bold; font-style: italic; }
-.valueOK { font-size: 16px; font-style: italic; }
+.valueNoError { font-size: 20px; font-style: italic; }
+.valueInfo { font-size: 20px; font-style: italic; white-space: normal !important; }
+.valueWarning { font-size: 20px; font-weight: bold; font-style: italic; }
+.valueError { font-size: 20px; font-weight: bold; font-style: italic; }
+.valueOK { font-size: 20px; font-style: italic; }
 .control-set { 
     padding: 10px;
     -webkit-border-radius: 1em;
@@ -307,6 +307,10 @@ li.ui-block-g {
     -webkit-border-bottom-left-radius: inherit;
     border-bottom-left-radius: inherit;
     border-width: 1px !important;
+}
+
+.last-used-time{
+    font-size: 12px !important;
 }
 
 @media screen and (max-width: 50em)
