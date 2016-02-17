@@ -1113,7 +1113,7 @@ function processGraphicID(type) {
         if (resultOptionsMap['default_sort_manually']) {
             tmpObj[parseInt(val['position'])] = html;
         } else {
-            tmpObj[val['name']] = html;
+            tmpObj[val['name'].toLowerCase()] = html;
         }
     });
 

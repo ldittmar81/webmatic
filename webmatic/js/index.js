@@ -40,7 +40,7 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
         if (resultOptionsMap['default_sort_manually']) {
             tmpObj[parseInt(val['position'])] = html;
         } else {
-            tmpObj[val['name']] = html;
+            tmpObj[val['name'].toLowerCase()] = html;
         }
     });
     var keys;

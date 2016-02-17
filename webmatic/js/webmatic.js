@@ -493,7 +493,7 @@ function processVariable(variable, valID, systemDate) {
     var html = "<li class='dataListItem' id='" + valID + "' " + (variable['visible'] ? "" : "style='display: none;'") + "><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
     html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
     if ($.inArray(picKey, picturesList) !== -1) {
-        html += "<div style='float: left; text-align: center;'>";
+        html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
         html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
         html += "</div>";
     }
@@ -531,7 +531,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
     deviceHTML += "<h2 class='ui-li-heading'>" + prog['name'] + "</h2>";
     deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
     if ($.inArray(prgID, picturesList) !== -1) {
-        deviceHTML += "<div style='float: left; text-align: center;'>";
+        deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
         deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
         deviceHTML += "</div>";
     }
@@ -1981,7 +1981,7 @@ function loadVariables(restart) {
             if (resultOptionsMap['default_sort_manually']) {
                 tmpObj[parseInt(variable['position'])] = html;
             } else {
-                tmpObj[variable['name']] = html;
+                tmpObj[variable['name'].toLowerCase()] = html;
             }            
         });
         
@@ -2075,7 +2075,7 @@ function loadPrograms(restart) {
             if (resultOptionsMap['default_sort_manually']) {
                 tmpObj[parseInt(prog['position'])] = html;
             } else {
-                tmpObj[prog['name']] = html;
+                tmpObj[prog['name'].toLowerCase()] = html;
             }
         });
 

@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 20;
+var storageVersion = 21;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
@@ -243,8 +243,7 @@ function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate,
 
 // ValueType 16 (Liste-Select)
 function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options) {
-    var html = "<div class='ui-field-contain'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    var html = "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='selector_" + valID + "' data-theme='" + theme + "'>";
     for (var i = 0; i < optionsArray.length; i++) {
         if (selIndex === i) {
@@ -254,9 +253,8 @@ function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, r
         }
     }
     html += "</select>";
-    html += "<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='" + (options ? "options" : "") + "setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">&nbsp;</a>";
+    html += "&nbsp;<span id='unit_ " + valID + "'>" + valUnit + "</span> <a href='#' id='" + (options ? "options" : "") + "setValueBigList_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">&nbsp;</a>";
     html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-    html += "</div>";
     html += "</div>";
     return html;
 }
