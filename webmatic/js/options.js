@@ -103,7 +103,7 @@ function loadGraphicIDs(type) {
     $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved ? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
 
     //Global
-    if (localStorage.getItem("webmatic" + type + "Map") === null) {
+    if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
         if (newVersion) {
             saveDataToFile = true;
         }
@@ -112,7 +112,7 @@ function loadGraphicIDs(type) {
         loadLocalStorageMap(type);
     }
     //Lokal
-    if (localStorage.getItem("webmatic" + type + "clientMap") === null) {
+    if (localStorage.getItem("webmatic" + type + "clientMap") === null || localStorage.getItem("webmatic" + type + "clientMap") === "undefined") {
         if (client !== "") {
             loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
         }
@@ -447,7 +447,7 @@ function processOptionsGlobalAnzeige() {
 function processOptionsGlobalVariables() {
 
     //Variablen
-    var html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
+    var html = "<li><h1>" + mapText("WORKSPACE") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Standardmäßig nur lesend
@@ -945,7 +945,7 @@ function processOptionsClientAnzeige() {
 function processOptionsClientVariables() {
 
     //Variablen
-    var html = "<li><h1>" + mapText("SYS_VAR") + "</h1>";
+    var html = "<li><h1>" + mapText("WORKSPACE") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
     //Standardmäßig nur lesend
@@ -967,6 +967,48 @@ function processOptionsClientVariables() {
     html += "<a href='#' name='saveClientOption' data-key='systemvar_readonly' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
     html += "<a href='#' name='saveClientOption' data-key='systemvar_readonly' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
     html += "<a href='#' name='saveClientOption' data-key='systemvar_readonly' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Beschreibung ausblenden
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("SHOW_DESCRIPTION") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("show_description" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if (optionsClientMap["show_description"]) {
+        selected2 = "class='ui-btn-active'";
+    } else {
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='show_description' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='show_description' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='show_description' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    //Beschreibung ausblenden
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("SHOW_LAST_TIME_USED") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    selected1 = "";
+    selected2 = "";
+    selected3 = "";
+    if (!("show_lastUsedTime" in optionsClientMap)) {
+        selected1 = "class='ui-btn-active'";
+    } else if (optionsClientMap["show_lastUsedTime"]) {
+        selected2 = "class='ui-btn-active'";
+    } else {
+        selected3 = "class='ui-btn-active'";
+    }
+    html += "<a href='#' name='saveClientOption' data-key='show_lastUsedTime' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='show_lastUsedTime' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveClientOption' data-key='show_lastUsedTime' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
     html += "</div>";
     html += "</div>";
 
@@ -1053,17 +1095,17 @@ function processGraphicID(type) {
             html += "<div class='ui-block-a'>";
             html += "<div class='ui-grid-a'>";
             html += "<div class='ui-block-a'>";
-            html += "step: ";
+            html += mapText('STEP') + ":&nbsp;";
             html += "<div data-role='controlgroup' data-type='horizontal'>";
-            html += "<input type='number' class='ui-no-corner-right' style='width: 50px;' value='" + val["step"] + "' data-wrapper-class='controlgroup-textinput ui-btn'/>";
-            html += "<a href='#' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "<input type='number' id='step" + key + "' class='ui-no-corner-right' style='width: 50px;' value='" + val["step"] + "' data-wrapper-class='controlgroup-textinput ui-btn'/>";
+            html += "<a href='#' data-role='button' name='changeFloatSF' data-change='step' data-id='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
             html += "</div>";
             html += "</div>";
             html += "<div class='ui-block-b'>";
-            html += "factor: ";
+            html += mapText('FACTOR') + ":&nbsp;";
             html += "<div data-role='controlgroup' data-type='horizontal'>";
-            html += "<input type='number' class='ui-no-corner-left' style='width: 50px;' value='" + val["faktor"] + "' data-wrapper-class='controlgroup-textinput ui-btn'/>";
-            html += "<a href='#' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "<input type='number' id='faktor" + key + "' class='ui-no-corner-left' style='width: 50px;' value='" + val["faktor"] + "' data-wrapper-class='controlgroup-textinput ui-btn'/>";
+            html += "<a href='#' data-role='button' name='changeFloatSF' data-change='faktor' data-id='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
             html += "</div>";
             html += "</div>";
             html += "<div class='ui-block-c'>";
@@ -1093,9 +1135,9 @@ function processGraphicID(type) {
                 } else {
                     selected3 = "class='ui-btn-active'";
                 }
-                html += "<a href='#' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("OPTIONS") + "</a>";
-                html += "<a href='#' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-                html += "<a href='#' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+                html += "<a href='#' name='editVarOperate' data-type='" + type + "' data-id='" + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("DEFAULT") + "</a>";
+                html += "<a href='#' name='editVarOperate' data-type='" + type + "' data-id='" + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+                html += "<a href='#' name='editVarOperate' data-type='" + type + "' data-id='" + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
                 html += "</div>";
             }
         } else {
@@ -1442,23 +1484,37 @@ $(function () {
         var obj = $(this);
         var id = obj.data("id");
         var checked = obj.prop('checked');
-        var type = obj.data("type");
+       
+        programsMap[id]['operate'] = checked;
 
-        if (checked) {
-            $("#" + id).fadeIn(1000);
-        } else {
-            $("#" + id).fadeOut(1000);
-        }
+        activateSettingSaveButton();
+    });
 
-        switch (type) {
-            case "programs":
-                programsMap[id]['operate'] = checked;
-                break
-            case "variables":
-                variablesMap[id]['operate'] = checked;
-                break
-        }
-
+    $(document.body).on("click", "[name='editVarOperate']", function () {
+        var obj = $(this);
+        var id = obj.data("id");
+        var checked = obj.data('value');
+        
+        $(this).parent().children().removeClass("ui-btn-active");
+        $(this).addClass("ui-btn-active");
+        
+        variablesMap[id]['operate'] = checked;
+        
+        activateSettingSaveButton();
+    });
+    
+    $(document.body).on("click", "[name='changeFloatSF']", function(){
+        var obj = $(this);
+        var id = obj.data("id");
+        var toChange = obj.data("change");
+        var value = $("#" + toChange + id).val();
+        
+        variablesMap[id][toChange] = value;
+        
+        var tmpMap = variablesMap[id];
+        $('#mainNumber' + id).replaceWith(addSetNumber(0, id, parseFloat(tmpMap["valueMin"]), tmpMap['valueUnit'], parseFloat(tmpMap["valueMin"]), parseFloat(tmpMap["valueMax"]), tmpMap["step"] ? tmpMap["step"] : 1, tmpMap["faktor"] ? tmpMap["faktor"] : 1, "", false, true, true));
+        $('#mainNumber' + id).enhanceWithin();
+        
         activateSettingSaveButton();
     });
 

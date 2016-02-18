@@ -707,7 +707,7 @@ var textMap = {
     FONT: "yazı",
     MENU: "Menü girişleri",
     DEFAULT_OPEN: "İlk aramayı Display",
-    DEFAULT_READONLY: "Varsayılan olarak, salt okunur",
+    DEFAULT_READONLY: "Değişken standart salt okunur",
     HISTORIAN_WARNING: "Ayarlar> Seçenekler URL altında Enter",
     NEW_UPDATES_WARNING: "Yeni sürümleri ile ilgili bilgiler",
     STABLE: "Sadece kararlı sürümleri",
@@ -731,5 +731,10 @@ var textMap = {
     TWO_SITES_VERSION: "2 sayfada Ekran",
     TWO_SITES_TRANSITION: "Sayfanın değişiminde etkisi",
     BACK: "sırt",
-    NUMBER_OF_COLUMNS: "Sütun sayısı"
+    NUMBER_OF_COLUMNS: "Sütun sayısı",
+    STEP: "adım",
+    FACTOR: "faktör",
+    SHOW_DESCRIPTION: "göster Açıklama",
+    SHOW_LAST_TIME_USED: "kullanılan en son ne zaman göster",
+    WORKSPACE: "işyeri"
 };

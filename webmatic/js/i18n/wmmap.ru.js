@@ -707,7 +707,7 @@ var textMap = {
     FONT: "шрифта",
     MENU: "Пункты меню",
     DEFAULT_OPEN: "Дисплей первый звонок",
-    DEFAULT_READONLY: "По умолчанию, только для чтения",
+    DEFAULT_READONLY: "Переменная стандарт только для чтения",
     HISTORIAN_WARNING: "Вводят под Параметры> Параметры URL",
     NEW_UPDATES_WARNING: "Информация о новых выпусках",
     STABLE: "только стабильные версии",
@@ -731,5 +731,10 @@ var textMap = {
     TWO_SITES_VERSION: "Показать на 2 страницах",
     TWO_SITES_TRANSITION: "Влияние на изменение страницы",
     BACK: "назад",
-    NUMBER_OF_COLUMNS: "Количество колонок"
+    NUMBER_OF_COLUMNS: "Количество колонок",
+    STEP: "шаг",
+    FACTOR: "фактор",
+    SHOW_DESCRIPTION: "Показать описание",
+    SHOW_LAST_TIME_USED: "Показать последний раз использованный",
+    WORKSPACE: "рабочее место"
 };

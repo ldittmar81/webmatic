@@ -4,7 +4,7 @@
 // by ldittmar
 
 //Wiedererkennung von Clients (feste IP zwingend notwendig)
-if (localStorage.getItem("webmaticrecognizeMap") === null) {
+if (localStorage.getItem("webmaticrecognizeMap") === null || localStorage.getItem("webmaticrecognizeMap") === "undefined") {
     loadRecognization();
 } else {
     recognizeMap = JSON.parse(localStorage.getItem("webmaticrecognizeMap"));
@@ -38,7 +38,7 @@ if (localStorage.getItem("tempOptionsForClient") !== null) {
 
 //Initialwerte (Einstellungen) einlesen
 //Global
-if (localStorage.getItem("webmaticoptionsMap") === null) {
+if (localStorage.getItem("webmaticoptionsMap") === null || localStorage.getItem("webmaticoptionsMap") === "undefined") {
     localStorage.clear();
     if (isTempClient) {
         localStorage.setItem("clearCache", true);
@@ -58,7 +58,7 @@ if (localStorage.getItem("webmaticoptionsMap") === null) {
 }
 
 //Lokal
-if (localStorage.getItem("webmaticoptionsclientMap") === null) {
+if (localStorage.getItem("webmaticoptionsclientMap") === null || localStorage.getItem("webmaticoptionsclientMap") === "undefined") {
     if (client !== "") {
         loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true);
     }
@@ -71,7 +71,7 @@ createOneMap("config");
 clientsList = optionsMap["clientsList"];
 
 //Check Icons
-if (localStorage.getItem("picturesList") === null) {
+if (localStorage.getItem("picturesList") === null || localStorage.getItem("picturesList") === "undefined") {
     $.ajax({
         type: 'GET',
         url: 'cgi/check-image.cgi',
@@ -127,7 +127,7 @@ if (!debugModus) {
     });
     function createVerFile() {
         $.ajax({
-            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvVW5ZM1RC"),
+            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wveTdFYUEx"),
             method: 'GET',
             dataType: 'JSONP',
             error: function (jqXHR, textStatus) {
@@ -506,7 +506,7 @@ function processVariable(variable, valID, systemDate) {
         html += addSetBoolButtonList('', valID, strValue, variable['valueName0'], variable['valueName1'], valUnit, vorDate, true, operate);
     } else if (valType === "4") {
         // Float, Integer.
-        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], 0.01, 1.0, vorDate, true, operate);
+        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], variable["step"] ? variable["step"] : 1, variable["faktor"] ? variable["faktor"] : 1, vorDate, true, operate);
     } else if (valType === "16") {
         // Liste.
         html += addSetValueList('', valID, strValue, variable['valueList'], valUnit, vorDate, true, operate);
@@ -1125,6 +1125,7 @@ function addChannel(device, systemDate, options, operate) {
             var valList = channel['valueList'];
             channelDate = channel['date'];
             vorDate = getTimeDiffString(channelDate, systemDate);
+            var picKey = getPicKey(valID, "variables", channel, false);
 
             // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten,
             // bei (d) / (dk) ist es ein Diagramm in den Favoriten,
@@ -1151,6 +1152,11 @@ function addChannel(device, systemDate, options, operate) {
                 // <br> davor, weil es an der Stelle eine mit Gerät verknüpfte Variable ist:
                 deviceHTML += "<br><h2 class='ui-li-heading'>" + unescape(channel['name']) + "</h2>";
                 deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
+                if ($.inArray(picKey, picturesList) !== -1) {
+                    deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
+                    deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+                    deviceHTML += "</div>";
+                }
                 if (isReadOnly(valInfo)) {
                     deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
                 } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -1247,6 +1253,8 @@ function processDevices(device, systemDate, options, operate) {
         var valList = device['valueList'];
         var channelDate = device['date'];
         var vorDate = getTimeDiffString(channelDate, systemDate);
+        var picKey = getPicKey(valID, "variables", device, false);
+
         // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten:
         options['varOptionsFirst'] = "";
         options['varOptions'] = [];
@@ -1266,6 +1274,11 @@ function processDevices(device, systemDate, options, operate) {
         }
 
         deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
+        if ($.inArray(picKey, picturesList) !== -1) {
+            deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
+            deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+            deviceHTML += "</div>";
+        }
         if (isReadOnly(valInfo)) {
             deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
         } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -1630,20 +1643,20 @@ function refreshJSONObj(type, newJsonObj, create) {
                         saveDataToFile = true;
                     }
                     if (valueType === "16") {
-                        if('listType' in savedVal){
+                        if ('listType' in savedVal) {
                             val['listType'] = savedVal['listType'];
                         } else {
                             val['listType'] = "auto";
                             saveDataToFile = true;
                         }
                     } else if (valueType === "4") {
-                        if('step' in savedVal){
+                        if ('step' in savedVal) {
                             val['step'] = savedVal['step'];
                         } else {
                             val['step'] = 1;
                             saveDataToFile = true;
                         }
-                        if('faktor' in savedVal){
+                        if ('faktor' in savedVal) {
                             val['faktor'] = savedVal['faktor'];
                         } else {
                             val['faktor'] = 1;
@@ -1697,10 +1710,10 @@ function refreshJSONObj(type, newJsonObj, create) {
         if (!("columns" in newJsonObj)) {
             newJsonObj['columns'] = 1;
         }
-         if (!("show_description" in newJsonObj)) {
+        if (!("show_description" in newJsonObj)) {
             newJsonObj['show_description'] = true;
         }
-         if (!("show_lastUsedTime" in newJsonObj)) {
+        if (!("show_lastUsedTime" in newJsonObj)) {
             newJsonObj['show_lastUsedTime'] = true;
         }
     }
@@ -1852,7 +1865,7 @@ function loadData(url, id, restart) {
         // "Lade..." anzeigen:
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
-        if (localStorage.getItem("webmaticdevicesMap" + id) === null) {
+        if (localStorage.getItem("webmaticdevicesMap" + id) === null || localStorage.getItem("webmaticdevicesMap" + id) === "undefined") {
             if (newVersion) {
                 saveDataToFile = true;
             }
@@ -1926,7 +1939,8 @@ function loadData(url, id, restart) {
             });
 
             reloadList(dta['name'], systemDate, restart, dta['description']);
-
+            $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
+            $("img").trigger("lazyLoadInstantly");
         });
 
     }
@@ -1939,6 +1953,8 @@ function loadData(url, id, restart) {
     $("[id^=button]").enhanceWithin();
     $("[id^=input]").enhanceWithin();
     $("textarea").textinput("refresh");
+    $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
+    $("img").trigger("lazyLoadInstantly");
 }
 
 function loadVariables(restart) {
@@ -1952,7 +1968,7 @@ function loadVariables(restart) {
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         //Global
-        if (localStorage.getItem("webmaticvariablesMap") === null) {
+        if (localStorage.getItem("webmaticvariablesMap") === null || localStorage.getItem("webmaticvariablesMap") === "undefined") {
             if (newVersion) {
                 saveDataToFile = true;
             }
@@ -1961,7 +1977,7 @@ function loadVariables(restart) {
             loadLocalStorageMap("variables");
         }
         //Lokal
-        if (localStorage.getItem("webmaticvariablesclientMap") === null) {
+        if (localStorage.getItem("webmaticvariablesclientMap") === null || localStorage.getItem("webmaticvariablesclientMap") === "undefined") {
             if (client !== "") {
                 loadConfigData(false, '../webmatic_user/variables' + client + '.json', 'variablesClient', 'webmaticvariablesclientMap', false, true);
             }
@@ -1970,7 +1986,7 @@ function loadVariables(restart) {
         }
         //Kombinieren
         createOneMap("variables");
-        
+
         var systemDate = resultVariablesMap['date'];
         var tmpObj = {};
         $.each(resultVariablesMap, function (key, variable) {
@@ -1982,9 +1998,9 @@ function loadVariables(restart) {
                 tmpObj[parseInt(variable['position'])] = html;
             } else {
                 tmpObj[variable['name'].toLowerCase()] = html;
-            }            
+            }
         });
-        
+
         var keys;
         if (resultOptionsMap['default_sort_manually']) {
             keys = Object.keys(tmpObj).sort(function (a, b) {
@@ -1998,25 +2014,25 @@ function loadVariables(restart) {
             var k = keys[i];
             $("#" + dataList).append(tmpObj[k]);
         }
-        
+
         reloadList(mapText("SYS_VAR"), systemDate, restart, "");
-    }    
+    }
 
     loadConfigData(true, 'cgi/variables.cgi', 'variables', 'webmaticvariablesMap', false, true, function () {
         createOneMap("variables");
-        
+
         var systemDate = resultVariablesMap['date'];
         $.each(resultVariablesMap, function (key, variable) {
             if (key === "date" || key === "size") {
                 return;
             }
-            
+
             if ($('#' + key).length === 0) {
                 $("#" + dataList).append(processVariable(variable, key, systemDate));
             } else {
                 $('#' + key).replaceWith(processVariable(variable, key, systemDate));
             }
-            
+
         });
         reloadList(mapText("SYS_VAR"), systemDate, restart, "");
         $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
@@ -2043,7 +2059,7 @@ function loadPrograms(restart) {
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         //Global
-        if (localStorage.getItem("webmaticprogramsMap") === null) {
+        if (localStorage.getItem("webmaticprogramsMap") === null || localStorage.getItem("webmaticprogramsMap") === "undefined") {
             if (newVersion) {
                 saveDataToFile = true;
             }
@@ -2052,7 +2068,7 @@ function loadPrograms(restart) {
             loadLocalStorageMap("programs");
         }
         //Lokal
-        if (localStorage.getItem("webmaticprogramsclientMap") === null) {
+        if (localStorage.getItem("webmaticprogramsclientMap") === null || localStorage.getItem("webmaticprogramsclientMap") === "undefined") {
             if (client !== "") {
                 loadConfigData(false, '../webmatic_user/programs' + client + '.json', 'programsClient', 'webmaticprogramsclientMap', false, true);
             }

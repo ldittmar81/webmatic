@@ -707,7 +707,7 @@ var textMap = {
     FONT: "la police",
     MENU: "les entrées de menu",
     DEFAULT_OPEN: "Afficher le premier appel",
-    DEFAULT_READONLY: "Par défaut, en lecture seule",
+    DEFAULT_READONLY: "Norme variable en lecture seule",
     HISTORIAN_WARNING: "Entrez dans la configuration > Options l'URL",
     NEW_UPDATES_WARNING: "Informations sur les nouvelles versions",
     STABLE: "seules les versions stables",
@@ -731,5 +731,10 @@ var textMap = {
     TWO_SITES_VERSION: "Affichage sur 2 pages",
     TWO_SITES_TRANSITION: "Effet sur le changement de la page",
     BACK: "Arrière",
-    NUMBER_OF_COLUMNS: "Nombre de colonnes"
+    NUMBER_OF_COLUMNS: "Nombre de colonnes",
+    STEP: "étape",
+    FACTOR: "facteur",
+    SHOW_DESCRIPTION: "Montrer la description",
+    SHOW_LAST_TIME_USED: "Dernier temps utilisé",
+    WORKSPACE: "lieu de travail"
 };

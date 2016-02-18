@@ -707,7 +707,7 @@ var textMap = {
     FONT: "字形",
     MENU: "菜单项",
     DEFAULT_OPEN: "显示的第一个电话",
-    DEFAULT_READONLY: "默认情况下，只读",
+    DEFAULT_READONLY: "可变标准只读",
     HISTORIAN_WARNING: "在设置>选项URL输入",
     NEW_UPDATES_WARNING: "关于新版本的信息",
     STABLE: "只有稳定的版本",
@@ -731,5 +731,10 @@ var textMap = {
     TWO_SITES_VERSION: "显示2页",
     TWO_SITES_TRANSITION: "作者在页面的变化",
     BACK: "背部",
-    NUMBER_OF_COLUMNS: "列数"
+    NUMBER_OF_COLUMNS: "列数",
+    STEP: "步",
+    FACTOR: "因素",
+    SHOW_DESCRIPTION: "展会介绍",
+    SHOW_LAST_TIME_USED: "显示上一次使用",
+    WORKSPACE: "职场"
 };

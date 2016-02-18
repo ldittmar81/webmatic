@@ -707,7 +707,7 @@ var textMap = {
     FONT: "font",
     MENU: "menu entries",
     DEFAULT_OPEN: "Display the first call",
-    DEFAULT_READONLY: "By default, read-only",
+    DEFAULT_READONLY: "Variable standard read-only",
     HISTORIAN_WARNING: "Enter under Settings > Options the URL",
     NEW_UPDATES_WARNING: "Information about new releases",
     STABLE: "only stable versions",
@@ -731,5 +731,10 @@ var textMap = {
     TWO_SITES_VERSION: "Display on 2 pages",
     TWO_SITES_TRANSITION: "Effect at the change of page",
     BACK: "Back",
-    NUMBER_OF_COLUMNS: "Number of columns"
+    NUMBER_OF_COLUMNS: "Number of columns",
+    STEP: "Step",
+    FACTOR: "Factor",
+    SHOW_DESCRIPTION: "Show description",
+    SHOW_LAST_TIME_USED: "Show last time used",
+    WORKSPACE: "Workspace"
 };

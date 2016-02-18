@@ -169,7 +169,7 @@ function addStartProgramButton(parentId, id, text, vorDate, operate) {
 // ist aber 0 - 100 schöner.
 // ValueType 4
 function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate, refresh, operate, options) {
-    var html = "<div class='ui-field-contain'>";
+    var html = "<div class='ui-field-contain' id='mainNumber" + id + "'>";
     html += "<input type='range' value='" + value * factor + "' min='" + min * factor + "' max='" + max * factor + "' step='" + step * factor + "' data-factor='" + factor + "' id='" + (options ? "options" : "") + "setValue_" + id + "' data-id='" + id + "' data-highlight='true' data-theme='" + theme + "'/>";
     html += " (" + min * factor + " - " + max * factor + " <span id='unit_ " + id + "'>" + unit + "</span>) ";
     html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";

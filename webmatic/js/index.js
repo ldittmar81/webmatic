@@ -3,7 +3,7 @@
 function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3><ul id='list" + indexType + "' data-role='listview' data-inset='true'></ul></div>");
     //Global
-    if (localStorage.getItem("webmatic" + indexType + "Map") === null) {
+    if (localStorage.getItem("webmatic" + indexType + "Map") === null || localStorage.getItem("webmatic" + indexType + "Map") === "undefined") {
         if (newVersion) {
             saveDataToFile = true;
         }
@@ -12,7 +12,7 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
         loadLocalStorageMap(indexType);
     }
     //Lokal
-    if (localStorage.getItem("webmatic" + indexType + "clientMap") === null) {
+    if (localStorage.getItem("webmatic" + indexType + "clientMap") === null || localStorage.getItem("webmatic" + indexType + "clientMap") === "undefined") {
         if (client !== "") {
             loadConfigData(false, '../webmatic_user/' + indexType + client + '.json', indexType + 'Client', 'webmatic' + indexType + 'clientMap', false, true);
         }
