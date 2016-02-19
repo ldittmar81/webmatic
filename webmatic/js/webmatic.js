@@ -94,7 +94,7 @@ if (localStorage.getItem("picturesList") === null || localStorage.getItem("pictu
 //Webmatic-Version erkennen
 if (!debugModus) {
     if (resultOptionsMap['new_version'] !== "no") {
-        if (resultOptionsMap['new_version'] !== "alpha") {
+        if (resultOptionsMap['new_version'] === "alpha") {
             $.get("https://raw.githubusercontent.com/jens-maus/webmatic/master/ISALPHA", function (isalpha) {
                 var versionURL = "";
                 if (isalpha === "1") {
