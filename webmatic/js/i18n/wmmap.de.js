@@ -601,11 +601,11 @@ var textMap = {
     LANGUAGE: "Sprache",
     //CCU Bezeichnungen
     ROOMLIVINGROOM: "Wohnzimmer",
-    ROOMKITCHEN: "K%FCche",
+    ROOMKITCHEN: "Küche",
     ROOMBEDROOM: "Schlafzimmer",
     ROOMCHILDRENSROOM1: "Kinderzimmer 1",
     ROOMCHILDRENSROOM2: "Kinderzimmer 2",
-    ROOMOFFICE: "B%FCro",
+    ROOMOFFICE: "Büro",
     ROOMBATHROOM: "Badezimmer",
     ROOMGARAGE: "Garage",
     ROOMHWR: "Hauswirtschaftsraum",
@@ -734,7 +734,8 @@ var textMap = {
     NUMBER_OF_COLUMNS: "Anzahl der Spalten",
     STEP: "Schritt",
     FACTOR: "Faktor",
-    SHOW_DESCRIPTION: "Beschribung anzeigen",
-    SHOW_LAST_TIME_USED: "letztes Mal benutzt anzeigen",
-    WORKSPACE: "Arbeitsplatz"
+    SHOW_DESCRIPTION: "Beschreibung anzeigen",
+    SHOW_LAST_TIME_USED: "Letztes Mal benutzt anzeigen",
+    WORKSPACE: "Arbeitsplatz",
+    ONLY_PIC: "Nur Grafik"
 };

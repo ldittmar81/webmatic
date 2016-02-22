@@ -490,36 +490,48 @@ function processVariable(variable, valID, systemDate) {
     var operate = checkOperate(variable['operate']);
     var picKey = getPicKey(valID, "variables", variable, false);
 
-    var html = "<li class='dataListItem' id='" + valID + "' " + (variable['visible'] ? "" : "style='display: none;'") + "><h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
-    html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
-    if ($.inArray(picKey, picturesList) !== -1) {
-        html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-        html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+    var html = "<li class='dataListItem' id='" + valID + "' " + (variable['visible'] ? "" : "style='display: none;'") + ">";
+    html += "<h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
+    if (variable['onlyPic'] && (!operate || valType === "2")) {
+        html += "<div data-id='" + valID + "' data-value='" + strValue + "' data-type='variables" + valType + "' class='onlyPic " + (!operate ? "onlyPicDisabled" : "onlyPicPointer") + "'>";
+        html += "<img id='img" + valID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+        if (operate) {
+            html += "<div class='onlyPic-player' id='player" + valID + "'>&nbsp;</div>";
+        } else if (valType === "4") {
+            html += "<div class='onlyPic-value'>" + parseFloat(strValue) + valUnit + "</div>";
+        }
         html += "</div>";
-    }
-
-    // In der Variablenliste editieren zulassen:
-    if (!operate) {
-        html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, variable['valueList'], variable['valueName0'], variable['valueName1']);
-    } else if (valType === "2") {
-        // Bool.
-        html += addSetBoolButtonList('', valID, strValue, variable['valueName0'], variable['valueName1'], valUnit, vorDate, true, operate);
-    } else if (valType === "4") {
-        // Float, Integer.
-        html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], variable["step"] ? variable["step"] : 1, variable["faktor"] ? variable["faktor"] : 1, vorDate, true, operate);
-    } else if (valType === "16") {
-        // Liste.
-        html += addSetValueList('', valID, strValue, variable['valueList'], valUnit, vorDate, true, operate);
-    } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
-        html += addHTML("", valID, strValue, vorDate, false);
-    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-        html += addHistorianDiagram("", valID, strValue, vorDate, false);
-    } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
-        html += addTuneInRadio("", valID, strValue, vorDate, false);
-    } else if (valType === "20") {
-        html += addSetText("", valID, strValue, valUnit, vorDate, operate);
     } else {
-        html += mapText("UNKNOWN_VAR_TYPE") + "!";
+        html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
+        if ($.inArray(picKey, picturesList) !== -1) {
+            html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
+            html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+            html += "</div>";
+        }
+
+        // In der Variablenliste editieren zulassen:
+        if (!operate) {
+            html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, variable['valueList'], variable['valueName0'], variable['valueName1'], variable['faktor']);
+        } else if (valType === "2") {
+            // Bool.
+            html += addSetBoolButtonList('', valID, strValue, variable['valueName0'], variable['valueName1'], valUnit, vorDate, true, operate);
+        } else if (valType === "4") {
+            // Float, Integer.
+            html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], variable["step"] ? variable["step"] : 1, variable["faktor"] ? variable["faktor"] : 1, vorDate, true, operate);
+        } else if (valType === "16") {
+            // Liste.
+            html += addSetValueList('', valID, strValue, variable['valueList'], valUnit, vorDate, true, operate, variable['listType']);
+        } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
+            html += addHTML("", valID, strValue, vorDate, false);
+        } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+            html += addHistorianDiagram("", valID, strValue, vorDate, false);
+        } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
+            html += addTuneInRadio("", valID, strValue, vorDate, false);
+        } else if (valType === "20") {
+            html += addSetText("", valID, strValue, valUnit, vorDate, operate);
+        } else {
+            html += mapText("UNKNOWN_VAR_TYPE") + "!";
+        }
     }
     html += "</li>";
 
@@ -529,13 +541,23 @@ function processVariable(variable, valID, systemDate) {
 function processProgram(prog, prgID, systemDate, active, visible) {
     var deviceHTML = "<li class='dataListItem' id='" + prgID + "' " + (visible ? "" : "style='display: none;'") + ">";
     deviceHTML += "<h2 class='ui-li-heading'>" + prog['name'] + "</h2>";
-    deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
-    if ($.inArray(prgID, picturesList) !== -1) {
-        deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-        deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+    if (prog['onlyPic']) {
+        var enabled = (prog['operate'] || !readModus);
+        deviceHTML += "<div data-id='" + prgID + "' data-type='programs' class='onlyPic " + (!enabled ? "onlyPicDisabled" : "onlyPicPointer") + "'>";
+        deviceHTML += "<img id='img" + prgID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+        if (enabled) {
+            deviceHTML += "<div class='onlyPic-player' id='player" + prgID + "'>&nbsp;</div>";
+        }
         deviceHTML += "</div>";
+    } else {
+        deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
+        if ($.inArray(prgID, picturesList) !== -1) {
+            deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
+            deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+            deviceHTML += "</div>";
+        }
+        deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
     }
-    deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
     deviceHTML += "</li>";
     return deviceHTML;
 }
@@ -1158,7 +1180,7 @@ function addChannel(device, systemDate, options, operate) {
                     deviceHTML += "</div>";
                 }
                 if (isReadOnly(valInfo)) {
-                    deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
+                    deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1, 1);
                 } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
                     excludeFromRefresh.push(valID);
                     options['addDiagram'] = true;
@@ -1280,7 +1302,7 @@ function processDevices(device, systemDate, options, operate) {
             deviceHTML += "</div>";
         }
         if (isReadOnly(valInfo)) {
-            deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1);
+            deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1, 1);
         } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
             excludeFromRefresh.push(valID.toString());
             options['addDiagram'] = true;
@@ -1459,7 +1481,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 var obj = {};
                 var oldName = val;
                 if (val.startsWith("${")) {
-                    val = mapText(val.substring(val.indexOf("${"), val.indexOf("}")));
+                    val = mapText(val.substring(2, val.length - 1));
                 }
                 obj['name'] = val;
                 obj['oldname'] = oldName;
@@ -1487,6 +1509,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 obj['oldoperate'] = val['operate'];
                 obj['date'] = val['date'];
                 obj['info'] = val['info'];
+                obj['onlyPic'] = false;
                 returnJson[key] = obj;
             });
             returnJson['size'] = i;
@@ -1514,6 +1537,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 var valueType = val['valueType'];
                 obj['valueType'] = valueType;
                 obj['valueUnit'] = val['valueUnit'];
+                obj['onlyPic'] = false;
                 if (valueType === "16") {
                     obj['valueList'] = val['valueList'];
                     obj['listType'] = "auto";
@@ -1563,7 +1587,11 @@ function refreshJSONObj(type, newJsonObj, create) {
                     val['visible'] = savedVal['visible'];
                     val['position'] = savedVal['position'];
                     if (val['oldname'] === savedVal['oldname']) {
-                        val['name'] = savedVal['name'];
+                        var savedName = savedVal['name'];
+                        if (savedName.startsWith("${")) {
+                            savedName = mapText(savedName.substring(2, savedName.length - 1));
+                        }
+                        val['name'] = savedName;
                     } else {
                         saveDataToFile = true;
                     }
@@ -1604,6 +1632,12 @@ function refreshJSONObj(type, newJsonObj, create) {
                     } else {
                         saveDataToFile = true;
                     }
+                    if ('onlyPic' in savedVal) {
+                        val['onlyPic'] = savedVal['onlyPic'];
+                    } else {
+                        val['onlyPic'] = false;
+                        saveDataToFile = true;
+                    }
                 } else {
                     size++;
                     val['position'] = size;
@@ -1640,6 +1674,12 @@ function refreshJSONObj(type, newJsonObj, create) {
                     if (val['oldoperate'] === savedVal['oldoperate']) {
                         val['operate'] = savedVal['operate'];
                     } else {
+                        saveDataToFile = true;
+                    }
+                    if ('onlyPic' in savedVal) {
+                        val['onlyPic'] = savedVal['onlyPic'];
+                    } else {
+                        val['onlyPic'] = false;
                         saveDataToFile = true;
                     }
                     if (valueType === "16") {
@@ -2237,6 +2277,33 @@ $(function () {
             $("#" + infoID).text(mapText("TRANSFER_OK"));
         });
     });
+
+    $(document.body).on("click", ".onlyPic:not(.onlyPicDisabled)", function () {
+        var dataID = $(this).data("id");  // Homematic Geräte ID.
+        $('#player' + dataID).css("background-image", "url('img/misc/gear32ani.GIF')");
+        var type = $(this).data("type");
+        
+        var urlAttr = testSite?"&debug=true":"";
+            if (testSite) {
+                urlAttr += '&debug=true';
+            }
+
+        if (type === "programs") {
+            
+            $.get('cgi/startprogram.cgi?id=' + dataID + urlAttr, function () {
+                $('#player' + dataID).delay(2000).css("background-image", "url('img/misc/gear32.gif')");
+            });
+        } else if (type === "variables2") {
+            var value = $(this).data("value");
+            if (value === "") {
+                value = false;
+            }
+            $.get('cgi/set.cgi?id=' + dataID + '&value=' + !value + urlAttr, function () {
+                refreshPage(0);
+            });
+        }
+    });
+
 
     // Historian
     $(document.body).on("click", "[id^=saveHistorianData]", function () {

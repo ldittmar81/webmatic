@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 21;
+var storageVersion = 23;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
@@ -207,7 +207,7 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
     }
     html += "</div>";
     html += "</div>";
-   
+
     return html;
 }
 
@@ -227,23 +227,23 @@ function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, r
 
 // ValueType 16 (Liste-Buttons)
 function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options) {
-    var html = "<div class='ui-field-contain'>";
+    var html = "<div class='ui-field-contain' id='mainNumber" + valID + "'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     for (var i = 0; i < optionsArray.length; i++) {
         var active = (selIndex === i ? "ui-btn-active" : "");
         html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-refresh='" + refresh + "' data-value='" + i + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled " + active + "'" : "data-role='button' class='" + active + "' data-inline='true'") + ">" + optionsArray[i] + "</a>";
-    }        
+    }
     html += "&nbsp;<span id='unit_ " + valID + "'>" + valUnit + "</span> ";
     html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
     html += "</div>";
-    
+
     return html;
 }
 
 // ValueType 16 (Liste-Select)
 function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options) {
-    var html = "<div data-role='controlgroup' data-type='horizontal'>";
+    var html = "<div data-role='controlgroup' data-type='horizontal' id='mainNumber" + valID + "'>";
     html += "<select id='selector_" + valID + "' data-theme='" + theme + "'>";
     for (var i = 0; i < optionsArray.length; i++) {
         if (selIndex === i) {
@@ -287,7 +287,7 @@ function addHTML(parentId, valID, val, vorDate, readonly) {
     return html;
 }
 
-function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1) {
+function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1, faktor) {
     // Bestimmen, wie der sichtbare Werte aussehen soll:
     var visVal = "";
     if (valType === "2") {
@@ -299,7 +299,7 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
         }
     } else if (valType === "4") {
         // Float, Integer.
-        visVal = parseFloat(strValue);
+        visVal = parseFloat(strValue) * parseFloat(faktor);
     } else if (valType === "16") {
         // Liste.
         var optionsArray = valList.split(";");
@@ -340,7 +340,7 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
 
     var html = "<div class='ui-field-contain" + (readonly ? "" : " ui-grid-a") + "'>";
     if (readonly) {
-        html += "<div id='chart_" + valID + "' ></div>";
+        html += "<div id='chart_" + valID + "' style='min-width: 100px;' ></div>";
         $.ajax({
             url: resultOptionsMap['ccu_historian'] + "/query/json.gy?i=" + optionsArray[0] + "&d=" + optionsArray[2],
             method: 'GET',
@@ -502,7 +502,7 @@ function getPicKey(key, type, map, options) {
                     return item.trim().match(regex);
                 });
 
-                var myValue = "not_exist";
+                var myValue = 0;
                 if (typeof testList !== 'undefined' && testList.length > 0) {
                     $.each(testList, function (i, val) {
                         var tmp_val = parseFloat(val.split("_")[1]);
@@ -512,10 +512,10 @@ function getPicKey(key, type, map, options) {
                     });
                 }
                 value = myValue;
-            }
-            else if(valueType === "2"){
+                picKey += "_" + value;
+            } else if (valueType === "2") {
                 picKey += "_" + (value === "true");
-            }else if (valueType !== "20") {
+            } else if (valueType !== "20") {
                 picKey += "_" + value;
             }
 
@@ -770,7 +770,7 @@ function isReadOnlyVariable(valInfo) {
 }
 
 function checkOperate(status) {
-    if(!readModus){
+    if (!readModus) {
         return true;
     }
     if (status === "none") {

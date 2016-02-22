@@ -1071,10 +1071,17 @@ function processGraphicID(type) {
         html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key + "'>";
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><input name='editName' data-id='" + key + "' data-type='" + type + "' type='text' value='" + val['name'] + "' /></div>";
-        if (isVariables && !isTextVariables) {
-            html += "<div class='ui-block-b small-hidden'></div>";
+        if ((isVariables && !isTextVariables) || isPrograms) {
+            html += "<div class='ui-block-b'>"
+            html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
+            html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-type='" + type + "' data-key='onlyPic' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['onlyPic'] ? "checked" : "") + "/>";
+            html += "</div>";
             html += "<div class='ui-block-c small-hidden'></div>";
+        }
+        if (isVariables && !isTextVariables) {
             html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
+        } else if (isPrograms) {
+            html += "<div class='ui-block-a small-hidden'></div>";
         }
         html += "<div class='ui-block-b'>";
         html += "<input name='file' id='file" + key + "' data-pickey='" + picKey + "' type='file' accept='image/*' />";
@@ -1083,12 +1090,12 @@ function processGraphicID(type) {
         if (isListVariables) {
             html += "<div class='ui-block-a'>"
             html += "<div data-role='controlgroup' data-type='horizontal'>";
-            html += "<select data-theme='" + theme + "'>";
-            html += "<option>auto</option>";
-            html += "<option>button</option>";
-            html += "<option>select</option>";
+            html += "<select id='listType" + key + "' data-theme='" + theme + "'>";
+            html += "<option value='auto' " + (val['listType'] === "auto" ? "selected='selected'" : "") + ">auto</option>";
+            html += "<option value='small' " + (val['listType'] === "small" ? "selected='selected'" : "") + ">button</option>";
+            html += "<option value='big' " + (val['listType'] === "big" ? "selected='selected'" : "") + ">select</option>";
             html += "</select>";
-            html += "<a href='#' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "<a href='#' data-role='button' name='changeFloatSF' data-change='listType' data-id='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
             html += "</div>";
             html += "</div>";
         } else if (isFloatVariables) {
@@ -1122,7 +1129,7 @@ function processGraphicID(type) {
             html += "'>";
             html += "<label>" + mapText("OPERATABLE") + ":&nbsp;";
             if (!isVariables) {
-                html += "<input type='checkbox' data-role='flipswitch' name='editOperate' data-type='" + type + "' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['operate'] ? "checked" : "") + "/>";
+                html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-key='operate' data-type='" + type + "' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['operate'] ? "checked" : "") + "/>";
             } else {
                 html += "<div data-role='controlgroup' data-type='horizontal'>";
                 var selected1 = "";
@@ -1146,7 +1153,7 @@ function processGraphicID(type) {
         html += "</div>";
         html += "<div class='ui-block-c'>";
         html += "<label>" + mapText("VISIBILITY") + ":&nbsp;";
-        html += "<input type='checkbox' data-role='flipswitch' name='editVisible' data-type='" + type + "' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['visible'] ? "checked" : "") + "/>";
+        html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-key='visible' data-type='" + type + "' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['visible'] ? "checked" : "") + "/>";
         html += "</label>";
         html += "</div>";
         html += "</div>";
@@ -1447,45 +1454,38 @@ $(function () {
         }
     });
 
-    $(document.body).on("change", "[name='editVisible']", function () {
+    $(document.body).on("change", "[name='flipswitch']", function () {
         var obj = $(this);
         var id = obj.data("id");
         var type = obj.data("type");
+        var key = obj.data("key");
         var checked = obj.prop('checked');
 
-        if (checked) {
-            $("#" + id).fadeIn(1000);
-        } else {
-            $("#" + id).fadeOut(1000);
+        if (type === "favorites" || type === "rooms" || type === "functions") {
+            if (checked) {
+                $("#" + id).fadeIn(1000);
+            } else {
+                $("#" + id).fadeOut(1000);
+            }
         }
 
         switch (type) {
             case "favorites":
-                favoritesMap[id]['visible'] = checked;
+                favoritesMap[id][key] = checked;
                 break
             case "rooms":
-                roomsMap[id]['visible'] = checked;
+                roomsMap[id][key] = checked;
                 break
             case "functions":
-                functionsMap[id]['visible'] = checked;
+                functionsMap[id][key] = checked;
                 break
             case "programs":
-                programsMap[id]['visible'] = checked;
+                programsMap[id][key] = checked;
                 break
             case "variables":
-                variablesMap[id]['visible'] = checked;
+                variablesMap[id][key] = checked;
                 break
         }
-
-        activateSettingSaveButton();
-    });
-
-    $(document.body).on("change", "[name='editOperate']", function () {
-        var obj = $(this);
-        var id = obj.data("id");
-        var checked = obj.prop('checked');
-       
-        programsMap[id]['operate'] = checked;
 
         activateSettingSaveButton();
     });
@@ -1494,27 +1494,31 @@ $(function () {
         var obj = $(this);
         var id = obj.data("id");
         var checked = obj.data('value');
-        
+
         $(this).parent().children().removeClass("ui-btn-active");
         $(this).addClass("ui-btn-active");
-        
+
         variablesMap[id]['operate'] = checked;
-        
+
         activateSettingSaveButton();
     });
-    
-    $(document.body).on("click", "[name='changeFloatSF']", function(){
+
+    $(document.body).on("click", "[name='changeFloatSF']", function () {
         var obj = $(this);
         var id = obj.data("id");
         var toChange = obj.data("change");
         var value = $("#" + toChange + id).val();
-        
+
         variablesMap[id][toChange] = value;
-        
+
         var tmpMap = variablesMap[id];
-        $('#mainNumber' + id).replaceWith(addSetNumber(0, id, parseFloat(tmpMap["valueMin"]), tmpMap['valueUnit'], parseFloat(tmpMap["valueMin"]), parseFloat(tmpMap["valueMax"]), tmpMap["step"] ? tmpMap["step"] : 1, tmpMap["faktor"] ? tmpMap["faktor"] : 1, "", false, true, true));
+        if ("faktor" === toChange || "step" === toChange) {
+            $('#mainNumber' + id).replaceWith(addSetNumber(0, id, parseFloat(tmpMap["valueMin"]), tmpMap['valueUnit'], parseFloat(tmpMap["valueMin"]), parseFloat(tmpMap["valueMax"]), tmpMap["step"] ? tmpMap["step"] : 1, tmpMap["faktor"] ? tmpMap["faktor"] : 1, "", false, true, true));
+        } else if ("listType" === toChange) {
+            $('#mainNumber' + id).replaceWith(addSetValueList(0, id, "0", tmpMap['valueList'], tmpMap['valueUnit'], "", false, true, tmpMap['listType'], true));
+        }
         $('#mainNumber' + id).enhanceWithin();
-        
+
         activateSettingSaveButton();
     });
 

@@ -736,5 +736,6 @@ var textMap = {
     FACTOR: "faktör",
     SHOW_DESCRIPTION: "göster Açıklama",
     SHOW_LAST_TIME_USED: "kullanılan en son ne zaman göster",
-    WORKSPACE: "işyeri"
+    WORKSPACE: "işyeri",
+    ONLY_PIC: "sadece grafik"
 };

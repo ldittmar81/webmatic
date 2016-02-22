@@ -736,5 +736,6 @@ var textMap = {
     FACTOR: "因素",
     SHOW_DESCRIPTION: "展会介绍",
     SHOW_LAST_TIME_USED: "显示上一次使用",
-    WORKSPACE: "职场"
+    WORKSPACE: "职场",
+    ONLY_PIC: "只有图形"
 };

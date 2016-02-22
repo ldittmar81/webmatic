@@ -186,6 +186,43 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     max-width: 5em;
 }
 
+.onlyPic{
+    position: relative;
+    width: 160px;
+    height: 160px;
+    text-align: center;
+}
+
+.onlyPicPointer{
+    cursor: pointer;
+}
+
+.onlyPic > img{
+    vertical-align: middle;
+    text-align: center;
+    left: 0;
+    top: 0;   
+    max-width: 160px;
+    max-height: 160px;   
+}
+
+.onlyPic-player {
+    position: absolute;
+    top: 135px;
+    left: 135px;
+    width: 32px;
+    height: 32px;
+    background-image: url("../img/misc/gear32.gif");
+}
+
+.onlyPic-value {
+    position: absolute;
+    top: 130px;
+    font-size: 30px;
+    width: 100%;
+    text-align: right;
+}
+
 .text-right {
     text-align: right;
     padding-right: 15px !important;
@@ -249,7 +286,7 @@ li.ui-block-g {
 }
 
 .column-1 > li{
-    
+
 }
 .column-2 > li{
     width: 46%;

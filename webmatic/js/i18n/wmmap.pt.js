@@ -736,7 +736,8 @@ var textMap = {
     FACTOR: "fator",
     SHOW_DESCRIPTION: "Mostrar descrição",
     SHOW_LAST_TIME_USED: "Mostrar último usado",
-    WORKSPACE: "local de trabalho"
+    WORKSPACE: "local de trabalho",
+    ONLY_PIC: "somente gráficos"
 };
 
 
