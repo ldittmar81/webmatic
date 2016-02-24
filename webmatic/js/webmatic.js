@@ -493,9 +493,14 @@ function processVariable(variable, valID, systemDate) {
     var html = "<li class='dataListItem' id='" + valID + "' " + (variable['visible'] ? "" : "style='display: none;'") + ">";
     html += "<h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
     if (variable['onlyPic'] && (!operate || valType === "2")) {
-        html += "<div data-id='" + valID + "' data-value='" + strValue + "' data-type='variables" + valType + "' class='onlyPic " + (!operate ? "onlyPicDisabled" : "onlyPicPointer") + "'>";
+        var data = "data-id='" + valID + "' data-value='" + strValue + "' data-type='variables" + valType + "' class='onlyPic" + (!operate ? " onlyPicDisabled" : "") + "'";
+        html += "<div " + (operate ? "class='onlyPicDiv'" : data) + ">";
+        if (operate) {
+            html += "<a href='#' " + data + ">";
+        }
         html += "<img id='img" + valID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
         if (operate) {
+            html += "</a>";
             html += "<div class='onlyPic-player' id='player" + valID + "'>&nbsp;</div>";
         } else if (valType === "4") {
             html += "<div class='onlyPic-value'>" + parseFloat(strValue) + valUnit + "</div>";
@@ -539,27 +544,32 @@ function processVariable(variable, valID, systemDate) {
 }
 
 function processProgram(prog, prgID, systemDate, active, visible) {
-    var deviceHTML = "<li class='dataListItem' id='" + prgID + "' " + (visible ? "" : "style='display: none;'") + ">";
-    deviceHTML += "<h2 class='ui-li-heading'>" + prog['name'] + "</h2>";
+    var html = "<li class='dataListItem' id='" + prgID + "' " + (visible ? "" : "style='display: none;'") + ">";
+    html += "<h2 class='ui-li-heading'>" + prog['name'] + "</h2>";
     if (prog['onlyPic']) {
         var enabled = (prog['operate'] || !readModus);
-        deviceHTML += "<div data-id='" + prgID + "' data-type='programs' class='onlyPic " + (!enabled ? "onlyPicDisabled" : "onlyPicPointer") + "'>";
-        deviceHTML += "<img id='img" + prgID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+        var data = "data-id='" + prgID + "' data-type='programs' class='onlyPic" + (!enabled ? " onlyPicDisabled" : "") + "'";
+        html += "<div " + (enabled ? "class='onlyPicDiv'" : data) + ">";
         if (enabled) {
-            deviceHTML += "<div class='onlyPic-player' id='player" + prgID + "'>&nbsp;</div>";
+            html += "<a href='#' " + data + ">";
         }
-        deviceHTML += "</div>";
+        html += "<img id='img" + prgID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+        if (enabled) {
+            html += "<div class='onlyPic-player' id='player" + prgID + "'>&nbsp;</div>";
+            html += "</a>";
+        }
+        html += "</div>";
     } else {
-        deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
+        html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
         if ($.inArray(prgID, picturesList) !== -1) {
-            deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
-            deviceHTML += "</div>";
+            html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
+            html += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+            html += "</div>";
         }
-        deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
+        html += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
     }
-    deviceHTML += "</li>";
-    return deviceHTML;
+    html += "</li>";
+    return html;
 }
 
 function getErrorMessage(errType, error, errValue, deviceHssType) {
@@ -1363,9 +1373,10 @@ function processDevices(device, systemDate, options, operate) {
 
 // ----------------------- Helper functions ----------------------------
 
-function activateSettingSaveButton() {
+function activateSettingSaveButton(reload) {
     $('[name="saveAllChanges"]').removeClass('ui-state-disabled');
     mustBeSaved = true;
+    mustReload = reload;
 }
 
 function loadRecognization() {
@@ -1474,7 +1485,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
         if (type === "rooms" || type === "favorites" || type === "functions") {
             var i = 0;
             $.each(newJsonObj, function (key, val) {
-                if (key === "size") {
+                if (key === "date") {
+                    returnJson[key] = val;
                     return;
                 }
                 i++;
@@ -1487,13 +1499,19 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 obj['oldname'] = oldName;
                 obj['visible'] = true;
                 obj['position'] = i;
+                if (type === "rooms") {
+                    obj['room_divisor'] = "";
+                }
                 returnJson[key] = obj;
             });
             returnJson['size'] = i;
+            if (type === "rooms") {
+                returnJson['divisors'] = {};
+            }
         } else if (type === "programs") {
             var i = 0;
             $.each(newJsonObj, function (key, val) {
-                if (key === "date" || key === "size") {
+                if (key === "date") {
                     returnJson[key] = val;
                     return;
                 }
@@ -1516,7 +1534,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
         } else if (type === "variables") {
             var i = 0;
             $.each(newJsonObj, function (key, val) {
-                if (key === "date" || key === "size") {
+                if (key === "date") {
                     returnJson[key] = val;
                     return;
                 }
@@ -1578,8 +1596,16 @@ function refreshJSONObj(type, newJsonObj, create) {
             var returnJson = {};
             var size = newJsonObj["size"];
             $.each(newJsonObj, function (key, val) {
-                if (key === "date" || key === "size") {
-                    returnJson[key] = val;
+                if (key === "date" || key === "size" || key === "divisors") {
+                    if (key === "divisors") {
+                        if ('divisors' in oldMap) {
+                            returnJson['divisors'] = oldMap['divisors'];
+                        } else {
+                            returnJson['divisors'] = val;
+                        }
+                    } else {
+                        returnJson[key] = val;
+                    }
                     return;
                 }
                 if (key in oldMap) {
@@ -1594,6 +1620,14 @@ function refreshJSONObj(type, newJsonObj, create) {
                         val['name'] = savedName;
                     } else {
                         saveDataToFile = true;
+                    }
+                    if (type === "rooms") {
+                        if ('room_divisor' in savedVal) {
+                            val['room_divisor'] = savedVal['room_divisor'];
+                        } else {
+                            val['room_divisor'] = "";
+                            saveDataToFile = true;
+                        }
                     }
                 } else {
                     size++;
@@ -1756,6 +1790,9 @@ function refreshJSONObj(type, newJsonObj, create) {
         if (!("show_lastUsedTime" in newJsonObj)) {
             newJsonObj['show_lastUsedTime'] = true;
         }
+        if (!("room_divisor" in newJsonObj)) {
+            newJsonObj['room_divisor'] = false;
+        }
     }
 
     setMap(type, newJsonObj);
@@ -1788,7 +1825,8 @@ function createConfigFile(type, map) {
         text += '"transition" : "flip",';
         text += '"columns" : 1,';
         text += '"show_description" : true,';
-        text += '"show_lastUsedTime" : true';
+        text += '"show_lastUsedTime" : true,';
+        text += '"room_divisor" : false';
         text += '}';
 
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
@@ -2282,14 +2320,14 @@ $(function () {
         var dataID = $(this).data("id");  // Homematic Geräte ID.
         $('#player' + dataID).css("background-image", "url('img/misc/gear32ani.GIF')");
         var type = $(this).data("type");
-        
-        var urlAttr = testSite?"&debug=true":"";
-            if (testSite) {
-                urlAttr += '&debug=true';
-            }
+
+        var urlAttr = testSite ? "&debug=true" : "";
+        if (testSite) {
+            urlAttr += '&debug=true';
+        }
 
         if (type === "programs") {
-            
+
             $.get('cgi/startprogram.cgi?id=' + dataID + urlAttr, function () {
                 $('#player' + dataID).delay(2000).css("background-image", "url('img/misc/gear32.gif')");
             });
@@ -2303,7 +2341,6 @@ $(function () {
             });
         }
     });
-
 
     // Historian
     $(document.body).on("click", "[id^=saveHistorianData]", function () {

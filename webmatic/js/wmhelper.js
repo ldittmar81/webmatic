@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "2.1.4";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 23;
+var storageVersion = 24;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
@@ -19,6 +19,7 @@ var prevItem = 0;
 var saveDataToFile = false;
 var newVersion = false;
 var mustBeSaved = false;
+var mustReload = false;
 var isGetSite = false;
 var client = "";
 var isTempClient = false;
@@ -69,6 +70,24 @@ if (typeof String.prototype.trim !== 'function') {
         };
     })();
 }
+
+Array.prototype.max = function() {
+  return Math.max.apply(null, this);
+};
+
+Array.prototype.min = function() {
+  return Math.min.apply(null, this);
+};
+
+$.extend({
+    keys: function (obj) {
+        var a = [];
+        $.each(obj, function (k) {
+            a.push(k);
+        });
+        return a;
+    }
+});
 
 // Check if a new cache is available on page load.
 window.addEventListener('load', function () {
@@ -482,6 +501,48 @@ function editTuneIn(parentId, valID, val, vorDate) {
     html += "<a href='#' id='saveTuneInRadioData_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-value='" + val + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
     html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
+    return html;
+}
+
+//onlyPicDialog
+function openOnlyPicDialog(title, html, button, callback) {
+    $("#dialog .functionName").text(title);
+    $("#dialog .functionContent").text(html);
+    $("#sure .sure-do").text(button).on("click.sure", function () {
+        callback();
+        $(this).off("click.sure");
+    });
+    $.mobile.changePage("#dialog");
+}
+
+function addRoomDivisor(sizeRoom) {
+    var html = "";
+    $.each(roomsMap['divisors'], function (key, value) {
+        html += "<li id='listRoomDivisor" + key + "'>";
+        html += "<div class='ui-block-a'>";
+        html += "<input type='text' id='editRoom" + key + "' value='" + value['name'] + "' />";
+        html += "</div>";
+        html += "<div class='ui-block-b'>";
+        html += "<a href='#' name='editRoomDivider' data-action='save' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("SAVE") + "</a>";
+        html += "<a href='#' name='editRoomDivider' data-action='delete' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("DELETE") + "</a>";
+        html += "</div>";
+        html += "<div class='ui-block-c'>";
+        html += "<div style='float: right;'>";
+        html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key + "' data-type='roomDiv' value='" + value['position'] + "' data-last='" + (sizeRoom === value['position']) + "'/>";
+        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
+        if (value['position'] <= 1) {
+            html += " ui-state-disabled' style='display: none;";
+        }
+        html += "' name='setUpRoomDivider' id='setUpRoomDivider" + key + "' data-id='" + key + "' />";
+        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext ui-corner-all";
+        if (value['position'] >= sizeRoom) {
+            html += " ui-state-disabled' style='display: none;";
+        }
+        html += "' name='setDownRoomDivider' id='setDownRoomDivider" + key + "' data-id='" + key + "' />";
+        html += "</div>";
+        html += "</div>";
+        html += "</li>";
+    });
     return html;
 }
 

@@ -186,15 +186,11 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     max-width: 5em;
 }
 
-.onlyPic{
+.onlyPicDiv, .onlyPicDisabled{
     position: relative;
     width: 160px;
     height: 160px;
     text-align: center;
-}
-
-.onlyPicPointer{
-    cursor: pointer;
 }
 
 .onlyPic > img{

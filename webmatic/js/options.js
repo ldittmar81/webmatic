@@ -1,4 +1,4 @@
-/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList */
+/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList, resultRoomsMap, mustReload */
 
 // ----------------------- Helper functions ----------------------------
 
@@ -36,6 +36,9 @@ function saveAllDatasToServer() {
     $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap)});
     $.post('cgi/saveconfig.cgi', {name: "variables", text: JSON.stringify(variablesMap)});
 
+    if (mustReload) {
+        location.reload(true);
+    }
     mustBeSaved = false;
     $('[name="saveAllChanges"]').addClass('ui-state-disabled');
 }
@@ -323,23 +326,45 @@ function processOptionsGlobalAnzeige() {
     html += "<a href='#' name='saveGlobalOption' data-key='favorites' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
     html += "</div>";
     html += "</div>";
-    //Räume anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    if (optionsMap["rooms"]) {
-        selected1 = "class='ui-btn-active'";
+    if (!optionsMap["room_divisor"]) {
+        //Räume anzeigen
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        selected1 = "";
+        selected2 = "";
+        if (optionsMap["rooms"]) {
+            selected1 = "class='ui-btn-active'";
+        } else {
+            selected2 = "class='ui-btn-active'";
+        }
+        html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+        html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+        html += "</div>";
+        html += "</div>";
     } else {
-        selected2 = "class='ui-btn-active'";
+        //Räumeteilung
+        $.each(roomsMap['divisors'], function (key, val) {
+            html += "<div class='ui-block-f text-right'>";
+            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
+            html += "</div>";
+            html += "<div class='ui-block-g'>";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            selected1 = "";
+            selected2 = "";
+            if (optionsMap["room" + key]) {
+                selected1 = "class='ui-btn-active'";
+            } else {
+                selected2 = "class='ui-btn-active'";
+            }
+            html += "<a href='#' name='saveGlobalOption' data-key='room" + key + "' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+            html += "<a href='#' name='saveGlobalOption' data-key='room" + key + "' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+            html += "</div>";
+            html += "</div>";
+        });
     }
-    html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
     //Gewerke anzeigen
     html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
@@ -412,7 +437,13 @@ function processOptionsGlobalAnzeige() {
     html += "<select id='global_collapsed' data-theme='" + theme + "'>";
     var globalColapsed = optionsMap["collapsed"];
     html += "<option value='favorites' " + (globalColapsed === "favorites" ? "selected='selected'" : "") + ">" + mapText("FAVORITES") + "</option>";
-    html += "<option value='rooms' " + (globalColapsed === "rooms" ? "selected='selected'" : "") + ">" + mapText("ROOMS") + "</a>";
+    if (!optionsMap["room_divisor"]) {
+        html += "<option value='rooms' " + (globalColapsed === "rooms" ? "selected='selected'" : "") + ">" + mapText("ROOMS") + "</option>";
+    } else {
+        $.each(roomsMap['divisors'], function (key, val) {
+            html += "<option value='room" + key + "' " + (globalColapsed === ("room" + key) ? "selected='selected'" : "") + ">" + val["name"] + "</option>";
+        });
+    }
     html += "<option value='functions' " + (globalColapsed === "functions" ? "selected='selected'" : "") + ">" + mapText("FUNCTIONS") + "</option>";
     html += "<option value='variables' " + (globalColapsed === "variables" ? "selected='selected'" : "") + ">" + mapText("SYS_VAR") + "</option>";
     html += "<option value='programs' " + (globalColapsed === "programs" ? "selected='selected'" : "") + ">" + mapText("PROGRAMS") + "</option>";
@@ -801,27 +832,53 @@ function processOptionsClientAnzeige() {
     html += "<a href='#' name='saveClientOption' data-key='favorites' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
     html += "</div>";
     html += "</div>";
-    //Räume anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    selected3 = "";
-    if (!("rooms" in optionsClientMap)) {
-        selected1 = "class='ui-btn-active'";
-    } else if (optionsClientMap["rooms"]) {
-        selected2 = "class='ui-btn-active'";
+    if (!optionsMap["room_divisor"]) {
+        //Räume anzeigen
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        selected1 = "";
+        selected2 = "";
+        selected3 = "";
+        if (!("rooms" in optionsClientMap)) {
+            selected1 = "class='ui-btn-active'";
+        } else if (optionsClientMap["rooms"]) {
+            selected2 = "class='ui-btn-active'";
+        } else {
+            selected3 = "class='ui-btn-active'";
+        }
+        html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+        html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+        html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+        html += "</div>";
+        html += "</div>";
     } else {
-        selected3 = "class='ui-btn-active'";
+        //Räumeteilung
+        $.each(roomsMap['divisors'], function (key, val) {
+            html += "<div class='ui-block-f text-right'>";
+            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
+            html += "</div>";
+            html += "<div class='ui-block-g'>";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            selected1 = "";
+            selected2 = "";
+            selected3 = "";
+            if (!(("room" + key) in optionsClientMap)) {
+                selected1 = "class='ui-btn-active'";
+            } else if (optionsClientMap["room" + key]) {
+                selected2 = "class='ui-btn-active'";
+            } else {
+                selected3 = "class='ui-btn-active'";
+            }
+            html += "<a href='#' name='saveClientOption' data-key='room" + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+            html += "<a href='#' name='saveClientOption' data-key='room" + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+            html += "<a href='#' name='saveClientOption' data-key='room" + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+            html += "</div>";
+            html += "</div>";
+        });
     }
-    html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
     //Gewerke anzeigen
     html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
@@ -1024,12 +1081,62 @@ function processGraphicID(type) {
     var isListVariables = false;
     var isFloatVariables = false;
     var isPrograms = type === "programs";
-    var isRFF = type === "rooms" || type === "functions" || type === "favorites";
+    var isRoom = type === "rooms";
+    var isFunction = type === "functions";
+    var isFavorite = type === "favorites";
+    var isRFF = isRoom || isFunction || isFavorite;
+    var html = "";
+
+    if (isRoom) {
+        html += "<li><h1>" + mapText("SETTINGS") + "</h1>";
+        html += "<div class='ui-field-contain'>";
+
+        html += "<div class='ui-grid-b'>";
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText("DIVIDE_ROOMS") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        var selected1 = "";
+        var selected2 = "";
+        if (optionsMap["room_divisor"]) {
+            selected1 = "class='ui-btn-active'";
+        } else {
+            selected2 = "class='ui-btn-active'";
+        }
+        html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='room_divisor' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+        html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='room_divisor' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+        html += "</div>";
+        html += "</div>";
+        html += "</div>";
+
+        var sizeRoom = $.isEmptyObject(roomsMap['divisors']) ? 0 : $.keys(roomsMap['divisors']).length;
+        html += "<div class='ui-grid-b' id='dividerRoomOptions' style='" + (optionsMap["room_divisor"] ? "" : "display: none;") + "'>";
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText("ADD_ROOM_DIVIDER") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        html += "<input type='text' id='addDividerRoomInput' value='' class='ui-no-corner-right' data-wrapper-class='controlgroup-textinput ui-btn'/>";
+        html += "<a href='#' data-role='button' id='addDividerRoom' data-size='" + sizeRoom + "' data-inline='true' data-icon='plus'>&nbsp;</a>";
+        html += "</div>";
+        html += "</div>";
+        html += "</div>";
+
+        html += "<ul id='dataListDivisors' data-role='listview' data-inset='true' style='" + (optionsMap["room_divisor"] ? "" : "display: none;") + "'>";
+        html += addRoomDivisor(sizeRoom);
+        html += "</ul>"
+
+        html += "</div>";
+        html += "</li>";
+    }
+
+    $("#" + dataList).append(html);
 
     var tmpObj = {};
     var size = map["size"];
     $.each(map, function (key, val) {
-        if (key === "date" || key === "size") {
+        if (key === "date" || key === "size" || key === "divisors") {
             return;
         }
         isTextVariables = isVariables && val["valueType"] === "20";
@@ -1037,7 +1144,7 @@ function processGraphicID(type) {
         isFloatVariables = isVariables && val["valueType"] === "4";
 
         var picKey = getPicKey(key, type, val, true);
-        var html = "<li id='list" + key + "' data-id='" + key + "'>";
+        html = "<li id='list" + key + "' data-id='" + key + "'>";
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
@@ -1121,6 +1228,19 @@ function processGraphicID(type) {
             html += "</div>";
             html += "</div>";
             html += "</div>";
+        } else if (isRoom && optionsMap["room_divisor"]) {
+            html += "<div class='ui-block-a'>";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            html += "<select id='select_room_divisor" + key + "' data-theme='" + theme + "'>";
+            var divisor = val["room_divisor"];
+            html += "<option value=''></option>";
+            $.each(roomsMap['divisors'], function (keyDiv, valueDiv) {
+                html += "<option value='" + keyDiv + "' " + (divisor === keyDiv ? "selected='selected'" : "") + ">" + valueDiv['name'] + "</option>";
+            });
+            html += "</select>";
+            html += "<a href='#' name='saveRoomDiviser' data-key='room_divisor' data-id='" + key + "' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "</div>";
+            html += "</div>";
         } else {
             html += "<div class='ui-block-a small-hidden'></div>";
         }
@@ -1179,7 +1299,6 @@ function processGraphicID(type) {
         var k = keys[i];
         $("#" + dataList).append(tmpObj[k]);
     }
-
 }
 
 // ------------------------- OnDocumentReady -----------------------------
@@ -1243,6 +1362,8 @@ $(function () {
                 variablesMap[beforeId]['position'] = oldPosition;
                 break
         }
+        
+        createOneMap(type);
 
         activateSettingSaveButton();
     });
@@ -1304,6 +1425,8 @@ $(function () {
                 variablesMap[afterId]['position'] = oldPosition;
                 break
         }
+        
+        createOneMap(type);
 
         activateSettingSaveButton();
     });
@@ -1363,9 +1486,36 @@ $(function () {
                 resultOptionsMap[key] = value;
             }
             saveClientOptionsToServer(key, value);
-
         }
+    });
 
+    $(document.body).on("click", "#addDividerRoom", function () {
+        var $elem = $(this);
+        var sizeRoomNew = parseInt($elem.attr('data-size')) + 1;
+        var key = 0;
+        if ($.isEmptyObject(roomsMap['divisors'])) {
+            key = 1;
+        } else {
+            key = Math.max.apply(Math, $.keys(roomsMap['divisors'])) + 1;
+        }
+        var value = {};
+        var $input = $("#addDividerRoomInput");
+        value['name'] = $input.val();
+        value['position'] = sizeRoomNew;
+        var originObj = roomsMap['divisors'];
+        originObj[key] = value;
+        roomsMap['divisors'] = originObj;
+        $input.val('');
+
+        createOneMap("rooms");
+
+        optionsMap["room" + key] = true;
+        saveOptionsToServer("room" + key, true, false);
+
+        $('#dataListDivisors').html(addRoomDivisor(sizeRoomNew)).enhanceWithin();
+        $elem.attr("data-size", sizeRoomNew);
+
+        activateSettingSaveButton(true);
     });
 
     //Globale Optionen
@@ -1486,6 +1636,8 @@ $(function () {
                 variablesMap[id][key] = checked;
                 break
         }
+        
+        createOneMap(type);
 
         activateSettingSaveButton();
     });
@@ -1499,6 +1651,21 @@ $(function () {
         $(this).addClass("ui-btn-active");
 
         variablesMap[id]['operate'] = checked;
+        
+        createOneMap("variables");
+
+        activateSettingSaveButton();
+    });
+    
+    $(document.body).on("click", "[name='saveRoomDiviser']", function() {
+        var obj = $(this);
+        var id = obj.data("id");
+        var key = obj.data("key");
+        var selected = $('#select_room_divisor' + id).val();
+        
+        roomsMap[id][key] = selected;
+        
+        createOneMap("rooms");
 
         activateSettingSaveButton();
     });
@@ -1518,6 +1685,8 @@ $(function () {
             $('#mainNumber' + id).replaceWith(addSetValueList(0, id, "0", tmpMap['valueList'], tmpMap['valueUnit'], "", false, true, tmpMap['listType'], true));
         }
         $('#mainNumber' + id).enhanceWithin();
+        
+        createOneMap("variables");
 
         activateSettingSaveButton();
     });
@@ -1553,6 +1722,8 @@ $(function () {
         $("#menuText" + id).fadeOut(500, function () {
             $("#menuText" + id).text(name).fadeIn(1000);
         });
+        
+        createOneMap(type);
 
         activateSettingSaveButton();
     });

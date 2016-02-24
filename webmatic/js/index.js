@@ -28,7 +28,7 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
 
     var tmpObj = {};
     $.each(getResultMap(indexType), function (key, val) {
-        if (key === "date" || key === "size") {
+        if (key === "date" || key === "size" || key === "divisors") {
             return;
         }
         var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key + "' " + (val['visible'] ? "" : "style='display: none;'") + ">";
@@ -59,6 +59,91 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
 
     $("#list" + indexType).listview().listview("refresh");
     $("img.lazy" + indexType).lazyload({event: "lazyLoadInstantly"});
+}
+
+function loadDividedRooms(gfxClassParent, gfxClassSelected, collapsed) {
+
+    //Global
+    if (localStorage.getItem("webmaticroomsMap") === null || localStorage.getItem("webmaticroomsMap") === "undefined") {
+        if (newVersion) {
+            saveDataToFile = true;
+        }
+        loadConfigData(false, '../webmatic_user/rooms.json', 'rooms', 'webmaticroomsMap', false, false);
+    } else {
+        loadLocalStorageMap('rooms');
+    }
+    //Lokal
+    if (localStorage.getItem("webmaticroomsclientMap") === null || localStorage.getItem("webmaticroomsclientMap") === "undefined") {
+        if (client !== "") {
+            loadConfigData(false, '../webmatic_user/rooms' + client + '.json', 'roomsClient', 'webmaticroomsclientMap', false, true);
+        }
+    } else {
+        setResultMap('rooms', JSON.parse(localStorage.getItem("webmaticroomsclientMap")));
+    }
+    //Kombinieren
+    createOneMap('rooms');
+
+    loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticroomsMap', false, true, function () {
+        createOneMap('rooms');
+    });
+
+    var roomMap = getResultMap('rooms');
+    var tmpRooms = {};
+    $.each(roomMap['divisors'], function (key, val) {
+        var indexType = "room" + key;
+        var roomHtml = "<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'>";
+        roomHtml += "<h3>" + val['name'] + "</h3>";
+        roomHtml += "<ul class='listRoomDiv' data-role='listview' data-inset='true'>";
+
+        var tmpObj = {};
+        $.each(roomMap, function (key2, val2) {
+            if (val2['room_divisor'] !== key || key2 === "date" || key2 === "size" || key2 === "divisors") {
+                return;
+            }
+            var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key2 + "' " + (val2['visible'] ? "" : "style='display: none;'") + ">";
+            html += "<a href='#'><img id='menuImg" + key2 + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
+            if ($.inArray(key2, picturesList) !== -1 || picturesListError) {
+                html += " lazyRoomDiv' data-original='../webmatic_user/img/ids/rooms/" + key2 + ".png";
+            }
+            html += "' src='img/menu/rooms.png'><span id='menuText" + key2 + "' class='breakText'>" + val2['name'] + "</span></a></li>";
+
+            if (resultOptionsMap['default_sort_manually']) {
+                tmpObj[parseInt(val2['position'])] = html;
+            } else {
+                tmpObj[val2['name'].toLowerCase()] = html;
+            }
+        });
+
+        var keys;
+        if (resultOptionsMap['default_sort_manually']) {
+            keys = Object.keys(tmpObj).sort(function (a, b) {
+                return a - b;
+            });
+        } else {
+            keys = Object.keys(tmpObj).sort();
+        }
+        var len = keys.length;
+        for (var i = 0; i < len; i++) {
+            var k = keys[i];
+            roomHtml += tmpObj[k];
+        }
+        roomHtml += "</ul></div>";
+
+        tmpRooms[parseInt(val['position'])] = roomHtml;
+    });
+
+    var keys = Object.keys(tmpRooms).sort(function (a, b) {
+        return a - b;
+    });
+    var len = keys.length;
+    for (var i = 0; i < len; i++) {
+        var k = keys[i];
+        $("#main_menu").append(tmpRooms[k]);
+    }
+
+    $(".listRoomDiv").listview().listview("refresh");
+    $("img.lazyRoomDiv").lazyload({event: "lazyLoadInstantly"});
+
 }
 
 executeButtons = function (lct, lcid, rm, $this, col) {
@@ -113,7 +198,11 @@ $(function () {
 
     //Menüpunkt Räume
     indexType = "rooms";
-    loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
+    if (resultOptionsMap['room_divisor'] !== true) {
+        loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
+    } else {
+        loadDividedRooms(gfxClassParent, gfxClassSelected, collapsed);
+    }
 
     //Menüpunkt Gewerke
     indexType = "functions";
