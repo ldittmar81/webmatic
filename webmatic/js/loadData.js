@@ -471,7 +471,7 @@ function createConfigFile(type, map) {
         text += '"rooms_divisor" : false,';
         text += '"functions_divisor" : false,';
         text += '"variables_divisor" : false,';
-        text += '"programs_divisor" : false,';
+        text += '"programs_divisor" : false';
         text += '}';
 
         optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);

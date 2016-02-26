@@ -135,13 +135,13 @@ function loadSingleDivisorMenu(type, gfxClassParent, gfxClassSelected, collapsed
     }
 
     $.each(resultMap, function (key, val) {
-        if (key === "date" || key === "size" || key === "divisors" || val[type + '_divisor'] !== "unsorted") {
+        if (key === "date" || key === "size" || key === "divisors" || val[type + '_divisor'] !== "unsorted" || !val['visible']) {
             return;
         }
         var indexType = type + "unsorted";
         var html = "<li class='menuListSpecialItem " + gfxClassParent + " scrollToList' data-divisor='true' data-type='" + type + "' data-id='unsorted' >";
         html += "<a href='#'><img id='menuImg" + indexType + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
-        html += "' src='img/menu/" + type + ".png'><span id='menuText" + indexType + "' class='breakText'>" + val['name'] + "</span></a></li>";
+        html += "' src='img/menu/" + type + ".png'><span id='menuText" + indexType + "' class='breakText'>" + mapText("UNSORTED") + "</span></a></li>";
         $("#list" + type).append(html);
         return false;
     });
@@ -180,6 +180,9 @@ function loadDivisor(gfxClassParent, gfxClassSelected, collapsed, type) {
     var tmpMap = {};
     addUnsorted(resultMap);
     $.each(resultMap['divisors'], function (key, val) {
+        if($.isNumeric(key)){
+            key = parseInt(key);
+        }
         var indexType = type + key;
         var html = "<div " + (resultOptionsMap[indexType] || key === "unsorted" ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'>";
         html += "<h3>" + val['name'] + "</h3>";
@@ -233,7 +236,7 @@ function loadDivisor(gfxClassParent, gfxClassSelected, collapsed, type) {
     }
 
     if ($('#listElement' + type + 'unsorted').children().length === 0) {
-        $('#listElement' + type + 'unsorted').remove();
+        $('#' + type + 'unsortedMainMenu').remove();
     }
 
     $(".list" + type + "Div").listview().listview("refresh");
@@ -370,7 +373,7 @@ $(function () {
     $(document.body).on("click", ".menuListSpecialItem", function () {
         var $obj = $(this);
         var type = $obj.data("type");
-        executeButtons("variables" === type ? 2 : 3, $obj.data("id"), false, $obj);
+        executeButtons("variables" === type ? 2 : 3, $obj.data("id"), true, $obj);
     });
 
     $(document.body).on("click", ".menuItemvariables", function () {

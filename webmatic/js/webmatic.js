@@ -1322,7 +1322,7 @@ function loadVariables(restart) {
     $("img").trigger("lazyLoadInstantly");
 }
 
-function loadPrograms(restart, divId) {
+function loadPrograms(restart) {
 
     // Icon Animation in Refresh Button:
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
