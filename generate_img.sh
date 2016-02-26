@@ -20,12 +20,15 @@ cp -a update_script tmp/
 
 ISALPHA=$(cat ISALPHA)
 VERSION=""
+STABLEVERSION=""
 
 if [ ${ISALPHA} = "0" ]; then
-    VERSION=$(cat VERSION)  
+    VERSION=$(cat VERSION)
+    STABLEVERSION=VERSION
     cp -a VERSION tmp/
 elif [ ${ISALPHA} = "1" ]; then
-    VERSION=$(cat VERSIONALPHA) 
+    VERSION=$(cat VERSIONALPHA)
+    STABLEVERSION=$(cat VERSION)
     cp -a VERSIONALPHA tmp/VERSION
 fi
 
@@ -57,12 +60,17 @@ sed -i "s/wmhelper.js/wmhelper.min.js?${HASHDATE}/" get.html
 sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" index.html
 sed -i "s/webmatic.js/webmatic.min.js?${HASHDATE}/" get.html
 sed -i "s/options.js/options.min.js?${HASHDATE}/" index.html
+sed -i "s/loadData.js/loadData.min.js?${HASHDATE}/" index.html
+sed -i "s/loadData.js/loadData.min.js?${HASHDATE}/" get.html
+sed -i "s/init.js/init.min.js?${HASHDATE}/" index.html
+sed -i "s/init.js/init.min.js?${HASHDATE}/" get.html
 sed -i "s/index.js/index.min.js?${HASHDATE}/" index.html
 sed -i "s/get.js/get.min.js?${HASHDATE}/" get.html
 
 cd js
 
 sed -i "s/webmaticVersion=\"0\"/webmaticVersion=\"${VERSION}\"/" wmhelper.min.js
+sed -i "s/lastStableVersion=\"0\"/lastStableVersion=\"${STABLEVERSION}\"/" wmhelper.min.js
 sed -i "s/isPreRelease=0/isPreRelease=${ISALPHA}/" wmhelper.min.js
 sed -i "s/debugModus=true/debugModus=false/" wmhelper.min.js
 

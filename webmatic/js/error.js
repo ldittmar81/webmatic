@@ -6,4 +6,4 @@ window.onerror = function (msg, url, linenumber) {
     } else {
         $('#errorsDebugger').append("<li>" + linenumber + ": " + msg + " (" + url + ")</li>");
     }
-}
+};

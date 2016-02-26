@@ -1,3 +1,8 @@
+html * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .valueNoError { font-size: 20px; font-style: italic; }
 .valueInfo { font-size: 20px; font-style: italic; white-space: normal !important; }
 .valueWarning { font-size: 20px; font-weight: bold; font-style: italic; }
@@ -19,6 +24,8 @@
 .valueOK-wma { color:green; }
 .valueService-wma{ background-color:#fdd017 !important;}
 .control-set-wma{ border-color: #000; }
+.onlyPic-player-wma{  background-image: url("../img/misc/gear32.gif"); }
+.onlyPic-playerani-wma{  background-image: url("../img/misc/gear32ani.GIF"); }
 
 .valueNoError-wmb { color:#909090;}
 .valueInfo-wmb { color:#fff; }
@@ -27,6 +34,8 @@
 .valueOK-wmb { color:green; }
 .valueService-wmb{ background-color:#2ad !important;}
 .control-set-wmb{ border-color: #fff; }
+.onlyPic-player-wmb{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmb{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wmc { color:#909090;}
 .valueInfo-wmc { color:#fff; }
@@ -35,6 +44,8 @@
 .valueOK-wmc { color:green; }
 .valueService-wmc{ background-color:#f75d59 !important;}
 .control-set-wmc{ border-color: #fff; }
+.onlyPic-player-wmc{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmc{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wmd { color:#909090;}
 .valueInfo-wmd { color:#fff; }
@@ -46,6 +57,8 @@
     color: #3d5a20 !important;
 }
 .control-set-wmd{ border-color: #fff; }
+.onlyPic-player-wmd{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmd{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wme { color:#909090;}
 .valueInfo-wme { color:#fff; }
@@ -57,6 +70,8 @@
     color: #000 !important;
 }
 .control-set-wme{ border-color: #fff; }
+.onlyPic-player-wme{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wme{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wmf { color:#909090;}
 .valueInfo-wmf { color:#000; }
@@ -68,6 +83,8 @@
     color: gray !important;
 }
 .control-set-wmf{ border-color: #000; }
+.onlyPic-player-wmf{  background-image: url("../img/misc/gear32.gif"); }
+.onlyPic-playerani-wmf{  background-image: url("../img/misc/gear32ani.GIF"); }
 
 .valueNoError-wmg { color:#909090;}
 .valueInfo-wmg { color:#fff; }
@@ -76,6 +93,8 @@
 .valueOK-wmg { color:green; }
 .valueService-wmg{ background-color:#fdd017 !important;}
 .control-set-wmg{ border-color: #fff; }
+.onlyPic-player-wmg{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmg{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wmh { color:#909090;}
 .valueInfo-wmh { color:#fff; }
@@ -84,6 +103,8 @@
 .valueOK-wmh { color:green; }
 .valueService-wmh{ background-color:#fdd017 !important;}
 .control-set-wmh{ border-color: #fff; }
+.onlyPic-player-wmh{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmh{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wmi { color:#909090;}
 .valueInfo-wmi { color:#fff; }
@@ -92,6 +113,8 @@
 .valueOK-wmi { color:green; }
 .valueService-wmi{ background-color:#fdd017 !important;}
 .control-set-wmi{ border-color: #fff; }
+.onlyPic-player-wmi{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmi{  background-image: url("../img/misc/gear32ani.GIF"); }
 
 .valueNoError-wmj { color:#909090;}
 .valueInfo-wmj { color:#fff; }
@@ -100,6 +123,8 @@
 .valueOK-wmj { color:green; }
 .valueService-wmj{ background-color:#ffebcd !important;}
 .control-set-wmj{ border-color: #fff; }
+.onlyPic-player-wmj{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmj{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wmk { color:#909090;}
 .valueInfo-wmk { color:#fff; }
@@ -108,6 +133,8 @@
 .valueOK-wmk { color:green; }
 .valueService-wmk{ background-color:#fdd017 !important;}
 .control-set-wmk{ border-color: #fff; }
+.onlyPic-player-wmk{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmk{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wml { color:#909090;}
 .valueInfo-wml { color:#fff; }
@@ -116,6 +143,8 @@
 .valueOK-wml { color:#5cb3ff; }
 .valueService-wml{ background-color:#ff8c00 !important;}
 .control-set-wml{ border-color: #fff; }
+.onlyPic-player-wml{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wml{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-wmm { color:#909090;}
 .valueInfo-wmm { color:#fff; }
@@ -124,6 +153,8 @@
 .valueOK-wmm { color:green; }
 .valueService-wmm { background-color:#fdd017 !important;}
 .control-set-wmm { border-color: #fff; }
+.onlyPic-player-wmm{  background-image: url("../img/misc/gear32w.gif"); }
+.onlyPic-playerani-wmm{  background-image: url("../img/misc/gear32aniw.GIF"); }
 
 .valueNoError-a, .valueNoError-b, .valueNoError-c, .valueNoError-d, .valueNoError-e, .valueNoError-f, .valueNoError-g, .valueNoError-h, .valueNoError-i, .valueNoError-j, .valueNoError-k, .valueNoError-l { color:#909090; }
 .valueInfo-a, .valueInfo-b, .valueInfo-c, .valueInfo-d, .valueInfo-e, .valueInfo-f, .valueInfo-g, .valueInfo-h, .valueInfo-i, .valueInfo-j, .valueInfo-k, .valueInfo-l { color:#000; }
@@ -132,6 +163,8 @@
 .valueOK-a, .valueOK-b, .valueOK-c, .valueOK-d, .valueOK-e, .valueOK-f, .valueOK-g, .valueOK-h, .valueOK-i, .valueOK-j, .valueOK-k, .valueOK-l { color:green; }
 .valueService-a, .valueService-b, .valueService-c, .valueService-d, .valueService-e, .valueService-f, .valueService-g, .valueService-h, .valueService-i, .valueService-j, .valueService-k, .valueService-l { background-color:#fdd017 !important;}
 .control-set-a, .control-set-b, .control-set-c, .control-set-d, .control-set-e, .control-set-f, .control-set-g, .control-set-h, .control-set-i, .control-set-j, .control-set-k, .control-set-l { border-color: #000; }
+.onlyPic-player-a, .onlyPic-player-b, .onlyPic-player-c, .onlyPic-player-d, .onlyPic-player-e, .onlyPic-player-f, .onlyPic-player-g, .onlyPic-player-h, .onlyPic-player-i, .onlyPic-player-j, .onlyPic-player-k, .onlyPic-player-l { background-image: url("../img/misc/gear32.gif"); }
+.onlyPic-playerani-a, .onlyPic-playerani-b, .onlyPic-playerani-c, .onlyPic-playerani-d, .onlyPic-playerani-e, .onlyPic-playerani-f, .onlyPic-playerani-g, .onlyPic-playerani-h, .onlyPic-playerani-i, .onlyPic-playerani-j, .onlyPic-playerani-k, .onlyPic-playerani-l { background-image: url("../img/misc/gear32ani.GIF"); }
 
 .grid-text{
     padding-top: 15px;
@@ -207,8 +240,7 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     top: 135px;
     left: 135px;
     width: 32px;
-    height: 32px;
-    background-image: url("../img/misc/gear32.gif");
+    height: 32px;   
 }
 
 .onlyPic-value {
@@ -381,5 +413,60 @@ li.ui-block-g {
     .small-hidden{
         display: none;
     }
+}
 
+/* Scroll to top */
+.cd-top {
+    display: inline-block;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    position: fixed;
+    bottom: 40px;
+    right: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    /* image replacement properties */
+    overflow: hidden;
+    text-indent: 100%;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.8) url(../img/misc/top_arrow.png) no-repeat center 50%;
+    background-size: 90%;
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: opacity .3s 0s, visibility 0s .3s;
+    -moz-transition: opacity .3s 0s, visibility 0s .3s;
+    transition: opacity .3s 0s, visibility 0s .3s;
+}
+.cd-top.cd-is-visible, .cd-top.cd-fade-out, .no-touch .cd-top:hover {
+    -webkit-transition: opacity .3s 0s, visibility 0s 0s;
+    -moz-transition: opacity .3s 0s, visibility 0s 0s;
+    transition: opacity .3s 0s, visibility 0s 0s;
+}
+.cd-top.cd-is-visible {
+    /* the button becomes visible */
+    visibility: visible;
+    opacity: .3;
+}
+.cd-top.cd-fade-out {
+    /* if the user keeps scrolling down, the button is out of focus and becomes less visible */
+    opacity: .3;
+}
+.cd-top:hover {
+    background-color: #fff;
+    opacity: 1;
+}
+@media only screen and (min-width: 768px) {
+    .cd-top {
+        right: 20px;
+        bottom: 20px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .cd-top {
+        height: 60px;
+        width: 60px;
+        right: 30px;
+        bottom: 30px;
+    }
 }

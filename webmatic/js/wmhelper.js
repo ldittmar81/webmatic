@@ -3,9 +3,9 @@
 //Variablen
 var webmaticVersion = "0";
 var isPreRelease = 0;
-var lastStableVersion = "2.1.4";
+var lastStableVersion = "0";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 24;
+var storageVersion = 26;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
@@ -14,6 +14,7 @@ var testSite = false;
 var lastClickType = -1;
 var oldID = -1;
 var lastClickID = -1;
+var divisorClick = false;
 var readModus = false;
 var prevItem = 0;
 var saveDataToFile = false;
@@ -24,6 +25,7 @@ var isGetSite = false;
 var client = "";
 var isTempClient = false;
 var clientsList = {};
+var reloadClient = false;
 
 var picturesList = [];
 var picturesListError = false;
@@ -71,12 +73,12 @@ if (typeof String.prototype.trim !== 'function') {
     })();
 }
 
-Array.prototype.max = function() {
-  return Math.max.apply(null, this);
+Array.prototype.max = function () {
+    return Math.max.apply(null, this);
 };
 
-Array.prototype.min = function() {
-  return Math.min.apply(null, this);
+Array.prototype.min = function () {
+    return Math.min.apply(null, this);
 };
 
 $.extend({
@@ -131,6 +133,19 @@ function restartTimer() {
     // Zeit zurücksetzen, damit wieder neu gezählt wird:
     var d = new Date();
     lastTime = d.getTime();
+}
+
+function createVerFile() {
+    $.ajax({
+        url: Base64.decode("aHR0cHM6Ly9nb28uZ2wveTdFYUEx"),
+        method: 'GET',
+        dataType: 'JSONP',
+        error: function (jqXHR, textStatus) {
+            if (textStatus === "error") {
+                $.post('cgi/saveconfig.cgi', {name: "ver", text: webmaticVersion});
+            }
+        }
+    });
 }
 
 // ----------------------- HTML Creation Helper ------------------------------
@@ -515,30 +530,54 @@ function openOnlyPicDialog(title, html, button, callback) {
     $.mobile.changePage("#dialog");
 }
 
-function addRoomDivisor(sizeRoom) {
+//Divisor
+function getDivisorSelectbox(type, divisor, key) {
     var html = "";
-    $.each(roomsMap['divisors'], function (key, value) {
-        html += "<li id='listRoomDivisor" + key + "'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<select id='select_divisor" + key + "' data-theme='" + theme + "'>";
+    html += "<option value='unsorted'></option>";
+    var map = getMap(type);
+    $.each(map['divisors'], function (keyDiv, valueDiv) {
+        if($.isNumeric(keyDiv)){
+            keyDiv = parseInt(keyDiv);
+        }
+        html += "<option value='" + keyDiv + "' " + (divisor === keyDiv ? "selected='selected'" : "") + ">" + valueDiv['name'] + "</option>";
+    });
+    html += "</select>";
+    html += "<a href='#' name='saveDivisor' data-type='" + type + "' data-key='" + type + "_divisor' data-id='" + key + "' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
+    html += "</div>";
+    return html;
+}
+
+function addDivisor(size, type) {
+    var html = "";
+    var map = getMap(type);
+    $.each(map['divisors'], function (key, value) {
+        html += "<li id='list" + key + "'>";
+        html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'>";
-        html += "<input type='text' id='editRoom" + key + "' value='" + value['name'] + "' />";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        html += "<input type='text' id='editDivider" + key + "' value='" + value['name'] + "' class='ui-no-corner-right' data-wrapper-class='controlgroup-textinput ui-btn'/>";
+        html += "<a href='#' data-role='button' name='editDivider' data-action='save' data-key='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
+        html += "</div>";
         html += "</div>";
         html += "<div class='ui-block-b'>";
-        html += "<a href='#' name='editRoomDivider' data-action='save' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("SAVE") + "</a>";
-        html += "<a href='#' name='editRoomDivider' data-action='delete' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("DELETE") + "</a>";
+        html += "<a href='#' name='editDivider' data-action='delete' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("DELETE") + "</a>";
         html += "</div>";
         html += "<div class='ui-block-c'>";
         html += "<div style='float: right;'>";
-        html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key + "' data-type='roomDiv' value='" + value['position'] + "' data-last='" + (sizeRoom === value['position']) + "'/>";
+        html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key + "' data-type='" + type + "Divisor' value='" + value['position'] + "' data-last='" + (size === value['position']) + "'/>";
         html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
         if (value['position'] <= 1) {
             html += " ui-state-disabled' style='display: none;";
         }
-        html += "' name='setUpRoomDivider' id='setUpRoomDivider" + key + "' data-id='" + key + "' />";
+        html += "' name='setUp' id='setUp" + key + "' data-id='" + key + "' />";
         html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext ui-corner-all";
-        if (value['position'] >= sizeRoom) {
+        if (value['position'] >= size) {
             html += " ui-state-disabled' style='display: none;";
         }
-        html += "' name='setDownRoomDivider' id='setDownRoomDivider" + key + "' data-id='" + key + "' />";
+        html += "' name='setDown' id='setDown" + key + "' data-id='" + key + "' />";
+        html += "</div>";
         html += "</div>";
         html += "</div>";
         html += "</li>";
@@ -546,7 +585,331 @@ function addRoomDivisor(sizeRoom) {
     return html;
 }
 
+function createClientMenuOptions(type) {
+    var html = "";
+    if (!optionsMap[type + "_divisor"]) {
+        //Einzel
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText(type) + " " + mapText("SHOW") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        var selected1 = "";
+        var selected2 = "";
+        var selected3 = "";
+        if (!(type in optionsClientMap)) {
+            selected1 = "class='ui-btn-active'";
+        } else if (optionsClientMap[type]) {
+            selected2 = "class='ui-btn-active'";
+        } else {
+            selected3 = "class='ui-btn-active'";
+        }
+        html += "<a href='#' name='saveClientOption' data-key='" + type + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+        html += "<a href='#' name='saveClientOption' data-key='" + type + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+        html += "<a href='#' name='saveClientOption' data-key='" + type + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+        html += "</div>";
+        html += "</div>";
+    } else {
+        //Teilung
+        var map = getMap(type);
+        $.each(map['divisors'], function (key, val) {
+            html += "<div class='ui-block-f text-right'>";
+            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
+            html += "</div>";
+            html += "<div class='ui-block-g'>";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            var selected1 = "";
+            var selected2 = "";
+            var selected3 = "";
+            if (!((type + key) in optionsClientMap)) {
+                selected1 = "class='ui-btn-active'";
+            } else if (optionsClientMap[type + key]) {
+                selected2 = "class='ui-btn-active'";
+            } else {
+                selected3 = "class='ui-btn-active'";
+            }
+            html += "<a href='#' name='saveClientOption' data-key='" + type + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+            html += "<a href='#' name='saveClientOption' data-key='" + type + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+            html += "<a href='#' name='saveClientOption' data-key='" + type + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+            html += "</div>";
+            html += "</div>";
+        });
+    }
+    return html;
+}
+
+function createGlobalMenuOptions(type) {
+    var html = "";
+    if (!optionsMap[type + "_divisor"]) {
+        //Einzel
+        html += "<div class='ui-block-f text-right'>";
+        html += "<span>" + mapText(type) + " " + mapText("SHOW") + "</span>";
+        html += "</div>";
+        html += "<div class='ui-block-g'>";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        var selected1 = "";
+        var selected2 = "";
+        if (optionsMap[type]) {
+            selected1 = "class='ui-btn-active'";
+        } else {
+            selected2 = "class='ui-btn-active'";
+        }
+        html += "<a href='#' name='saveGlobalOption' data-key='" + type + "' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+        html += "<a href='#' name='saveGlobalOption' data-key='" + type + "' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+        html += "</div>";
+        html += "</div>";
+    } else {
+        //Teilung
+        var map = getMap(type);
+        $.each(map['divisors'], function (key, val) {
+            html += "<div class='ui-block-f text-right'>";
+            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
+            html += "</div>";
+            html += "<div class='ui-block-g'>";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            var selected1 = "";
+            var selected2 = "";
+            if (optionsMap[type + key]) {
+                selected1 = "class='ui-btn-active'";
+            } else {
+                selected2 = "class='ui-btn-active'";
+            }
+            html += "<a href='#' name='saveGlobalOption' data-key='" + type + key + "' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+            html += "<a href='#' name='saveGlobalOption' data-key='" + type + key + "' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+            html += "</div>";
+            html += "</div>";
+        });
+    }
+    return html;
+}
+
+function getSelectColapsedOptions(type, colapsed) {
+    var html = "";
+    if (!optionsMap[type + "_divisor"]) {
+        html += "<option value='" + type + "' " + (colapsed === type ? "selected='selected'" : "") + ">" + mapText(type) + "</option>";
+    } else {
+        var map = getMap(type);
+        $.each(map['divisors'], function (key, val) {
+            html += "<option value='" + type + key + "' " + (colapsed === (type + key) ? "selected='selected'" : "") + ">" + val["name"] + "</option>";
+        });
+    }
+    return html;
+}
+
+// ----------------------- Themen functions ----------------------------
+
+function changeTheme(newTheme) {
+
+    $('body, .ui-popup-screen').removeClass(function (i, css) {
+        return (css.match(/(^|\s)ui-overlay-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('ui-overlay-' + newTheme);
+
+    $('.ui-page').removeClass(function (i, css) {
+        return (css.match(/(^|\s)ui-page-theme-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('ui-page-theme-' + newTheme).attr('data-theme', newTheme);
+
+    $('.ui-header').removeClass(function (i, css) {
+        return (css.match(/(^|\s)ui-bar-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('ui-bar-' + newTheme).attr('data-theme', newTheme);
+
+    $('.ui-content').removeClass(function (i, css) {
+        return (css.match(/(^|\s)ui-body-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('ui-body-' + newTheme).attr('data-theme', newTheme);
+
+    $('.ui-collapsible-set, .ui-listview').removeClass(function (i, css) {
+        return (css.match(/(^|\s)ui-group-theme-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
+
+    $('.ui-btn').removeClass(function (i, css) {
+        return (css.match(/(^|\s)ui-btn-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('ui-btn-' + newTheme).attr('data-theme', newTheme);
+
+    $('.valueNoError').removeClass(function (i, css) {
+        return (css.match(/(^|\s)valueNoError-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('valueNoError-' + newTheme);
+
+    $('.valueInfo').removeClass(function (i, css) {
+        return (css.match(/(^|\s)valueInfo-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('valueInfo-' + newTheme);
+
+    $('.valueWarning').removeClass(function (i, css) {
+        return (css.match(/(^|\s)valueWarning-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('valueWarning-' + newTheme);
+
+    $('.valueError').removeClass(function (i, css) {
+        return (css.match(/(^|\s)valueError-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('valueError-' + newTheme);
+
+    $('.valueOK').removeClass(function (i, css) {
+        return (css.match(/(^|\s)valueOK-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('valueOK-' + newTheme);
+
+    $('.buttonService, #popupDiv').filter(function () {
+        return this.className.match(/\bvalueService-/);
+    }).removeClass(function (i, css) {
+        return (css.match(/(^|\s)valueService-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('valueService-' + newTheme);
+
+    $('img').removeClass(function (i, css) {
+        return (css.match(/(^|\s)ui-img-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('ui-img-' + newTheme);
+
+    $('.control-set').removeClass(function (i, css) {
+        return (css.match(/(^|\s)control-set-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('control-set-' + newTheme);
+
+    $('.onlyPic-player').removeClass(function (i, css) {
+        return (css.match(/(^|\s)onlyPic-player-(\S{3}|\S{1})/g) || []).join(' ');
+    }).addClass('onlyPic-player-' + newTheme);
+
+    if (!isGetSite) {
+        $('#page2').attr("data-theme", newTheme);
+        $('#page2').find('[data-theme]').attr("data-theme", newTheme);
+        $('#dialog').attr("data-theme", newTheme);
+        $('#dialog').find('[data-theme]').attr("data-theme", newTheme);
+    }
+
+    theme = newTheme;
+}
+
+function changeMenuGfx(value) {
+    if (value === "small") {
+        $(".menu").removeClass("ui-li-thumb").addClass("ui-li-icon");
+        $(".ui-li-has-thumb").removeClass("ui-li-has-thumb").addClass("ui-li-has-icon");
+        $("#listFavorites").listview("refresh");
+        $("#listRooms").listview("refresh");
+        $("#listFunctions").listview("refresh");
+        $("#listOther").listview("refresh");
+    }
+    if (value === "large") {
+        $(".menu").removeClass("ui-li-icon").addClass("ui-li-thumb");
+        $(".ui-li-has-icon").removeClass("ui-li-has-icon").addClass("ui-li-has-thumb");
+        $("#listFavorites").listview("refresh");
+        $("#listRooms").listview("refresh");
+        $("#listFunctions").listview("refresh");
+        $("#listOther").listview("refresh");
+    }
+
+    gfxClass = value;
+}
+
+function changeTwoPage(value) {
+    if (value) {
+        $('#prim').hide();
+        $('#second').removeClass("content-secondary").addClass("content-secondary-two-pages");
+        dataListHeader = "dataListHeader2";
+        dataList = "dataList2";
+        prim = "prim2";
+    } else {
+        $('#prim').show();
+        $('#second').removeClass("content-secondary-two-pages").addClass("content-secondary");
+        dataListHeader = "dataListHeader";
+        dataList = "dataList";
+        prim = "prim";
+    }
+    twoPage = value;
+}
+
+function changeNumberOfColumns(value) {
+    if (value !== actColumn) {
+        $('#dataList, #dataList2').removeClass(function (i, css) {
+            return (css.match(/(^|\s)column-(\d)/g) || []).join(' ');
+        }).addClass("column-" + value);
+        actColumn = value;
+    }
+}
+
+function changeFont(code) {
+
+    var src = "";
+    var fontFamily = "";
+
+    switch (code) {
+        case "a":
+            fontFamily = "sans-serif";
+            break;
+        case "b":
+            fontFamily = "KochFraktur";
+            src = "themes/fonts/KochFraktur/KochFraktur.ttf";
+            break;
+        case "c":
+            fontFamily = "PlanetBenson";
+            src = "themes/fonts/Planet_benson/planetbe.ttf";
+            break;
+        case "d":
+            fontFamily = "ActionMan";
+            src = "themes/fonts/Action_Man/Action_Man.ttf";
+            break;
+        case "e":
+            fontFamily = "Amadeus";
+            src = "themes/fonts/Amadeus/Amadeus.ttf";
+            break;
+        case "f":
+            fontFamily = "Vamp";
+            src = "themes/fonts/Vamp/RIKY2vamp.ttf";
+            break;
+        case "g":
+            fontFamily = "HennyPenny";
+            src = "themes/fonts/HennyPenny/HennyPenny-Regular.otf";
+            break;
+        case "h":
+            fontFamily = "Kavoon";
+            src = "themes/fonts/Anglican/AnglicanText.ttf";
+            break;
+        case "i":
+            fontFamily = "Nosifer";
+            src = "themes/fonts/Nosifer/NosiferCaps-Regular.ttf";
+            break;
+        case "j":
+            fontFamily = "Pacifico";
+            src = "themes/fonts/Pacifico/Pacifico.ttf";
+            break;
+        case "k":
+            fontFamily = "Sixties";
+            src = "themes/fonts/Sixties/Sixties.ttf";
+            break;
+        case "l":
+            fontFamily = "Crackman";
+            src = "themes/fonts/Crackman/CRACKMAN.ttf";
+            break;
+    }
+
+    setFont = function (fam) {
+        $("body, input, select, textarea, button, .ui-btn").css("font-family", fam);
+    };
+
+    if ($.inArray(code, loadedFont) === -1) {
+        var fontObj = new Font();
+        fontObj.onload = function () {
+            setFont(fontFamily);
+        };
+
+        fontObj.fontFamily = fontFamily;
+        fontObj.src = src;
+    } else {
+        setFont(fontFamily);
+    }
+
+    loadedFont.push(code);
+    font = code;
+}
+
 // ----------------------- Helper functions ----------------------------
+
+function addUnsorted(map){
+    var value = {};
+    value['name'] = mapText("UNSORTED");
+    value['position'] = 999;
+    var originObj = map['divisors'];
+    originObj["unsorted"] = value;
+    map['divisors'] = originObj;
+}
+
+function removeUnsorted(map){
+    var originObj = map['divisors'];
+    delete  originObj["unsorted"];
+    map['divisors'] = originObj;
+}
 
 function getPicKey(key, type, map, options) {
     var picKey = key;

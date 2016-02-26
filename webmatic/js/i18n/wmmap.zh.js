@@ -640,7 +640,7 @@ var textMap = {
     VISIBILITY: "能见度",
     DELETE: "删除",
     UPLOAD: "上载",
-    SYS_VAR: "系统变量",
+    VARIABLES: "系统变量",
     PROGRAMS: "计划",
     FAVORITES: "收藏夹",
     ROOMS: "房间",

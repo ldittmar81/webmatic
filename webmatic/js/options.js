@@ -2,6 +2,12 @@
 
 // ----------------------- Helper functions ----------------------------
 
+function activateSettingSaveButton(reload) {
+    $('[name="saveAllChanges"]').removeClass('ui-state-disabled');
+    mustBeSaved = true;
+    mustReload = reload;
+}
+
 function saveOptionsToServer(key, value, reload) {
     localStorage.setItem("webmaticoptionsMap", JSON.stringify(optionsMap));
     $.post('cgi/saveconfig.cgi', {name: "config", text: JSON.stringify(optionsMap)}).done(function () {
@@ -304,126 +310,23 @@ function processOptionsGlobalTheme() {
 }
 
 function processOptionsGlobalAnzeige() {
-
     //Anzeige
     var html = "<li><h1>" + mapText("MENU") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
-    //Favoriten anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("FAVORITES") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    var selected1 = "";
-    var selected2 = "";
-    if (optionsMap["favorites"]) {
-        selected1 = "class='ui-btn-active'";
-    } else {
-        selected2 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveGlobalOption' data-key='favorites' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveGlobalOption' data-key='favorites' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
-    if (!optionsMap["room_divisor"]) {
-        //Räume anzeigen
-        html += "<div class='ui-block-f text-right'>";
-        html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
-        html += "</div>";
-        html += "<div class='ui-block-g'>";
-        html += "<div data-role='controlgroup' data-type='horizontal'>";
-        selected1 = "";
-        selected2 = "";
-        if (optionsMap["rooms"]) {
-            selected1 = "class='ui-btn-active'";
-        } else {
-            selected2 = "class='ui-btn-active'";
-        }
-        html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-        html += "<a href='#' name='saveGlobalOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-        html += "</div>";
-        html += "</div>";
-    } else {
-        //Räumeteilung
-        $.each(roomsMap['divisors'], function (key, val) {
-            html += "<div class='ui-block-f text-right'>";
-            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
-            html += "</div>";
-            html += "<div class='ui-block-g'>";
-            html += "<div data-role='controlgroup' data-type='horizontal'>";
-            selected1 = "";
-            selected2 = "";
-            if (optionsMap["room" + key]) {
-                selected1 = "class='ui-btn-active'";
-            } else {
-                selected2 = "class='ui-btn-active'";
-            }
-            html += "<a href='#' name='saveGlobalOption' data-key='room" + key + "' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-            html += "<a href='#' name='saveGlobalOption' data-key='room" + key + "' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-            html += "</div>";
-            html += "</div>";
-        });
-    }
-    //Gewerke anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    if (optionsMap["functions"]) {
-        selected1 = "class='ui-btn-active'";
-    } else {
-        selected2 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveGlobalOption' data-key='functions' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveGlobalOption' data-key='functions' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
-    //Variablen anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("SYS_VAR") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    if (optionsMap["variables"]) {
-        selected1 = "class='ui-btn-active'";
-    } else {
-        selected2 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveGlobalOption' data-key='variables' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveGlobalOption' data-key='variables' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
-    //Programme anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("PROGRAMS") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    if (optionsMap["programs"]) {
-        selected1 = "class='ui-btn-active'";
-    } else {
-        selected2 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveGlobalOption' data-key='programs' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveGlobalOption' data-key='programs' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
+    html += createGlobalMenuOptions("favorites");
+    html += createGlobalMenuOptions("rooms");
+    html += createGlobalMenuOptions("functions");
+    html += createGlobalMenuOptions("variables");
+    html += createGlobalMenuOptions("programs");
     //Einstellungen anzeigen
     html += "<div class='ui-block-f text-right'>";
     html += "<span style='color: red;'>" + mapText("SETTINGS") + " " + mapText("SHOW") + "</span>";
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "class='" + (optionsMap["others"] ? "ui-btn-active" : "") + (optionsMap["no_more_settings"] === 0 ? " ui-state-disabled" : "") + "'";
-    selected2 = "class='" + (!optionsMap["others"] ? "ui-btn-active" : "") + (optionsMap["no_more_settings"] === 0 ? " ui-state-disabled" : "") + "'";
+    var selected1 = "class='" + (optionsMap["others"] ? "ui-btn-active" : "") + (optionsMap["no_more_settings"] === 0 ? " ui-state-disabled" : "") + "'";
+    var selected2 = "class='" + (!optionsMap["others"] ? "ui-btn-active" : "") + (optionsMap["no_more_settings"] === 0 ? " ui-state-disabled" : "") + "'";
     html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
     html += "<a href='#' name='saveGlobalOption' data-key='others' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
     html += "</div>";
@@ -436,17 +339,11 @@ function processOptionsGlobalAnzeige() {
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<select id='global_collapsed' data-theme='" + theme + "'>";
     var globalColapsed = optionsMap["collapsed"];
-    html += "<option value='favorites' " + (globalColapsed === "favorites" ? "selected='selected'" : "") + ">" + mapText("FAVORITES") + "</option>";
-    if (!optionsMap["room_divisor"]) {
-        html += "<option value='rooms' " + (globalColapsed === "rooms" ? "selected='selected'" : "") + ">" + mapText("ROOMS") + "</option>";
-    } else {
-        $.each(roomsMap['divisors'], function (key, val) {
-            html += "<option value='room" + key + "' " + (globalColapsed === ("room" + key) ? "selected='selected'" : "") + ">" + val["name"] + "</option>";
-        });
-    }
-    html += "<option value='functions' " + (globalColapsed === "functions" ? "selected='selected'" : "") + ">" + mapText("FUNCTIONS") + "</option>";
-    html += "<option value='variables' " + (globalColapsed === "variables" ? "selected='selected'" : "") + ">" + mapText("SYS_VAR") + "</option>";
-    html += "<option value='programs' " + (globalColapsed === "programs" ? "selected='selected'" : "") + ">" + mapText("PROGRAMS") + "</option>";
+    html += getSelectColapsedOptions("favorites", globalColapsed);
+    html += getSelectColapsedOptions("rooms", globalColapsed);
+    html += getSelectColapsedOptions("functions", globalColapsed);
+    html += getSelectColapsedOptions("variables", globalColapsed);
+    html += getSelectColapsedOptions("programs", globalColapsed);
     html += "<option value='others' " + (globalColapsed === "others" ? "selected='selected'" : "") + ">" + mapText("SETTINGS") + "</option>";
     html += "</select>";
     html += "<a href='#' name='saveGlobalOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
@@ -811,137 +708,11 @@ function processOptionsClientAnzeige() {
     var html = "<li><h1>" + mapText("MENU") + "</h1>";
     html += "<div class='ui-field-contain'>";
     html += "<div class='ui-grid-b'>";
-    //Favoriten anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("FAVORITES") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    var selected1 = "";
-    var selected2 = "";
-    var selected3 = "";
-    if (!("favorites" in optionsClientMap)) {
-        selected1 = "class='ui-btn-active'";
-    } else if (optionsClientMap["favorites"]) {
-        selected2 = "class='ui-btn-active'";
-    } else {
-        selected3 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveClientOption' data-key='favorites' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='favorites' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='favorites' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
-    if (!optionsMap["room_divisor"]) {
-        //Räume anzeigen
-        html += "<div class='ui-block-f text-right'>";
-        html += "<span>" + mapText("ROOMS") + " " + mapText("SHOW") + "</span>";
-        html += "</div>";
-        html += "<div class='ui-block-g'>";
-        html += "<div data-role='controlgroup' data-type='horizontal'>";
-        selected1 = "";
-        selected2 = "";
-        selected3 = "";
-        if (!("rooms" in optionsClientMap)) {
-            selected1 = "class='ui-btn-active'";
-        } else if (optionsClientMap["rooms"]) {
-            selected2 = "class='ui-btn-active'";
-        } else {
-            selected3 = "class='ui-btn-active'";
-        }
-        html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-        html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-        html += "<a href='#' name='saveClientOption' data-key='rooms' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-        html += "</div>";
-        html += "</div>";
-    } else {
-        //Räumeteilung
-        $.each(roomsMap['divisors'], function (key, val) {
-            html += "<div class='ui-block-f text-right'>";
-            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
-            html += "</div>";
-            html += "<div class='ui-block-g'>";
-            html += "<div data-role='controlgroup' data-type='horizontal'>";
-            selected1 = "";
-            selected2 = "";
-            selected3 = "";
-            if (!(("room" + key) in optionsClientMap)) {
-                selected1 = "class='ui-btn-active'";
-            } else if (optionsClientMap["room" + key]) {
-                selected2 = "class='ui-btn-active'";
-            } else {
-                selected3 = "class='ui-btn-active'";
-            }
-            html += "<a href='#' name='saveClientOption' data-key='room" + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-            html += "<a href='#' name='saveClientOption' data-key='room" + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-            html += "<a href='#' name='saveClientOption' data-key='room" + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-            html += "</div>";
-            html += "</div>";
-        });
-    }
-    //Gewerke anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("FUNCTIONS") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    selected3 = "";
-    if (!("functions" in optionsClientMap)) {
-        selected1 = "class='ui-btn-active'";
-    } else if (optionsClientMap["functions"]) {
-        selected2 = "class='ui-btn-active'";
-    } else {
-        selected3 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveClientOption' data-key='functions' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='functions' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='functions' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
-    //Variablen anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("SYS_VAR") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    selected3 = "";
-    if (!("variables" in optionsClientMap)) {
-        selected1 = "class='ui-btn-active'";
-    } else if (optionsClientMap["variables"]) {
-        selected2 = "class='ui-btn-active'";
-    } else {
-        selected3 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveClientOption' data-key='variables' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='variables' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='variables' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
-    //Programme anzeigen
-    html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("PROGRAMS") + " " + mapText("SHOW") + "</span>";
-    html += "</div>";
-    html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "";
-    selected2 = "";
-    selected3 = "";
-    if (!("programs" in optionsClientMap)) {
-        selected1 = "class='ui-btn-active'";
-    } else if (optionsClientMap["programs"]) {
-        selected2 = "class='ui-btn-active'";
-    } else {
-        selected3 = "class='ui-btn-active'";
-    }
-    html += "<a href='#' name='saveClientOption' data-key='programs' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='programs' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-    html += "<a href='#' name='saveClientOption' data-key='programs' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-    html += "</div>";
-    html += "</div>";
+    html += createClientMenuOptions("favorites");
+    html += createClientMenuOptions("rooms");
+    html += createClientMenuOptions("functions");
+    html += createClientMenuOptions("variables");
+    html += createClientMenuOptions("programs");
     //Einstellungen anzeigen
     html += "<div class='ui-block-f text-right'>";
     html += "<span>" + mapText("SETTINGS") + " " + mapText("SHOW") + "</span>";
@@ -984,11 +755,11 @@ function processOptionsClientAnzeige() {
     var clientColapsed = optionsClientMap["collapsed"];
     html += "<option value='none'>" + mapText("NOT_SELECTED") + "</a>";
     html += "<option value=''>" + mapText("NO_VALUE") + "</option>";
-    html += "<option value='favorites' " + (clientColapsed === "favorites" ? "selected='selected'" : "") + ">" + mapText("FAVORITES") + "</option>";
-    html += "<option value='rooms' " + (clientColapsed === "rooms" ? "selected='selected'" : "") + ">" + mapText("ROOMS") + "</option>";
-    html += "<option value='functions' " + (clientColapsed === "functions" ? "selected='selected'" : "") + ">" + mapText("FUNCTIONS") + "</option>";
-    html += "<option value='variables' " + (clientColapsed === "variables" ? "selected='selected'" : "") + ">" + mapText("SYS_VAR") + "</option>";
-    html += "<option value='programs' " + (clientColapsed === "programs" ? "selected='selected'" : "") + ">" + mapText("PROGRAMS") + "</option>";
+    html += getSelectColapsedOptions('favorites', clientColapsed);
+    html += getSelectColapsedOptions('rooms', clientColapsed);
+    html += getSelectColapsedOptions('functions', clientColapsed);
+    html += getSelectColapsedOptions('variables', clientColapsed);
+    html += getSelectColapsedOptions('programs', clientColapsed);
     html += "<option value='others' " + (clientColapsed === "others" ? "selected='selected'" : "") + ">" + mapText("SETTINGS") + "</option>";
     html += "</select>";
     html += "<a href='#' name='saveClientOption' data-key='collapsed' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
@@ -1075,6 +846,7 @@ function processOptionsClientVariables() {
 
 function processGraphicID(type) {
     var map = getResultMap(type);
+    var globalMap = getMap(type);
 
     var isVariables = type === "variables";
     var isTextVariables = false;
@@ -1087,49 +859,47 @@ function processGraphicID(type) {
     var isRFF = isRoom || isFunction || isFavorite;
     var html = "";
 
-    if (isRoom) {
-        html += "<li><h1>" + mapText("SETTINGS") + "</h1>";
-        html += "<div class='ui-field-contain'>";
+    html += "<li><h1>" + mapText("SETTINGS") + "</h1>";
+    html += "<div class='ui-field-contain'>";
 
-        html += "<div class='ui-grid-b'>";
-        html += "<div class='ui-block-f text-right'>";
-        html += "<span>" + mapText("DIVIDE_ROOMS") + "</span>";
-        html += "</div>";
-        html += "<div class='ui-block-g'>";
-        html += "<div data-role='controlgroup' data-type='horizontal'>";
-        var selected1 = "";
-        var selected2 = "";
-        if (optionsMap["room_divisor"]) {
-            selected1 = "class='ui-btn-active'";
-        } else {
-            selected2 = "class='ui-btn-active'";
-        }
-        html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='room_divisor' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-        html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='room_divisor' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-        html += "</div>";
-        html += "</div>";
-        html += "</div>";
-
-        var sizeRoom = $.isEmptyObject(roomsMap['divisors']) ? 0 : $.keys(roomsMap['divisors']).length;
-        html += "<div class='ui-grid-b' id='dividerRoomOptions' style='" + (optionsMap["room_divisor"] ? "" : "display: none;") + "'>";
-        html += "<div class='ui-block-f text-right'>";
-        html += "<span>" + mapText("ADD_ROOM_DIVIDER") + "</span>";
-        html += "</div>";
-        html += "<div class='ui-block-g'>";
-        html += "<div data-role='controlgroup' data-type='horizontal'>";
-        html += "<input type='text' id='addDividerRoomInput' value='' class='ui-no-corner-right' data-wrapper-class='controlgroup-textinput ui-btn'/>";
-        html += "<a href='#' data-role='button' id='addDividerRoom' data-size='" + sizeRoom + "' data-inline='true' data-icon='plus'>&nbsp;</a>";
-        html += "</div>";
-        html += "</div>";
-        html += "</div>";
-
-        html += "<ul id='dataListDivisors' data-role='listview' data-inset='true' style='" + (optionsMap["room_divisor"] ? "" : "display: none;") + "'>";
-        html += addRoomDivisor(sizeRoom);
-        html += "</ul>"
-
-        html += "</div>";
-        html += "</li>";
+    html += "<div class='ui-grid-b'>";
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("DIVIDE_" + type) + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    var selected1 = "";
+    var selected2 = "";
+    if (optionsMap[type + "_divisor"]) {
+        selected1 = "class='ui-btn-active'";
+    } else {
+        selected2 = "class='ui-btn-active'";
     }
+    html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='" + type + "_divisor' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
+    html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='" + type + "_divisor' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "</div>";
+    html += "</div>";
+    html += "</div>";
+
+    var size = $.isEmptyObject(globalMap['divisors']) ? 0 : $.keys(globalMap['divisors']).length;
+    html += "<div class='ui-grid-b' id='dividerOptions' style='" + (optionsMap[type + "_divisor"] ? "" : "display: none;") + "'>";
+    html += "<div class='ui-block-f text-right'>";
+    html += "<span>" + mapText("ADD_DIVIDER") + "</span>";
+    html += "</div>";
+    html += "<div class='ui-block-g'>";
+    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<input type='text' id='addDividerInput' value='' class='ui-no-corner-right' data-wrapper-class='controlgroup-textinput ui-btn'/>";
+    html += "<a href='#' data-role='button' id='addDivider' data-type='" + type +"' data-size='" + size + "' data-inline='true' data-icon='plus'>&nbsp;</a>";
+    html += "</div>";
+    html += "</div>";
+    html += "</div>";
+
+    html += "<ul id='dataListDivisors' data-role='listview' data-inset='true' style='" + (optionsMap[type + "_divisor"] ? "" : "display: none;") + "'>";
+    html += addDivisor(size, type);
+    html += "</ul>";
+
+    html += "</div>";
+    html += "</li>";
 
     $("#" + dataList).append(html);
 
@@ -1179,11 +949,22 @@ function processGraphicID(type) {
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><input name='editName' data-id='" + key + "' data-type='" + type + "' type='text' value='" + val['name'] + "' /></div>";
         if ((isVariables && !isTextVariables) || isPrograms) {
-            html += "<div class='ui-block-b'>"
+            html += "<div class='ui-block-b'>";
             html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
             html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-type='" + type + "' data-key='onlyPic' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['onlyPic'] ? "checked" : "") + "/>";
-            html += "</div>";
-            html += "<div class='ui-block-c small-hidden'></div>";
+            html += "</div>";            
+        }
+        if(isVariables){
+            if(isTextVariables){
+                html += "<div class='ui-block-b small-hidden'></div>";
+            }
+            if(optionsMap["variables_divisor"]){
+                html += "<div class='ui-block-c'>";
+                html += getDivisorSelectbox(type, val[type + "_divisor"], key);
+                html += "</div>";
+            }else{
+                html += "<div class='ui-block-c small-hidden'></div>";
+            }            
         }
         if (isVariables && !isTextVariables) {
             html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
@@ -1195,7 +976,7 @@ function processGraphicID(type) {
         html += "</div>";
         html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("UPLOAD") + "</a></div>";
         if (isListVariables) {
-            html += "<div class='ui-block-a'>"
+            html += "<div class='ui-block-a'>";
             html += "<div data-role='controlgroup' data-type='horizontal'>";
             html += "<select id='listType" + key + "' data-theme='" + theme + "'>";
             html += "<option value='auto' " + (val['listType'] === "auto" ? "selected='selected'" : "") + ">auto</option>";
@@ -1228,18 +1009,9 @@ function processGraphicID(type) {
             html += "</div>";
             html += "</div>";
             html += "</div>";
-        } else if (isRoom && optionsMap["room_divisor"]) {
+        } else if (optionsMap[type + "_divisor"] && !isVariables) {
             html += "<div class='ui-block-a'>";
-            html += "<div data-role='controlgroup' data-type='horizontal'>";
-            html += "<select id='select_room_divisor" + key + "' data-theme='" + theme + "'>";
-            var divisor = val["room_divisor"];
-            html += "<option value=''></option>";
-            $.each(roomsMap['divisors'], function (keyDiv, valueDiv) {
-                html += "<option value='" + keyDiv + "' " + (divisor === keyDiv ? "selected='selected'" : "") + ">" + valueDiv['name'] + "</option>";
-            });
-            html += "</select>";
-            html += "<a href='#' name='saveRoomDiviser' data-key='room_divisor' data-id='" + key + "' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
-            html += "</div>";
+            html += getDivisorSelectbox(type, val[type + "_divisor"], key);
             html += "</div>";
         } else {
             html += "<div class='ui-block-a small-hidden'></div>";
@@ -1345,24 +1117,59 @@ $(function () {
                 favoritesMap[thisId]['position'] = newPosition;
                 favoritesMap[beforeId]['position'] = oldPosition;
                 break
+            case "favoritesDivisor":
+                var originObj = favoritesMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[beforeId]['position'] = oldPosition;
+                favoritesMap['divisors'] = originObj;
+                type = "favorites";
+                break
             case "rooms":
                 roomsMap[thisId]['position'] = newPosition;
                 roomsMap[beforeId]['position'] = oldPosition;
+                break
+            case "roomsDivisor":
+                var originObj = roomsMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[beforeId]['position'] = oldPosition;
+                roomsMap['divisors'] = originObj;
+                type = "rooms";
                 break
             case "functions":
                 functionsMap[thisId]['position'] = newPosition;
                 functionsMap[beforeId]['position'] = oldPosition;
                 break
+            case "functionsDivisor":
+                var originObj = functionsMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[beforeId]['position'] = oldPosition;
+                functionsMap['divisors'] = originObj;
+                type = "functions";
+                break
             case "programs":
                 programsMap[thisId]['position'] = newPosition;
                 programsMap[beforeId]['position'] = oldPosition;
+                break
+            case "programsDivisor":
+                var originObj = programsMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[beforeId]['position'] = oldPosition;
+                programsMap['divisors'] = originObj;
+                type = "programs";
                 break
             case "variables":
                 variablesMap[thisId]['position'] = newPosition;
                 variablesMap[beforeId]['position'] = oldPosition;
                 break
+            case "variablesDivisor":
+                var originObj = variablesMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[beforeId]['position'] = oldPosition;
+                variablesMap['divisors'] = originObj;
+                type = "variables";
+                break
         }
-        
+
         createOneMap(type);
 
         activateSettingSaveButton();
@@ -1408,24 +1215,59 @@ $(function () {
                 favoritesMap[thisId]['position'] = newPosition;
                 favoritesMap[afterId]['position'] = oldPosition;
                 break
+            case "favoritesDivisor":
+                var originObj = favoritesMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[afterId]['position'] = oldPosition;
+                favoritesMap['divisors'] = originObj;
+                type = "favorites";
+                break
             case "rooms":
                 roomsMap[thisId]['position'] = newPosition;
                 roomsMap[afterId]['position'] = oldPosition;
+                break
+            case "roomsDivisor":
+                var originObj = roomsMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[afterId]['position'] = oldPosition;
+                roomsMap['divisors'] = originObj;
+                type = "rooms";
                 break
             case "functions":
                 functionsMap[thisId]['position'] = newPosition;
                 functionsMap[afterId]['position'] = oldPosition;
                 break
+            case "functionsDivisor":
+                var originObj = functionsMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[afterId]['position'] = oldPosition;
+                functionsMap['divisors'] = originObj;
+                type = "functions";
+                break
             case "programs":
                 programsMap[thisId]['position'] = newPosition;
                 programsMap[afterId]['position'] = oldPosition;
+                break
+            case "programsDivisor":
+                var originObj = programsMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[afterId]['position'] = oldPosition;
+                programsMap['divisors'] = originObj;
+                type = "programs";
                 break
             case "variables":
                 variablesMap[thisId]['position'] = newPosition;
                 variablesMap[afterId]['position'] = oldPosition;
                 break
+            case "variablesDivisor":
+                var originObj = variablesMap['divisors'];
+                originObj[thisId]['position'] = newPosition;
+                originObj[afterId]['position'] = oldPosition;
+                variablesMap['divisors'] = originObj;
+                type = "variables";
+                break
         }
-        
+
         createOneMap(type);
 
         activateSettingSaveButton();
@@ -1489,31 +1331,33 @@ $(function () {
         }
     });
 
-    $(document.body).on("click", "#addDividerRoom", function () {
+    $(document.body).on("click", "#addDivider", function () {
         var $elem = $(this);
-        var sizeRoomNew = parseInt($elem.attr('data-size')) + 1;
+        var sizeNew = parseInt($elem.attr('data-size')) + 1;
+        var type = $elem.data("type");
         var key = 0;
-        if ($.isEmptyObject(roomsMap['divisors'])) {
+        var map = getMap(type);
+        if ($.isEmptyObject(map['divisors'])) {
             key = 1;
         } else {
-            key = Math.max.apply(Math, $.keys(roomsMap['divisors'])) + 1;
+            key = Math.max.apply(Math, $.keys(map['divisors'])) + 1;
         }
         var value = {};
-        var $input = $("#addDividerRoomInput");
+        var $input = $("#addDividerInput");
         value['name'] = $input.val();
-        value['position'] = sizeRoomNew;
-        var originObj = roomsMap['divisors'];
+        value['position'] = sizeNew;
+        var originObj = map['divisors'];
         originObj[key] = value;
-        roomsMap['divisors'] = originObj;
+        map['divisors'] = originObj;
         $input.val('');
 
-        createOneMap("rooms");
+        createOneMap(type);
 
-        optionsMap["room" + key] = true;
-        saveOptionsToServer("room" + key, true, false);
+        optionsMap[type + key] = true;
+        saveOptionsToServer(type + key, true, false);
 
-        $('#dataListDivisors').html(addRoomDivisor(sizeRoomNew)).enhanceWithin();
-        $elem.attr("data-size", sizeRoomNew);
+        $('#dataListDivisors').html(addDivisor(sizeNew, type)).enhanceWithin();
+        $elem.attr("data-size", sizeNew);
 
         activateSettingSaveButton(true);
     });
@@ -1636,7 +1480,7 @@ $(function () {
                 variablesMap[id][key] = checked;
                 break
         }
-        
+
         createOneMap(type);
 
         activateSettingSaveButton();
@@ -1651,23 +1495,28 @@ $(function () {
         $(this).addClass("ui-btn-active");
 
         variablesMap[id]['operate'] = checked;
-        
+
         createOneMap("variables");
 
         activateSettingSaveButton();
     });
-    
-    $(document.body).on("click", "[name='saveRoomDiviser']", function() {
+
+    $(document.body).on("click", "[name='saveDivisor']", function () {
         var obj = $(this);
         var id = obj.data("id");
         var key = obj.data("key");
-        var selected = $('#select_room_divisor' + id).val();
-        
-        roomsMap[id][key] = selected;
-        
-        createOneMap("rooms");
+        var type = obj.data("type");
+        var selected = $('#select_divisor' + id).val();
 
-        activateSettingSaveButton();
+        if($.isNumeric(selected)){
+            selected = parseInt(selected);
+        }
+        var map = getMap(type);
+        map[id][key] = selected;
+
+        createOneMap(type);
+
+        activateSettingSaveButton(true);
     });
 
     $(document.body).on("click", "[name='changeFloatSF']", function () {
@@ -1685,7 +1534,7 @@ $(function () {
             $('#mainNumber' + id).replaceWith(addSetValueList(0, id, "0", tmpMap['valueList'], tmpMap['valueUnit'], "", false, true, tmpMap['listType'], true));
         }
         $('#mainNumber' + id).enhanceWithin();
-        
+
         createOneMap("variables");
 
         activateSettingSaveButton();
@@ -1722,7 +1571,7 @@ $(function () {
         $("#menuText" + id).fadeOut(500, function () {
             $("#menuText" + id).text(name).fadeIn(1000);
         });
-        
+
         createOneMap(type);
 
         activateSettingSaveButton();

@@ -640,7 +640,7 @@ var textMap = {
     VISIBILITY: "visibilidade",
     DELETE: "deletar",
     UPLOAD: "upload de imagem",
-    SYS_VAR: "variáveis ​​do sistema",
+    VARIABLES: "variáveis ​​do sistema",
     PROGRAMS: "programas",
     FAVORITES: "favoritos",
     ROOMS: "quartos",

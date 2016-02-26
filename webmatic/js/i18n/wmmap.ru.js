@@ -640,7 +640,7 @@ var textMap = {
     VISIBILITY: "видимость",
     DELETE: "Удалить",
     UPLOAD: "Загрузить изображение",
-    SYS_VAR: "Системные переменные",
+    VARIABLES: "Системные переменные",
     PROGRAMS: "программы",
     FAVORITES: "Избранное",
     ROOMS: "комнаты",

@@ -1,6 +1,22 @@
 /* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim */
 
 function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
+    if (resultOptionsMap[indexType + '_divisor'] !== true) {
+        if (indexType === "variables" || indexType === "programs") {
+            $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToList list" + indexType + "' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3></div>");
+        } else {
+            loadSingleMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
+        }
+    } else {
+        if (indexType === "variables" || indexType === "programs") {
+            loadSingleDivisorMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
+        } else {
+            loadDivisor(gfxClassParent, gfxClassSelected, collapsed, indexType);
+        }
+    }
+}
+
+function loadSingleMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3><ul id='list" + indexType + "' data-role='listview' data-inset='true'></ul></div>");
     //Global
     if (localStorage.getItem("webmatic" + indexType + "Map") === null || localStorage.getItem("webmatic" + indexType + "Map") === "undefined") {
@@ -61,51 +77,125 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("img.lazy" + indexType).lazyload({event: "lazyLoadInstantly"});
 }
 
-function loadDividedRooms(gfxClassParent, gfxClassSelected, collapsed) {
-
+function loadSingleDivisorMenu(type, gfxClassParent, gfxClassSelected, collapsed) {
+    $("#main_menu").append("<div " + (resultOptionsMap[type] ? "" : "style='display:none;'") + " id='" + type + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === type) + "'><h3>" + mapText(type) + "</h3><ul id='list" + type + "' data-role='listview' data-inset='true'></ul></div>");
     //Global
-    if (localStorage.getItem("webmaticroomsMap") === null || localStorage.getItem("webmaticroomsMap") === "undefined") {
+    if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
         if (newVersion) {
             saveDataToFile = true;
         }
-        loadConfigData(false, '../webmatic_user/rooms.json', 'rooms', 'webmaticroomsMap', false, false);
+        loadConfigData(false, '../webmatic_user/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
     } else {
-        loadLocalStorageMap('rooms');
+        loadLocalStorageMap(type);
     }
     //Lokal
-    if (localStorage.getItem("webmaticroomsclientMap") === null || localStorage.getItem("webmaticroomsclientMap") === "undefined") {
+    if (localStorage.getItem("webmatic" + type + "clientMap") === null || localStorage.getItem("webmatic" + type + "clientMap") === "undefined") {
         if (client !== "") {
-            loadConfigData(false, '../webmatic_user/rooms' + client + '.json', 'roomsClient', 'webmaticroomsclientMap', false, true);
+            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        setResultMap('rooms', JSON.parse(localStorage.getItem("webmaticroomsclientMap")));
+        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
     }
     //Kombinieren
-    createOneMap('rooms');
+    createOneMap(type);
 
-    loadConfigData(true, 'cgi/rooms.cgi', 'rooms', 'webmaticroomsMap', false, true, function () {
-        createOneMap('rooms');
+    loadConfigData(true, 'cgi/' + type + '.cgi', type, 'webmatic' + type + 'Map', false, true, function () {
+        createOneMap(type);
     });
 
-    var roomMap = getResultMap('rooms');
-    var tmpRooms = {};
-    $.each(roomMap['divisors'], function (key, val) {
-        var indexType = "room" + key;
-        var roomHtml = "<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'>";
-        roomHtml += "<h3>" + val['name'] + "</h3>";
-        roomHtml += "<ul class='listRoomDiv' data-role='listview' data-inset='true'>";
+    var tmpObj = {};
+    var resultMap = getResultMap(type);
+    $.each(resultMap['divisors'], function (key, val) {
+        var indexType = type + key;
+        var html = "<li class='menuListSpecialItem " + gfxClassParent + " scrollToList' data-divisor='true' data-type='" + type + "' data-id='" + key + "' " + (resultOptionsMap[indexType] ? "" : "style='display: none;'") + ">";
+        html += "<a href='#'><img id='menuImg" + indexType + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
+        if ($.inArray(indexType, picturesList) !== -1 || picturesListError) {
+            html += " lazy" + type + "' data-original='../webmatic_user/img/ids/" + type + "/" + indexType + ".png";
+        }
+        html += "' src='img/menu/" + type + ".png'><span id='menuText" + indexType + "' class='breakText'>" + val['name'] + "</span></a></li>";
+        if (resultOptionsMap['default_sort_manually']) {
+            tmpObj[parseInt(val['position'])] = html;
+        } else {
+            tmpObj[val['name'].toLowerCase()] = html;
+        }
+    });
+
+    var keys;
+    if (resultOptionsMap['default_sort_manually']) {
+        keys = Object.keys(tmpObj).sort(function (a, b) {
+            return a - b;
+        });
+    } else {
+        keys = Object.keys(tmpObj).sort();
+    }
+    var len = keys.length;
+    for (var i = 0; i < len; i++) {
+        var k = keys[i];
+        $("#list" + type).append(tmpObj[k]);
+    }
+
+    $.each(resultMap, function (key, val) {
+        if (key === "date" || key === "size" || key === "divisors" || val[type + '_divisor'] !== "unsorted") {
+            return;
+        }
+        var indexType = type + "unsorted";
+        var html = "<li class='menuListSpecialItem " + gfxClassParent + " scrollToList' data-divisor='true' data-type='" + type + "' data-id='unsorted' >";
+        html += "<a href='#'><img id='menuImg" + indexType + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
+        html += "' src='img/menu/" + type + ".png'><span id='menuText" + indexType + "' class='breakText'>" + val['name'] + "</span></a></li>";
+        $("#list" + type).append(html);
+        return false;
+    });
+
+    $("#list" + type).listview().listview("refresh");
+    $("img.lazy" + type).lazyload({event: "lazyLoadInstantly"});
+}
+
+function loadDivisor(gfxClassParent, gfxClassSelected, collapsed, type) {
+
+    //Global
+    if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
+        if (newVersion) {
+            saveDataToFile = true;
+        }
+        loadConfigData(false, '../webmatic_user/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
+    } else {
+        loadLocalStorageMap(type);
+    }
+    //Lokal
+    if (localStorage.getItem("webmatic" + type + "clientMap") === null || localStorage.getItem("webmatic" + type + "clientMap") === "undefined") {
+        if (client !== "") {
+            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
+        }
+    } else {
+        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+    }
+    //Kombinieren
+    createOneMap(type);
+
+    loadConfigData(true, 'cgi/' + type + '.cgi', type, 'webmatic' + type + 'Map', false, true, function () {
+        createOneMap(type);
+    });
+
+    var resultMap = getResultMap(type);
+    var tmpMap = {};
+    addUnsorted(resultMap);
+    $.each(resultMap['divisors'], function (key, val) {
+        var indexType = type + key;
+        var html = "<div " + (resultOptionsMap[indexType] || key === "unsorted" ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'>";
+        html += "<h3>" + val['name'] + "</h3>";
+        html += "<ul class='list" + type + "Div' data-role='listview' id='listElement" + indexType + "' data-inset='true'>";
 
         var tmpObj = {};
-        $.each(roomMap, function (key2, val2) {
-            if (val2['room_divisor'] !== key || key2 === "date" || key2 === "size" || key2 === "divisors") {
+        $.each(resultMap, function (key2, val2) {
+            if (key2 === "date" || key2 === "size" || key2 === "divisors" || val2[type + '_divisor'] !== key) {
                 return;
             }
             var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key2 + "' " + (val2['visible'] ? "" : "style='display: none;'") + ">";
             html += "<a href='#'><img id='menuImg" + key2 + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
             if ($.inArray(key2, picturesList) !== -1 || picturesListError) {
-                html += " lazyRoomDiv' data-original='../webmatic_user/img/ids/rooms/" + key2 + ".png";
+                html += " lazy" + type + "Div' data-original='../webmatic_user/img/ids/" + type + "/" + key2 + ".png";
             }
-            html += "' src='img/menu/rooms.png'><span id='menuText" + key2 + "' class='breakText'>" + val2['name'] + "</span></a></li>";
+            html += "' src='img/menu/" + type + ".png'><span id='menuText" + key2 + "' class='breakText'>" + val2['name'] + "</span></a></li>";
 
             if (resultOptionsMap['default_sort_manually']) {
                 tmpObj[parseInt(val2['position'])] = html;
@@ -125,25 +215,29 @@ function loadDividedRooms(gfxClassParent, gfxClassSelected, collapsed) {
         var len = keys.length;
         for (var i = 0; i < len; i++) {
             var k = keys[i];
-            roomHtml += tmpObj[k];
+            html += tmpObj[k];
         }
-        roomHtml += "</ul></div>";
+        html += "</ul></div>";
 
-        tmpRooms[parseInt(val['position'])] = roomHtml;
+        tmpMap[parseInt(val['position'])] = html;
     });
+    removeUnsorted(resultMap);
 
-    var keys = Object.keys(tmpRooms).sort(function (a, b) {
+    var keys = Object.keys(tmpMap).sort(function (a, b) {
         return a - b;
     });
     var len = keys.length;
     for (var i = 0; i < len; i++) {
         var k = keys[i];
-        $("#main_menu").append(tmpRooms[k]);
+        $("#main_menu").append(tmpMap[k]);
     }
 
-    $(".listRoomDiv").listview().listview("refresh");
-    $("img.lazyRoomDiv").lazyload({event: "lazyLoadInstantly"});
+    if ($('#listElement' + type + 'unsorted').children().length === 0) {
+        $('#listElement' + type + 'unsorted').remove();
+    }
 
+    $(".list" + type + "Div").listview().listview("refresh");
+    $("img.lazy" + type + "Div").lazyload({event: "lazyLoadInstantly"});
 }
 
 executeButtons = function (lct, lcid, rm, $this, col) {
@@ -155,6 +249,11 @@ executeButtons = function (lct, lcid, rm, $this, col) {
     lastClickID = lcid;
     $('.ui-input-search .ui-input-text').val("");
     readModus = rm;
+    if ($this.data('divisor')) {
+        divisorClick = true;
+    } else {
+        divisorClick = false;
+    }
     refreshPage($this, col);
 };
 
@@ -198,37 +297,35 @@ $(function () {
 
     //Menüpunkt Räume
     indexType = "rooms";
-    if (resultOptionsMap['room_divisor'] !== true) {
-        loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
-    } else {
-        loadDividedRooms(gfxClassParent, gfxClassSelected, collapsed);
-    }
+    loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
 
     //Menüpunkt Gewerke
     indexType = "functions";
     loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
 
-    $("img").trigger("lazyLoadInstantly");
-
     //Menüpunkt Variablen
-    $("#main_menu").append("<div " + (resultOptionsMap["variables"] ? "" : "style='display:none;'") + " id='variablesMainMenu' class='scrollToList listVariables' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (collapsed === "variables") + "'><h3>" + mapText("SYS_VAR") + "</h3></div>");
+    indexType = "variables";
+    loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
 
     //Menüpunkt Programme
-    $("#main_menu").append("<div " + (resultOptionsMap["programs"] ? "" : "style='display:none;'") + " id='programsMainMenu' class='scrollToList listPrograms' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (collapsed === "programs") + "'><h3>" + mapText("PROGRAMS") + "</h3></div>");
+    indexType = "programs";
+    loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed);
+
+    $("img").trigger("lazyLoadInstantly");
 
     //Menüpunkt Sonstiges
     $("#main_menu").append("<div " + (resultOptionsMap["others"] || isTempClient ? "" : "style='display:none;'") + " id='othersMainMenu' class='menuListRow' data-role='collapsible' data-collapsed='" + (collapsed === "others") + "'><h3>" + mapText("SETTINGS") + "</h3><ul id='listOther' data-role='listview' data-inset='true'></ul></div>");
-    $("#listOther").append("<li id='menuItemVariables' class='menuItemVariables " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>" + mapText("SYS_VAR") + "</span></a></li>");
-    $("#listOther").append("<li id='menuItemPrograms' class='menuItemPrograms " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>" + mapText("PROGRAMS") + "</span></a></li>");
+    $("#listOther").append("<li id='menuItemvariables' class='menuItemvariables " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/variables.png'><span class='breakText'>" + mapText("VARIABLES") + "</span></a></li>");
+    $("#listOther").append("<li id='menuItemprograms' class='menuItemprograms " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/programs.png'><span class='breakText'>" + mapText("PROGRAMS") + "</span></a></li>");
     $("#listOther").append("<li id='menuItemOptions' class='menuItemOptions " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>" + mapText("OPTIONS") + "</span></a></li>");
     if (client !== "") {
         $("#listOther").append("<li id='menuItemOptionsClient' class='menuItemOptionsClient " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/options.png'><span class='breakText'>" + mapText("OPTIONS_CLIENT") + "</span></a></li>");
     }
-    $("#listOther").append("<li id='menuItemGraphicIDs_FAVORITES' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='4'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("FAVORITES") + ")</span></a></li>");
-    $("#listOther").append("<li id='menuItemGraphicIDs_ROOMS' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='8'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("ROOMS") + ")</span></a></li>");
-    $("#listOther").append("<li id='menuItemGraphicIDs_FUNCTIONS' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='9'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("FUNCTIONS") + ")</span></a></li>");
-    $("#listOther").append("<li id='menuItemGraphicIDs_PROGRAMS' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='10'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("PROGRAMS") + ")</span></a></li>");
-    $("#listOther").append("<li id='menuItemGraphicIDs_VARIABLES' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='12'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("SYS_VAR") + ")</span></a></li>");
+    $("#listOther").append("<li id='menuItemGraphicIDs_favorites' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='4'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("FAVORITES") + ")</span></a></li>");
+    $("#listOther").append("<li id='menuItemGraphicIDs_rooms' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='8'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("ROOMS") + ")</span></a></li>");
+    $("#listOther").append("<li id='menuItemGraphicIDs_functions' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='9'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("FUNCTIONS") + ")</span></a></li>");
+    $("#listOther").append("<li id='menuItemGraphicIDs_programs' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='10'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("PROGRAMS") + ")</span></a></li>");
+    $("#listOther").append("<li id='menuItemGraphicIDs_variables' class='menuItemGraphicIDs " + gfxClassParent + "' data-refresh-id='12'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/graphics.png'><span class='breakText'>" + mapText("EDIT") + " (" + mapText("VARIABLES") + ")</span></a></li>");
 
     if (debugModus) {
         $("#listOther").append("<li id='menuItemDebug' class='menuItemDebug " + gfxClassParent + "'><a href='#'><img class='menu " + gfxClassSelected + " ui-img-" + theme + "' src='img/menu/debug.png'><span class='breakText'>" + mapText("TEST_DEVICE") + "</span></a></li>");
@@ -256,12 +353,12 @@ $(function () {
 
     // ----------------------- Buttons -----------------------
 
-    $(document.body).on("collapsibleexpand", ".listVariables", function () {
+    $(document.body).on("collapsibleexpand", ".listvariables", function () {
         $(this).children(".ui-collapsible-content").hide();
         executeButtons(2, $(this).attr("id"), true, $(this));
     });
 
-    $(document.body).on("collapsibleexpand", ".listPrograms", function () {
+    $(document.body).on("collapsibleexpand", ".listprograms", function () {
         $(this).children(".ui-collapsible-content").hide();
         executeButtons(3, $(this).attr("id"), true, $(this));
     });
@@ -270,11 +367,17 @@ $(function () {
         executeButtons(1, $(this).attr("id"), true, $(this));
     });
 
-    $(document.body).on("click", ".menuItemVariables", function () {
+    $(document.body).on("click", ".menuListSpecialItem", function () {
+        var $obj = $(this);
+        var type = $obj.data("type");
+        executeButtons("variables" === type ? 2 : 3, $obj.data("id"), false, $obj);
+    });
+
+    $(document.body).on("click", ".menuItemvariables", function () {
         executeButtons(2, $(this).attr("id"), false, $(this));
     });
 
-    $(document.body).on("click", ".menuItemPrograms", function () {
+    $(document.body).on("click", ".menuItemprograms", function () {
         executeButtons(3, $(this).attr("id"), false, $(this));
     });
 

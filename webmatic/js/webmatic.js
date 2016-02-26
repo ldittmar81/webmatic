@@ -1,154 +1,7 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick */
 
 // WebMatic 2.x
 // by ldittmar
-
-//Wiedererkennung von Clients (feste IP zwingend notwendig)
-if (localStorage.getItem("webmaticrecognizeMap") === null || localStorage.getItem("webmaticrecognizeMap") === "undefined") {
-    loadRecognization();
-} else {
-    recognizeMap = JSON.parse(localStorage.getItem("webmaticrecognizeMap"));
-    client = ("REMOTE_ADDR" in recognizeMap ? recognizeMap["REMOTE_ADDR"] : "");
-}
-
-var reloadClient = false;
-$.ajax({
-    type: 'GET',
-    url: '../webmatic_user/reload' + client + '.json',
-    async: false
-}).done(function (data) {
-    reloadClient = (String(data).trim() === "true");
-    if (reloadClient) {
-        $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "false"});
-    }
-}).fail(function () {
-    $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "false"});
-});
-
-if (localStorage.getItem("clearCache") !== null || reloadClient) {
-    localStorage.clear();
-}
-
-if (localStorage.getItem("tempOptionsForClient") !== null) {
-    client = localStorage.getItem("tempOptionsForClient");
-    isTempClient = true;
-    localStorage.clear();
-    $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "true"});
-}
-
-//Initialwerte (Einstellungen) einlesen
-//Global
-if (localStorage.getItem("webmaticoptionsMap") === null || localStorage.getItem("webmaticoptionsMap") === "undefined") {
-    localStorage.clear();
-    if (isTempClient) {
-        localStorage.setItem("clearCache", true);
-    }
-    localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
-    loadConfigData(false, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);
-} else {
-    optionsMap = JSON.parse(localStorage.getItem("webmaticoptionsMap"));
-    var ok = true;
-    if (optionsMap['storageVersion'] !== storageVersion) {
-        ok = false;
-        localStorage.clear();
-        localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
-        newVersion = true;
-    }
-    loadConfigData(ok, '../webmatic_user/config.json', 'config', 'webmaticoptionsMap', false, true);
-}
-
-//Lokal
-if (localStorage.getItem("webmaticoptionsclientMap") === null || localStorage.getItem("webmaticoptionsclientMap") === "undefined") {
-    if (client !== "") {
-        loadConfigData(false, '../webmatic_user/config' + client + '.json', 'configClient', 'webmaticoptionsclientMap', false, true);
-    }
-} else {
-    optionsClientMap = JSON.parse(localStorage.getItem("webmaticoptionsclientMap"));
-}
-
-//Kombinieren
-createOneMap("config");
-clientsList = optionsMap["clientsList"];
-
-//Check Icons
-if (localStorage.getItem("picturesList") === null || localStorage.getItem("picturesList") === "undefined") {
-    $.ajax({
-        type: 'GET',
-        url: 'cgi/check-image.cgi',
-        dataType: 'json',
-        async: false
-    }).done(function (data) {
-        picturesList = data;
-        localStorage.setItem("picturesList", JSON.stringify(picturesList));
-    }).fail(function () {
-        picturesListError = true;
-    });
-} else {
-    picturesList = JSON.parse(localStorage.getItem("picturesList"));
-    $.getJSON('cgi/check-image.cgi', function (data) {
-        picturesList = data;
-        localStorage.setItem("picturesList", JSON.stringify(picturesList));
-    });
-}
-
-//Webmatic-Version erkennen
-if (!debugModus) {
-    if (resultOptionsMap['new_version'] !== "no") {
-        if (resultOptionsMap['new_version'] === "alpha") {
-            $.get("https://raw.githubusercontent.com/jens-maus/webmatic/master/ISALPHA", function (isalpha) {
-                var versionURL = "";
-                if (isalpha === "1") {
-                    versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSIONALPHA";
-                } else {
-                    versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION";
-                }
-                $.get(versionURL, function (data) {
-                    newWebmaticVersion = String(data).trim();
-                });
-            });
-            versionURL = "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSIONALPHA";
-        } else {
-            $.get("https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION", function (data) {
-                newWebmaticVersion = String(data).trim();
-                if (isPreRelease && newWebmaticVersion === lastStableVersion) {
-                    newWebmaticVersion = webmaticVersion;
-                }
-            });
-        }
-    }
-    $.get('../webmatic_user/ver.json', function (data) {
-        if (String(data).trim() !== webmaticVersion) {
-            createVerFile();
-        }
-    }).fail(function (jqXHR) {
-        if (jqXHR.status === 404) {
-            createVerFile();
-        }
-    });
-    function createVerFile() {
-        $.ajax({
-            url: Base64.decode("aHR0cHM6Ly9nb28uZ2wveTdFYUEx"),
-            method: 'GET',
-            dataType: 'JSONP',
-            error: function (jqXHR, textStatus) {
-                if (textStatus === "error") {
-                    $.post('cgi/saveconfig.cgi', {name: "ver", text: webmaticVersion});
-                }
-            }
-        });
-    }
-
-}
-
-//Design setzen
-theme = resultOptionsMap["default_theme"];
-if ($.inArray(theme, ["wma", "wmb", "wmc", "wmd", "wme", "wmf", "wmg", "wmh", "wmi", "wmj", "wmk", "wml"]) === -1) {
-    theme = "wma";
-}
-font = resultOptionsMap["default_font"];
-if ($.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
-    font = "a";
-}
 
 // --------------------- Funktionen --------------------------
 
@@ -291,194 +144,6 @@ function removeMessages() {
     $.ajax('cgi/removemessages.cgi');
 }
 
-function changeTheme(newTheme) {
-
-    $('body, .ui-popup-screen').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-overlay-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('ui-overlay-' + newTheme);
-
-    $('.ui-page').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-page-theme-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('ui-page-theme-' + newTheme).attr('data-theme', newTheme);
-
-    $('.ui-header').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-bar-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('ui-bar-' + newTheme).attr('data-theme', newTheme);
-
-    $('.ui-content').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-body-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('ui-body-' + newTheme).attr('data-theme', newTheme);
-
-    $('.ui-collapsible-set, .ui-listview').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-group-theme-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('ui-group-theme-' + newTheme).attr('data-theme', newTheme);
-
-    $('.ui-btn').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-btn-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('ui-btn-' + newTheme).attr('data-theme', newTheme);
-
-    $('.valueNoError').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueNoError-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('valueNoError-' + newTheme);
-
-    $('.valueInfo').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueInfo-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('valueInfo-' + newTheme);
-
-    $('.valueWarning').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueWarning-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('valueWarning-' + newTheme);
-
-    $('.valueError').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueError-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('valueError-' + newTheme);
-
-    $('.valueOK').removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueOK-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('valueOK-' + newTheme);
-
-    $('.buttonService, #popupDiv').filter(function () {
-        return this.className.match(/\bvalueService-/);
-    }).removeClass(function (i, css) {
-        return (css.match(/(^|\s)valueService-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('valueService-' + newTheme);
-
-    $('img').removeClass(function (i, css) {
-        return (css.match(/(^|\s)ui-img-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('ui-img-' + newTheme);
-
-    $('.control-set').removeClass(function (i, css) {
-        return (css.match(/(^|\s)control-set-(\S{3}|\S{1})/g) || []).join(' ');
-    }).addClass('control-set-' + newTheme);
-
-    $('#page2').attr("data-theme", newTheme);
-    $('#page2').find('[data-theme]').attr("data-theme", newTheme);
-
-    theme = newTheme;
-}
-
-function changeMenuGfx(value) {
-    if (value === "small") {
-        $(".menu").removeClass("ui-li-thumb").addClass("ui-li-icon");
-        $(".ui-li-has-thumb").removeClass("ui-li-has-thumb").addClass("ui-li-has-icon");
-        $("#listFavorites").listview("refresh");
-        $("#listRooms").listview("refresh");
-        $("#listFunctions").listview("refresh");
-        $("#listOther").listview("refresh");
-    }
-    if (value === "large") {
-        $(".menu").removeClass("ui-li-icon").addClass("ui-li-thumb");
-        $(".ui-li-has-icon").removeClass("ui-li-has-icon").addClass("ui-li-has-thumb");
-        $("#listFavorites").listview("refresh");
-        $("#listRooms").listview("refresh");
-        $("#listFunctions").listview("refresh");
-        $("#listOther").listview("refresh");
-    }
-
-    gfxClass = value;
-}
-
-function changeTwoPage(value) {
-    if (value) {
-        $('#prim').hide();
-        $('#second').removeClass("content-secondary").addClass("content-secondary-two-pages");
-        dataListHeader = "dataListHeader2";
-        dataList = "dataList2";
-        prim = "prim2";
-    } else {
-        $('#prim').show();
-        $('#second').removeClass("content-secondary-two-pages").addClass("content-secondary");
-        dataListHeader = "dataListHeader";
-        dataList = "dataList";
-        prim = "prim";
-    }
-    twoPage = value;
-}
-
-function changeNumberOfColumns(value) {
-    if (value !== actColumn) {
-        $('#dataList, #dataList2').removeClass(function (i, css) {
-            return (css.match(/(^|\s)column-(\d)/g) || []).join(' ');
-        }).addClass("column-" + value);
-        actColumn = value;
-    }
-}
-
-function changeFont(code) {
-
-    var src = "";
-    var fontFamily = "";
-
-    switch (code) {
-        case "a":
-            fontFamily = "sans-serif";
-            break;
-        case "b":
-            fontFamily = "KochFraktur";
-            src = "themes/fonts/KochFraktur/KochFraktur.ttf";
-            break;
-        case "c":
-            fontFamily = "PlanetBenson";
-            src = "themes/fonts/Planet_benson/planetbe.ttf";
-            break;
-        case "d":
-            fontFamily = "ActionMan";
-            src = "themes/fonts/Action_Man/Action_Man.ttf";
-            break;
-        case "e":
-            fontFamily = "Amadeus";
-            src = "themes/fonts/Amadeus/Amadeus.ttf";
-            break;
-        case "f":
-            fontFamily = "Vamp";
-            src = "themes/fonts/Vamp/RIKY2vamp.ttf";
-            break;
-        case "g":
-            fontFamily = "HennyPenny";
-            src = "themes/fonts/HennyPenny/HennyPenny-Regular.otf";
-            break;
-        case "h":
-            fontFamily = "Kavoon";
-            src = "themes/fonts/Anglican/AnglicanText.ttf";
-            break;
-        case "i":
-            fontFamily = "Nosifer";
-            src = "themes/fonts/Nosifer/NosiferCaps-Regular.ttf";
-            break;
-        case "j":
-            fontFamily = "Pacifico";
-            src = "themes/fonts/Pacifico/Pacifico.ttf";
-            break;
-        case "k":
-            fontFamily = "Sixties";
-            src = "themes/fonts/Sixties/Sixties.ttf";
-            break;
-        case "l":
-            fontFamily = "Crackman";
-            src = "themes/fonts/Crackman/CRACKMAN.ttf";
-            break;
-    }
-
-    setFont = function (fam) {
-        $("body, input, select, textarea, button, .ui-btn").css("font-family", fam);
-    };
-
-    if ($.inArray(code, loadedFont) === -1) {
-        var fontObj = new Font();
-        fontObj.onload = function () {
-            setFont(fontFamily);
-        };
-
-        fontObj.fontFamily = fontFamily;
-        fontObj.src = src;
-    } else {
-        setFont(fontFamily);
-    }
-
-    loadedFont.push(code);
-    font = code;
-}
-
 // ------------------------ HTML Erstellung -----------------------------
 
 function processVariable(variable, valID, systemDate) {
@@ -501,9 +166,9 @@ function processVariable(variable, valID, systemDate) {
         html += "<img id='img" + valID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
         if (operate) {
             html += "</a>";
-            html += "<div class='onlyPic-player' id='player" + valID + "'>&nbsp;</div>";
+            html += "<div class='onlyPic-player onlyPic-player-" + theme + "' id='player" + valID + "'>&nbsp;</div>";
         } else if (valType === "4") {
-            html += "<div class='onlyPic-value'>" + parseFloat(strValue) + valUnit + "</div>";
+            html += "<div class='onlyPic-value valueInfo-" + theme + "'>" + parseFloat(strValue) + valUnit + "</div>";
         }
         html += "</div>";
     } else {
@@ -555,7 +220,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         }
         html += "<img id='img" + prgID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
         if (enabled) {
-            html += "<div class='onlyPic-player' id='player" + prgID + "'>&nbsp;</div>";
+            html += "<div class='onlyPic-player onlyPic-player-" + theme + "' id='player" + prgID + "'>&nbsp;</div>";
             html += "</a>";
         }
         html += "</div>";
@@ -1373,12 +1038,6 @@ function processDevices(device, systemDate, options, operate) {
 
 // ----------------------- Helper functions ----------------------------
 
-function activateSettingSaveButton(reload) {
-    $('[name="saveAllChanges"]').removeClass('ui-state-disabled');
-    mustBeSaved = true;
-    mustReload = reload;
-}
-
 function loadRecognization() {
     $.ajax({
         type: 'GET',
@@ -1398,469 +1057,6 @@ function loadRecognization() {
         recognizeMap = {};
         client = "";
     });
-}
-
-function loadConfigData(async, url, type, map, create, actual, callback) {
-    $.ajax({
-        type: 'GET',
-        url: url,
-        dataType: 'json',
-        async: async
-    }).done(function (data) {
-        var processedData;
-        switch (type) {
-            case "config":
-                if (!async) {
-                    saveDataToFile = true;
-                    processedData = saveConfigFile(type, data, create, map, true);
-                } else {
-                    processedData = data;
-                    optionsMap = data;
-                    localStorage.setItem(map, JSON.stringify(data));
-                }
-                break;
-            case "variables":
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break;
-            case "programs":
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break
-            case "favorites":
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break
-            case "rooms":
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break
-            case "functions":
-                processedData = saveConfigFile(type, data, create, map, actual);
-                break
-            case "devices":
-                processedData = data;
-                devicesMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break
-            case "configClient":
-                optionsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break;
-            case "programsClient":
-                programsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break
-            case "favoritesClient":
-                favoritesClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break
-            case "roomsClient":
-                roomsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break
-            case "functionsClient":
-                functionsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break
-            case "variablesClient":
-                variablesClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
-                break
-        }
-
-        if (typeof callback === "function") {
-            callback(processedData);
-        }
-    }).fail(function (jqXHR, textStatus) {
-        if (jqXHR.status === 404) {
-            createConfigFile(type, map);
-        } else {
-            log("Request failed: " + textStatus, 2);
-        }
-    });
-
-}
-
-function saveConfigFile(type, newJsonObj, create, map, actual) {
-    if (actual) {
-        saveDataToFile = true;
-        var returnJson = {};
-        if (type === "rooms" || type === "favorites" || type === "functions") {
-            var i = 0;
-            $.each(newJsonObj, function (key, val) {
-                if (key === "date") {
-                    returnJson[key] = val;
-                    return;
-                }
-                i++;
-                var obj = {};
-                var oldName = val;
-                if (val.startsWith("${")) {
-                    val = mapText(val.substring(2, val.length - 1));
-                }
-                obj['name'] = val;
-                obj['oldname'] = oldName;
-                obj['visible'] = true;
-                obj['position'] = i;
-                if (type === "rooms") {
-                    obj['room_divisor'] = "";
-                }
-                returnJson[key] = obj;
-            });
-            returnJson['size'] = i;
-            if (type === "rooms") {
-                returnJson['divisors'] = {};
-            }
-        } else if (type === "programs") {
-            var i = 0;
-            $.each(newJsonObj, function (key, val) {
-                if (key === "date") {
-                    returnJson[key] = val;
-                    return;
-                }
-                i++;
-                var obj = {};
-                obj['name'] = val['name'];
-                obj['oldname'] = val['name'];
-                obj['visible'] = val['visible'];
-                obj['oldvisible'] = val['visible'];
-                obj['position'] = i;
-                obj['active'] = val['active'];
-                obj['operate'] = val['operate'];
-                obj['oldoperate'] = val['operate'];
-                obj['date'] = val['date'];
-                obj['info'] = val['info'];
-                obj['onlyPic'] = false;
-                returnJson[key] = obj;
-            });
-            returnJson['size'] = i;
-        } else if (type === "variables") {
-            var i = 0;
-            $.each(newJsonObj, function (key, val) {
-                if (key === "date") {
-                    returnJson[key] = val;
-                    return;
-                }
-                i++;
-                var obj = {};
-                obj['name'] = val['name'];
-                obj['oldname'] = val['name'];
-                obj['visible'] = val['visible'];
-                obj['oldvisible'] = val['visible'];
-                obj['position'] = i;
-                obj['value'] = val['value'];
-                obj['active'] = val['active'];
-                var valInfo = val['info'];
-                obj['operate'] = isReadOnlyVariable(valInfo);
-                obj['oldoperate'] = obj['operate'];
-                obj['date'] = val['date'];
-                obj['info'] = valInfo;
-                var valueType = val['valueType'];
-                obj['valueType'] = valueType;
-                obj['valueUnit'] = val['valueUnit'];
-                obj['onlyPic'] = false;
-                if (valueType === "16") {
-                    obj['valueList'] = val['valueList'];
-                    obj['listType'] = "auto";
-                } else if (valueType === "2") {
-                    obj['valueName0'] = val['valueName0'];
-                    obj['valueName1'] = val['valueName1'];
-                } else if (valueType === "4") {
-                    obj['valueMin'] = val['valueMin'];
-                    obj['valueMax'] = val['valueMax'];
-                    obj['step'] = 1;
-                    obj['faktor'] = 1;
-                }
-                returnJson[key] = obj;
-            });
-            returnJson['size'] = i;
-        } else {
-            returnJson = newJsonObj;
-        }
-
-        returnJson = refreshJSONObj(type, returnJson, create);
-
-        localStorage.setItem(map, JSON.stringify(returnJson));
-        if (saveDataToFile) {
-            saveDataToFile = false;
-            $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(returnJson)});
-        }
-        return returnJson;
-    } else {
-        setMap(type, newJsonObj);
-        return newJsonObj;
-    }
-}
-
-function refreshJSONObj(type, newJsonObj, create) {
-    var oldMap = getMap(type);
-    if (type === "rooms" || type === "favorites" || type === "functions") {
-        if (!create) {
-            var returnJson = {};
-            var size = newJsonObj["size"];
-            $.each(newJsonObj, function (key, val) {
-                if (key === "date" || key === "size" || key === "divisors") {
-                    if (key === "divisors") {
-                        if ('divisors' in oldMap) {
-                            returnJson['divisors'] = oldMap['divisors'];
-                        } else {
-                            returnJson['divisors'] = val;
-                        }
-                    } else {
-                        returnJson[key] = val;
-                    }
-                    return;
-                }
-                if (key in oldMap) {
-                    var savedVal = oldMap[key];
-                    val['visible'] = savedVal['visible'];
-                    val['position'] = savedVal['position'];
-                    if (val['oldname'] === savedVal['oldname']) {
-                        var savedName = savedVal['name'];
-                        if (savedName.startsWith("${")) {
-                            savedName = mapText(savedName.substring(2, savedName.length - 1));
-                        }
-                        val['name'] = savedName;
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if (type === "rooms") {
-                        if ('room_divisor' in savedVal) {
-                            val['room_divisor'] = savedVal['room_divisor'];
-                        } else {
-                            val['room_divisor'] = "";
-                            saveDataToFile = true;
-                        }
-                    }
-                } else {
-                    size++;
-                    val['position'] = size;
-                    saveDataToFile = true;
-                }
-                returnJson[key] = val;
-            });
-            returnJson["size"] = size;
-            newJsonObj = returnJson;
-        }
-    } else if (type === "programs") {
-        if (!create) {
-            var returnJson = {};
-            var size = newJsonObj["size"];
-            $.each(newJsonObj, function (key, val) {
-                if (key === "date" || key === "size") {
-                    returnJson[key] = val;
-                    return;
-                }
-                if (key in oldMap) {
-                    var savedVal = oldMap[key];
-                    val['position'] = savedVal['position'];
-                    if (val['oldname'] === savedVal['oldname']) {
-                        val['name'] = savedVal['name'];
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if (val['oldvisible'] === savedVal['oldvisible']) {
-                        val['visible'] = savedVal['visible'];
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if (val['oldoperate'] === savedVal['oldoperate']) {
-                        val['operate'] = savedVal['operate'];
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if ('onlyPic' in savedVal) {
-                        val['onlyPic'] = savedVal['onlyPic'];
-                    } else {
-                        val['onlyPic'] = false;
-                        saveDataToFile = true;
-                    }
-                } else {
-                    size++;
-                    val['position'] = size;
-                    saveDataToFile = true;
-                }
-                returnJson[key] = val;
-            });
-            returnJson["size"] = size;
-            newJsonObj = returnJson;
-        }
-    } else if (type === "variables") {
-        if (!create) {
-            var returnJson = {};
-            var size = newJsonObj["size"];
-            $.each(newJsonObj, function (key, val) {
-                if (key === "date" || key === "size") {
-                    returnJson[key] = val;
-                    return;
-                }
-                var valueType = val['valueType'];
-                if (key in oldMap) {
-                    var savedVal = oldMap[key];
-                    val['position'] = savedVal['position'];
-                    if (val['oldname'] === savedVal['oldname']) {
-                        val['name'] = savedVal['name'];
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if (val['oldvisible'] === savedVal['oldvisible']) {
-                        val['visible'] = savedVal['visible'];
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if (val['oldoperate'] === savedVal['oldoperate']) {
-                        val['operate'] = savedVal['operate'];
-                    } else {
-                        saveDataToFile = true;
-                    }
-                    if ('onlyPic' in savedVal) {
-                        val['onlyPic'] = savedVal['onlyPic'];
-                    } else {
-                        val['onlyPic'] = false;
-                        saveDataToFile = true;
-                    }
-                    if (valueType === "16") {
-                        if ('listType' in savedVal) {
-                            val['listType'] = savedVal['listType'];
-                        } else {
-                            val['listType'] = "auto";
-                            saveDataToFile = true;
-                        }
-                    } else if (valueType === "4") {
-                        if ('step' in savedVal) {
-                            val['step'] = savedVal['step'];
-                        } else {
-                            val['step'] = 1;
-                            saveDataToFile = true;
-                        }
-                        if ('faktor' in savedVal) {
-                            val['faktor'] = savedVal['faktor'];
-                        } else {
-                            val['faktor'] = 1;
-                            saveDataToFile = true;
-                        }
-                    }
-                } else {
-                    size++;
-                    val['position'] = size;
-                    saveDataToFile = true;
-                }
-                returnJson[key] = val;
-            });
-            returnJson["size"] = size;
-            newJsonObj = returnJson;
-        }
-    } else if (type === "config" && !create) {
-        newJsonObj['storageVersion'] = storageVersion;
-        if (!("ccu_historian" in newJsonObj)) {
-            newJsonObj['ccu_historian'] = "";
-        }
-        if (!("default_menugfxsize" in newJsonObj)) {
-            newJsonObj['default_menugfxsize'] = "large";
-        }
-        if (!("no_more_settings" in newJsonObj)) {
-            newJsonObj['no_more_settings'] = 0;
-        }
-        if (!("new_version" in newJsonObj)) {
-            newJsonObj['new_version'] = "stable";
-        }
-        if (!("dont_leave" in newJsonObj)) {
-            newJsonObj['dont_leave'] = false;
-        }
-        if (!("clientsList" in newJsonObj)) {
-            newJsonObj['clientsList'] = !isTempClient ? clientsList : new Object();
-        }
-        if (!("default_sort_manually" in newJsonObj)) {
-            newJsonObj['default_sort_manually'] = true;
-        }
-        clientsList = newJsonObj['clientsList'];
-        if (client !== "" && !isTempClient && !(client in clientsList)) {
-            clientsList[client] = client;
-            newJsonObj['clientsList'] = clientsList;
-        }
-        if (!("two_sites" in newJsonObj)) {
-            newJsonObj['two_sites'] = false;
-        }
-        if (!("transition" in newJsonObj)) {
-            newJsonObj['transition'] = "flip";
-        }
-        if (!("columns" in newJsonObj)) {
-            newJsonObj['columns'] = 1;
-        }
-        if (!("show_description" in newJsonObj)) {
-            newJsonObj['show_description'] = true;
-        }
-        if (!("show_lastUsedTime" in newJsonObj)) {
-            newJsonObj['show_lastUsedTime'] = true;
-        }
-        if (!("room_divisor" in newJsonObj)) {
-            newJsonObj['room_divisor'] = false;
-        }
-    }
-
-    setMap(type, newJsonObj);
-    return newJsonObj;
-}
-
-function createConfigFile(type, map) {
-    saveDataToFile = true;
-    if (type === "config") {
-        var text = '{';
-        text += '"storageVersion" : ' + storageVersion + ',';
-        text += '"favorites" : true,';
-        text += '"rooms" : true,';
-        text += '"functions" : true,';
-        text += '"variables" : true,';
-        text += '"programs" : true,';
-        text += '"others" : true,';
-        text += '"collapsed" : "rooms",';
-        text += '"systemvar_readonly" : true,';
-        text += '"default_theme" : "wma",';
-        text += '"default_font" : "a",';
-        text += '"ccu_historian" : "",';
-        text += '"default_menugfxsize" : "large",';
-        text += '"no_more_settings" : 0,';
-        text += '"new_version" : "stable",';
-        text += '"dont_leave" : false,';
-        text += '"clientsList" : {' + (client !== "" && !isTempClient ? '"' + client + '":"' + client + '"' : '') + '},';
-        text += '"default_sort_manually" : true,';
-        text += '"two_sites" : false,';
-        text += '"transition" : "flip",';
-        text += '"columns" : 1,';
-        text += '"show_description" : true,';
-        text += '"show_lastUsedTime" : true,';
-        text += '"room_divisor" : false';
-        text += '}';
-
-        optionsMap = saveConfigFile(type, JSON.parse(text), true, map, true);
-    } else if (type.endsWith("Client")) {
-        var text = '{}';
-        type = type.slice(0, -6);
-        if (client !== "") {
-            switch (type) {
-                case "config":
-                    optionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break;
-                case "variables":
-                    variablesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break;
-                case "programs":
-                    programsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "favorites":
-                    favoritesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "rooms":
-                    roomsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "functions":
-                    functionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "devices":
-                    devicesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-            }
-        }
-    } else {
-        loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);
-    }
 }
 
 function buttonEvents(obj, refresh) {
@@ -2068,7 +1264,7 @@ function loadVariables(restart) {
         var systemDate = resultVariablesMap['date'];
         var tmpObj = {};
         $.each(resultVariablesMap, function (key, variable) {
-            if (key === "date" || key === "size") {
+            if (key === "date" || key === "size" || key === "divisors" || (divisorClick && variable['variables_divisor'] !== lastClickID)) {
                 return;
             }
             var html = processVariable(variable, key, systemDate);
@@ -2093,7 +1289,7 @@ function loadVariables(restart) {
             $("#" + dataList).append(tmpObj[k]);
         }
 
-        reloadList(mapText("SYS_VAR"), systemDate, restart, "");
+        reloadList(mapText("VARIABLES"), systemDate, restart, "");
     }
 
     loadConfigData(true, 'cgi/variables.cgi', 'variables', 'webmaticvariablesMap', false, true, function () {
@@ -2101,7 +1297,7 @@ function loadVariables(restart) {
 
         var systemDate = resultVariablesMap['date'];
         $.each(resultVariablesMap, function (key, variable) {
-            if (key === "date" || key === "size") {
+            if (key === "date" || key === "size" || key === "divisors" || (divisorClick && variable['variables_divisor'] !== lastClickID)) {
                 return;
             }
 
@@ -2112,7 +1308,7 @@ function loadVariables(restart) {
             }
 
         });
-        reloadList(mapText("SYS_VAR"), systemDate, restart, "");
+        reloadList(mapText("VARIABLES"), systemDate, restart, "");
         $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
         $("img").trigger("lazyLoadInstantly");
     });
@@ -2126,7 +1322,7 @@ function loadVariables(restart) {
     $("img").trigger("lazyLoadInstantly");
 }
 
-function loadPrograms(restart) {
+function loadPrograms(restart, divId) {
 
     // Icon Animation in Refresh Button:
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
@@ -2159,7 +1355,7 @@ function loadPrograms(restart) {
         var systemDate = resultProgramsMap['date'];
         var tmpObj = {};
         $.each(resultProgramsMap, function (key, prog) {
-            if (key === "date" || key === "size") {
+            if (key === "date" || key === "size" || key === "divisors" || (divisorClick && prog['programs_divisor'] !== lastClickID)) {
                 return;
             }
             var prgVisible = prog['visible'];
@@ -2196,7 +1392,7 @@ function loadPrograms(restart) {
 
         var systemDate = resultProgramsMap['date'];
         $.each(resultProgramsMap, function (key, prog) {
-            if (key === "date" || key === "size") {
+            if (key === "date" || key === "size" || key === "divisors" || (divisorClick && prog['programs_divisor'] !== lastClickID)) {
                 return;
             }
             var prgVisible = prog['visible'];
@@ -2318,7 +1514,7 @@ $(function () {
 
     $(document.body).on("click", ".onlyPic:not(.onlyPicDisabled)", function () {
         var dataID = $(this).data("id");  // Homematic Geräte ID.
-        $('#player' + dataID).css("background-image", "url('img/misc/gear32ani.GIF')");
+        $('#player' + dataID).removeClass('onlyPic-player-' + theme).addClass('onlyPic-playerani-' + theme);
         var type = $(this).data("type");
 
         var urlAttr = testSite ? "&debug=true" : "";
@@ -2327,11 +1523,10 @@ $(function () {
         }
 
         if (type === "programs") {
-
             $.get('cgi/startprogram.cgi?id=' + dataID + urlAttr, function () {
-                $('#player' + dataID).delay(2000).css("background-image", "url('img/misc/gear32.gif')");
+                $('#player' + dataID).delay(3000).removeClass('onlyPic-playerani-' + theme).addClass('onlyPic-player-' + theme);
             });
-        } else if (type === "variables2") {
+        } else if (type === "variables") {
             var value = $(this).data("value");
             if (value === "") {
                 value = false;
@@ -2437,6 +1632,29 @@ $(function () {
                 }
             });
         }
+    });
+
+    //ScrolltoTop
+    var offset = 300,
+            offset_opacity = 1200,
+            scroll_top_duration = 700,
+            $back_to_top = $('.cd-top');
+
+    //hide or show the "back to top" link
+    $(window).scroll(function () {
+        ($(this).scrollTop() > offset) ? $back_to_top.addClass('cd-is-visible') : $back_to_top.removeClass('cd-is-visible cd-fade-out');
+        if ($(this).scrollTop() > offset_opacity) {
+            $back_to_top.addClass('cd-fade-out');
+        }
+    });
+
+    //smooth scroll to top
+    $back_to_top.on('click', function (event) {
+        event.preventDefault();
+        $('body,html').animate({
+            scrollTop: 0
+        }, scroll_top_duration
+                );
     });
 
 });

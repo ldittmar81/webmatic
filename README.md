@@ -5,6 +5,9 @@ WebMatic ist eine browserbasierte Benutzeroberfläche für HomeMatic. Die Elemen
 Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsweise der Software und keinerlei Haftung für Schäden, die aus der Benutzung dieser Software resultieren.
 
 ## Changelog
+2.2
+* Informationen folgen...
+
 2.1.4
 * Unterstützung verschiedener Sprachen (deutsch, englisch, spanisch, türkisch, chinesisch, russisch, portugisisch, französisch) - alles von Mr. Big G. übersetzt ... wer es besser kann, kann gerne unterstützen
 * Einstellung von Clients über Admin-Rechner möglich

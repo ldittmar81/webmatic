@@ -640,7 +640,7 @@ var textMap = {
     VISIBILITY: "görünürlük",
     DELETE: "silmek",
     UPLOAD: "resim upload",
-    SYS_VAR: "Sistem değişkenleri",
+    VARIABLES: "Sistem değişkenleri",
     PROGRAMS: "programları",
     FAVORITES: "Sık",
     ROOMS: "oda",
