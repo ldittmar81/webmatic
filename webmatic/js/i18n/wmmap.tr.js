@@ -737,5 +737,8 @@ var textMap = {
     SHOW_DESCRIPTION: "göster Açıklama",
     SHOW_LAST_TIME_USED: "kullanılan en son ne zaman göster",
     WORKSPACE: "işyeri",
-    ONLY_PIC: "sadece grafik"
+    ONLY_PIC: "sadece grafik",
+    DIVIDE: "bölme",
+    ADD_DIVIDER: "bölümü eklemek",
+    UNSORTED: "sıralanır"
 };

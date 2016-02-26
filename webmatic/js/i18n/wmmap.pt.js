@@ -737,7 +737,10 @@ var textMap = {
     SHOW_DESCRIPTION: "Mostrar descrição",
     SHOW_LAST_TIME_USED: "Mostrar último usado",
     WORKSPACE: "local de trabalho",
-    ONLY_PIC: "somente gráficos"
+    ONLY_PIC: "somente gráficos",
+    DIVIDE: "divisória",
+    ADD_DIVIDER: "adicionar partição",
+    UNSORTED: "não classificadas"
 };
 
 

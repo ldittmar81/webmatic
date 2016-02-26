@@ -737,5 +737,8 @@ var textMap = {
     SHOW_DESCRIPTION: "展会介绍",
     SHOW_LAST_TIME_USED: "显示上一次使用",
     WORKSPACE: "职场",
-    ONLY_PIC: "只有图形"
+    ONLY_PIC: "只有图形",
+    DIVIDE: "划分",
+    ADD_DIVIDER: "添加分区",
+    UNSORTED: "没有排序"
 };

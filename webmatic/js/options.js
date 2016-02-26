@@ -864,7 +864,7 @@ function processGraphicID(type) {
 
     html += "<div class='ui-grid-b'>";
     html += "<div class='ui-block-f text-right'>";
-    html += "<span>" + mapText("DIVIDE_" + type) + "</span>";
+    html += "<span>" + mapText("DIVIDE") + "</span>";
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
