@@ -1518,6 +1518,10 @@ $(function () {
 
         activateSettingSaveButton(true);
     });
+    
+    $(document.body).on("click", "[nam='editDivider']", function(){
+       alert("Geht noch nicht!"); 
+    });
 
     $(document.body).on("click", "[name='changeFloatSF']", function () {
         var obj = $(this);
