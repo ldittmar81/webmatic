@@ -1,6 +1,6 @@
 html * {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .valueNoError { font-size: 20px; font-style: italic; }
@@ -469,4 +469,21 @@ li.ui-block-g {
         right: 30px;
         bottom: 30px;
     }
+}
+
+.save-button{
+    display: inline-block;
+    position: fixed;
+    bottom: 40px;
+    right: 50%;
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: opacity .3s 0s, visibility 0s .3s;
+    -moz-transition: opacity .3s 0s, visibility 0s .3s;
+    transition: opacity .3s 0s, visibility 0s .3s;
+}
+.save-button.save-button-is-visible {
+    /* the button becomes visible */
+    visibility: visible;
+    opacity: 1;
 }

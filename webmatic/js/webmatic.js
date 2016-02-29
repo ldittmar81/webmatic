@@ -31,6 +31,7 @@ function refreshPage(item, col) {
             }
             excludeFromRefresh.length = 0;
             $("#" + dataList).hide();
+            loadColorPicker = false;
         }
 
         switch (lastClickType) {
@@ -180,28 +181,7 @@ function processVariable(variable, valID, systemDate) {
         }
 
         // In der Variablenliste editieren zulassen:
-        if (!operate) {
-            html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, variable['valueList'], variable['valueName0'], variable['valueName1'], variable['faktor']);
-        } else if (valType === "2") {
-            // Bool.
-            html += addSetBoolButtonList('', valID, strValue, variable['valueName0'], variable['valueName1'], valUnit, vorDate, true, operate);
-        } else if (valType === "4") {
-            // Float, Integer.
-            html += addSetNumber('', valID, strValue, valUnit, variable['valueMin'], variable['valueMax'], variable["step"] ? variable["step"] : 1, variable["faktor"] ? variable["faktor"] : 1, vorDate, true, operate);
-        } else if (valType === "16") {
-            // Liste.
-            html += addSetValueList('', valID, strValue, variable['valueList'], valUnit, vorDate, true, operate, variable['listType']);
-        } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
-            html += addHTML("", valID, strValue, vorDate, false);
-        } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-            html += addHistorianDiagram("", valID, strValue, vorDate, false);
-        } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
-            html += addTuneInRadio("", valID, strValue, vorDate, false);
-        } else if (valType === "20") {
-            html += addSetText("", valID, strValue, valUnit, vorDate, operate);
-        } else {
-            html += mapText("UNKNOWN_VAR_TYPE") + "!";
-        }
+        html += addVariableField('', valID, variable, vorDate, !operate, operate);
     }
     html += "</li>";
 
@@ -854,9 +834,7 @@ function addChannel(device, systemDate, options, operate) {
                     deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
                     deviceHTML += "</div>";
                 }
-                if (isReadOnly(valInfo)) {
-                    deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1, 1);
-                } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
+                if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
                     excludeFromRefresh.push(valID);
                     options['addDiagram'] = true;
                     if (options['varOptionsFirst'] === "dk") {
@@ -872,26 +850,7 @@ function addChannel(device, systemDate, options, operate) {
                         deviceHTML += "<div id='" + options['diagramID'] + "' style='height:300px; width:90%;'></div>" + " <i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i>";
                     }
                 } else {
-                    if (valType === "2") {
-                        // Bool.
-                        deviceHTML += addSetBoolButtonList(deviceID, valID, strValue, val0, val1, valUnit, vorDate, true, operate);
-                    } else if (valType === "4") {
-                        // Float, Integer.
-                        deviceHTML += addSetNumber(deviceID, valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true, operate);
-                    } else if (valType === "16") {
-                        // Liste.
-                        deviceHTML += addSetValueList(deviceID, valID, strValue, valList, valUnit, vorDate, true, operate);
-                    } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
-                        deviceHTML += addHTML(deviceID, valID, strValue, vorDate, false);
-                    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-                        deviceHTML += addHistorianDiagram(deviceID, valID, strValue, vorDate, false);
-                    } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
-                        deviceHTML += addTuneInRadio(deviceID, valID, strValue, vorDate, false);
-                    } else if (valType === "20") {
-                        deviceHTML += addSetText(deviceID, valID, strValue, valUnit, vorDate, operate);
-                    } else {
-                        deviceHTML += mapText("UNKNOWN_VAR_TYPE") + "!";
-                    }
+                    deviceHTML += addVariableField(deviceID, valID, channel, vorDate, isReadOnly(valInfo), operate);
                 }
             }
         }
@@ -976,9 +935,7 @@ function processDevices(device, systemDate, options, operate) {
             deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
             deviceHTML += "</div>";
         }
-        if (isReadOnly(valInfo)) {
-            deviceHTML += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1, 1);
-        } else if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
+        if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
             excludeFromRefresh.push(valID.toString());
             options['addDiagram'] = true;
             if (options['varOptionsFirst'] === "dk") {
@@ -996,26 +953,7 @@ function processDevices(device, systemDate, options, operate) {
         } else if (options['varOptionsFirst'] === "nv") {
             deviceHTML = "";  // Leeren.
         } else {
-            if (valType === "2") {
-                // Bool.
-                deviceHTML += addSetBoolButtonList('', valID, strValue, val0, val1, valUnit, vorDate, true, operate);
-            } else if (valType === "4") {
-                // Float, Integer.
-                deviceHTML += addSetNumber('', valID, strValue, valUnit, valMin, valMax, 0.001, 1.0, vorDate, true, operate);
-            } else if (valType === "16") {
-                // Liste.
-                deviceHTML += addSetValueList('', valID, strValue, valList, valUnit, vorDate, true, operate);
-            } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
-                deviceHTML += addHTML("", valID, strValue, vorDate, false);
-            } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
-                deviceHTML += addHistorianDiagram("", valID, strValue, vorDate, false);
-            } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
-                deviceHTML += addTuneInRadio("", valID, strValue, vorDate, false);
-            } else if (valType === "20") {
-                deviceHTML += addSetText("", valID, strValue, valUnit, vorDate, operate);
-            } else {
-                deviceHTML += mapText("UNKNOWN_VAR_TYPE") + "!";
-            }
+            deviceHTML += addVariableField('', valID, device, vorDate, isReadOnly(valInfo), operate);          
         }
     } else if (device['type'] === "PROGRAM") {
         var prgID = device['id'];
@@ -1215,6 +1153,10 @@ function loadData(url, id, restart) {
             reloadList(dta['name'], systemDate, restart, dta['description']);
             $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
             $("img").trigger("lazyLoadInstantly");
+
+            if (loadColorPicker) {
+                $(".colorPicker").colorPicker();
+            }
         });
 
     }
@@ -1229,6 +1171,10 @@ function loadData(url, id, restart) {
     $("textarea").textinput("refresh");
     $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
     $("img").trigger("lazyLoadInstantly");
+
+    if (loadColorPicker) {
+        $(".colorPicker").colorPicker();
+    }
 }
 
 function loadVariables(restart) {
@@ -1311,6 +1257,10 @@ function loadVariables(restart) {
         reloadList(mapText("VARIABLES"), systemDate, restart, "");
         $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
         $("img").trigger("lazyLoadInstantly");
+
+        if (loadColorPicker) {
+            $(".colorPicker").colorPicker();
+        }
     });
 
     // Animated Icon aus Refresh wieder entfernen:
@@ -1320,6 +1270,10 @@ function loadVariables(restart) {
     $("textarea").textinput("refresh");
     $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
     $("img").trigger("lazyLoadInstantly");
+
+    if (loadColorPicker) {
+        $(".colorPicker").colorPicker();
+    }
 }
 
 function loadPrograms(restart) {

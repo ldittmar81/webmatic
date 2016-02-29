@@ -20,6 +20,7 @@ libs/jquery/jquery-2.1.4.min.js
 libs/jquery/jquery.mobile-1.4.5.min.js
 libs/jquery_lazyload/jquery.lazyload.min.js
 libs/Font.js/Font.min.js
+libs/tinyColorPicker/jqColorPicker.min.js
 libs/DateBox/js/jtsage-datebox.min.js
 libs/DateBox/js/jtsage-datebox.i18n.de.utf8.min.js
 js/i18n/wmmap.de.min.js

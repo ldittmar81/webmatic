@@ -180,7 +180,7 @@ function loadDivisor(gfxClassParent, gfxClassSelected, collapsed, type) {
     var tmpMap = {};
     addUnsorted(resultMap);
     $.each(resultMap['divisors'], function (key, val) {
-        if($.isNumeric(key)){
+        if ($.isNumeric(key)) {
             key = parseInt(key);
         }
         var indexType = type + key;
@@ -271,6 +271,7 @@ $(function () {
     $("#serviceText").text(mapText("SERVICE_NOTE"));
     $("#serviceTextNone").text(mapText("NO_DISORDERS"));
     $(".backText").text(mapText("BACK"));
+    $(".save-button").text(mapText("SAVE"));
 
     // Größe der Grafiken aus localStorage holen:
     gfxClass = resultOptionsMap['default_menugfxsize'];

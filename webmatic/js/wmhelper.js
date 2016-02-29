@@ -26,6 +26,7 @@ var client = "";
 var isTempClient = false;
 var clientsList = {};
 var reloadClient = false;
+var loadColorPicker = false;
 
 var picturesList = [];
 var picturesListError = false;
@@ -149,6 +150,41 @@ function createVerFile() {
 }
 
 // ----------------------- HTML Creation Helper ------------------------------
+
+function addVariableField(parentID, valID, map, vorDate, readonly, operate) {
+    var strValue = unescape(map['value']);
+    var valType = map['valueType'];
+    var valUnit = map['valueUnit'];
+
+    var html = "";
+    if (readonly) {
+        html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, map['valueList'], map['valueName0'], map['valueName1'], map["faktor"] ? map["faktor"] : 1);
+    } else if (valType === "2") {
+        // Bool.
+        html += addSetBoolButtonList(parentID, valID, strValue, map['valueName0'], map['valueName1'], valUnit, vorDate, true, operate);
+    } else if (valType === "4") {
+        // Float, Integer.
+        html += addSetNumber(parentID, valID, strValue, valUnit, map['valueMin'], map['valueMax'], map["step"] ? map["step"] : 1, map["faktor"] ? map["faktor"] : 1, vorDate, true, operate);
+    } else if (valType === "16") {
+        // Liste.
+        html += addSetValueList(parentID, valID, strValue, map['valueList'], valUnit, vorDate, true, operate, map['listType'] ? map['listType'] : 'auto', false);
+    } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
+        html += addHTML(parentID, valID, strValue, vorDate, !operate);
+    } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
+        html += addHistorianDiagram(parentID, valID, strValue, vorDate, !operate);
+    } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
+        html += addTuneInRadio(parentID, valID, strValue, vorDate, !operate);
+    } else if (valType === "20" && valUnit.toUpperCase() === "COLOR") {
+        html += addColorPicker(parentID, valID, strValue, vorDate, operate);
+    } else if (valType === "20" && valUnit.toUpperCase() === "DATE") {
+        html += addDatePicker(parentID, valID, strValue, vorDate, operate);
+    } else if (valType === "20") {
+        html += addSetText(parentID, valID, strValue, valUnit, vorDate, operate);
+    } else {
+        html += mapText("UNKNOWN_VAR_TYPE") + "!";
+    }
+    return html;
+}
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 // onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
@@ -342,12 +378,17 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
         // String oder unbekannt.
         visVal = strValue;
     }
+
     if (valType === "20" && valUnit.toUpperCase() === "HTML") {
         return addHTML("", valID, strValue, vorDate, true);
     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
         return addHistorianDiagram("", valID, strValue, vorDate, true);
     } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
         return addTuneInRadio("", valID, strValue, vorDate, true);
+    } else if (valType === "20" && valUnit.toUpperCase() === "COLOR") {
+        return addColorPicker("", valID, strValue, vorDate, false);
+    } else if (valType === "20" && valUnit.toUpperCase() === "DATE") {
+        return addDatePicker("", valID, strValue, vorDate, false);
     } else {
         return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></p>";
     }
@@ -519,6 +560,25 @@ function editTuneIn(parentId, valID, val, vorDate) {
     return html;
 }
 
+function addColorPicker(parentId, valID, val, vorDate, operate) {
+    var html = "<div class='ui-field-contain'>";
+    html += "<input type='text' class='colorPicker' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
+    html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
+    html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+    html += "</div>";
+    loadColorPicker = true;
+    return html;
+}
+
+function addDatePicker(parentId, valID, val, vorDate, operate) {
+    var html = "<div class='ui-field-contain'>";
+    html += "<input type='text' data-role='datebox' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;' data-options='{\"mode\":\"durationbox\"}'/>";
+    html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
+    html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+    html += "</div>";
+    return html;
+}
+
 //onlyPicDialog
 function openOnlyPicDialog(title, html, button, callback) {
     $("#dialog .functionName").text(title);
@@ -533,56 +593,76 @@ function openOnlyPicDialog(title, html, button, callback) {
 //Divisor
 function getDivisorSelectbox(type, divisor, key) {
     var html = "";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
-    html += "<select id='select_divisor" + key + "' data-theme='" + theme + "'>";
+    html += "<select name='saveDivisor' data-type='" + type + "' data-key='" + type + "_divisor' data-id='" + key + "' data-theme='" + theme + "'>";
     html += "<option value='unsorted'></option>";
     var map = getMap(type);
     $.each(map['divisors'], function (keyDiv, valueDiv) {
-        if($.isNumeric(keyDiv)){
+        if ($.isNumeric(keyDiv)) {
             keyDiv = parseInt(keyDiv);
         }
         html += "<option value='" + keyDiv + "' " + (divisor === keyDiv ? "selected='selected'" : "") + ">" + valueDiv['name'] + "</option>";
     });
     html += "</select>";
-    html += "<a href='#' name='saveDivisor' data-type='" + type + "' data-key='" + type + "_divisor' data-id='" + key + "' data-role='button' data-inline='true' data-icon='check'>&nbsp;</a>";
-    html += "</div>";
     return html;
 }
 
 function addDivisor(size, type) {
-    var html = "";
     var map = getMap(type);
+    var tmpObj = {};
+    if (resultOptionsMap['default_sort_manually'] && optionsMap[type + "_divisor"]) {
+        map = recalculatePositions(map, type, true);
+    }
     $.each(map['divisors'], function (key, value) {
-        html += "<li id='list" + key + "'>";
+        var html = "<li id='list" + key + "' data-id='" + key + "'>";
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'>";
-        html += "<div data-role='controlgroup' data-type='horizontal'>";
-        html += "<input type='text' id='editDivider" + key + "' value='" + value['name'] + "' class='ui-no-corner-right' data-wrapper-class='controlgroup-textinput ui-btn'/>";
-        html += "<a href='#' data-role='button' name='editDivider' data-action='save' data-key='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
-        html += "</div>";
+        html += "<input type='text' name='editName' data-id='" + key + "' data-type='" + type + "Divisor' value='" + value['name'] + "' />";
         html += "</div>";
         html += "<div class='ui-block-b'>";
-        html += "<a href='#' name='editDivider' data-action='delete' data-key='" + key + "' data-role='button' data-inline='true'>" + mapText("DELETE") + "</a>";
+        html += "<a href='#' name='deleteDivider' data-id='" + key + "' data-type='" + type + "Divisor' data-role='button' data-inline='true'>" + mapText("DELETE") + "</a>";
         html += "</div>";
         html += "<div class='ui-block-c'>";
-        html += "<div style='float: right;'>";
-        html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key + "' data-type='" + type + "Divisor' value='" + value['position'] + "' data-last='" + (size === value['position']) + "'/>";
-        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
-        if (value['position'] <= 1) {
-            html += " ui-state-disabled' style='display: none;";
+        if (resultOptionsMap['default_sort_manually']) {
+            html += "<div style='float: right;'>";
+            html += "<input type='hidden' name='position' id='position" + key + "' data-id='" + key + "' data-type='" + type + "Divisor' value='" + value['position'] + "' data-last='" + (size === value['position']) + "'/>";
+            html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-u ui-btn-icon-notext ui-corner-all";
+            if (value['position'] <= 1) {
+                html += " ui-state-disabled' style='display: none;";
+            }
+            html += "' name='setUp' id='setUp" + key + "' data-id='" + key + "' />";
+            html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext ui-corner-all";
+            if (value['position'] >= size) {
+                html += " ui-state-disabled' style='display: none;";
+            }
+            html += "' name='setDown' id='setDown" + key + "' data-id='" + key + "' />";
+            html += "</div>";
         }
-        html += "' name='setUp' id='setUp" + key + "' data-id='" + key + "' />";
-        html += "<a href='#' class='ui-btn ui-btn-inline ui-icon-carat-d ui-btn-icon-notext ui-corner-all";
-        if (value['position'] >= size) {
-            html += " ui-state-disabled' style='display: none;";
-        }
-        html += "' name='setDown' id='setDown" + key + "' data-id='" + key + "' />";
-        html += "</div>";
         html += "</div>";
         html += "</div>";
         html += "</li>";
+        if (resultOptionsMap['default_sort_manually']) {
+            tmpObj[parseInt(value['position'])] = html;
+        } else {
+            tmpObj[value['name'].toLowerCase()] = html;
+        }
     });
-    return html;
+
+    var keys;
+    if (resultOptionsMap['default_sort_manually']) {
+        keys = Object.keys(tmpObj).sort(function (a, b) {
+            return a - b;
+        });
+    } else {
+        keys = Object.keys(tmpObj).sort();
+    }
+    var result = "";
+    var len = keys.length;
+    for (var i = 0; i < len; i++) {
+        var k = keys[i];
+        result += tmpObj[k];
+    }
+
+    return result;
 }
 
 function createClientMenuOptions(type) {
@@ -896,7 +976,7 @@ function changeFont(code) {
 
 // ----------------------- Helper functions ----------------------------
 
-function addUnsorted(map){
+function addUnsorted(map) {
     var value = {};
     value['name'] = mapText("UNSORTED");
     value['position'] = 999;
@@ -905,10 +985,51 @@ function addUnsorted(map){
     map['divisors'] = originObj;
 }
 
-function removeUnsorted(map){
+function removeUnsorted(map) {
     var originObj = map['divisors'];
     delete  originObj["unsorted"];
     map['divisors'] = originObj;
+}
+
+function recalculatePositions(map, type, isDivisor) {
+    var tmpObj = {};
+    var counter = 0;
+    var biggest = 0;
+    var calcMap = isDivisor ? map['divisors'] : map;
+    $.each(calcMap, function (key, val) {
+        if (key === "date" || key === "size" || key === "divisors") {
+            return;
+        }
+        counter++;
+        var position = parseInt(val['position']);
+        if (position > biggest) {
+            biggest = position;
+        }
+        tmpObj[position] = key;
+    });
+
+    if (biggest !== counter) {
+        var keys;
+        keys = Object.keys(tmpObj).sort(function (a, b) {
+            return a - b;
+        });
+        var len = keys.length;
+        var pos = 0;
+        for (var i = 0; i < len; i++) {
+            var k = keys[i];
+            pos++;
+            if (isDivisor) {
+                map['divisors'][tmpObj[k]]['position'] = pos;
+            } else {
+                map['size'] = counter;
+                map[tmpObj[k]]['position'] = pos;
+            }
+        }
+        type = setMap(type, map);
+        localStorage.setItem("webmatic" + type + "Map", JSON.stringify(getMap(type)));
+        $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(getMap(type))});
+    }
+    return map;
 }
 
 function getPicKey(key, type, map, options) {
@@ -1054,17 +1175,37 @@ function setMap(type, data) {
         case "variables":
             variablesMap = data;
             break;
+        case "variablesDivisor":
+            variablesMap['divisors'] = data;
+            type = "variables";
+            break
         case "programs":
             programsMap = data;
+            break
+        case "programsDivisor":
+            programsMap['divisors'] = data;
+            type = "programs";
             break
         case "favorites":
             favoritesMap = data;
             break
+        case "favoritesDivisor":
+            favoritesMap['divisors'] = data;
+            type = "favorites";
+            break
         case "rooms":
             roomsMap = data;
             break
+        case "roomsDivisor":
+            roomsMap['divisors'] = data;
+            type = "rooms";
+            break
         case "functions":
             functionsMap = data;
+            break
+        case "functionsDivisor":
+            functionsMap['divisors'] = data;
+            type = "functions";
             break
         case "devices":
             devicesMap = data;
@@ -1073,6 +1214,7 @@ function setMap(type, data) {
             optionsMap = data;
             break;
     }
+    return type;
 }
 
 function loadLocalStorageMap(type, id) {

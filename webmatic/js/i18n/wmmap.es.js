@@ -740,5 +740,6 @@ var textMap = {
     ONLY_PIC: "sólo gráficos",
     DIVIDE: "dividir",
     ADD_DIVIDER: "añadir partición",
-    UNSORTED: "sin clasificar"
+    UNSORTED: "sin clasificar",
+    SAVE_AND_RELOAD: "guardar y recargar"
 };

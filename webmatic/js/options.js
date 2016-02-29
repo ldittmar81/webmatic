@@ -3,9 +3,13 @@
 // ----------------------- Helper functions ----------------------------
 
 function activateSettingSaveButton(reload) {
-    $('[name="saveAllChanges"]').removeClass('ui-state-disabled');
     mustBeSaved = true;
-    mustReload = reload;
+    if (!mustReload && reload) {
+        mustReload = true;
+        $(".save-button").text(mapText("SAVE_AND_RELOAD"));
+        $(".save-button").removeClass("ui-icon-check").addClass("ui-icon-refresh");
+    }
+    $('[name="saveAllChanges"]').addClass("save-button-is-visible").removeClass('ui-state-disabled');
 }
 
 function saveOptionsToServer(key, value, reload) {
@@ -46,7 +50,7 @@ function saveAllDatasToServer() {
         location.reload(true);
     }
     mustBeSaved = false;
-    $('[name="saveAllChanges"]').addClass('ui-state-disabled');
+    $('[name="saveAllChanges"]').removeClass('save-button-is-visible').addClass('ui-state-disabled');
 }
 
 function createExecutationField(key, map) {
@@ -109,8 +113,6 @@ function loadGraphicIDs(type) {
     // Icon Animation in Refresh Button:
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
-    $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved ? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
-
     //Global
     if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
         if (newVersion) {
@@ -137,8 +139,6 @@ function loadGraphicIDs(type) {
 
     $("#" + dataList).append("<li data-role='list-divider' role='heading'>" + mapText(type) + "</li>");
     processGraphicID(type);
-
-    $("#" + dataList).append("<li sytle='text-align:center;'><a href='#' " + (!mustBeSaved ? "class='ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + " name='saveAllChanges'>" + mapText("SAVE") + "</a></li>");
 
     $("#" + dataList).listview("refresh");
     $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
@@ -867,7 +867,7 @@ function processGraphicID(type) {
     html += "<span>" + mapText("DIVIDE") + "</span>";
     html += "</div>";
     html += "<div class='ui-block-g'>";
-    html += "<div data-role='controlgroup' data-type='horizontal'>";
+    html += "<div data-role='controlgroup' data-type='horizontal' style='vertical-align:middle;'>";
     var selected1 = "";
     var selected2 = "";
     if (optionsMap[type + "_divisor"]) {
@@ -877,6 +877,7 @@ function processGraphicID(type) {
     }
     html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='" + type + "_divisor' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
     html += "<a href='#' name='saveGlobalOption' data-reload='true' data-key='" + type + "_divisor' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
+    html += "&nbsp;(" + mapText("RELOAD") + ")";
     html += "</div>";
     html += "</div>";
     html += "</div>";
@@ -889,7 +890,7 @@ function processGraphicID(type) {
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     html += "<input type='text' id='addDividerInput' value='' class='ui-no-corner-right' data-wrapper-class='controlgroup-textinput ui-btn'/>";
-    html += "<a href='#' data-role='button' id='addDivider' data-type='" + type +"' data-size='" + size + "' data-inline='true' data-icon='plus'>&nbsp;</a>";
+    html += "<a href='#' data-role='button' id='addDivider' data-type='" + type + "' data-size='" + size + "' data-inline='true' data-icon='plus'>&nbsp;</a>";
     html += "</div>";
     html += "</div>";
     html += "</div>";
@@ -905,6 +906,9 @@ function processGraphicID(type) {
 
     var tmpObj = {};
     var size = map["size"];
+    if (resultOptionsMap['default_sort_manually']) {
+        map = recalculatePositions(map, type, false);
+    }
     $.each(map, function (key, val) {
         if (key === "date" || key === "size" || key === "divisors") {
             return;
@@ -952,19 +956,19 @@ function processGraphicID(type) {
             html += "<div class='ui-block-b'>";
             html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
             html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-type='" + type + "' data-key='onlyPic' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['onlyPic'] ? "checked" : "") + "/>";
-            html += "</div>";            
+            html += "</div>";
         }
-        if(isVariables){
-            if(isTextVariables){
+        if (isVariables) {
+            if (isTextVariables) {
                 html += "<div class='ui-block-b small-hidden'></div>";
             }
-            if(optionsMap["variables_divisor"]){
+            if (optionsMap["variables_divisor"]) {
                 html += "<div class='ui-block-c'>";
                 html += getDivisorSelectbox(type, val[type + "_divisor"], key);
                 html += "</div>";
-            }else{
+            } else {
                 html += "<div class='ui-block-c small-hidden'></div>";
-            }            
+            }
         }
         if (isVariables && !isTextVariables) {
             html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
@@ -1112,6 +1116,7 @@ $(function () {
 
         var type = $("#position" + thisId).data("type");
 
+        var reorderMenu = false;
         switch (type) {
             case "favorites":
                 favoritesMap[thisId]['position'] = newPosition;
@@ -1123,6 +1128,7 @@ $(function () {
                 originObj[beforeId]['position'] = oldPosition;
                 favoritesMap['divisors'] = originObj;
                 type = "favorites";
+                reorderMenu = true;
                 break
             case "rooms":
                 roomsMap[thisId]['position'] = newPosition;
@@ -1134,6 +1140,7 @@ $(function () {
                 originObj[beforeId]['position'] = oldPosition;
                 roomsMap['divisors'] = originObj;
                 type = "rooms";
+                reorderMenu = true;
                 break
             case "functions":
                 functionsMap[thisId]['position'] = newPosition;
@@ -1145,6 +1152,7 @@ $(function () {
                 originObj[beforeId]['position'] = oldPosition;
                 functionsMap['divisors'] = originObj;
                 type = "functions";
+                reorderMenu = true;
                 break
             case "programs":
                 programsMap[thisId]['position'] = newPosition;
@@ -1168,6 +1176,12 @@ $(function () {
                 variablesMap['divisors'] = originObj;
                 type = "variables";
                 break
+        }
+
+        if (reorderMenu) {
+            var thisList2 = $("#" + type + thisId + "MainMenu");
+            var before2 = thisList2.prev();
+            thisList2.insertBefore(before2);
         }
 
         createOneMap(type);
@@ -1210,6 +1224,7 @@ $(function () {
 
         var type = $("#position" + thisId).data("type");
 
+        var reorderMenu = false;
         switch (type) {
             case "favorites":
                 favoritesMap[thisId]['position'] = newPosition;
@@ -1221,6 +1236,7 @@ $(function () {
                 originObj[afterId]['position'] = oldPosition;
                 favoritesMap['divisors'] = originObj;
                 type = "favorites";
+                reorderMenu = true;
                 break
             case "rooms":
                 roomsMap[thisId]['position'] = newPosition;
@@ -1232,6 +1248,7 @@ $(function () {
                 originObj[afterId]['position'] = oldPosition;
                 roomsMap['divisors'] = originObj;
                 type = "rooms";
+                reorderMenu = true;
                 break
             case "functions":
                 functionsMap[thisId]['position'] = newPosition;
@@ -1243,6 +1260,7 @@ $(function () {
                 originObj[afterId]['position'] = oldPosition;
                 functionsMap['divisors'] = originObj;
                 type = "functions";
+                reorderMenu = true;
                 break
             case "programs":
                 programsMap[thisId]['position'] = newPosition;
@@ -1266,6 +1284,12 @@ $(function () {
                 variablesMap['divisors'] = originObj;
                 type = "variables";
                 break
+        }
+
+        if (reorderMenu) {
+            var thisList2 = $("#" + type + thisId + "MainMenu");
+            var before2 = thisList2.prev();
+            thisList2.insertAfter(before2);
         }
 
         createOneMap(type);
@@ -1501,14 +1525,14 @@ $(function () {
         activateSettingSaveButton();
     });
 
-    $(document.body).on("click", "[name='saveDivisor']", function () {
+    $(document.body).on("change", "[name='saveDivisor']", function () {
         var obj = $(this);
         var id = obj.data("id");
         var key = obj.data("key");
         var type = obj.data("type");
-        var selected = $('#select_divisor' + id).val();
+        var selected = obj.val();
 
-        if($.isNumeric(selected)){
+        if ($.isNumeric(selected)) {
             selected = parseInt(selected);
         }
         var map = getMap(type);
@@ -1517,10 +1541,6 @@ $(function () {
         createOneMap(type);
 
         activateSettingSaveButton(true);
-    });
-    
-    $(document.body).on("click", "[nam='editDivider']", function(){
-       alert("Geht noch nicht!"); 
     });
 
     $(document.body).on("click", "[name='changeFloatSF']", function () {
@@ -1548,33 +1568,127 @@ $(function () {
         saveAllDatasToServer();
     });
 
+    $(document.body).on("click", "[name='deleteDivider']", function () {
+        var obj = $(this);
+        var id = obj.data("id");
+        var type = obj.data("type");
+        var divisorType = "";
+
+        switch (type) {
+            case "favoritesDivisor":
+                var originObj = favoritesMap['divisors'];
+                delete  originObj[id];
+                favoritesMap['divisors'] = originObj;
+                divisorType = "favorites";
+                break
+            case "roomsDivisor":
+                var originObj = roomsMap['divisors'];
+                delete  originObj[id];
+                roomsMap['divisors'] = originObj;
+                divisorType = "rooms";
+                break
+            case "functionsDivisor":
+                var originObj = functionsMap['divisors'];
+                delete  originObj[id];
+                functionsMap['divisors'] = originObj;
+                divisorType = "functions";
+                break
+            case "programsDivisor":
+                var originObj = programsMap['divisors'];
+                delete  originObj[id];
+                programsMap['divisors'] = originObj;
+                divisorType = "programs";
+                break
+            case "variablesDivisor":
+                var originObj = variablesMap['divisors'];
+                delete  originObj[id];
+                variablesMap['divisors'] = originObj;
+                divisorType = "variables";
+                break
+        }
+
+        recalculatePositions(getMap(divisorType), divisorType, true);
+
+        $("#" + divisorType + id + "MainMenu").fadeOut(500).remove();
+        $("#list" + id).fadeOut(500).remove();
+
+        createOneMap(type);
+
+        activateSettingSaveButton();
+
+    });
+
     $(document.body).on("change", "[name='editName']", function () {
         var obj = $(this);
         var id = obj.data("id");
         var name = obj.val();
         var type = obj.data("type");
+        var divisorType = "";
 
+        var renameMenu = false;
         switch (type) {
             case "favorites":
                 favoritesMap[id]['name'] = name;
                 break
+            case "favoritesDivisor":
+                var originObj = favoritesMap['divisors'];
+                originObj[id]['name'] = name;
+                favoritesMap['divisors'] = originObj;
+                type = "favorites";
+                divisorType = type;
+                renameMenu = true;
+                break
             case "rooms":
                 roomsMap[id]['name'] = name;
+                break
+            case "roomsDivisor":
+                var originObj = roomsMap['divisors'];
+                originObj[id]['name'] = name;
+                roomsMap['divisors'] = originObj;
+                type = "rooms";
+                divisorType = type;
+                renameMenu = true;
                 break
             case "functions":
                 functionsMap[id]['name'] = name;
                 break
+            case "functionsDivisor":
+                var originObj = functionsMap['divisors'];
+                originObj[id]['name'] = name;
+                functionsMap['divisors'] = originObj;
+                type = "functions";
+                divisorType = type;
+                renameMenu = true;
+                break
             case "programs":
                 programsMap[id]['name'] = name;
+                break
+            case "programsDivisor":
+                var originObj = programsMap['divisors'];
+                originObj[id]['name'] = name;
+                programsMap['divisors'] = originObj;
+                type = "programs";
+                divisorType = type;
                 break
             case "variables":
                 variablesMap[id]['name'] = name;
                 break
+            case "variablesDivisor":
+                var originObj = variablesMap['divisors'];
+                originObj[id]['name'] = name;
+                variablesMap['divisors'] = originObj;
+                type = "variables";
+                divisorType = type;
+                break
         }
 
-        $("#menuText" + id).fadeOut(500, function () {
-            $("#menuText" + id).text(name).fadeIn(1000);
+        $("#menuText" + divisorType + id).fadeOut(500, function () {
+            $("#menuText" + divisorType + id).text(name).fadeIn(1000);
         });
+
+        if (renameMenu) {
+            $('#' + type + id + "MainMenu").find(".ui-collapsible-heading-toggle").text(name);
+        }
 
         createOneMap(type);
 

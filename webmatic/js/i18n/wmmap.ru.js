@@ -740,5 +740,6 @@ var textMap = {
     ONLY_PIC: "только графика",
     DIVIDE: "раздел",
     ADD_DIVIDER: "добавить раздел",
-    UNSORTED: "не отсортировано"
+    UNSORTED: "не отсортировано",
+    SAVE_AND_RELOAD: "сохранение и перезагрузка"
 };

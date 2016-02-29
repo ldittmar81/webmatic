@@ -740,5 +740,6 @@ var textMap = {
     ONLY_PIC: "Nur Grafik",
     DIVIDE: "Aufteilung",
     ADD_DIVIDER: "Teiler hinzufügen",
-    UNSORTED: "unsortiert"
+    UNSORTED: "unsortiert",
+    SAVE_AND_RELOAD: "Speichern und neu laden"
 };

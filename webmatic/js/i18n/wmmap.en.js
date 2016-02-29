@@ -740,5 +740,6 @@ var textMap = {
     ONLY_PIC: "Only graphics",
     DIVIDE: "partition",
     ADD_DIVIDER: "add partition",
-    UNSORTED: "unsorted"
+    UNSORTED: "unsorted",
+    SAVE_AND_RELOAD: "save and reload"
 };

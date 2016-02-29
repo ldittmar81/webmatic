@@ -740,5 +740,6 @@ var textMap = {
     ONLY_PIC: "sadece grafik",
     DIVIDE: "bölme",
     ADD_DIVIDER: "bölümü eklemek",
-    UNSORTED: "sıralanır"
+    UNSORTED: "sıralanır",
+    SAVE_AND_RELOAD: "kaydetmek ve yeniden"
 };

@@ -740,5 +740,6 @@ var textMap = {
     ONLY_PIC: "只有图形",
     DIVIDE: "划分",
     ADD_DIVIDER: "添加分区",
-    UNSORTED: "没有排序"
+    UNSORTED: "没有排序",
+    SAVE_AND_RELOAD: "保存并重新加载"
 };
