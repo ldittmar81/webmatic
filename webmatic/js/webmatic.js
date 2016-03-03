@@ -158,17 +158,37 @@ function processVariable(variable, valID, systemDate) {
 
     var html = "<li class='dataListItem' id='" + valID + "' " + (variable['visible'] ? "" : "style='display: none;'") + ">";
     html += "<h2 class='ui-li-heading'>" + unescape(variable['name']) + "</h2>";
-    if (variable['onlyPic'] && (!operate || valType === "2")) {
-        var data = "data-id='" + valID + "' data-value='" + strValue + "' data-type='variables" + valType + "' class='onlyPic" + (!operate ? " onlyPicDisabled" : "") + "'";
-        html += "<div " + (operate ? "class='onlyPicDiv'" : data) + ">";
-        if (operate) {
+    if (variable['onlyPic']) {
+        var isTextVariables = valType === "20";
+
+        var data = "data-id='" + valID + "' data-value='" + strValue + "' data-type='variables" + valType + "' class='onlyPic" + (!operate && !isTextVariables ? " onlyPicDisabled" : "") + "' ";
+
+        if (valType === "4" && operate) {
+            data += "data-faktor='" + variable['faktor'] + "' data-step='" + variable['step'] + "' data-min='" + variable['valueMin'] + "' data-max='" + variable['valueMax'] + "' ";
+        } else if (valType === "16" && operate) {
+            data += "data-list='" + variable['valueList'] + "' data-listtype='" + variable['listType'] + "' ";
+        } else if (isTextVariables) {
+            data += "data-operate='" + operate + "' ";
+        }
+        if ((operate && (valType === "4" || valType === "16")) || isTextVariables) {
+            data += "data-name='" + unescape(variable['name']) + "' data-unit='" + valUnit + "' data-date='" + vorDate + "'";
+        }
+
+        html += "<div " + (operate && !isTextVariables ? "class='onlyPicDiv'" : data) + ">";
+        if (operate || isTextVariables) {
             html += "<a href='#' " + data + ">";
         }
         html += "<img id='img" + valID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
-        if (operate) {
+        if (operate || isTextVariables) {
             html += "</a>";
+        }
+        if (operate) {
             html += "<div class='onlyPic-player onlyPic-player-" + theme + "' id='player" + valID + "'>&nbsp;</div>";
-        } else if (valType === "4") {
+        } else if (isTextVariables) {
+            html += "<div class='onlyPic-viewer onlyPic-viewer-" + theme + "'>&nbsp;</div>";
+        }
+
+        if (valType === "4") {
             html += "<div class='onlyPic-value valueInfo-" + theme + "'>" + parseFloat(strValue) + valUnit + "</div>";
         }
         html += "</div>";
@@ -953,7 +973,7 @@ function processDevices(device, systemDate, options, operate) {
         } else if (options['varOptionsFirst'] === "nv") {
             deviceHTML = "";  // Leeren.
         } else {
-            deviceHTML += addVariableField('', valID, device, vorDate, isReadOnly(valInfo), operate);          
+            deviceHTML += addVariableField('', valID, device, vorDate, isReadOnly(valInfo), operate);
         }
     } else if (device['type'] === "PROGRAM") {
         var prgID = device['id'];
@@ -1050,6 +1070,9 @@ function buttonEvents(obj, refresh) {
 }
 
 function reloadList(txt, systemDate, restart, description) {
+    if (txt.startsWith("room") || txt.startsWith("func")) {
+        txt = mapText(txt);
+    }
     $("#" + dataListHeader).empty();
     $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>");
     if (description !== "") {
@@ -1467,7 +1490,7 @@ $(function () {
     });
 
     $(document.body).on("click", ".onlyPic:not(.onlyPicDisabled)", function () {
-        var dataID = $(this).data("id");  // Homematic Geräte ID.
+        var dataID = $(this).data("id");
         $('#player' + dataID).removeClass('onlyPic-player-' + theme).addClass('onlyPic-playerani-' + theme);
         var type = $(this).data("type");
 
@@ -1480,7 +1503,7 @@ $(function () {
             $.get('cgi/startprogram.cgi?id=' + dataID + urlAttr, function () {
                 $('#player' + dataID).delay(3000).removeClass('onlyPic-playerani-' + theme).addClass('onlyPic-player-' + theme);
             });
-        } else if (type === "variables") {
+        } else if (type === "variables2") {
             var value = $(this).data("value");
             if (value === "") {
                 value = false;
@@ -1488,6 +1511,46 @@ $(function () {
             $.get('cgi/set.cgi?id=' + dataID + '&value=' + !value + urlAttr, function () {
                 refreshPage(0);
             });
+        } else if (type === "variables4") {
+            var value = $(this).data("value");
+            var unit = $(this).data("unit");
+            var name = $(this).data("name");
+            var vorDate = $(this).data("date");
+
+            var faktor = $(this).data("faktor");
+            if (!faktor) {
+                faktor = 1;
+            }
+            var valMin = $(this).data("min");
+            var valMax = $(this).data("max");
+            var step = $(this).data("step");
+            if (!step) {
+                step = 1;
+            }
+            openOnlyPicDialog(name, addSetNumber('', dataID, value, unit, valMin, valMax, step, faktor, vorDate, true, true), "button");
+
+        } else if (type === "variables16") {
+            var value = $(this).data("value");
+            var unit = $(this).data("unit");
+            var name = $(this).data("name");
+            var vorDate = $(this).data("date");
+
+            var list = $(this).data("list");
+            var listtype = $(this).data("listtype");
+            if (!listtype) {
+                listtype = "auto";
+            }
+
+            openOnlyPicDialog(name, addSetValueList('', dataID, value, list, unit, vorDate, true, true, listtype, false), "button");
+        } else if (type === "variables20") {
+            var value = $(this).data("value");
+            var unit = $(this).data("unit");
+            var name = $(this).data("name");
+            var vorDate = $(this).data("date");
+
+            var operate = $(this).data("operate");
+
+            openOnlyPicDialog(name, addSetValueList('', dataID, value, list, unit, vorDate, true, true, listtype, false), "button");
         }
     });
 

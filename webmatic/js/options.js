@@ -952,16 +952,13 @@ function processGraphicID(type) {
         html += "<form method='post' enctype='multipart/form-data' action='#' id='form" + key + "'>";
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><input name='editName' data-id='" + key + "' data-type='" + type + "' type='text' value='" + val['name'] + "' /></div>";
-        if ((isVariables && !isTextVariables) || isPrograms) {
+        if (isVariables || isPrograms) {
             html += "<div class='ui-block-b'>";
             html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
             html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-type='" + type + "' data-key='onlyPic' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['onlyPic'] ? "checked" : "") + "/>";
             html += "</div>";
         }
         if (isVariables) {
-            if (isTextVariables) {
-                html += "<div class='ui-block-b small-hidden'></div>";
-            }
             if (optionsMap["variables_divisor"]) {
                 html += "<div class='ui-block-c'>";
                 html += getDivisorSelectbox(type, val[type + "_divisor"], key);

@@ -92,8 +92,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 i++;
                 var obj = {};
                 var oldName = val;
-                if (val.startsWith("${")) {
-                    val = mapText(val.substring(2, val.length - 1));
+                if (val.startsWith("room") || val.startsWith("func")) {
+                    val = mapText(val);
                 }
                 obj['name'] = val;
                 obj['oldname'] = oldName;
@@ -140,7 +140,11 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 }
                 i++;
                 var obj = {};
-                obj['name'] = val['name'];
+                var name = val['name'];
+                if (name.startsWith("%24%7B")) {
+                    name = mapText(name.substring(6, name.length - 3));
+                }
+                obj['name'] = name;
                 obj['oldname'] = val['name'];
                 obj['visible'] = val['visible'];
                 obj['oldvisible'] = val['visible'];
@@ -148,6 +152,9 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 obj['value'] = val['value'];
                 obj['active'] = val['active'];
                 var valInfo = val['info'];
+                if (valInfo.startsWith("%24%7B")) {
+                    valInfo = mapText(valInfo.substring(6, valInfo.length - 3));
+                }
                 obj['operate'] = isReadOnlyVariable(valInfo);
                 obj['oldoperate'] = obj['operate'];
                 obj['date'] = val['date'];
@@ -160,8 +167,16 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                     obj['valueList'] = val['valueList'];
                     obj['listType'] = "auto";
                 } else if (valueType === "2") {
-                    obj['valueName0'] = val['valueName0'];
-                    obj['valueName1'] = val['valueName1'];
+                    var valueName0 = val['valueName0'];
+                    if (valueName0.startsWith("${")) {
+                        valueName0 = mapText(valueName0.substring(2, valueName0.length - 1));
+                    }
+                    obj['valueName0'] = valueName0;
+                    var valueName1 = val['valueName1'];
+                    if (valueName1.startsWith("${")) {
+                        valueName1 = mapText(valueName1.substring(2, valueName1.length - 1));
+                    }
+                    obj['valueName1'] = valueName1;
                 } else if (valueType === "4") {
                     obj['valueMin'] = val['valueMin'];
                     obj['valueMax'] = val['valueMax'];
@@ -216,8 +231,8 @@ function refreshJSONObj(type, newJsonObj, create) {
                     val['position'] = savedVal['position'];
                     if (val['oldname'] === savedVal['oldname']) {
                         var savedName = savedVal['name'];
-                        if (savedName.startsWith("${")) {
-                            savedName = mapText(savedName.substring(2, savedName.length - 1));
+                        if (savedName.startsWith("room") || savedName.startsWith("func")) {
+                            savedName = mapText(savedName);
                         }
                         val['name'] = savedName;
                     } else {
@@ -319,7 +334,11 @@ function refreshJSONObj(type, newJsonObj, create) {
                     var savedVal = oldMap[key];
                     val['position'] = savedVal['position'];
                     if (val['oldname'] === savedVal['oldname']) {
-                        val['name'] = savedVal['name'];
+                        var name = savedVal['name'];
+                        if (name.startsWith("%24%7B")) {
+                            name = mapText(name.substring(6, name.length - 3));
+                        }
+                        val['name'] = name;
                     } else {
                         saveDataToFile = true;
                     }

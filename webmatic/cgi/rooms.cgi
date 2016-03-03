@@ -10,26 +10,17 @@ cgi_eval {
     array set res [rega_script {
         WriteLine ("{");
         string s_date = system.Date("%d.%m.%Y %H:%M:%S");
-        WriteLine ('"date":"' + s_date + '",');
+        WriteLine ('"date":"' + s_date + '"');
 
         string id;
         object obj;
-        boolean isFirst;
-
+     
         obj = dom.GetObject(ID_ROOMS);
-        isFirst = true;
         foreach (id, obj.EnumUsedIDs()){
-            if (isFirst){
-                isFirst = false;
-            }else{
-                WriteLine (',');
-            }
-
             var room = dom.GetObject(id);
-            Write('  "' + id + '": "' + room.Name() + '"');
+            WriteLine(',"' + id + '": "' + room.Name() + '"');
         }
 
-        WriteLine("");
         WriteLine ("}");
     }]
 
