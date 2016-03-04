@@ -6,7 +6,7 @@ var isPreRelease = 0;
 var lastStableVersion = "0";
 var newWebmaticVersion = webmaticVersion;
 var storageVersion = 28;
-var wmLang="de";//genau so lassen (ohne Leerzeichen)
+var wmLang = "de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
 var debugModus = true;
@@ -34,6 +34,8 @@ var picturesListError = false;
 var excludeFromRefresh = [];
 var tempExcludeFromRefresh = 0;
 
+var specialTextVariables = ["HTML", "COLOR", "DATE", "TIME", "HISTORIAN", "TUNEIN"];
+
 var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap, recognizeMap;
 var programsClientMap = {}, functionsClientMap = {}, roomsClientMap = {}, favoritesClientMap = {}, optionsClientMap = {}, variablesClientMap = {}, devicesClientMap = {};
 var resultProgramsMap = {}, resultFunctionsMap = {}, resultRoomsMap = {}, resultFavoritesMap = {}, resultVariablesMap = {}, resultOptionsMap = {}, resultDevicesMap = {};
@@ -42,6 +44,8 @@ var theme, font, gfxClass;
 var loadedFont = ["a"];
 
 var actColumn = 1;
+
+var isDialog = false;
 
 //Two Pages
 var twoPage;
@@ -177,7 +181,9 @@ function addVariableField(parentID, valID, map, vorDate, readonly, operate) {
     } else if (valType === "20" && valUnit.toUpperCase() === "COLOR") {
         html += addColorPicker(parentID, valID, strValue, vorDate, operate);
     } else if (valType === "20" && valUnit.toUpperCase() === "DATE") {
-        html += addDatePicker(parentID, valID, strValue, vorDate, operate);
+        html += addDatePicker(parentID, valID, strValue, vorDate, operate, "datebox");
+    } else if (valType === "20" && valUnit.toUpperCase() === "TIME") {
+        html += addDatePicker(parentID, valID, strValue, vorDate, operate, "timebox");
     } else if (valType === "20") {
         html += addSetText(parentID, valID, strValue, valUnit, vorDate, operate);
     } else {
@@ -188,17 +194,13 @@ function addVariableField(parentID, valID, map, vorDate, readonly, operate) {
 
 // Ein Button, bei dessen drücken ein Wert an die ID übertragen wird.
 // onlyButton wird benutzt, wenn für das selbe Element mehrere Controls angezeigt werden sollen, aber nur einmal die Zusatzinfos. Z.B. Winmatic, Keymatic, Dimmer.
-function addSetButton(parentId, id, text, value, vorDate, onlyButton, noAction, refresh, operate, special) {
+function addSetButton(parentId, id, text, value, vorDate, onlyButton, active, refresh, operate, special) {
     var html = "";
     if (!onlyButton) {
         html += "<p class='ui-li-desc'>";
     }
 
-    if (noAction) {
-        html += "<a href='#' data-value='" + value + "' data-role='button' class='ui-btn-active' data-inline='true' data-theme='" + theme + "'>" + text + "</a>";
-    } else {
-        html += "<a href='#' id='setButton_" + id + "' " + (special ? "data-special='" + special + "' " : "") + "data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' " + (!operate ? "class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true'") + ">" + text + "</a>";
-    }
+    html += "<a href='#' id='setButton_" + id + "' " + (special ? "data-special='" + special + "' " : "") + "data-id='" + id + "' data-parent-id='" + parentId + "' data-refresh='" + refresh + "' data-value='" + value + "' class='ui-link ui-btn ui-btn-inline ui-shadow ui-corner-all " + (active ? "ui-btn-active " : "") + (!operate ? "ui-state-disabled " : "") + "'>" + text + "</a>";
 
     if (!onlyButton) {
         html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
@@ -388,7 +390,9 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
     } else if (valType === "20" && valUnit.toUpperCase() === "COLOR") {
         return addColorPicker("", valID, strValue, vorDate, false);
     } else if (valType === "20" && valUnit.toUpperCase() === "DATE") {
-        return addDatePicker("", valID, strValue, vorDate, false);
+        return addDatePicker("", valID, strValue, vorDate, false, "datebox");
+    } else if (valType === "20" && valUnit.toUpperCase() === "TIME") {
+        return addDatePicker("", valID, strValue, vorDate, false, "timebox");
     } else {
         return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></p>";
     }
@@ -570,9 +574,9 @@ function addColorPicker(parentId, valID, val, vorDate, operate) {
     return html;
 }
 
-function addDatePicker(parentId, valID, val, vorDate, operate) {
+function addDatePicker(parentId, valID, val, vorDate, operate, picker) {
     var html = "<div class='ui-field-contain'>";
-    html += "<input type='text' data-role='datebox' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;' data-options='{\"mode\":\"durationbox\"}'/>";
+    html += "<input type='text' data-role='datebox' data-theme='" + theme + "' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;' data-options='{\"mode\":\"" + picker + "\"}'/>";
     html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
     html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
@@ -580,14 +584,16 @@ function addDatePicker(parentId, valID, val, vorDate, operate) {
 }
 
 //onlyPicDialog
-function openOnlyPicDialog(title, html, button, callback) {
-    $("#dialog .functionName").text(title);
-    $("#dialog .functionContent").text(html);
-    $("#sure .sure-do").text(button).on("click.sure", function () {
-        callback();
-        $(this).off("click.sure");
+function openOnlyPicDialog(title, html) {
+    $("#functionName").text(title);
+    $("#functionContent").html(html);
+    isDialog = true;
+    $(document.body).one('pagebeforeshow', '#page1', function () {
+        isDialog = false;
+        refreshPage(0);
     });
     $.mobile.changePage("#dialog");
+    $("#dialog").enhanceWithin();
 }
 
 //Divisor
@@ -692,6 +698,9 @@ function createClientMenuOptions(type) {
     } else {
         //Teilung
         var map = getMap(type);
+        html += "<div class='ui-block-divisor-top'>";
+        html += mapText("DIVIDE") + " " + mapText(type);
+        html += "</div>";
         $.each(map['divisors'], function (key, val) {
             html += "<div class='ui-block-f text-right'>";
             html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
@@ -714,6 +723,8 @@ function createClientMenuOptions(type) {
             html += "</div>";
             html += "</div>";
         });
+        html += "<div class='ui-block-divisor-bottom'>";
+        html += "</div>";
     }
     return html;
 }
@@ -741,6 +752,9 @@ function createGlobalMenuOptions(type) {
     } else {
         //Teilung
         var map = getMap(type);
+        html += "<div class='ui-block-divisor-top'>";
+        html += mapText("DIVIDE") + " " + mapText(type);
+        html += "</div>";
         $.each(map['divisors'], function (key, val) {
             html += "<div class='ui-block-f text-right'>";
             html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
@@ -759,6 +773,8 @@ function createGlobalMenuOptions(type) {
             html += "</div>";
             html += "</div>";
         });
+        html += "<div class='ui-block-divisor-bottom'>";
+        html += "</div>";
     }
     return html;
 }

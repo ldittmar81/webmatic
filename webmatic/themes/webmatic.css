@@ -26,7 +26,7 @@ html * {
 .control-set-wma{ border-color: #000; }
 .onlyPic-player-wma{  background-image: url("../img/misc/gear32.gif"); }
 .onlyPic-playerani-wma{  background-image: url("../img/misc/gear32ani.GIF"); }
-.onlyPic-viewer-wma{  background-image: url("../img/misc/eyew.gif"); }
+.onlyPic-viewer-wma{  background-image: url("../img/misc/eye.gif"); }
 
 .valueNoError-wmb { color:#909090;}
 .valueInfo-wmb { color:#fff; }
@@ -297,13 +297,17 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
 .ui-block-d,
 .ui-block-e,
 .ui-block-f,
-.ui-block-g{
+.ui-block-g,
+.ui-block-divisor-top,
+.ui-block-divisor-bottom {
     white-space: normal !important;
     margin-top: 2px;    
 }
 
 .ui-block-f,
-.ui-block-g {
+.ui-block-g,
+.ui-block-divisor-top,
+.ui-block-divisor-bottom {
     margin: 0;
     margin-top: 2px;
     padding: 0;
@@ -316,7 +320,9 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
 }
 
 li.ui-block-f,
-li.ui-block-g {
+li.ui-block-g,
+li.ui-block-divisor-top,
+li.ui-block-divisor-bottom {
     margin-left: 0;
     margin-right: 0;    
     padding: 0;
@@ -328,6 +334,26 @@ li.ui-block-g {
 }
 .ui-grid-b > .ui-block-g {
     width: 66.666%;
+}
+
+.ui-block-divisor-top,
+.ui-block-divisor-bottom  {
+    width: 100%;
+    height: 15px;
+    border-left: 1px solid;
+    border-right: 1px solid;
+}
+
+.ui-block-divisor-top {
+    padding: 10px;
+    border-top: 1px solid;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+.ui-block-divisor-bottom {
+    border-bottom: 1px solid;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
 
 .ui-dialog-contain {
@@ -427,7 +453,9 @@ li.ui-block-g {
     .ui-block-d,
     .ui-block-e,
     .ui-block-f,
-    .ui-block-g{
+    .ui-block-g,
+    .ui-block-divisor-top,
+    .ui-block-divisor-bottom {
         width: 100% !important;
     }
 
@@ -467,14 +495,17 @@ li.ui-block-g {
 .cd-top.cd-is-visible {
     /* the button becomes visible */
     visibility: visible;
+    filter: Alpha(Opacity=30);
     opacity: .3;
 }
 .cd-top.cd-fade-out {
     /* if the user keeps scrolling down, the button is out of focus and becomes less visible */
+    filter: Alpha(Opacity=30);
     opacity: .3;
 }
 .cd-top:hover {
     background-color: #fff;
+    filter: Alpha(Opacity=100);
     opacity: 1;
 }
 @media only screen and (min-width: 768px) {
@@ -498,6 +529,7 @@ li.ui-block-g {
     bottom: 40px;
     right: 50%;
     visibility: hidden;
+    filter: Alpha(Opacity=0);
     opacity: 0;
     -webkit-transition: opacity .3s 0s, visibility 0s .3s;
     -moz-transition: opacity .3s 0s, visibility 0s .3s;

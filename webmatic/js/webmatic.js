@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog */
 
 // WebMatic 2.x
 // by ldittmar
@@ -11,7 +11,7 @@ function refreshPage(item, col) {
     restartTimer();
     testSite = false;
 
-    if (lastClickType !== -1 && lastClickID !== -1) {
+    if (lastClickType !== -1 && lastClickID !== -1 && !isDialog) {
         var restart = oldID !== lastClickID && item !== 0;
         oldID = lastClickID;
 
@@ -161,7 +161,10 @@ function processVariable(variable, valID, systemDate) {
     if (variable['onlyPic']) {
         var isTextVariables = valType === "20";
 
-        var data = "data-id='" + valID + "' data-value='" + strValue + "' data-type='variables" + valType + "' class='onlyPic" + (!operate && !isTextVariables ? " onlyPicDisabled" : "") + "' ";
+        var data = "data-id='" + valID + "' data-type='variables" + valType + "' class='onlyPic" + (!operate && !isTextVariables ? " onlyPicDisabled" : "") + "' ";
+        if (!isTextVariables) {
+            data += "data-value='" + strValue + "' ";
+        }
 
         if (valType === "4" && operate) {
             data += "data-faktor='" + variable['faktor'] + "' data-step='" + variable['step'] + "' data-min='" + variable['valueMin'] + "' data-max='" + variable['valueMax'] + "' ";
@@ -174,11 +177,17 @@ function processVariable(variable, valID, systemDate) {
             data += "data-name='" + unescape(variable['name']) + "' data-unit='" + valUnit + "' data-date='" + vorDate + "'";
         }
 
-        html += "<div " + (operate && !isTextVariables ? "class='onlyPicDiv'" : data) + ">";
+        html += "<div " + (operate || isTextVariables ? "class='onlyPicDiv'" : data) + ">";
         if (operate || isTextVariables) {
             html += "<a href='#' " + data + ">";
         }
-        html += "<img id='img" + valID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+
+        html += "<img id='img" + valID + "' class='ui-img-" + theme;
+        if ($.inArray(picKey, picturesList) !== -1) {
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png";
+        }
+        html += "' src='img/menu/variables.png'/>";
+
         if (operate || isTextVariables) {
             html += "</a>";
         }
@@ -190,7 +199,10 @@ function processVariable(variable, valID, systemDate) {
 
         if (valType === "4") {
             html += "<div class='onlyPic-value valueInfo-" + theme + "'>" + parseFloat(strValue) + valUnit + "</div>";
+        } else if (isTextVariables) {
+            html += "<span id='textValue" + valID + "' style='display: none;'>" + strValue + "</span>";
         }
+
         html += "</div>";
     } else {
         html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
@@ -218,7 +230,11 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         if (enabled) {
             html += "<a href='#' " + data + ">";
         }
-        html += "<img id='img" + prgID + "' class='ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+        html += "<img id='img" + prgID + "' class='ui-img-" + theme;
+        if ($.inArray(prgID, picturesList) !== -1) {
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png";
+        }
+        html += "' src='img/menu/programs.png'/>";
         if (enabled) {
             html += "<div class='onlyPic-player onlyPic-player-" + theme + "' id='player" + prgID + "'>&nbsp;</div>";
             html += "</a>";
@@ -1053,12 +1069,17 @@ function buttonEvents(obj, refresh) {
     }
 
     $("#" + infoID).text(mapText("TRANSFER"));
+
     $.get('cgi/set.cgi' + urlAttr, function () {
-        if (refresh) {
-            $("#" + infoID).text(mapText("TRANSFER_OK"));
-            refreshPage(0);
+        if (!isDialog) {
+            if (refresh) {
+                $("#" + infoID).text(mapText("TRANSFER_OK"));
+                refreshPage(0);
+            } else {
+                $("#" + infoID).text(mapText("DELAY"));
+            }
         } else {
-            $("#" + infoID).text(mapText("DELAY"));
+            history.back();
         }
 
         if (durationVal > 0) {
@@ -1467,9 +1488,14 @@ $(function () {
         }
 
         $("#" + infoID).text(mapText("TRANSFER"));
+
         $.get('cgi/set.cgi?id=' + dataID + '&value=' + value + urlAttr, function () {
-            $("#" + infoID).text(mapText("TRANSFER_OK"));
-            refreshPage(0);
+            if (!isDialog) {
+                $("#" + infoID).text(mapText("TRANSFER_OK"));
+                refreshPage(0);
+            } else {
+                history.back();
+            }
         });
     });
 
@@ -1527,7 +1553,7 @@ $(function () {
             if (!step) {
                 step = 1;
             }
-            openOnlyPicDialog(name, addSetNumber('', dataID, value, unit, valMin, valMax, step, faktor, vorDate, true, true), "button");
+            openOnlyPicDialog(name, addSetNumber('', dataID, value, unit, valMin, valMax, step, faktor, vorDate, true, true));
 
         } else if (type === "variables16") {
             var value = $(this).data("value");
@@ -1541,16 +1567,22 @@ $(function () {
                 listtype = "auto";
             }
 
-            openOnlyPicDialog(name, addSetValueList('', dataID, value, list, unit, vorDate, true, true, listtype, false), "button");
+            openOnlyPicDialog(name, addSetValueList('', dataID, value, list, unit, vorDate, true, true, listtype, false));
         } else if (type === "variables20") {
-            var value = $(this).data("value");
+            var value = $("#textValue" + dataID).text();
             var unit = $(this).data("unit");
             var name = $(this).data("name");
             var vorDate = $(this).data("date");
 
             var operate = $(this).data("operate");
 
-            openOnlyPicDialog(name, addSetValueList('', dataID, value, list, unit, vorDate, true, true, listtype, false), "button");
+            var html = "";
+            if (operate) {
+                html = addSetText('', dataID, value, unit, vorDate, operate);
+            } else {
+                html = addReadonlyVariable(dataID, value, vorDate, "20", unit);
+            }
+            openOnlyPicDialog(name, html);
         }
     });
 
