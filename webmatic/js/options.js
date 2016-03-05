@@ -1583,30 +1583,70 @@ $(function () {
                 delete  originObj[id];
                 favoritesMap['divisors'] = originObj;
                 divisorType = "favorites";
+                $.each(favoritesMap, function (key, val) {
+                    if (key === "date" || key === "size" || key === "divisors") {
+                        return;
+                    }
+                    if (val['favorites_divisor'] === id) {
+                        favoritesMap[key]['favorites_divisor'] = "unsorted";
+                    }
+                });
                 break
             case "roomsDivisor":
                 var originObj = roomsMap['divisors'];
                 delete  originObj[id];
                 roomsMap['divisors'] = originObj;
                 divisorType = "rooms";
+                $.each(roomsMap, function (key, val) {
+                    if (key === "date" || key === "size" || key === "divisors") {
+                        return;
+                    }
+                    if (val['rooms_divisor'] === id) {
+                        roomsMap[key]['rooms_divisor'] = "unsorted";
+                    }
+                });
                 break
             case "functionsDivisor":
                 var originObj = functionsMap['divisors'];
                 delete  originObj[id];
                 functionsMap['divisors'] = originObj;
                 divisorType = "functions";
+                $.each(functionsMap, function (key, val) {
+                    if (key === "date" || key === "size" || key === "divisors") {
+                        return;
+                    }
+                    if (val['functions_divisor'] === id) {
+                        functionsMap[key]['functions_divisor'] = "unsorted";
+                    }
+                });
                 break
             case "programsDivisor":
                 var originObj = programsMap['divisors'];
                 delete  originObj[id];
                 programsMap['divisors'] = originObj;
                 divisorType = "programs";
+                $.each(programsMap, function (key, val) {
+                    if (key === "date" || key === "size" || key === "divisors") {
+                        return;
+                    }
+                    if (val['programs_divisor'] === id) {
+                        programsMap[key]['programs_divisor'] = "unsorted";
+                    }
+                });
                 break
             case "variablesDivisor":
                 var originObj = variablesMap['divisors'];
                 delete  originObj[id];
                 variablesMap['divisors'] = originObj;
                 divisorType = "variables";
+                $.each(variablesMap, function (key, val) {
+                    if (key === "date" || key === "size" || key === "divisors") {
+                        return;
+                    }
+                    if (val['variables_divisor'] === id) {
+                        variablesMap[key]['variables_divisor'] = "unsorted";
+                    }
+                });
                 break
         }
 
@@ -1617,7 +1657,7 @@ $(function () {
 
         createOneMap(type);
 
-        activateSettingSaveButton();
+        activateSettingSaveButton(true);
 
     });
 
