@@ -10,9 +10,11 @@ case "$1" in
 
   info)
     VER=$(cat ${WEBMATICDIR}/VERSION)
-    echo "Info: <b>WebMatic CCU Addon</b><br>"
-    echo "Info: <img src='/addons/webmatic/img/misc/webmatic.png'>"
-    echo "Info: <a href='https://github.com/jens-maus/webmatic'>https://github.com/jens-maus/webmatic</a>"
+    echo "Info: <center>"
+    echo "Info: <b>WebMatic ${VER}</b><br>"
+    echo "Info: <img src='/addons/webmatic/img/misc/webmatic.png'><br>"
+    echo "Info: <a href='https://github.com/jens-maus/webmatic'>Weitere Infos</a>"
+    echo "Info: </center>"
     echo "Name: WebMatic"
     echo "Version: ${VER}"
     echo "Operations: uninstall"

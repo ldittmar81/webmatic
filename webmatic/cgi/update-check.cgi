@@ -17,7 +17,7 @@ if { [info exists cmd ] && $cmd == "download"} {
     catch {
         set newversion [ exec /usr/bin/wget -qO- --no-check-certificate $checkURL ]
     }
-    set downloadURL "https://github.com/jens-maus/webmatic/releases/tag/v$newversion"
+    set downloadURL "http://github.com/jens-maus/webmatic/releases/tag/v$newversion"
     puts "<meta http-equiv='refresh' content='0; url=$downloadURL' />"
 } else {
     catch {
