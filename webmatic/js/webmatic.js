@@ -1072,6 +1072,10 @@ function buttonEvents(obj, refresh) {
 function reloadList(txt, systemDate, restart, description) {
     if (txt.startsWith("room") || txt.startsWith("func")) {
         txt = mapText(txt);
+    }else if (txt.startsWith("%24%7B")) {
+        txt = mapText(txt.substring(6, txt.length - 3));
+    } else if (txt.startsWith("${")) {
+        txt = mapText(txt.substring(2, txt.length - 1));
     }
     $("#" + dataListHeader).empty();
     $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>");

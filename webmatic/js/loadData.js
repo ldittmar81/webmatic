@@ -242,9 +242,9 @@ function refreshJSONObj(type, newJsonObj, create) {
                         var savedName = savedVal['name'];
                         if (savedName.startsWith("room") || savedName.startsWith("func")) {
                             savedName = mapText(savedName);
-                        } else if (val.startsWith("%24%7B")) {
+                        } else if (savedName.startsWith("%24%7B")) {
                             savedName = mapText(savedName.substring(6, savedName.length - 3));
-                        } else if (val.startsWith("${")) {
+                        } else if (savedName.startsWith("${")) {
                             savedName = mapText(savedName.substring(2, savedName.length - 1));
                         }
                         val['name'] = savedName;
