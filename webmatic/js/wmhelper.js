@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "0";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 28;
+var storageVersion = 29;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
