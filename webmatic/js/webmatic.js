@@ -1012,27 +1012,6 @@ function processDevices(device, systemDate, options, operate) {
 
 // ----------------------- Helper functions ----------------------------
 
-function loadRecognization() {
-    $.ajax({
-        type: 'GET',
-        url: 'cgi/recognizer.cgi',
-        dataType: 'json',
-        async: false
-    }).done(function (data) {
-        if (data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")) {
-            recognizeMap = data;
-            client = data['REMOTE_ADDR'];
-            localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
-        } else {
-            recognizeMap = {};
-            client = "";
-        }
-    }).fail(function () {
-        recognizeMap = {};
-        client = "";
-    });
-}
-
 function buttonEvents(obj, refresh) {
     var dataID = obj.data("id");  // Homematic Geräte ID.
     var urlAttr = '?id=' + dataID;
@@ -1601,6 +1580,7 @@ $(function () {
         obj.attr('data-value', $('#tuneInURL_' + dataID).val());
         buttonEvents(obj, true);
     });
+
     $(document.body).on("click", "[name=showTuneIn]", function () {
         var obj = $(this);
         var valID = obj.data("id");
@@ -1620,6 +1600,7 @@ $(function () {
             $('#tuneInField_' + valID).fadeIn(1000);
         });
     });
+
     $(document.body).on("click", "[name=editTuneIn]", function () {
         var obj = $(this);
         obj.fadeOut(500, function () {
@@ -1635,15 +1616,6 @@ $(function () {
             $('#' + valID).enhanceWithin();
             $('#tuneInField_' + valID).fadeIn(1000);
         });
-    });
-
-    $(window).on('beforeunload', function () {
-        if (mustBeSaved) {
-            saveAllDatasToServer();
-        }
-        if (!debugModus && resultOptionsMap['dont_leave']) {
-            return "Don't leave me!";
-        }
     });
 
     $(document.body).on("fertig", "#dataList,#dataList2", function () {
@@ -1680,6 +1652,15 @@ $(function () {
                     }
                 }
             });
+        }
+    });
+
+    $(window).on('beforeunload', function () {
+        if (mustBeSaved) {
+            saveAllDatasToServer();
+        }
+        if (!debugModus && resultOptionsMap['dont_leave']) {
+            return "Don't leave me!";
         }
     });
 

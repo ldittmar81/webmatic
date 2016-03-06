@@ -6,7 +6,7 @@ var isPreRelease = 0;
 var lastStableVersion = "0";
 var newWebmaticVersion = webmaticVersion;
 var storageVersion = 28;
-var wmLang = "de";//genau so lassen (ohne Leerzeichen)
+var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
 var debugModus = true;
@@ -27,7 +27,6 @@ var isTempClient = false;
 var clientsList = {};
 var reloadClient = false;
 var loadColorPicker = false;
-
 var picturesList = [];
 var picturesListError = false;
 
@@ -44,7 +43,7 @@ var theme, font, gfxClass;
 var loadedFont = ["a"];
 
 var actColumn = 1;
-
+var lastTime = -1;
 var isDialog = false;
 
 //Two Pages
@@ -108,12 +107,6 @@ window.addEventListener('load', function () {
     }, false);
 }, false);
 
-// Initialize refresh timer:
-var refreshTimer = setInterval(function () {
-    checkrefreshPage();
-}, 1000);
-var lastTime = -1;
-
 function checkrefreshPage() {
     // Statt Timer auf 60 Sekunden hier eigener Vergleich alle Sekunde. Nur so geht es, dass nach einem iOS WakeUp
     // des Browsers sofort ein Reload passiert, wenn mehr als 60 Sekunden vorbei sind.
@@ -155,6 +148,7 @@ function createVerFile() {
 
 // ----------------------- HTML Creation Helper ------------------------------
 
+// Variablen setzen
 function addVariableField(parentID, valID, map, vorDate, readonly, operate) {
     var strValue = unescape(map['value']);
     var valType = map['valueType'];
@@ -209,6 +203,7 @@ function addSetButton(parentId, id, text, value, vorDate, onlyButton, active, re
     return html;
 }
 
+// für ValueType 4 (Schnellzugriff)
 function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, operate, addFirst, addLast) {
     var html = "";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -229,16 +224,13 @@ function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, operate
     return html;
 }
 
-// Ein Button, bei dessen drücken ein Programm ID ausgeführt wird.
+// Programme ausführen
 function addStartProgramButton(parentId, id, text, vorDate, operate) {
     var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "'>" + text + "</a></div>";
     html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
     return html;
 }
 
-// Ein Slider und Button, bei dessen drücken der neue Wert an die ID übertragen wird.
-// Factor wird für das Setzen verwendet, z.B. bei Jalousien muss 0-1 gesetzt werden, für die Anzeige
-// ist aber 0 - 100 schöner.
 // ValueType 4
 function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate, refresh, operate, options) {
     var html = "<div class='ui-field-contain' id='mainNumber" + id + "'>";
@@ -331,6 +323,7 @@ function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, r
     return html;
 }
 
+// ValueType 20
 function addSetText(parentId, valID, val, valUnit, vorDate, operate) {
     var html = "<div class=ui-field-contain'>";
     // Der String ist hier mit " eingefasst, darum müssen diese im String mit &quot; ersetzt werden:
@@ -346,19 +339,7 @@ function addSetText(parentId, valID, val, valUnit, vorDate, operate) {
     return html;
 }
 
-function addHTML(parentId, valID, val, vorDate, readonly) {
-    var html = "<div class='ui-field-contain" + (readonly ? "" : " ui-grid-a") + "'>";
-    html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "' data-id='" + valID + "'>" + val + "</div>";
-    if (!readonly) {
-        html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
-        html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
-        html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
-        html += "</div>";
-    }
-    html += "</div>";
-    return html;
-}
-
+// Readonly Variablen
 function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList, val0, val1, faktor) {
     // Bestimmen, wie der sichtbare Werte aussehen soll:
     var visVal = "";
@@ -398,6 +379,21 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
     }
 }
 
+// ValueType 20 Unit HTML
+function addHTML(parentId, valID, val, vorDate, readonly) {
+    var html = "<div class='ui-field-contain" + (readonly ? "" : " ui-grid-a") + "'>";
+    html += "<div class='evalScript" + (readonly ? "" : " ui-block-a") + "' data-id='" + valID + "'>" + val + "</div>";
+    if (!readonly) {
+        html += "<div class='ui-block-b'><textarea id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' style='width:20em; display:inline-block;'>" + val + "</textarea>";
+        html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' data-role='button' data-inline='true' data-icon='check'>" + mapText("SET") + "</a>";
+        html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
+        html += "</div>";
+    }
+    html += "</div>";
+    return html;
+}
+
+// ValueType 20 Unit Historian
 function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
     excludeFromRefresh.push(valID.toString());
     if (!val) {
@@ -479,6 +475,7 @@ function addHistorianDiagram(parentId, valID, val, vorDate, readonly) {
     return html;
 }
 
+// ValueType 20 Unit Historian #2
 function reloadHistorianChart(valID, data) {
     $.jqplot("chart_" + valID, [data], {
         axes: {
@@ -509,6 +506,7 @@ function reloadHistorianChart(valID, data) {
     });
 }
 
+// ValueType 20 Unit TuneIn
 function addTuneInRadio(parentId, valID, val, vorDate, readonly) {
     excludeFromRefresh.push(valID.toString());
     if (!val || !val.startsWith("http")) {
@@ -524,6 +522,7 @@ function addTuneInRadio(parentId, valID, val, vorDate, readonly) {
     return html;
 }
 
+// ValueType 20 Unit TuneIn #2
 function getTuneIn(parentId, valID, val, vorDate) {
     if (!val || !val.startsWith("http")) {
         return editTuneIn(parentId, valID, val, vorDate);
@@ -552,6 +551,7 @@ function getTuneIn(parentId, valID, val, vorDate) {
     return html;
 }
 
+// ValueType 20 Unit TuneIn #3
 function editTuneIn(parentId, valID, val, vorDate) {
     var html = "<div class='ui-block-a'>TuneIn-URL</div>";
     html += "<div class='ui-block-b'>";
@@ -564,6 +564,7 @@ function editTuneIn(parentId, valID, val, vorDate) {
     return html;
 }
 
+// ValueType 20 Unit Color
 function addColorPicker(parentId, valID, val, vorDate, operate) {
     var html = "<div class='ui-field-contain'>";
     html += "<input type='text' class='colorPicker' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;'/>";
@@ -574,6 +575,7 @@ function addColorPicker(parentId, valID, val, vorDate, operate) {
     return html;
 }
 
+// ValueType 20 Unit Date
 function addDatePicker(parentId, valID, val, vorDate, operate, picker) {
     var html = "<div class='ui-field-contain'>";
     html += "<input type='text' data-role='datebox' data-theme='" + theme + "' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;' data-options='{\"mode\":\"" + picker + "\"}'/>";
@@ -612,6 +614,7 @@ function getDivisorSelectbox(type, divisor, key) {
     return html;
 }
 
+//Divisor #2
 function addDivisor(size, type) {
     var map = getMap(type);
     var tmpObj = {};

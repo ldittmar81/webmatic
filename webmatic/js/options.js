@@ -45,6 +45,12 @@ function saveAllDatasToServer() {
     $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap)});
     $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap)});
     $.post('cgi/saveconfig.cgi', {name: "variables", text: JSON.stringify(variablesMap)});
+    
+    Object.keys(clientsList).forEach(function (key) {
+        if (key !== client) {
+            $.post('cgi/saveconfig.cgi', {name: "reload" + key, text: "true"});
+        }
+    });
 
     if (mustReload) {
         location.reload(true);

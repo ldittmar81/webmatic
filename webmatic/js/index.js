@@ -1,6 +1,6 @@
 /* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim */
 
-function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
+loadMainMenu = function (indexType, gfxClassParent, gfxClassSelected, collapsed) {
     if (resultOptionsMap[indexType + '_divisor'] !== true) {
         if (indexType === "variables" || indexType === "programs") {
             $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToList list" + indexType + "' data-role='collapsible' data-collapsed-icon='carat-r' data-expanded-icon='carat-r' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3></div>");
@@ -14,9 +14,9 @@ function loadMainMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
             loadDivisor(gfxClassParent, gfxClassSelected, collapsed, indexType);
         }
     }
-}
+};
 
-function loadSingleMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) {
+loadSingleMenu = function (indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3><ul id='list" + indexType + "' data-role='listview' data-inset='true'></ul></div>");
     //Global
     if (localStorage.getItem("webmatic" + indexType + "Map") === null || localStorage.getItem("webmatic" + indexType + "Map") === "undefined") {
@@ -75,9 +75,10 @@ function loadSingleMenu(indexType, gfxClassParent, gfxClassSelected, collapsed) 
 
     $("#list" + indexType).listview().listview("refresh");
     $("img.lazy" + indexType).lazyload({event: "lazyLoadInstantly"});
-}
+};
 
-function loadSingleDivisorMenu(type, gfxClassParent, gfxClassSelected, collapsed) {
+//Divisor für Variablen oder Programme
+loadSingleDivisorMenu = function (type, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[type] ? "" : "style='display:none;'") + " id='" + type + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === type) + "'><h3>" + mapText(type) + "</h3><ul id='list" + type + "' data-role='listview' data-inset='true'></ul></div>");
     //Global
     if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
@@ -148,9 +149,9 @@ function loadSingleDivisorMenu(type, gfxClassParent, gfxClassSelected, collapsed
 
     $("#list" + type).listview().listview("refresh");
     $("img.lazy" + type).lazyload({event: "lazyLoadInstantly"});
-}
+};
 
-function loadDivisor(gfxClassParent, gfxClassSelected, collapsed, type) {
+loadDivisor = function (gfxClassParent, gfxClassSelected, collapsed, type) {
 
     //Global
     if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
@@ -241,7 +242,7 @@ function loadDivisor(gfxClassParent, gfxClassSelected, collapsed, type) {
 
     $(".list" + type + "Div").listview().listview("refresh");
     $("img.lazy" + type + "Div").lazyload({event: "lazyLoadInstantly"});
-}
+};
 
 executeButtons = function (lct, lcid, rm, $this, col) {
     if (twoPage) {

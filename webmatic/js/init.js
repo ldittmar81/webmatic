@@ -8,10 +8,12 @@ if (localStorage.getItem("webmaticrecognizeMap") === null || localStorage.getIte
     client = ("REMOTE_ADDR" in recognizeMap ? recognizeMap["REMOTE_ADDR"] : "");
 }
 
+//Special Reload für Client-Einstellungen
 $.ajax({
     type: 'GET',
     url: '../webmatic_user/reload' + client + '.json',
-    async: false
+    async: false,
+    cache: false
 }).done(function (data) {
     reloadClient = (String(data).trim() === "true");
     if (reloadClient) {
@@ -20,11 +22,9 @@ $.ajax({
 }).fail(function () {
     $.post('cgi/saveconfig.cgi', {name: "reload" + client, text: "false"});
 });
-
 if (localStorage.getItem("clearCache") !== null || reloadClient) {
     localStorage.clear();
 }
-
 if (localStorage.getItem("tempOptionsForClient") !== null) {
     client = localStorage.getItem("tempOptionsForClient");
     isTempClient = true;
@@ -72,7 +72,8 @@ if (localStorage.getItem("picturesList") === null || localStorage.getItem("pictu
         type: 'GET',
         url: 'cgi/check-image.cgi',
         dataType: 'json',
-        async: false
+        async: false,
+        cache: false
     }).done(function (data) {
         picturesList = data;
         localStorage.setItem("picturesList", JSON.stringify(picturesList));
@@ -131,4 +132,31 @@ if ($.inArray(theme, ["wma", "wmb", "wmc", "wmd", "wme", "wmf", "wmg", "wmh", "w
 font = resultOptionsMap["default_font"];
 if ($.inArray(font, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]) === -1) {
     font = "a";
+}
+
+// Initialize refresh timer:
+var refreshTimer = setInterval(function () {
+    checkrefreshPage();
+}, 1000);
+
+function loadRecognization() {
+    $.ajax({
+        type: 'GET',
+        url: 'cgi/recognizer.cgi',
+        dataType: 'json',
+        async: false,
+        cache: false
+    }).done(function (data) {
+        if (data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")) {
+            recognizeMap = data;
+            client = data['REMOTE_ADDR'];
+            localStorage.setItem("webmaticrecognizeMap", JSON.stringify(recognizeMap));
+        } else {
+            recognizeMap = {};
+            client = "";
+        }
+    }).fail(function () {
+        recognizeMap = {};
+        client = "";
+    });
 }

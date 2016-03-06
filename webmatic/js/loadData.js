@@ -5,7 +5,8 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
         type: 'GET',
         url: url,
         dataType: 'json',
-        async: async
+        async: async,
+        cache: async
     }).done(function (data) {
         var processedData;
         switch (type) {

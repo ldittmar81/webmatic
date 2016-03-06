@@ -5,8 +5,27 @@ WebMatic ist eine browserbasierte Benutzeroberfläche für HomeMatic. Die Elemen
 Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsweise der Software und keinerlei Haftung für Schäden, die aus der Benutzung dieser Software resultieren.
 
 ## Changelog
-2.2
-* Informationen folgen...
+2.2 (noch nicht freigegeben - voraussichtlich vor Ostern)
+* Codereview Teil 3
+* Button zum Sprung zum Anfang der Seite
+* Zwei Seiten Anzeige mit Effekt -> Menü auf Seite 1 und Ergebnisse auf Seite 2. Effekte beim Seitenwechsel einstellbar
+* Beschreibungen können überall ausgeblendet werden
+* Ergebnisseite mit eintellbare Spaltenanzahl (1-4 + auto)
+* Unterteilung von Räume, Gewerke, Favoriten, Systemvariablen und Programme
+* Systemvariablen können jetzt auch alphabetisch sortiert werden
+* Systemvariablen (Nummer) Faktor und Step einstellbar
+* Systemvariablen (Liste) Anzeigeart einstellbar (Buttons/Selectbox)
+* Systemvariablen (readonly/bearbeitbar) unter Optionen einstellbar
+* Systemvariablen ein-/ausblendbar
+* Bezeichnung von Systemvariablen änderbar
+* Neue Systemvariablen-Typen (Color, Date, Time)
+* Systemvariablen: Nur-Bild-Funktion (wird nur Icon (160px * 160px) + Überschrift angezeigt - Bei Zahlen noch den Wert + Einheit)
+* Programme: Nur-Bild-Funktion (wird nur Icon (160px * 160px) + Überschrift angezeigt)
+* Icons von Systemvariablen je nach Wert einstellbar (Boolean: true/false, Liste: einzelnen Listenpunkte, Text: Nur ein Bild, Nummer: verschiedene Bilder für Werte größer x -> Beipiel mit 3 Bildern: 0-25=Bild1, 25-75=Bild2, 75-100=Bild3)
+* Bugfix: Fehlerhaft Darstellung bei Zeiteinstellungen
+* Bugfix: Programmbilder werden auch unter Favoriten angezeigt
+* Bugfix: CCU Bezeichnungen bei neue Geräten z.B. ${roomKitchen} werden jetzt korrekt dargestellt
+* Bugfix: Probleme bei der Installation auf nagelneue CCUs
 
 2.1.4
 * Unterstützung verschiedener Sprachen (deutsch, englisch, spanisch, türkisch, chinesisch, russisch, portugisisch, französisch) - alles von Mr. Big G. übersetzt ... wer es besser kann, kann gerne unterstützen
