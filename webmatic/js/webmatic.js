@@ -1072,7 +1072,7 @@ function buttonEvents(obj, refresh) {
 function reloadList(txt, systemDate, restart, description) {
     if (txt.startsWith("room") || txt.startsWith("func")) {
         txt = mapText(txt);
-    }else if (txt.startsWith("%24%7B")) {
+    } else if (txt.startsWith("%24%7B")) {
         txt = mapText(txt.substring(6, txt.length - 3));
     } else if (txt.startsWith("${")) {
         txt = mapText(txt.substring(2, txt.length - 1));
@@ -1669,26 +1669,17 @@ $(function () {
     });
 
     //ScrolltoTop
-    var offset = 300,
-            offset_opacity = 1200,
-            scroll_top_duration = 700,
-            $back_to_top = $('.cd-top');
-
-    //hide or show the "back to top" link
-    $(window).scroll(function () {
-        ($(this).scrollTop() > offset) ? $back_to_top.addClass('cd-is-visible') : $back_to_top.removeClass('cd-is-visible cd-fade-out');
-        if ($(this).scrollTop() > offset_opacity) {
-            $back_to_top.addClass('cd-fade-out');
+    $(document).on("scroll", window, function () {
+        ($(this).scrollTop() > 300) ? $('.cd-top').addClass('cd-is-visible') : $('.cd-top').removeClass('cd-is-visible cd-fade-out');
+        if ($(this).scrollTop() > 1200) {
+            $('.cd-top').addClass('cd-fade-out');
         }
     });
 
     //smooth scroll to top
-    $back_to_top.on('click', function (event) {
+    $('.cd-top').on('click', function (event) {
         event.preventDefault();
-        $('body,html').animate({
-            scrollTop: 0
-        }, scroll_top_duration
-                );
+        $('body,html').animate({scrollTop: 0}, 700);
     });
 
 });
