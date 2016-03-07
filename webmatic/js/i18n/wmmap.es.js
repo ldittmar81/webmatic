@@ -621,14 +621,14 @@ var textMap = {
     FUNCBUTTON: "Botón",
     FUNCCENTRAL: "Control central",
     FUNCENERGY: "Gestión de la energía",
-    SYSVARPRESENCE : "Anwesenheit",
-    SYSVARPRESENCEMSG : "Anwesenheit",
-    SYSVARPRESENCEPRESENT : "anwesend",
-    SYSVARPRESENCENOTPRESENT : "nicht anwesend",
-    SYSVARALARMZONE1 : "Alarmzone 1",
-    SYSVARALARMZONE1MSG : "Alarmmeldung Alarmzone 1",
-    SYSVARALARMZONE1TRIGGERED : "ausgelöst",
-    SYSVARALARMZONE1NOTTRIGGERED : "nicht ausgelöst",
+    SYSVARPRESENCE : "presencia",
+    SYSVARPRESENCEMSG : "presencia",
+    SYSVARPRESENCEPRESENT : "presente",
+    SYSVARPRESENCENOTPRESENT : "no presente",
+    SYSVARALARMZONE1 : "zona de alarma 1",
+    SYSVARALARMZONE1MSG : "zona de alarma 1",
+    SYSVARALARMZONE1TRIGGERED : "disparado",
+    SYSVARALARMZONE1NOTTRIGGERED : "no disparado",
     //Andere Bezeichnungen
     OPEN: "abierto",
     OPEN_SHORT: "abierta",
@@ -749,5 +749,6 @@ var textMap = {
     DIVIDE: "dividir",
     ADD_DIVIDER: "añadir partición",
     UNSORTED: "sin clasificar",
-    SAVE_AND_RELOAD: "guardar y recargar"
+    SAVE_AND_RELOAD: "guardar y recargar",
+    RELOAD_CCU_CHANGES: "el cambio encontrado"
 };

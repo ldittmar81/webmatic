@@ -271,8 +271,8 @@ $(function () {
     $('.dlgAbout').text(mapText("ABOUT"));
     $("#serviceText").text(mapText("SERVICE_NOTE"));
     $("#serviceTextNone").text(mapText("NO_DISORDERS"));
-    $(".backText").text(mapText("BACK"));
-    $(".save-button").text(mapText("SAVE"));
+    $(".save-button-text").text(mapText("SAVE"));
+    $(".reload-button-text").text(mapText("RELOAD_CCU_CHANGES"));
 
     // Größe der Grafiken aus localStorage holen:
     gfxClass = resultOptionsMap['default_menugfxsize'];
@@ -416,8 +416,8 @@ $(function () {
         refreshServiceMessages();
     });
 
-    $(document.body).on("click", "#reloadWebMatic", function () {
-        window.location.reload();
+    $(document.body).on("click", '[name="reloadCCUChanges"]', function(){
+        window.location.reload(true);
     });
 
     $("#main_menu").children("div[data-collapsed='true']").collapsible("expand");

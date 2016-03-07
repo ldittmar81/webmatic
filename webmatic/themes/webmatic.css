@@ -425,45 +425,6 @@ li.ui-block-divisor-bottom {
     font-size: 12px !important;
 }
 
-@media screen and (max-width: 50em)
-{
-    .content-secondary {
-        width: 100%;
-    }
-
-    .text-right {
-        text-align: left;
-        padding-right: 0;
-        padding-top: 0;
-    }
-
-    .content-primary {
-        width: 100%;
-        float: left;
-    }
-
-    .grid-text{
-        padding-top: 0;
-        padding-left: 5px;
-    }
-
-    .ui-block-a,
-    .ui-block-b,
-    .ui-block-c,
-    .ui-block-d,
-    .ui-block-e,
-    .ui-block-f,
-    .ui-block-g,
-    .ui-block-divisor-top,
-    .ui-block-divisor-bottom {
-        width: 100% !important;
-    }
-
-    .small-hidden{
-        display: none;
-    }
-}
-
 /* Scroll to top */
 .cd-top {
     display: inline-block;
@@ -508,22 +469,8 @@ li.ui-block-divisor-bottom {
     filter: Alpha(Opacity=100);
     opacity: 1;
 }
-@media only screen and (min-width: 768px) {
-    .cd-top {
-        right: 20px;
-        bottom: 20px;
-    }
-}
-@media only screen and (min-width: 1024px) {
-    .cd-top {
-        height: 60px;
-        width: 60px;
-        right: 30px;
-        bottom: 30px;
-    }
-}
 
-.save-button{
+.middle-button{
     display: inline-block;
     position: fixed;
     bottom: 40px;
@@ -535,8 +482,98 @@ li.ui-block-divisor-bottom {
     -moz-transition: opacity .3s 0s, visibility 0s .3s;
     transition: opacity .3s 0s, visibility 0s .3s;
 }
-.save-button.save-button-is-visible {
+.middle-button.middle-button-is-visible {
     /* the button becomes visible */
     visibility: visible;
     opacity: 1;    
+}
+
+.backText{
+    display: inline-block;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    position: fixed;
+    bottom: 40px;
+    left: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    /* image replacement properties */
+    overflow: hidden;
+    text-indent: 100%;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.8) url(../img/misc/back_arrow.png) no-repeat center 50%;
+    background-size: 90%;
+    visibility: visible;
+    filter: Alpha(Opacity=30);
+    opacity: .3;
+    -webkit-transition: opacity .3s 0s, visibility 0s 0s;
+    -moz-transition: opacity .3s 0s, visibility 0s 0s;
+    transition: opacity .3s 0s, visibility 0s 0s;
+}
+.backText:hover {
+    background-color: #fff;
+    filter: Alpha(Opacity=100);
+    opacity: 1;
+}
+
+@media only screen and (min-width: 768px) {
+    .cd-top, .backText {
+        right: 20px;
+        bottom: 20px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .cd-top {
+        height: 60px;
+        width: 60px;
+        right: 30px;
+        bottom: 30px;
+    }
+    
+    .backText {
+        height: 60px;
+        width: 60px;
+        left: 30px;
+        bottom: 30px;
+    }
+}
+
+@media screen and (max-width: 50em)
+{
+    .content-secondary {
+        width: 100%;
+    }
+
+    .text-right {
+        text-align: left;
+        padding-right: 0;
+        padding-top: 0;
+    }
+
+    .content-primary {
+        width: 100%;
+        float: left;
+    }
+
+    .grid-text{
+        padding-top: 0;
+        padding-left: 5px;
+    }
+
+    .ui-block-a,
+    .ui-block-b,
+    .ui-block-c,
+    .ui-block-d,
+    .ui-block-e,
+    .ui-block-f,
+    .ui-block-g,
+    .ui-block-divisor-top,
+    .ui-block-divisor-bottom {
+        width: 100% !important;
+    }
+
+    .small-hidden{
+        display: none;
+    }
 }

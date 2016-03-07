@@ -749,5 +749,6 @@ var textMap = {
     DIVIDE: "划分",
     ADD_DIVIDER: "添加分区",
     UNSORTED: "没有排序",
-    SAVE_AND_RELOAD: "保存并重新加载"
+    SAVE_AND_RELOAD: "保存并重新加载",
+    RELOAD_CCU_CHANGES: "发现变化"
 };

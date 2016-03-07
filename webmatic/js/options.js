@@ -2,14 +2,19 @@
 
 // ----------------------- Helper functions ----------------------------
 
+function activateSettingChangedButton(type) {
+    $('.reload-button-text').text(mapText("RELOAD_CCU_CHANGES") + ": " + mapText(type));
+    $('[name="reloadCCUChanges"]').addClass("middle-button-is-visible").removeClass('ui-state-disabled');
+}
+
 function activateSettingSaveButton(reload) {
     mustBeSaved = true;
     if (!mustReload && reload) {
         mustReload = true;
-        $(".save-button").text(mapText("SAVE_AND_RELOAD"));
-        $(".save-button").removeClass("ui-icon-check").addClass("ui-icon-refresh");
+        $(".save-button-text").text(mapText("SAVE_AND_RELOAD"));
+        $(".save-button-text").removeClass("ui-icon-check").addClass("ui-icon-refresh");
     }
-    $('[name="saveAllChanges"]').addClass("save-button-is-visible").removeClass('ui-state-disabled');
+    $('[name="saveAllChanges"]').addClass("middle-button-is-visible").removeClass('ui-state-disabled');
 }
 
 function saveOptionsToServer(key, value, reload) {
@@ -56,7 +61,7 @@ function saveAllDatasToServer() {
         location.reload(true);
     }
     mustBeSaved = false;
-    $('[name="saveAllChanges"]').removeClass('save-button-is-visible').addClass('ui-state-disabled');
+    $('[name="saveAllChanges"]').removeClass('middle-button-is-visible').addClass('ui-state-disabled');
 }
 
 function createExecutationField(key, map) {

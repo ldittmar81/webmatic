@@ -621,14 +621,14 @@ var textMap = {
     FUNCBUTTON: "Bouton",
     FUNCCENTRAL: "Contrôle centrale",
     FUNCENERGY: "Gestion d'énergie",
-    SYSVARPRESENCE : "Anwesenheit",
-    SYSVARPRESENCEMSG : "Anwesenheit",
-    SYSVARPRESENCEPRESENT : "anwesend",
-    SYSVARPRESENCENOTPRESENT : "nicht anwesend",
-    SYSVARALARMZONE1 : "Alarmzone 1",
-    SYSVARALARMZONE1MSG : "Alarmmeldung Alarmzone 1",
-    SYSVARALARMZONE1TRIGGERED : "ausgelöst",
-    SYSVARALARMZONE1NOTTRIGGERED : "nicht ausgelöst",
+    SYSVARPRESENCE : "Présence",
+    SYSVARPRESENCEMSG : "Présence",
+    SYSVARPRESENCEPRESENT : "présent",
+    SYSVARPRESENCENOTPRESENT : "pas présenter",
+    SYSVARALARMZONE1 : "Zone Alarm 1",
+    SYSVARALARMZONE1MSG : "Message d'alarme Zone 1",
+    SYSVARALARMZONE1TRIGGERED : "déclenché",
+    SYSVARALARMZONE1NOTTRIGGERED : "pas déclenché",
     // Andere Bezeichnungen
     OPEN: "ouvrir",
     OPEN_SHORT: "ouvert",
@@ -749,5 +749,6 @@ var textMap = {
     DIVIDE: "Partition",
     ADD_DIVIDER: "ajouter une partition",
     UNSORTED: "non trié",
-    SAVE_AND_RELOAD: "sauvegarder et recharger"
+    SAVE_AND_RELOAD: "sauvegarder et recharger",
+    RELOAD_CCU_CHANGES: "changement trouvé"
 };

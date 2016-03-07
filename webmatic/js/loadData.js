@@ -217,10 +217,15 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
 
 function refreshJSONObj(type, newJsonObj, create) {
     var oldMap = getMap(type);
+
     if (type === "rooms" || type === "favorites" || type === "functions") {
         if (!create) {
+            var changeCCUAttr = false;
             var returnJson = {};
             var size = newJsonObj["size"];
+            if (size !== oldMap["size"]) {
+                changeCCUAttr = true;
+            }
             $.each(newJsonObj, function (key, val) {
                 if (key === "date" || key === "size" || key === "divisors") {
                     if (key === "divisors") {
@@ -249,12 +254,14 @@ function refreshJSONObj(type, newJsonObj, create) {
                         }
                         val['name'] = savedName;
                     } else {
+                        changeCCUAttr = true;
                         saveDataToFile = true;
                     }
                     if (type + '_divisor' in savedVal) {
                         val[type + '_divisor'] = savedVal[type + '_divisor'];
                     } else {
                         val[type + '_divisor'] = "unsorted";
+                        changeCCUAttr = true;
                         saveDataToFile = true;
                     }
 
@@ -267,6 +274,9 @@ function refreshJSONObj(type, newJsonObj, create) {
             });
             returnJson["size"] = size;
             newJsonObj = returnJson;
+            if (changeCCUAttr) {
+                activateSettingChangedButton(type);
+            }
         }
     } else if (type === "programs") {
         if (!create) {

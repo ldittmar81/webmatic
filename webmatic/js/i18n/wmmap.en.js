@@ -621,14 +621,14 @@ var textMap = {
     FUNCBUTTON: "Button",
     FUNCCENTRAL: "Central control unit",
     FUNCENERGY: "Energy management",
-    SYSVARPRESENCE : "Anwesenheit",
-    SYSVARPRESENCEMSG : "Anwesenheit",
-    SYSVARPRESENCEPRESENT : "anwesend",
-    SYSVARPRESENCENOTPRESENT : "nicht anwesend",
-    SYSVARALARMZONE1 : "Alarmzone 1",
-    SYSVARALARMZONE1MSG : "Alarmmeldung Alarmzone 1",
-    SYSVARALARMZONE1TRIGGERED : "ausgelöst",
-    SYSVARALARMZONE1NOTTRIGGERED : "nicht ausgelöst",
+    SYSVARPRESENCE : "presence",
+    SYSVARPRESENCEMSG : "presence",
+    SYSVARPRESENCEPRESENT : "present",
+    SYSVARPRESENCENOTPRESENT : "not present",
+    SYSVARALARMZONE1 : "alarm zone 1",
+    SYSVARALARMZONE1MSG : "alarm zone 1",
+    SYSVARALARMZONE1TRIGGERED : "triggered",
+    SYSVARALARMZONE1NOTTRIGGERED : "not triggered",
     //Andere Bezeichnungen
     OPEN: "open",
     OPEN_SHORT: "open",
@@ -749,5 +749,6 @@ var textMap = {
     DIVIDE: "partition",
     ADD_DIVIDER: "add partition",
     UNSORTED: "unsorted",
-    SAVE_AND_RELOAD: "save and reload"
+    SAVE_AND_RELOAD: "save and reload",
+    RELOAD_CCU_CHANGES: "change found"
 };

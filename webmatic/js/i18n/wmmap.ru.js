@@ -621,14 +621,14 @@ var textMap = {
     FUNCBUTTON: "Кнопка",
     FUNCCENTRAL: "Центральный блок управления",
     FUNCENERGY: "Энергетический менеджмент",
-    SYSVARPRESENCE : "Anwesenheit",
-    SYSVARPRESENCEMSG : "Anwesenheit",
-    SYSVARPRESENCEPRESENT : "anwesend",
-    SYSVARPRESENCENOTPRESENT : "nicht anwesend",
-    SYSVARALARMZONE1 : "Alarmzone 1",
-    SYSVARALARMZONE1MSG : "Alarmmeldung Alarmzone 1",
-    SYSVARALARMZONE1TRIGGERED : "ausgelöst",
-    SYSVARALARMZONE1NOTTRIGGERED : "nicht ausgelöst",
+    SYSVARPRESENCE : "Присутствие",
+    SYSVARPRESENCEMSG : "Присутствие",
+    SYSVARPRESENCEPRESENT : "настоящее",
+    SYSVARPRESENCENOTPRESENT : "нет настоящее",
+    SYSVARALARMZONE1 : "Сигнализация Зона 1",
+    SYSVARALARMZONE1MSG : "Аварийное сообщение Зона 1",
+    SYSVARALARMZONE1TRIGGERED : "срабатывает",
+    SYSVARALARMZONE1NOTTRIGGERED : "нет срабатывает",
     //Andere Bezeichnungen
     OPEN: "открыть",
     OPEN_SHORT: "открыт",
@@ -749,5 +749,6 @@ var textMap = {
     DIVIDE: "раздел",
     ADD_DIVIDER: "добавить раздел",
     UNSORTED: "не отсортировано",
-    SAVE_AND_RELOAD: "сохранение и перезагрузка"
+    SAVE_AND_RELOAD: "сохранение и перезагрузка",
+    RELOAD_CCU_CHANGES: "изменение найдено"
 };

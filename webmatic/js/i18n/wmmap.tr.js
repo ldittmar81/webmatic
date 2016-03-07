@@ -621,14 +621,14 @@ var textMap = {
     FUNCBUTTON: "Tus takimi",
     FUNCCENTRAL: "Merkez",
     FUNCENERGY: "Enerji Yönetimi",
-    SYSVARPRESENCE : "Anwesenheit",
-    SYSVARPRESENCEMSG : "Anwesenheit",
-    SYSVARPRESENCEPRESENT : "anwesend",
-    SYSVARPRESENCENOTPRESENT : "nicht anwesend",
-    SYSVARALARMZONE1 : "Alarmzone 1",
-    SYSVARALARMZONE1MSG : "Alarmmeldung Alarmzone 1",
-    SYSVARALARMZONE1TRIGGERED : "ausgelöst",
-    SYSVARALARMZONE1NOTTRIGGERED : "nicht ausgelöst",
+    SYSVARPRESENCE : "varlık",
+    SYSVARPRESENCEMSG : "varlık",
+    SYSVARPRESENCEPRESENT : "mevcut",
+    SYSVARPRESENCENOTPRESENT : "mevcut değildir",
+    SYSVARALARMZONE1 : "Alarm Bölge 1",
+    SYSVARALARMZONE1MSG : "Alarm Mesajı Bölge 1",
+    SYSVARALARMZONE1TRIGGERED : "tetiklenir",
+    SYSVARALARMZONE1NOTTRIGGERED : "değil yangın",
     //Andere Bezeichnungen
     OPEN: "açmak",
     OPEN_SHORT: "Açık",
@@ -749,5 +749,6 @@ var textMap = {
     DIVIDE: "bölme",
     ADD_DIVIDER: "bölümü eklemek",
     UNSORTED: "sıralanır",
-    SAVE_AND_RELOAD: "kaydetmek ve yeniden"
+    SAVE_AND_RELOAD: "kaydetmek ve yeniden",
+    RELOAD_CCU_CHANGES: "değişim bulundu"
 };

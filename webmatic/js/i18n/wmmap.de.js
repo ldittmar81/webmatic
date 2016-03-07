@@ -749,5 +749,6 @@ var textMap = {
     DIVIDE: "Aufteilung",
     ADD_DIVIDER: "Teiler hinzufügen",
     UNSORTED: "unsortiert",
-    SAVE_AND_RELOAD: "Speichern und neu laden"
+    SAVE_AND_RELOAD: "Speichern und neu laden",
+    RELOAD_CCU_CHANGES: "Änderung festgestellt"
 };
