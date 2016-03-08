@@ -30,6 +30,9 @@ var loadColorPicker = false;
 var picturesList = [];
 var picturesListError = false;
 
+var changeGlobal = false;
+var changeClient = false;
+
 var excludeFromRefresh = [];
 var tempExcludeFromRefresh = 0;
 
@@ -599,16 +602,27 @@ function openOnlyPicDialog(title, html) {
 }
 
 //Divisor
-function getDivisorSelectbox(type, divisor, key) {
+function getDivisorSelectbox(type, divisor, key, isClient, clientVal) {
+    var map = getMap(type);
+
     var html = "";
     html += "<select name='saveDivisor' data-type='" + type + "' data-key='" + type + "_divisor' data-id='" + key + "' data-theme='" + theme + "'>";
-    html += "<option value='unsorted'></option>";
-    var map = getMap(type);
+    var selected = clientVal && clientVal[type + "_divisor"];
+    if (isClient) {
+        var divName = (divisor === "unsorted") ? mapText("UNSORTED") : map['divisors'][divisor]['name'];
+        html += "<option value=''" + (!selected ? "selected='selected'" : "") + ">Global: " + divName + "</option>";
+    }
     $.each(map['divisors'], function (keyDiv, valueDiv) {
         if ($.isNumeric(keyDiv)) {
             keyDiv = parseInt(keyDiv);
         }
-        html += "<option value='" + keyDiv + "' " + (divisor === keyDiv ? "selected='selected'" : "") + ">" + valueDiv['name'] + "</option>";
+        var sel = false;
+        if (isClient) {
+            sel = selected && clientVal[type + "_divisor"] === keyDiv;
+        } else {
+            sel = divisor === keyDiv;
+        }
+        html += "<option value='" + keyDiv + "' " + (sel ? "selected='selected'" : "") + ">" + valueDiv['name'] + "</option>";
     });
     html += "</select>";
     return html;
@@ -1006,7 +1020,7 @@ function addUnsorted(map) {
 
 function removeUnsorted(map) {
     var originObj = map['divisors'];
-    delete  originObj["unsorted"];
+    delete originObj["unsorted"];
     map['divisors'] = originObj;
 }
 
@@ -1049,6 +1063,19 @@ function recalculatePositions(map, type, isDivisor) {
         $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(getMap(type))});
     }
     return map;
+}
+
+function setDraggable(objID, type) {
+    $('.draggable').draggable({
+        snap: "container" + type + objID,
+        containment: "container" + type + objID,
+        scroll: false,
+        opacity: 0.5,
+        stack: ".draggable",
+        stop: function (event, ui) {
+            //hier muss noch weiter programmiert werden
+        }
+    });
 }
 
 function getPicKey(key, type, map, options) {
@@ -1170,6 +1197,47 @@ function setResultMap(type, data) {
     }
 }
 
+function getClientMap(type) {
+    switch (type) {
+        case "variables":
+            return variablesClientMap;
+        case "programs":
+            return programsClientMap;
+        case "favorites":
+            return favoritesClientMap;
+        case "rooms":
+            return roomsClientMap;
+        case "functions":
+            return functionsClientMap;
+        case "devices":
+            return devicesClientMap;
+        case "config":
+            return optionsClientMap;
+    }
+}
+function setClientMap(type, data) {
+    switch (type) {
+        case "variables":
+            variablesClientMap = data;
+            break;
+        case "programs":
+            programsClientMap = data;
+            break
+        case "favorites":
+            favoritesClientMap = data;
+            break
+        case "rooms":
+            roomsClientMap = data;
+            break
+        case "functions":
+            functionsClientMap = data;
+            break
+        case "devices":
+            devicesClientMap = data;
+            break
+    }
+}
+
 function getMap(type) {
     switch (type) {
         case "variables":
@@ -1278,7 +1346,15 @@ function createOneMap(type, changedKey, changedValue) {
         case "variables":
             $.each(variablesMap, function (key, val) {
                 if (key in variablesClientMap) {
-                    resultVariablesMap[key] = variablesClientMap[key];
+                    var tmpMap = {};
+                    $.each(val, function (key2, val2) {
+                        if(!(key2 in variablesClientMap[key])){
+                            tmpMap[key2] = val2;
+                        }else{
+                            tmpMap[key2] = variablesClientMap[key][key2];
+                        }
+                    });
+                    resultVariablesMap[key] = tmpMap;
                 } else {
                     resultVariablesMap[key] = val;
                 }
@@ -1287,7 +1363,15 @@ function createOneMap(type, changedKey, changedValue) {
         case "programs":
             $.each(programsMap, function (key, val) {
                 if (key in programsClientMap) {
-                    resultProgramsMap[key] = programsClientMap[key];
+                    var tmpMap = {};
+                    $.each(val, function (key2, val2) {
+                        if(!(key2 in programsClientMap[key])){
+                            tmpMap[key2] = val2;
+                        }else{
+                            tmpMap[key2] = programsClientMap[key][key2];
+                        }
+                    });
+                    resultProgramsMap[key] = tmpMap;
                 } else {
                     resultProgramsMap[key] = val;
                 }
@@ -1296,7 +1380,15 @@ function createOneMap(type, changedKey, changedValue) {
         case "favorites":
             $.each(favoritesMap, function (key, val) {
                 if (key in favoritesClientMap) {
-                    resultFavoritesMap[key] = favoritesClientMap[key];
+                    var tmpMap = {};
+                    $.each(val, function (key2, val2) {
+                        if(!(key2 in favoritesClientMap[key])){
+                            tmpMap[key2] = val2;
+                        }else{
+                            tmpMap[key2] = favoritesClientMap[key][key2];
+                        }
+                    });
+                    resultFavoritesMap[key] = tmpMap;
                 } else {
                     resultFavoritesMap[key] = val;
                 }
@@ -1305,7 +1397,15 @@ function createOneMap(type, changedKey, changedValue) {
         case "rooms":
             $.each(roomsMap, function (key, val) {
                 if (key in roomsClientMap) {
-                    resultRoomsMap[key] = roomsClientMap[key];
+                    var tmpMap = {};
+                    $.each(val, function (key2, val2) {
+                        if(!(key2 in roomsClientMap[key])){
+                            tmpMap[key2] = val2;
+                        }else{
+                            tmpMap[key2] = roomsClientMap[key][key2];
+                        }
+                    });
+                    resultRoomsMap[key] = tmpMap;
                 } else {
                     resultRoomsMap[key] = val;
                 }
@@ -1314,7 +1414,15 @@ function createOneMap(type, changedKey, changedValue) {
         case "functions":
             $.each(functionsMap, function (key, val) {
                 if (key in functionsClientMap) {
-                    resultFunctionsMap[key] = functionsClientMap[key];
+                    var tmpMap = {};
+                    $.each(val, function (key2, val2) {
+                        if(!(key2 in functionsClientMap[key])){
+                            tmpMap[key2] = val2;
+                        }else{
+                            tmpMap[key2] = functionsClientMap[key][key2];
+                        }
+                    });
+                    resultFunctionsMap[key] = tmpMap;
                 } else {
                     resultFunctionsMap[key] = val;
                 }
@@ -1323,7 +1431,15 @@ function createOneMap(type, changedKey, changedValue) {
         case "devices":
             $.each(devicesMap, function (key, val) {
                 if (key in devicesClientMap) {
-                    resultDevicesMap[key] = devicesClientMap[key];
+                    var tmpMap = {};
+                    $.each(val, function (key2, val2) {
+                        if(!(key2 in devicesClientMap[key])){
+                            tmpMap[key2] = val2;
+                        }else{
+                            tmpMap[key2] = devicesClientMap[key][key2];
+                        }
+                    });
+                    resultDevicesMap[key] = tmpMap;
                 } else {
                     resultDevicesMap[key] = val;
                 }

@@ -33,7 +33,7 @@ loadSingleMenu = function (indexType, gfxClassParent, gfxClassSelected, collapse
             loadConfigData(false, '../webmatic_user/' + indexType + client + '.json', indexType + 'Client', 'webmatic' + indexType + 'clientMap', false, true);
         }
     } else {
-        setResultMap(indexType, JSON.parse(localStorage.getItem("webmatic" + indexType + "clientMap")));
+        setClientMap(indexType, JSON.parse(localStorage.getItem("webmatic" + indexType + "clientMap")));
     }
     //Kombinieren
     createOneMap(indexType);
@@ -95,7 +95,7 @@ loadSingleDivisorMenu = function (type, gfxClassParent, gfxClassSelected, collap
             loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+        setClientMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
     }
     //Kombinieren
     createOneMap(type);
@@ -168,7 +168,7 @@ loadDivisor = function (gfxClassParent, gfxClassSelected, collapsed, type) {
             loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+        setClientMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
     }
     //Kombinieren
     createOneMap(type);

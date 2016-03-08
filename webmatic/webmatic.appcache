@@ -10,6 +10,8 @@ index.html
 get.html
 dlgAbout.html
 favicon.ico
+libs/jquery-ui/jquery-ui.min.css
+libs/jquery-ui/jquery-ui.structure.min.css
 libs/jquery/jquery.mobile.structure-1.4.5.min.css
 libs/jqplot/jquery.jqplot.min.css
 libs/DateBox/css/jtsage-datebox.min.css
@@ -17,6 +19,7 @@ themes/webmatic-theme.min.css
 themes/jquery.mobile.icons.min.css
 themes/webmatic.min.css
 libs/jquery/jquery-2.1.4.min.js
+libs/jquery-ui/jquery-ui-1.11.4.min.js
 libs/jquery/jquery.mobile-1.4.5.min.js
 libs/jquery_lazyload/jquery.lazyload.min.js
 libs/Font.js/Font.min.js

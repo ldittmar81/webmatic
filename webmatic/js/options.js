@@ -1,4 +1,4 @@
-/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList, resultRoomsMap, mustReload, specialTextVariables */
+/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList, resultRoomsMap, mustReload, specialTextVariables, variablesClientMap, favoritesClientMap, roomsClientMap, functionsClientMap, programsClientMap */
 
 // ----------------------- Helper functions ----------------------------
 
@@ -7,13 +7,20 @@ function activateSettingChangedButton(type) {
     $('[name="reloadCCUChanges"]').addClass("middle-button-is-visible").removeClass('ui-state-disabled');
 }
 
-function activateSettingSaveButton(reload) {
+function activateSettingSaveButton(reload, isClient) {
     mustBeSaved = true;
     if (!mustReload && reload) {
         mustReload = true;
         $(".save-button-text").text(mapText("SAVE_AND_RELOAD"));
         $(".save-button-text").removeClass("ui-icon-check").addClass("ui-icon-refresh");
     }
+
+    if (isClient) {
+        changeClient = true;
+    } else {
+        changeGlobal = true;
+    }
+
     $('[name="saveAllChanges"]').addClass("middle-button-is-visible").removeClass('ui-state-disabled');
 }
 
@@ -39,18 +46,34 @@ function saveClientOptionsToServer(key, value) {
 
 function saveAllDatasToServer() {
 
-    localStorage.setItem("webmaticfavoritesMap", JSON.stringify(favoritesMap));
-    localStorage.setItem("webmaticroomsMap", JSON.stringify(roomsMap));
-    localStorage.setItem("webmaticfunctionsMap", JSON.stringify(functionsMap));
-    localStorage.setItem("webmaticprogramsMap", JSON.stringify(programsMap));
-    localStorage.setItem("webmaticvariablesMap", JSON.stringify(variablesMap));
+    if (changeGlobal) {
+        localStorage.setItem("webmaticfavoritesMap", JSON.stringify(favoritesMap));
+        localStorage.setItem("webmaticroomsMap", JSON.stringify(roomsMap));
+        localStorage.setItem("webmaticfunctionsMap", JSON.stringify(functionsMap));
+        localStorage.setItem("webmaticprogramsMap", JSON.stringify(programsMap));
+        localStorage.setItem("webmaticvariablesMap", JSON.stringify(variablesMap));
 
-    $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap)});
-    $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap)});
-    $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap)});
-    $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap)});
-    $.post('cgi/saveconfig.cgi', {name: "variables", text: JSON.stringify(variablesMap)});
-    
+        $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap)});
+        $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap)});
+        $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap)});
+        $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap)});
+        $.post('cgi/saveconfig.cgi', {name: "variables", text: JSON.stringify(variablesMap)});
+    }
+
+    if (changeClient) {
+        localStorage.setItem("webmaticfavoritesclientMap", JSON.stringify(favoritesClientMap));
+        localStorage.setItem("webmaticroomsclientMap", JSON.stringify(roomsClientMap));
+        localStorage.setItem("webmaticfunctionsclientMap", JSON.stringify(functionsClientMap));
+        localStorage.setItem("webmaticprogramsclientMap", JSON.stringify(programsClientMap));
+        localStorage.setItem("webmaticvariablesclientMap", JSON.stringify(variablesClientMap));
+
+        $.post('cgi/saveconfig.cgi', {name: "favorites" + client, text: JSON.stringify(favoritesClientMap)});
+        $.post('cgi/saveconfig.cgi', {name: "rooms" + client, text: JSON.stringify(roomsClientMap)});
+        $.post('cgi/saveconfig.cgi', {name: "functions" + client, text: JSON.stringify(functionsClientMap)});
+        $.post('cgi/saveconfig.cgi', {name: "programs" + client, text: JSON.stringify(programsClientMap)});
+        $.post('cgi/saveconfig.cgi', {name: "variables" + client, text: JSON.stringify(variablesClientMap)});
+    }
+
     Object.keys(clientsList).forEach(function (key) {
         if (key !== client) {
             $.post('cgi/saveconfig.cgi', {name: "reload" + key, text: "true"});
@@ -61,6 +84,8 @@ function saveAllDatasToServer() {
         location.reload(true);
     }
     mustBeSaved = false;
+    changeClient = false;
+    changeGlobal = false;
     $('[name="saveAllChanges"]').removeClass('middle-button-is-visible').addClass('ui-state-disabled');
 }
 
@@ -116,7 +141,7 @@ function loadOptionsClient() {
     $("#" + dataList).fadeIn().enhanceWithin().trigger("fertig");
 }
 
-function loadGraphicIDs(type) {
+function loadGraphicIDs(type, global) {
     $("#" + dataList).empty();
     $("#" + dataListHeader).empty();
     // "Lade..." anzeigen:
@@ -139,7 +164,7 @@ function loadGraphicIDs(type) {
             loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        setResultMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+        setClientMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
     }
     //Kombinieren
     createOneMap(type);
@@ -148,8 +173,23 @@ function loadGraphicIDs(type) {
         createOneMap(type);
     });
 
-    $("#" + dataList).append("<li data-role='list-divider' role='heading'>" + mapText(type) + "</li>");
-    processGraphicID(type);
+    var titleHtml = "<li data-role='list-divider' role='heading'>";
+    if (global) {
+        titleHtml += "<div style='float:left;'>" + mapText(type) + " (" + mapText("NOT_SELECTED") + ")</div>";
+    } else {
+        titleHtml += "<div style='float:left;'>" + mapText(type) + " (" + clientsList[client] + ")</div>";
+    }
+    titleHtml += "<div style='float:right;'>";
+    titleHtml += "<a href='#' class='ui-btn ui-btn-inline ui-corner-all' name='changeGraphicIDEditModus' data-type='" + type + "' data-global='" + global + "'>" + (global ? clientsList[client] : mapText("NOT_SELECTED")) + "</a>";
+    titleHtml += "</div>";
+    titleHtml += "</li>";
+
+    $("#" + dataList).append(titleHtml);
+    if (global) {
+        processGraphicIDGlobal(type);
+    } else {
+        processGraphicIDClient(type);
+    }
 
     $("#" + dataList).listview("refresh");
     $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
@@ -730,9 +770,9 @@ function processOptionsClientAnzeige() {
     html += "</div>";
     html += "<div class='ui-block-g'>";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
-    selected1 = "class='";
-    selected2 = "class='";
-    selected3 = "class='";
+    var selected1 = "class='";
+    var selected2 = "class='";
+    var selected3 = "class='";
     var data_no_more_settings = "false";
     if (!("others" in optionsClientMap)) {
         selected1 += "ui-btn-active";
@@ -855,8 +895,8 @@ function processOptionsClientVariables() {
     return html;
 }
 
-function processGraphicID(type) {
-    var map = getResultMap(type);
+function processGraphicIDGlobal(type) {
+    var map = getMap(type);
     var globalMap = getMap(type);
 
     var isVariables = type === "variables";
@@ -970,6 +1010,7 @@ function processGraphicID(type) {
             html += "<div class='ui-block-b'>";
             html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
             html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-type='" + type + "' data-key='onlyPic' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['onlyPic'] ? "checked" : "") + "/>";
+            html += "</label>";
             html += "</div>";
         } else if (isSpecialTextVariables) {
             html += "<div class='ui-block-b small-hidden'></div>";
@@ -1057,6 +1098,7 @@ function processGraphicID(type) {
                 html += "<a href='#' name='editVarOperate' data-type='" + type + "' data-id='" + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
                 html += "</div>";
             }
+            html += "</label>";
         } else {
             html += " small-hidden'>";
         }
@@ -1064,6 +1106,209 @@ function processGraphicID(type) {
         html += "<div class='ui-block-c'>";
         html += "<label>" + mapText("VISIBILITY") + ":&nbsp;";
         html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-key='visible' data-type='" + type + "' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['visible'] ? "checked" : "") + "/>";
+        html += "</label>";
+        html += "</div>";
+        html += "</div>";
+        html += "</form>";
+        html += "</li>";
+        if (resultOptionsMap['default_sort_manually']) {
+            tmpObj[parseInt(val['position'])] = html;
+        } else {
+            tmpObj[val['name'].toLowerCase()] = html;
+        }
+    });
+
+    var keys;
+    if (resultOptionsMap['default_sort_manually']) {
+        keys = Object.keys(tmpObj).sort(function (a, b) {
+            return a - b;
+        });
+    } else {
+        keys = Object.keys(tmpObj).sort();
+    }
+    var len = keys.length;
+    for (var i = 0; i < len; i++) {
+        var k = keys[i];
+        $("#" + dataList).append(tmpObj[k]);
+    }
+}
+
+function processGraphicIDClient(type) {
+    var map = getMap(type);
+    var clientMap = getClientMap(type);
+
+    var isVariables = type === "variables";
+    var isTextVariables = false;
+    var isSpecialTextVariables = false;
+    var isListVariables = false;
+    var isPrograms = type === "programs";
+    var isRoom = type === "rooms";
+    var isFunction = type === "functions";
+    var isFavorite = type === "favorites";
+    var isRFF = isRoom || isFunction || isFavorite;
+    var html = "";
+
+    var tmpObj = {};
+    if (resultOptionsMap['default_sort_manually']) {
+        map = recalculatePositions(map, type, false);
+    }
+    $.each(map, function (key, val) {
+        if (key === "date" || key === "size" || key === "divisors") {
+            return;
+        }
+        var clientVal = clientMap[key];
+        isTextVariables = isVariables && val["valueType"] === "20";
+        isListVariables = isVariables && val["valueType"] === "16";
+        isSpecialTextVariables = isVariables && isTextVariables && ($.inArray(val["valueUnit"].toUpperCase(), specialTextVariables) !== -1);
+
+        var picKey = getPicKey(key, type, val, true);
+        html = "<li id='list" + key + "' data-id='" + key + "'>";
+        html += "<div style='float: left; text-align: center;'>";
+        html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
+        if ($.inArray(picKey, picturesList) !== -1) {
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
+        }
+        html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
+        html += "<h1>(";
+        if (isRFF) {
+            html += "<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>";
+        } else {
+            html += key;
+        }
+        html += ")</h1>";
+        html += "</div>";
+        html += "<form method='post' action='#' id='form" + key + "'>";
+        html += "<div class='ui-grid-b'>";
+        html += "<div class='ui-block-a'><strong>" + val['name'] + "</strong></div>";
+        if ((isVariables && !isSpecialTextVariables) || isPrograms) {
+            html += "<div class='ui-block-b'>";
+            html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            var selected1 = "";
+            var selected2 = "";
+            var selected3 = "";
+            if (clientVal === undefined || clientVal['onlyPic'] === undefined) {
+                selected1 = "class='ui-btn-active'";
+            } else if (clientVal['onlyPic'] === true) {
+                selected2 = "class='ui-btn-active'";
+            } else if (clientVal['onlyPic'] === false) {
+                selected3 = "class='ui-btn-active'";
+            }
+            html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='onlyPic' data-value='global' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+            html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='onlyPic' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+            html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='onlyPic' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+            html += "</div>";
+            html += "</label>";
+            html += "</div>";
+        } else if (isSpecialTextVariables) {
+            html += "<div class='ui-block-b small-hidden'></div>";
+        }
+
+        if (isVariables) {
+            if (optionsMap["variables_divisor"]) {
+                html += "<div class='ui-block-c'>";
+                html += getDivisorSelectbox(type, val[type + "_divisor"], key, true, clientVal);
+                html += "</div>";
+            } else {
+                html += "<div class='ui-block-c small-hidden'></div>";
+            }
+        }
+        if (isVariables && !isTextVariables) {
+            html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
+        } else if (isPrograms) {
+            html += "<div class='ui-block-a small-hidden'></div>";
+        }
+        html += "<div class='ui-block-b small-hidden'>";
+        html += "</div>";
+        html += "<div class='ui-block-c small-hidden'></div>";
+        if (isListVariables) {
+            html += "<div class='ui-block-a'>";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            html += "<select id='listType" + key + "' data-theme='" + theme + "'>";
+            var gs = "global";
+            if (clientVal === undefined || clientVal['listType'] === undefined) {
+                gs = "global";
+            } else {
+                gs = clientVal['listType'];
+            }
+            html += "<option value='global' " + (gs === "global" ? "selected='selected'" : "") + ">Global: " + val['listType'] + "</option>";
+            html += "<option value='auto' " + (gs === "auto" ? "selected='selected'" : "") + ">auto</option>";
+            html += "<option value='small' " + (gs === "small" ? "selected='selected'" : "") + ">button</option>";
+            html += "<option value='big' " + (gs === "big" ? "selected='selected'" : "") + ">select</option>";
+            html += "</select>";
+            html += "<a href='#' data-role='button' name='changeFloatSFClient' data-change='listType' data-id='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "</div>";
+            html += "</div>";
+        } else if (optionsMap[type + "_divisor"] && !isVariables) {
+            html += "<div class='ui-block-a'>";
+            html += getDivisorSelectbox(type, val[type + "_divisor"], key, true, clientVal);
+            html += "</div>";
+        } else {
+            html += "<div class='ui-block-a small-hidden'></div>";
+        }
+        html += "<div class='ui-block-b";
+        if (isPrograms || isVariables) {
+            html += "'>";
+            html += "<label>" + mapText("OPERATABLE") + ":&nbsp;";
+            if (!isVariables) {
+                html += "<div data-role='controlgroup' data-type='horizontal'>";
+                var selected1 = "";
+                var selected2 = "";
+                var selected3 = "";
+                if (clientVal === undefined || clientVal['operate'] === undefined) {
+                    selected1 = "class='ui-btn-active'";
+                } else if (clientVal['operate'] === true) {
+                    selected2 = "class='ui-btn-active'";
+                } else if (clientVal['operate'] === false) {
+                    selected3 = "class='ui-btn-active'";
+                }
+                html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='operate' data-value='global' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+                html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='operate' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+                html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='operate' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+                html += "</div>";
+            } else {
+                html += "<div data-role='controlgroup' data-type='horizontal'>";
+                var selected0 = "";
+                var selected1 = "";
+                var selected2 = "";
+                var selected3 = "";
+                if (clientVal === undefined || clientVal['operate'] === undefined) {
+                    selected0 = "class='ui-btn-active'";
+                } else if (clientVal['operate'] === "none") {
+                    selected1 = "class='ui-btn-active'";
+                } else if (clientVal['operate'] === true) {
+                    selected2 = "class='ui-btn-active'";
+                } else if (clientVal['operate'] === false) {
+                    selected3 = "class='ui-btn-active'";
+                }
+                html += "<a href='#' name='editVarOperateClient' data-type='" + type + "' data-id='" + key + "' data-value='global' data-role='button' data-inline='true' " + selected0 + ">" + mapText("NOT_SELECTED") + "</a>";
+                html += "<a href='#' name='editVarOperateClient' data-type='" + type + "' data-id='" + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("DEFAULT") + "</a>";
+                html += "<a href='#' name='editVarOperateClient' data-type='" + type + "' data-id='" + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+                html += "<a href='#' name='editVarOperateClient' data-type='" + type + "' data-id='" + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+                html += "</div>";
+            }
+            html += "</label>";
+        } else {
+            html += " small-hidden'>";
+        }
+        html += "</div>";
+        html += "<div class='ui-block-c'>";
+        html += "<label>" + mapText("VISIBILITY") + ":&nbsp;";
+        html += "<div data-role='controlgroup' data-type='horizontal'>";
+        var selected1 = "";
+        var selected2 = "";
+        var selected3 = "";
+        if (clientVal === undefined || clientVal['visible'] === undefined) {
+            selected1 = "class='ui-btn-active'";
+        } else if (clientVal['visible'] === true) {
+            selected2 = "class='ui-btn-active'";
+        } else if (clientVal['visible'] === false) {
+            selected3 = "class='ui-btn-active'";
+        }
+        html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='visible' data-value='global' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
+        html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='visible' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
+        html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='visible' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
+        html += "</div>";
         html += "</label>";
         html += "</div>";
         html += "</div>";
@@ -1524,6 +1769,132 @@ $(function () {
         activateSettingSaveButton();
     });
 
+    $(document.body).on("click", "[name='flipswitchClient']", function () {
+        var obj = $(this);
+        var id = obj.data("id");
+        var type = obj.data("type");
+        var key = obj.data("key");
+        var value = obj.data('value');
+
+        $(this).parent().children().removeClass("ui-btn-active");
+        $(this).addClass("ui-btn-active");
+
+        if (type === "favorites" || type === "rooms" || type === "functions") {
+            var show = value;
+            if (value === "global") {
+                var tmpMap = getMap(type);
+                show = tmpMap[id][key];
+            }
+            if (show) {
+                $("#" + id).fadeIn(1000);
+            } else {
+                $("#" + id).fadeOut(1000);
+            }
+        }
+
+        switch (type) {
+            case "favorites":
+                if (favoritesClientMap === undefined) {
+                    favoritesClientMap = {};
+                }
+                if (value === "global") {
+                    if (favoritesClientMap[id] !== undefined) {
+                        var tmpMap = favoritesClientMap[id];
+                        delete tmpMap[key];
+                        favoritesClientMap[id] = tmpMap;
+                    }
+                } else {
+                    var tmpMap = favoritesClientMap[id];
+                    if (tmpMap === undefined) {
+                        tmpMap = {};
+                    }
+                    tmpMap[key] = value;
+                    favoritesClientMap[id] = tmpMap;
+                }
+                break
+            case "rooms":
+                if (roomsClientMap === undefined) {
+                    roomsClientMap = {};
+                }
+                if (value === "global") {
+                    if (roomsClientMap[id] !== undefined) {
+                        var tmpMap = roomsClientMap[id];
+                        delete tmpMap[key];
+                        roomsClientMap[id] = tmpMap;
+                    }
+                } else {
+                    var tmpMap = roomsClientMap[id];
+                    if (tmpMap === undefined) {
+                        tmpMap = {};
+                    }
+                    tmpMap[key] = value;
+                    roomsClientMap[id] = tmpMap;
+                }
+                break
+            case "functions":
+                if (functionsClientMap === undefined) {
+                    functionsClientMap = {};
+                }
+                if (value === "global") {
+                    if (functionsClientMap[id] !== undefined) {
+                        var tmpMap = functionsClientMap[id];
+                        delete tmpMap[key];
+                        functionsClientMap[id] = tmpMap;
+                    }
+                } else {
+                    var tmpMap = functionsClientMap[id];
+                    if (tmpMap === undefined) {
+                        tmpMap = {};
+                    }
+                    tmpMap[key] = value;
+                    functionsClientMap[id] = tmpMap;
+                }
+                break
+            case "programs":
+                if (programsClientMap === undefined) {
+                    programsClientMap = {};
+                }
+                if (value === "global") {
+                    if (programsClientMap[id] !== undefined) {
+                        var tmpMap = programsClientMap[id];
+                        delete tmpMap[key];
+                        programsClientMap[id] = tmpMap;
+                    }
+                } else {
+                    var tmpMap = programsClientMap[id];
+                    if (tmpMap === undefined) {
+                        tmpMap = {};
+                    }
+                    tmpMap[key] = value;
+                    programsClientMap[id] = tmpMap;
+                }
+                break
+            case "variables":
+                if (variablesClientMap === undefined) {
+                    variablesClientMap = {};
+                }
+                if (value === "global") {
+                    if (variablesClientMap[id] !== undefined) {
+                        var tmpMap = variablesClientMap[id];
+                        delete tmpMap[key];
+                        variablesClientMap[id] = tmpMap;
+                    }
+                } else {
+                    var tmpMap = variablesClientMap[id];
+                    if (tmpMap === undefined) {
+                        tmpMap = {};
+                    }
+                    tmpMap[key] = value;
+                    variablesClientMap[id] = tmpMap;
+                }
+                break
+        }
+
+        createOneMap(type);
+
+        activateSettingSaveButton(false, true);
+    });
+
     $(document.body).on("click", "[name='editVarOperate']", function () {
         var obj = $(this);
         var id = obj.data("id");
@@ -1537,6 +1908,38 @@ $(function () {
         createOneMap("variables");
 
         activateSettingSaveButton();
+    });
+
+    $(document.body).on("click", "[name='editVarOperateClient']", function () {
+        var obj = $(this);
+        var id = obj.data("id");
+        var checked = obj.data('value');
+
+        $(this).parent().children().removeClass("ui-btn-active");
+        $(this).addClass("ui-btn-active");
+
+        if (variablesClientMap === undefined) {
+            variablesClientMap = {};
+        }
+
+        if (checked === "global") {
+            if (variablesClientMap[id] !== undefined) {
+                var tmpMap = variablesClientMap[id];
+                delete tmpMap["operate"];
+                variablesClientMap[id] = tmpMap;
+            }
+        } else {
+            var tmpMap = variablesClientMap[id];
+            if (tmpMap === undefined) {
+                tmpMap = {};
+            }
+            tmpMap["operate"] = checked;
+            variablesClientMap[id] = tmpMap;
+        }
+
+        createOneMap("variables");
+
+        activateSettingSaveButton(false, true);
     });
 
     $(document.body).on("change", "[name='saveDivisor']", function () {
@@ -1576,6 +1979,42 @@ $(function () {
         createOneMap("variables");
 
         activateSettingSaveButton();
+    });
+
+    $(document.body).on("click", "[name='changeFloatSFClient']", function () {
+        var obj = $(this);
+        var id = obj.data("id");
+        var toChange = obj.data("change");
+        var value = $("#" + toChange + id).val();
+
+        if (variablesClientMap === undefined) {
+            variablesClientMap = {};
+        }
+
+        if (value === "global") {
+            if (variablesClientMap[id] !== undefined) {
+                var tmpMap = variablesClientMap[id];
+                delete tmpMap[toChange];
+                variablesClientMap[id] = tmpMap;
+            }
+        } else {
+            var tmpMap = variablesClientMap[id];
+            if (tmpMap === undefined) {
+                tmpMap = {};
+            }
+            tmpMap[toChange] = value;
+            variablesClientMap[id] = tmpMap;
+        }
+
+        var tmpMap = variablesMap[id];
+        if ("listType" === toChange) {
+            $('#mainNumber' + id).replaceWith(addSetValueList(0, id, "0", tmpMap['valueList'], tmpMap['valueUnit'], "", false, true, value, true));
+        }
+        $('#mainNumber' + id).enhanceWithin();
+
+        createOneMap("variables");
+
+        activateSettingSaveButton(false, true);
     });
 
     $(document.body).on("click", "[name='saveAllChanges']", function () {
@@ -1749,6 +2188,13 @@ $(function () {
         activateSettingSaveButton();
     });
 
+    $(document.body).on("click", "[name='changeGraphicIDEditModus']", function () {
+        var obj = $(this);
+        var global = obj.data("global");
+        var type = obj.data("type");
+        loadGraphicIDs(type, !global);
+    });
+
     // ------------------------- Bilder -----------------------------
 
     $(document.body).on("click", "[id^=optionssetButton],[id^=optionssetValueBigList]", function () {
@@ -1839,6 +2285,7 @@ $(function () {
         var id = $(this).attr('id');
         var key = id.substr(13, id.length);
         var type = $(this).data('type');
+        var isBack = $(this).data('background') === "true";
         var picKey = $("#file" + key).attr("data-pickey");
 
         var formData = new FormData();
@@ -1849,8 +2296,14 @@ $(function () {
             var tempImg = new Image();
             tempImg.src = reader.result;
             tempImg.onload = function () {
+
                 var MAX_WIDTH = 160;
                 var MAX_HEIGHT = 160;
+                if (isBack) {
+                    MAX_WIDTH = 1850;
+                    MAX_HEIGHT = 950;
+                }
+
                 var tempW = tempImg.width;
                 var tempH = tempImg.height;
                 if (tempW > tempH) {

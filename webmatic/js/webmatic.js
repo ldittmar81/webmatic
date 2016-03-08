@@ -45,7 +45,7 @@ function refreshPage(item, col) {
                 loadPrograms(restart);
                 break;
             case 4:
-                loadGraphicIDs("favorites");
+                loadGraphicIDs("favorites", true);
                 break;
             case 5:
                 testSite = true;
@@ -59,19 +59,19 @@ function refreshPage(item, col) {
                 loadOptions();
                 break;
             case 8:
-                loadGraphicIDs("rooms");
+                loadGraphicIDs("rooms", true);
                 break;
             case 9:
-                loadGraphicIDs("functions");
+                loadGraphicIDs("functions", true);
                 break;
             case 10:
-                loadGraphicIDs("programs");
+                loadGraphicIDs("programs", true);
                 break;
             case 11:
                 loadOptionsClient();
                 break;
             case 12:
-                loadGraphicIDs("variables");
+                loadGraphicIDs("variables", true);
                 break;
         }
 
@@ -1584,7 +1584,6 @@ $(function () {
         obj.attr('data-value', $('#tuneInURL_' + dataID).val());
         buttonEvents(obj, true);
     });
-
     $(document.body).on("click", "[name=showTuneIn]", function () {
         var obj = $(this);
         var valID = obj.data("id");
@@ -1604,7 +1603,6 @@ $(function () {
             $('#tuneInField_' + valID).fadeIn(1000);
         });
     });
-
     $(document.body).on("click", "[name=editTuneIn]", function () {
         var obj = $(this);
         obj.fadeOut(500, function () {
