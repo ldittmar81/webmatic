@@ -4,6 +4,13 @@ WebMatic ist eine browserbasierte Benutzeroberfläche für HomeMatic. Die Elemen
 ## Haftungsausschluss
 Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsweise der Software und keinerlei Haftung für Schäden, die aus der Benutzung dieser Software resultieren.
 
+## Quick Links
+* [Aktuelle Version](https://github.com/jens-maus/webmatic/releases/latest)
+* [Anleitung](http://webmatic.lmdsoft.de/tiki-index.php?page=Inhalt)
+* [Support](http://homematic-forum.de/forum/viewforum.php?f=39)
+* [Fehler melden](https://github.com/jens-maus/webmatic/issues)
+* [Spenden](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K3QUGRC2AMPK6)
+
 ## Changelog
 2.2 (noch nicht freigegeben - voraussichtlich vor Ostern)
 * Codereview Teil 3
@@ -21,6 +28,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * Neue Systemvariablen-Typen (Color, Date, Time)
 * Systemvariablen: Nur-Bild-Funktion (wird nur Icon (160px * 160px) + Überschrift angezeigt - Bei Zahlen noch den Wert + Einheit)
 * Programme: Nur-Bild-Funktion (wird nur Icon (160px * 160px) + Überschrift angezeigt)
+* Clientspezifische Änderungen für Variablen, Programme, Räume, Favoriten und Gewerke möglich
 * Icons von Systemvariablen je nach Wert einstellbar (Boolean: true/false, Liste: einzelnen Listenpunkte, Text: Nur ein Bild, Nummer: verschiedene Bilder für Werte größer x -> Beipiel mit 3 Bildern: 0-25=Bild1, 25-75=Bild2, 75-100=Bild3)
 * Bugfix: Fehlerhaft Darstellung bei Zeiteinstellungen
 * Bugfix: Programmbilder werden auch unter Favoriten angezeigt

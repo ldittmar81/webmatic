@@ -271,6 +271,18 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     text-align: left;
 }
 
+.onlyPic-color {
+    position: absolute;
+    top: 125px;
+    left: -8px;
+    width: 40px;
+    height: 40px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    text-align: left;
+}
+
 .text-right {
     text-align: right;
     padding-right: 15px !important;

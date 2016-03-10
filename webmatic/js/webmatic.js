@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog, client */
 
 // WebMatic 2.x
 // by ldittmar
@@ -199,7 +199,11 @@ function processVariable(variable, valID, systemDate) {
 
         if (valType === "4") {
             html += "<div class='onlyPic-value valueInfo-" + theme + "'>" + parseFloat(strValue) + valUnit + "</div>";
-        } else if (isTextVariables) {
+        } else if (isTextVariables && valUnit && valUnit.toUpperCase() === "COLOR"){
+            html += "<div class='onlyPic-color' style='background-color: " + strValue + ";'>&nbsp;</div>";
+        }
+        
+        if (isTextVariables) {
             html += "<span id='textValue" + valID + "' style='display: none;'>" + strValue + "</span>";
         }
 
@@ -1502,18 +1506,22 @@ $(function () {
         var dataID = $(this).data("id");
         $('#player' + dataID).removeClass('onlyPic-player-' + theme).addClass('onlyPic-playerani-' + theme);
         var type = $(this).data("type");
+        var unit = $(this).data("unit");
 
         var urlAttr = testSite ? "&debug=true" : "";
         if (testSite) {
             urlAttr += '&debug=true';
         }
 
+        var value = $(this).data("value");
+        var name = $(this).data("name");
+        var vorDate = $(this).data("date");
+
         if (type === "programs") {
             $.get('cgi/startprogram.cgi?id=' + dataID + urlAttr, function () {
                 $('#player' + dataID).delay(3000).removeClass('onlyPic-playerani-' + theme).addClass('onlyPic-player-' + theme);
             });
         } else if (type === "variables2") {
-            var value = $(this).data("value");
             if (value === "") {
                 value = false;
             }
@@ -1521,11 +1529,6 @@ $(function () {
                 refreshPage(0);
             });
         } else if (type === "variables4") {
-            var value = $(this).data("value");
-            var unit = $(this).data("unit");
-            var name = $(this).data("name");
-            var vorDate = $(this).data("date");
-
             var faktor = $(this).data("faktor");
             if (!faktor) {
                 faktor = 1;
@@ -1536,14 +1539,9 @@ $(function () {
             if (!step) {
                 step = 1;
             }
+
             openOnlyPicDialog(name, addSetNumber('', dataID, value, unit, valMin, valMax, step, faktor, vorDate, true, true));
-
         } else if (type === "variables16") {
-            var value = $(this).data("value");
-            var unit = $(this).data("unit");
-            var name = $(this).data("name");
-            var vorDate = $(this).data("date");
-
             var list = $(this).data("list");
             var listtype = $(this).data("listtype");
             if (!listtype) {
@@ -1552,21 +1550,27 @@ $(function () {
 
             openOnlyPicDialog(name, addSetValueList('', dataID, value, list, unit, vorDate, true, true, listtype, false));
         } else if (type === "variables20") {
-            var value = $("#textValue" + dataID).text();
-            var unit = $(this).data("unit");
-            var name = $(this).data("name");
-            var vorDate = $(this).data("date");
+            value = $("#textValue" + dataID).text();
 
             var operate = $(this).data("operate");
 
             var html = "";
+            var callback;
             if (operate) {
-                html = addSetText('', dataID, value, unit, vorDate, operate);
+                if (unit && unit.toUpperCase() === "COLOR") {
+                    html = addColorPicker('', dataID, value, vorDate, operate);
+                    callback = function () {
+                        $(".colorPicker").colorPicker();
+                    };
+                }
             } else {
-                html = addReadonlyVariable(dataID, value, vorDate, "20", unit);
+                html = addSetText('', dataID, value, unit, vorDate, operate);
             }
-            openOnlyPicDialog(name, html);
+        } else {
+            html = addReadonlyVariable(dataID, value, vorDate, "20", unit);
         }
+
+        openOnlyPicDialog(name, html, callback);
     });
 
     // Historian

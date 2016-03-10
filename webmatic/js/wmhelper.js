@@ -589,7 +589,7 @@ function addDatePicker(parentId, valID, val, vorDate, operate, picker) {
 }
 
 //onlyPicDialog
-function openOnlyPicDialog(title, html) {
+function openOnlyPicDialog(title, html, callback) {
     $("#functionName").text(title);
     $("#functionContent").html(html);
     isDialog = true;
@@ -599,6 +599,9 @@ function openOnlyPicDialog(title, html) {
     });
     $.mobile.changePage("#dialog");
     $("#dialog").enhanceWithin();
+    if (typeof callback === "function") {
+        callback();
+    }
 }
 
 //Divisor
@@ -1348,9 +1351,9 @@ function createOneMap(type, changedKey, changedValue) {
                 if (key in variablesClientMap) {
                     var tmpMap = {};
                     $.each(val, function (key2, val2) {
-                        if(!(key2 in variablesClientMap[key])){
+                        if (!(key2 in variablesClientMap[key])) {
                             tmpMap[key2] = val2;
-                        }else{
+                        } else {
                             tmpMap[key2] = variablesClientMap[key][key2];
                         }
                     });
@@ -1365,9 +1368,9 @@ function createOneMap(type, changedKey, changedValue) {
                 if (key in programsClientMap) {
                     var tmpMap = {};
                     $.each(val, function (key2, val2) {
-                        if(!(key2 in programsClientMap[key])){
+                        if (!(key2 in programsClientMap[key])) {
                             tmpMap[key2] = val2;
-                        }else{
+                        } else {
                             tmpMap[key2] = programsClientMap[key][key2];
                         }
                     });
@@ -1382,9 +1385,9 @@ function createOneMap(type, changedKey, changedValue) {
                 if (key in favoritesClientMap) {
                     var tmpMap = {};
                     $.each(val, function (key2, val2) {
-                        if(!(key2 in favoritesClientMap[key])){
+                        if (!(key2 in favoritesClientMap[key])) {
                             tmpMap[key2] = val2;
-                        }else{
+                        } else {
                             tmpMap[key2] = favoritesClientMap[key][key2];
                         }
                     });
@@ -1399,9 +1402,9 @@ function createOneMap(type, changedKey, changedValue) {
                 if (key in roomsClientMap) {
                     var tmpMap = {};
                     $.each(val, function (key2, val2) {
-                        if(!(key2 in roomsClientMap[key])){
+                        if (!(key2 in roomsClientMap[key])) {
                             tmpMap[key2] = val2;
-                        }else{
+                        } else {
                             tmpMap[key2] = roomsClientMap[key][key2];
                         }
                     });
@@ -1416,9 +1419,9 @@ function createOneMap(type, changedKey, changedValue) {
                 if (key in functionsClientMap) {
                     var tmpMap = {};
                     $.each(val, function (key2, val2) {
-                        if(!(key2 in functionsClientMap[key])){
+                        if (!(key2 in functionsClientMap[key])) {
                             tmpMap[key2] = val2;
-                        }else{
+                        } else {
                             tmpMap[key2] = functionsClientMap[key][key2];
                         }
                     });
@@ -1433,9 +1436,9 @@ function createOneMap(type, changedKey, changedValue) {
                 if (key in devicesClientMap) {
                     var tmpMap = {};
                     $.each(val, function (key2, val2) {
-                        if(!(key2 in devicesClientMap[key])){
+                        if (!(key2 in devicesClientMap[key])) {
                             tmpMap[key2] = val2;
-                        }else{
+                        } else {
                             tmpMap[key2] = devicesClientMap[key][key2];
                         }
                     });
