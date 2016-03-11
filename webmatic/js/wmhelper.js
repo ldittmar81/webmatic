@@ -614,6 +614,8 @@ function getDivisorSelectbox(type, divisor, key, isClient, clientVal) {
     if (isClient) {
         var divName = (divisor === "unsorted") ? mapText("UNSORTED") : map['divisors'][divisor]['name'];
         html += "<option value=''" + (!selected ? "selected='selected'" : "") + ">Global: " + divName + "</option>";
+    } else {
+        html += "<option value='unsorted'></option>";
     }
     $.each(map['divisors'], function (keyDiv, valueDiv) {
         if ($.isNumeric(keyDiv)) {

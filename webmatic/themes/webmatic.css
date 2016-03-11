@@ -267,16 +267,17 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
 .onlyPic-value {
     position: absolute;
     top: 130px;
-    font-size: 30px;
+    left: -10px;
+    font-size: 28px;
     text-align: left;
 }
 
 .onlyPic-color {
     position: absolute;
-    top: 125px;
+    top: 135px;
     left: -8px;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
@@ -528,7 +529,7 @@ li.ui-block-divisor-bottom {
     opacity: 1;
 }
 
-aside { 
+a.special { 
     cursor: move;
     width: 40px; 
     height: 40px;  
@@ -537,10 +538,10 @@ aside {
     background-position: center;
     background-color: transparent;
 }
-aside.rad { 
+a.rad { 
     border-radius: 20px; 
 }
-aside.label { 
+a.labeled { 
     width: 180px;
     line-height: 40px;
     vertical-align: middle;

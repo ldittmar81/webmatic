@@ -199,10 +199,12 @@ function processVariable(variable, valID, systemDate) {
 
         if (valType === "4") {
             html += "<div class='onlyPic-value valueInfo-" + theme + "'>" + parseFloat(strValue) + valUnit + "</div>";
-        } else if (isTextVariables && valUnit && valUnit.toUpperCase() === "COLOR"){
+        } else if (isTextVariables && valUnit && valUnit.toUpperCase() === "COLOR") {
             html += "<div class='onlyPic-color' style='background-color: " + strValue + ";'>&nbsp;</div>";
+        } else if (isTextVariables && valUnit && (valUnit.toUpperCase() === "DATE" || valUnit.toUpperCase() === "TIME")) {
+            html += "<div class='onlyPic-value valueInfo-" + theme + "'>" + strValue + "</div>";
         }
-        
+
         if (isTextVariables) {
             html += "<span id='textValue" + valID + "' style='display: none;'>" + strValue + "</span>";
         }
@@ -1562,15 +1564,19 @@ $(function () {
                     callback = function () {
                         $(".colorPicker").colorPicker();
                     };
+                } else if (unit && unit.toUpperCase() === "DATE") {
+                    html = addDatePicker('', dataID, value, vorDate, operate, "datebox");
+                } else if (unit && unit.toUpperCase() === "TIME") {
+                    html = addDatePicker('', dataID, value, vorDate, operate, "timebox");
+                } else {
+                    html = addSetText('', dataID, value, unit, vorDate, operate);
                 }
             } else {
-                html = addSetText('', dataID, value, unit, vorDate, operate);
+                html = addReadonlyVariable(dataID, value, vorDate, "20", unit);
             }
-        } else {
-            html = addReadonlyVariable(dataID, value, vorDate, "20", unit);
-        }
-
-        openOnlyPicDialog(name, html, callback);
+            
+            openOnlyPicDialog(name, html, callback);
+        }        
     });
 
     // Historian
