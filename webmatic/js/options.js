@@ -1216,39 +1216,13 @@ function processGraphicIDClient(type) {
                 html += "<div class='ui-block-c small-hidden'></div>";
             }
         }
+        
         if (isVariables && !isTextVariables) {
             html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
-        } else if (isPrograms) {
-            html += "<div class='ui-block-a small-hidden'></div>";
-        }
-        html += "<div class='ui-block-b small-hidden'>";
-        html += "</div>";
-        html += "<div class='ui-block-c small-hidden'></div>";
-        if (isListVariables) {
-            html += "<div class='ui-block-a'>";
-            html += "<div data-role='controlgroup' data-type='horizontal'>";
-            html += "<select id='listType" + key + "' data-theme='" + theme + "'>";
-            var gs = "global";
-            if (clientVal === undefined || clientVal['listType'] === undefined) {
-                gs = "global";
-            } else {
-                gs = clientVal['listType'];
-            }
-            html += "<option value='global' " + (gs === "global" ? "selected='selected'" : "") + ">Global: " + val['listType'] + "</option>";
-            html += "<option value='auto' " + (gs === "auto" ? "selected='selected'" : "") + ">auto</option>";
-            html += "<option value='small' " + (gs === "small" ? "selected='selected'" : "") + ">button</option>";
-            html += "<option value='big' " + (gs === "big" ? "selected='selected'" : "") + ">select</option>";
-            html += "</select>";
-            html += "<a href='#' data-role='button' name='changeFloatSFClient' data-change='listType' data-id='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
-            html += "</div>";
-            html += "</div>";
-        } else if (optionsMap[type + "_divisor"] && !isVariables) {
-            html += "<div class='ui-block-a'>";
-            html += getDivisorSelectbox(type, val[type + "_divisor"], key, true, clientVal);
-            html += "</div>";
         } else {
             html += "<div class='ui-block-a small-hidden'></div>";
         }
+        
         html += "<div class='ui-block-b";
         if (isPrograms || isVariables) {
             html += "'>";
@@ -1270,7 +1244,7 @@ function processGraphicIDClient(type) {
                 html += "<a href='#' name='flipswitchClient' data-type='" + type + "' data-id='" + key + "' data-key='operate' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
                 html += "</div>";
             } else {
-                html += "<div data-role='controlgroup' data-type='horizontal'>";
+                html += "<div data-role='controlgroup' data-mini='true' data-type='horizontal'>";
                 var selected0 = "";
                 var selected1 = "";
                 var selected2 = "";
@@ -1295,6 +1269,7 @@ function processGraphicIDClient(type) {
             html += " small-hidden'>";
         }
         html += "</div>";
+        
         html += "<div class='ui-block-c'>";
         html += "<label>" + mapText("VISIBILITY") + ":&nbsp;";
         html += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -1314,9 +1289,36 @@ function processGraphicIDClient(type) {
         html += "</div>";
         html += "</label>";
         html += "</div>";
+        
+        if (isListVariables) {
+            html += "<div class='ui-block-a'>";
+            html += "<div data-role='controlgroup' data-type='horizontal'>";
+            html += "<select id='listType" + key + "' data-theme='" + theme + "'>";
+            var gs = "global";
+            if (clientVal === undefined || clientVal['listType'] === undefined) {
+                gs = "global";
+            } else {
+                gs = clientVal['listType'];
+            }
+            html += "<option value='global' " + (gs === "global" ? "selected='selected'" : "") + ">Global: " + val['listType'] + "</option>";
+            html += "<option value='auto' " + (gs === "auto" ? "selected='selected'" : "") + ">auto</option>";
+            html += "<option value='small' " + (gs === "small" ? "selected='selected'" : "") + ">button</option>";
+            html += "<option value='big' " + (gs === "big" ? "selected='selected'" : "") + ">select</option>";
+            html += "</select>";
+            html += "<a href='#' data-role='button' name='changeFloatSFClient' data-change='listType' data-id='" + key + "' data-inline='true' data-icon='check'>&nbsp;</a>";
+            html += "</div>";
+            html += "</div>";
+        } else if (optionsMap[type + "_divisor"] && !isVariables) {
+            html += "<div class='ui-block-a'>";
+            html += getDivisorSelectbox(type, val[type + "_divisor"], key, true, clientVal);
+            html += "</div>";
+        }
+
+
         html += "</div>";
         html += "</form>";
         html += "</li>";
+        
         if (resultOptionsMap['default_sort_manually']) {
             tmpObj[parseInt(val['position'])] = html;
         } else {
