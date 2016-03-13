@@ -92,15 +92,15 @@ html, body {
 .onlyPic-viewer-wmf{  background-image: url("../img/misc/eye.gif"); }
 
 .valueNoError-wmg { color:#909090;}
-.valueInfo-wmg { color:#fff; }
+.valueInfo-wmg { color:#000; }
 .valueWarning-wmg { color:#b60; }
 .valueError-wmg { color:#c00; }
 .valueOK-wmg { color:green; }
 .valueService-wmg{ background-color:#fdd017 !important;}
-.control-set-wmg{ border-color: #fff; }
-.onlyPic-player-wmg{  background-image: url("../img/misc/gear32w.gif"); }
-.onlyPic-playerani-wmg{  background-image: url("../img/misc/gear32aniw.GIF"); }
-.onlyPic-viewer-wmg{  background-image: url("../img/misc/eyew.gif"); }
+.control-set-wmg{ border-color: #000; }
+.onlyPic-player-wmg{  background-image: url("../img/misc/gear32.gif"); }
+.onlyPic-playerani-wmg{  background-image: url("../img/misc/gear32ani.GIF"); }
+.onlyPic-viewer-wmg{  background-image: url("../img/misc/eye.gif"); }
 
 .valueNoError-wmh { color:#909090;}
 .valueInfo-wmh { color:#fff; }

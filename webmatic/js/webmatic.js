@@ -1574,9 +1574,9 @@ $(function () {
             } else {
                 html = addReadonlyVariable(dataID, value, vorDate, "20", unit);
             }
-            
+
             openOnlyPicDialog(name, html, callback);
-        }        
+        }
     });
 
     // Historian

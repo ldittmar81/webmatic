@@ -1,4 +1,4 @@
-/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList, resultRoomsMap, mustReload, specialTextVariables, variablesClientMap, favoritesClientMap, roomsClientMap, functionsClientMap, programsClientMap */
+/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList, resultRoomsMap, mustReload, specialTextVariables, variablesClientMap, favoritesClientMap, roomsClientMap, functionsClientMap, programsClientMap, specialTextVariablesOnlypic */
 
 // ----------------------- Helper functions ----------------------------
 
@@ -901,7 +901,6 @@ function processGraphicIDGlobal(type) {
 
     var isVariables = type === "variables";
     var isTextVariables = false;
-    var isSpecialTextVariables = false;
     var isListVariables = false;
     var isFloatVariables = false;
     var isPrograms = type === "programs";
@@ -968,7 +967,8 @@ function processGraphicIDGlobal(type) {
         isTextVariables = isVariables && val["valueType"] === "20";
         isListVariables = isVariables && val["valueType"] === "16";
         isFloatVariables = isVariables && val["valueType"] === "4";
-        isSpecialTextVariables = isVariables && isTextVariables && ($.inArray(val["valueUnit"].toUpperCase(), specialTextVariables) !== -1);
+        var isSpecialTextVariables = isVariables && isTextVariables && ($.inArray(val["valueUnit"].toUpperCase(), specialTextVariables) !== -1);
+        var hasOnlyPicVersion = isVariables && isTextVariables && ($.inArray(val["valueUnit"].toUpperCase(), specialTextVariablesOnlypic) !== -1);
 
         var picKey = getPicKey(key, type, val, true);
         html = "<li id='list" + key + "' data-id='" + key + "'>";
@@ -1006,7 +1006,7 @@ function processGraphicIDGlobal(type) {
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><input name='editName' data-id='" + key + "' data-type='" + type + "' type='text' value='" + val['name'] + "' /></div>";
 
-        if ((isVariables && !isSpecialTextVariables) || isPrograms) {
+        if ((isVariables && (!isSpecialTextVariables || hasOnlyPicVersion)) || isPrograms) {
             html += "<div class='ui-block-b'>";
             html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
             html += "<input type='checkbox' data-role='flipswitch' name='flipswitch' data-type='" + type + "' data-key='onlyPic' data-id='" + key + "' data-on-text='" + mapText("YES") + "' data-off-text='" + mapText("NO") + "' " + (val['onlyPic'] ? "checked" : "") + "/>";
@@ -1139,7 +1139,6 @@ function processGraphicIDClient(type) {
 
     var isVariables = type === "variables";
     var isTextVariables = false;
-    var isSpecialTextVariables = false;
     var isListVariables = false;
     var isPrograms = type === "programs";
     var isRoom = type === "rooms";
@@ -1159,7 +1158,8 @@ function processGraphicIDClient(type) {
         var clientVal = clientMap[key];
         isTextVariables = isVariables && val["valueType"] === "20";
         isListVariables = isVariables && val["valueType"] === "16";
-        isSpecialTextVariables = isVariables && isTextVariables && ($.inArray(val["valueUnit"].toUpperCase(), specialTextVariables) !== -1);
+        var isSpecialTextVariables = isVariables && isTextVariables && ($.inArray(val["valueUnit"].toUpperCase(), specialTextVariables) !== -1);
+        var hasOnlyPicVersion = isVariables && isTextVariables && ($.inArray(val["valueUnit"].toUpperCase(), specialTextVariablesOnlypic) !== -1);
 
         var picKey = getPicKey(key, type, val, true);
         html = "<li id='list" + key + "' data-id='" + key + "'>";
@@ -1180,7 +1180,7 @@ function processGraphicIDClient(type) {
         html += "<form method='post' action='#' id='form" + key + "'>";
         html += "<div class='ui-grid-b'>";
         html += "<div class='ui-block-a'><strong>" + val['name'] + "</strong></div>";
-        if ((isVariables && !isSpecialTextVariables) || isPrograms) {
+        if ((isVariables && (!isSpecialTextVariables || hasOnlyPicVersion)) || isPrograms) {
             html += "<div class='ui-block-b'>";
             html += "<label>" + mapText("ONLY_PIC") + ":&nbsp;";
             html += "<div data-role='controlgroup' data-type='horizontal'>";

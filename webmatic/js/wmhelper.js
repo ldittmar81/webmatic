@@ -37,6 +37,7 @@ var excludeFromRefresh = [];
 var tempExcludeFromRefresh = 0;
 
 var specialTextVariables = ["HTML", "COLOR", "DATE", "TIME", "HISTORIAN", "TUNEIN"];
+var specialTextVariablesOnlypic = ["COLOR", "DATE", "TIME"];
 
 var programsMap, functionsMap, roomsMap, favoritesMap, variablesMap, optionsMap, devicesMap, recognizeMap;
 var programsClientMap = {}, functionsClientMap = {}, roomsClientMap = {}, favoritesClientMap = {}, optionsClientMap = {}, variablesClientMap = {}, devicesClientMap = {};
@@ -581,7 +582,7 @@ function addColorPicker(parentId, valID, val, vorDate, operate) {
 // ValueType 20 Unit Date
 function addDatePicker(parentId, valID, val, vorDate, operate, picker) {
     var html = "<div class='ui-field-contain'>";
-    html += "<input type='text' data-role='datebox' data-theme='" + theme + "' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" style='width:20em; display:inline-block;' data-options='{\"mode\":\"" + picker + "\"}'/>";
+    html += "<input type='text' data-role='datebox' data-theme='" + theme + "' id='setValue_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' value=\"" + val + "\" data-datebox-mode='" + picker + "'/>";
     html += "<a href='#' id='setTextButton_" + valID + "' data-parent-id='" + parentId + "' data-id='" + valID + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
     html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + valID + "' class='valueOK valueOK-" + theme + "'></span>";
     html += "</div>";
