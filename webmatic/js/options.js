@@ -978,7 +978,7 @@ function processGraphicIDGlobal(type) {
             html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
         }
         html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
-        html += "<a href='#' " + ($.inArray(key, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
+        html += "<a href='#' " + ($.inArray(picKey, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-pickey='" + picKey + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
         html += "<h1>(";
         if (isRFF) {
             html += "<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>";
@@ -2245,8 +2245,12 @@ $(function () {
             var url = "img/menu/" + type + ".png";
             if ($.inArray(picKey, picturesList) !== -1) {
                 url = "../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
+                $("#deletePic" + dataID).removeClass("ui-state-disabled");
+            }else{
+                $("#deletePic" + dataID).addClass("ui-state-disabled");
             }
             $("#img" + dataID).attr("src", url).fadeIn(1000);
+            $("#deletePic" + dataID).attr("data-pickey", picKey);
         });
     });
 
@@ -2254,14 +2258,20 @@ $(function () {
         var obj = $(this);
         var type = obj.data("type");
         var id = obj.data("id");
+        var picKey = obj.data("pickey");
 
-        $.get('cgi/delete.cgi?type=' + type + '&name=' + id, function () {
+        $.get('cgi/delete.cgi?type=' + type + '&name=' + picKey, function () {
             $("#img" + id).fadeOut(500, function () {
                 $("#img" + id).attr("src", "img/menu/" + type + ".png").fadeIn(1000);
             });
             $("#menuImg" + id).fadeOut(500, function () {
                 $("#menuImg" + id).attr("src", "img/menu/" + type + ".png").fadeIn(1000);
             });
+
+            var i = picturesList.indexOf(picKey);
+            if (i !== -1) {
+                picturesList.splice(i, 1);
+            }
 
             obj.addClass("ui-state-disabled");
         });
