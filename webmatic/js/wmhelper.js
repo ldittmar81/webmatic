@@ -243,7 +243,7 @@ function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate
     html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
     if (!options) {
         html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
-    }else{
+    } else {
         html += "&nbsp;<span id='optionsValueSpan" + id + "' style='font-weight: bolder; font-size: x-large;'>" + (value * factor) + "</span>";
     }
     html += "</div>";
@@ -375,13 +375,9 @@ function addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, valList
     } else if (valType === "20" && valUnit.toUpperCase() === "TUNEIN") {
         return addTuneInRadio("", valID, strValue, vorDate, true);
     } else if (valType === "20" && valUnit.toUpperCase() === "COLOR") {
-        return addColorPicker("", valID, strValue, vorDate, false);
-    } else if (valType === "20" && valUnit.toUpperCase() === "DATE") {
-        return addDatePicker("", valID, strValue, vorDate, false, "datebox");
-    } else if (valType === "20" && valUnit.toUpperCase() === "TIME") {
-        return addDatePicker("", valID, strValue, vorDate, false, "timebox");
+        return "<p style='background-color: " + visVal + ";'><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " </span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></p>";
     } else {
-        return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + valUnit + " </span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></p>";
+        return "<p><img class='ui-img-" + theme + "' src='img/channels/unknown.png' style='max-height:20px'><span class='valueInfo valueInfo-" + theme + "'>" + visVal + " " + ((valType === "20" && ($.inArray(valUnit.toUpperCase(), specialTextVariables) !== -1)) ? "" : valUnit) + " </span><i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i></p>";
     }
 }
 
@@ -1101,7 +1097,7 @@ function getPicKey(key, type, map, options) {
                     return item.trim().match(regex);
                 });
 
-                var myValue = map['minValue'];
+                var myValue = parseFloat(map['valueMin']);
                 if (typeof testList !== 'undefined' && testList.length > 0) {
                     $.each(testList, function (i, val) {
                         var tmp_val = parseFloat(val.split("_")[1]);
