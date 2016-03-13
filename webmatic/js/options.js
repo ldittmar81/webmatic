@@ -972,13 +972,13 @@ function processGraphicIDGlobal(type) {
 
         var picKey = getPicKey(key, type, val, true);
         html = "<li id='list" + key + "' data-id='" + key + "'>";
-        html += "<div style='float: left; text-align: center;'>";
+        html += "<div style='float: left; text-align: center; padding-right: 5px;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
             html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
         }
         html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
-        html += "<a href='#' " + ($.inArray(picKey, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-pickey='" + picKey + "' data-type='" + type + "'>" + mapText("DELETE") + "</a>";
+        html += "<a href='#' " + ($.inArray(picKey, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-pickey='" + picKey + "' data-type='" + type + "' data-faktor='" + val["faktor"] + "'>" + mapText("DELETE") + "</a>";
         html += "<h1>(";
         if (isRFF) {
             html += "<a href='get.html?id=" + key + "' target='_blank'>" + key + "</a>";
@@ -986,6 +986,9 @@ function processGraphicIDGlobal(type) {
             html += key;
         }
         html += ")</h1>";
+        if (isFloatVariables) {
+            html += createImgFloatList(key, val["faktor"] ? val["faktor"] : 1);
+        }
         html += "</div>";
         if (resultOptionsMap['default_sort_manually']) {
             html += "<div style='float: right;'>";
@@ -1033,7 +1036,7 @@ function processGraphicIDGlobal(type) {
         html += "<div class='ui-block-b'>";
         html += "<input name='file' id='file" + key + "' data-pickey='" + picKey + "' type='file' accept='image/*' />";
         html += "</div>";
-        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("UPLOAD") + "</a></div>";
+        html += "<div class='ui-block-c'><a href='#' name='uploadPicture' data-type='" + type + "' data-faktor='" + val["faktor"] + "' id='uploadPicture" + key + "' class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'>" + mapText("UPLOAD") + "</a></div>";
         if (isListVariables) {
             html += "<div class='ui-block-a'>";
             html += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -2197,6 +2200,11 @@ $(function () {
 
     // ------------------------- Bilder -----------------------------
 
+    $(document.body).on("click", "[name=setImgFloat]", function () {
+        $("#optionssetValue_" + $(this).data("id")).val($(this).text()).slider("refresh");
+        $("#optionssetButton_" + $(this).data("id")).click();
+    });
+
     $(document.body).on("click", "[id^=optionssetButton],[id^=optionssetValueBigList]", function () {
         var dataID = $(this).data("id");
         var orgValue = $(this).data("value");
@@ -2211,6 +2219,7 @@ $(function () {
             }
             var factor = $("#" + valueID).data("factor");
             if (typeof factor !== "undefined") {
+                $('#optionsValueSpan' + dataID).text(value);
                 orgValue = parseFloat(orgValue);
                 factor = parseFloat(factor);
                 orgValue = orgValue / factor;
@@ -2220,7 +2229,7 @@ $(function () {
                     return item.trim().match(regex);
                 });
 
-                var myValue = 0;
+                var myValue = parseFloat($("#" + valueID).attr("min"));
                 if (typeof testList !== 'undefined' && testList.length > 0) {
                     $.each(testList, function (i, val) {
                         var tmp_val = parseFloat(val.split("_")[1]);
@@ -2246,7 +2255,7 @@ $(function () {
             if ($.inArray(picKey, picturesList) !== -1) {
                 url = "../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
                 $("#deletePic" + dataID).removeClass("ui-state-disabled");
-            }else{
+            } else {
                 $("#deletePic" + dataID).addClass("ui-state-disabled");
             }
             $("#img" + dataID).attr("src", url).fadeIn(1000);
@@ -2258,7 +2267,8 @@ $(function () {
         var obj = $(this);
         var type = obj.data("type");
         var id = obj.data("id");
-        var picKey = obj.data("pickey");
+        var picKey = obj.attr("data-pickey");
+        var faktor = obj.data("faktor");
 
         $.get('cgi/delete.cgi?type=' + type + '&name=' + picKey, function () {
             $("#img" + id).fadeOut(500, function () {
@@ -2271,6 +2281,12 @@ $(function () {
             var i = picturesList.indexOf(picKey);
             if (i !== -1) {
                 picturesList.splice(i, 1);
+            }
+
+            if (faktor !== "undefined") {
+                $("#imgFloatList" + id).replaceWith(createImgFloatList(id, parseFloat(faktor)));
+                $("#" + dataList).listview("refresh");
+                $("#" + dataList).enhanceWithin();
             }
 
             obj.addClass("ui-state-disabled");
@@ -2292,11 +2308,13 @@ $(function () {
     });
 
     $(document.body).on("click", 'a[name=uploadPicture]', function () {
-        var id = $(this).attr('id');
+        var obj = $(this);
+        var id = obj.attr('id');
         var key = id.substr(13, id.length);
-        var type = $(this).data('type');
-        var isBack = $(this).data('background') === "true";
-        var picKey = $("#file" + key).attr("data-pickey");
+        var type = obj.data('type');
+        var isBack = obj.data('background') === "true";
+        var picKey = $("#file" + key).data("pickey");
+        var faktor = obj.data("faktor");
 
         var formData = new FormData();
 
@@ -2373,6 +2391,11 @@ $(function () {
                 }, 'json').done(function () {
                     if ($.inArray(picKey, picturesList) === -1) {
                         picturesList.push(picKey);
+                        if (faktor !== "undefined") {
+                            $("#imgFloatList" + key).replaceWith(createImgFloatList(key, parseFloat(faktor)));
+                            $("#" + dataList).listview("refresh");
+                            $("#" + dataList).enhanceWithin();
+                        }
                     }
                 });
 

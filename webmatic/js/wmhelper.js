@@ -243,6 +243,8 @@ function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate
     html += "<a href='#' id='" + (options ? "options" : "") + "setButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "' data-refresh='" + refresh + "' " + (!operate ? "class='ui-link ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='check'") + ">" + mapText("SET") + "</a>";
     if (!options) {
         html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span>";
+    }else{
+        html += "&nbsp;<span id='optionsValueSpan" + id + "' style='font-weight: bolder; font-size: x-large;'>" + (value * factor) + "</span>";
     }
     html += "</div>";
     return html;
@@ -1099,7 +1101,7 @@ function getPicKey(key, type, map, options) {
                     return item.trim().match(regex);
                 });
 
-                var myValue = 0;
+                var myValue = map['minValue'];
                 if (typeof testList !== 'undefined' && testList.length > 0) {
                     $.each(testList, function (i, val) {
                         var tmp_val = parseFloat(val.split("_")[1]);
@@ -1130,6 +1132,30 @@ function getPicKey(key, type, map, options) {
         }
     }
     return picKey;
+}
+
+function getPicFloatList(key) {
+    var testList = $.grep(picturesList, function (item) {
+        var regex = new RegExp("^" + key, "i");
+        return item.trim().match(regex);
+    });
+    var returnList = [];
+    $.each(testList, function (index, item) {
+        returnList.push(item.substr(key.length + 1, item.length));
+    });
+    return returnList.sort(function (a, b) {
+        return parseFloat(a) - parseFloat(b);
+    });
+}
+
+function createImgFloatList(key, faktor) {
+    var valueList = getPicFloatList(String(key));
+    var html = "<div data-role='controlgroup' id='imgFloatList" + key + "'>";
+    $.each(valueList, function (index, val) {
+        html += "<a href='#' id='imgFloat" + key + "_" + val + "' name='setImgFloat' data-id='" + key + "' data-val='" + val + "' class='ui-btn ui-mini ui-corner-all'>" + (val * faktor) + "</a>";
+    });
+    html += "</div>";
+    return html;
 }
 
 function log(txt, type, linenumber) {
