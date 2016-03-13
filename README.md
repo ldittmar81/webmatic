@@ -12,7 +12,7 @@ Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsw
 * [Spenden](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K3QUGRC2AMPK6)
 
 ## Changelog
-2.2 (noch nicht freigegeben - voraussichtlich vor Ostern)
+2.2
 * Codereview Teil 3
 * Button zum Sprung zum Anfang der Seite
 * Zwei Seiten Anzeige mit Effekt -> Menü auf Seite 1 und Ergebnisse auf Seite 2. Effekte beim Seitenwechsel einstellbar
