@@ -24,7 +24,7 @@ STABLEVERSION=""
 
 if [ ${ISALPHA} = "0" ]; then
     VERSION=$(cat VERSION)
-    STABLEVERSION=$(VERSION)
+    STABLEVERSION=${VERSION}
     cp -a VERSION tmp/
 elif [ ${ISALPHA} = "1" ]; then
     VERSION=$(cat VERSIONALPHA)
