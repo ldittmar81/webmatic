@@ -159,7 +159,12 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 }
                 i++;
                 var obj = {};
-                var name = decodeURI(val['name']);
+                var name;
+                try {
+                    name = decodeURI(val['name']);
+                } catch (e) {
+                    name = val['name'];
+                }
                 if (name.startsWith("${")) {
                     name = mapText(name.substring(2, name.length - 1));
                 }
