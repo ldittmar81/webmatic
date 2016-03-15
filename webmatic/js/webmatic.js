@@ -837,13 +837,9 @@ function addChannel(device, systemDate, options, operate) {
             var valID = channel['id'];
             var valInfo = unescape(channel['info']);
             var strValue = unescape(channel['value']);
-            var valType = channel['valueType'];
-            valUnit = channel['valueUnit'];
-            var val0 = channel['valueName0'];
-            var val1 = channel['valueName1'];
-            var valList = channel['valueList'];
-            channelDate = channel['date'];
-            vorDate = getTimeDiffString(channelDate, systemDate);
+            var valUnit = channel['valueUnit'];
+            var channelDate = channel['date'];
+            var vorDate = getTimeDiffString(channelDate, systemDate);
             var picKey = getPicKey(valID, "variables", channel, false);
 
             // Wenn die Variable hinten (r) hat, dann ist sie Read-Only in den Favoriten,
@@ -942,13 +938,7 @@ function processDevices(device, systemDate, options, operate) {
         var valID = device['id'];
         var valInfo = unescape(device['info']);
         var strValue = unescape(device['value']);
-        var valType = device['valueType'];
         var valUnit = device['valueUnit'];
-        var val0 = device['valueName0'];
-        var val1 = device['valueName1'];
-        var valMin = device['valueMin'];
-        var valMax = device['valueMax'];
-        var valList = device['valueList'];
         var channelDate = device['date'];
         var vorDate = getTimeDiffString(channelDate, systemDate);
         var picKey = getPicKey(valID, "variables", device, false);
@@ -1005,6 +995,11 @@ function processDevices(device, systemDate, options, operate) {
         operate = true;
 
         deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prgInfo + "</p>";
+        if ($.inArray(prgID, picturesList) !== -1) {
+            deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
+            deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+            deviceHTML += "</div>";
+        }
         deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, operate);
     }
 
