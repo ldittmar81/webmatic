@@ -179,9 +179,11 @@ function loadGraphicIDs(type, global) {
     } else {
         titleHtml += "<div style='float:left;'>" + mapText(type) + " (" + clientsList[client] + ")</div>";
     }
-    titleHtml += "<div style='float:right;'>";
-    titleHtml += "<a href='#' class='ui-btn ui-btn-inline ui-corner-all' name='changeGraphicIDEditModus' data-type='" + type + "' data-global='" + global + "'>" + (global ? clientsList[client] : mapText("NOT_SELECTED")) + "</a>";
-    titleHtml += "</div>";
+    if (client !== "") {
+        titleHtml += "<div style='float:right;'>";
+        titleHtml += "<a href='#' class='ui-btn ui-btn-inline ui-corner-all' name='changeGraphicIDEditModus' data-type='" + type + "' data-global='" + global + "'>" + (global ? clientsList[client] : mapText("NOT_SELECTED")) + "</a>";
+        titleHtml += "</div>";
+    }
     titleHtml += "</li>";
 
     $("#" + dataList).append(titleHtml);
@@ -1216,13 +1218,13 @@ function processGraphicIDClient(type) {
                 html += "<div class='ui-block-c small-hidden'></div>";
             }
         }
-        
+
         if (isVariables && !isTextVariables) {
             html += "<div class='ui-block-a'>" + createExecutationField(key, val) + "</div>";
         } else {
             html += "<div class='ui-block-a small-hidden'></div>";
         }
-        
+
         html += "<div class='ui-block-b";
         if (isPrograms || isVariables) {
             html += "'>";
@@ -1269,7 +1271,7 @@ function processGraphicIDClient(type) {
             html += " small-hidden'>";
         }
         html += "</div>";
-        
+
         html += "<div class='ui-block-c'>";
         html += "<label>" + mapText("VISIBILITY") + ":&nbsp;";
         html += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -1289,7 +1291,7 @@ function processGraphicIDClient(type) {
         html += "</div>";
         html += "</label>";
         html += "</div>";
-        
+
         if (isListVariables) {
             html += "<div class='ui-block-a'>";
             html += "<div data-role='controlgroup' data-type='horizontal'>";
@@ -1318,7 +1320,7 @@ function processGraphicIDClient(type) {
         html += "</div>";
         html += "</form>";
         html += "</li>";
-        
+
         if (resultOptionsMap['default_sort_manually']) {
             tmpObj[parseInt(val['position'])] = html;
         } else {
