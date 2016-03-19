@@ -186,7 +186,7 @@ var textMap = {
     KEY__LED_STATUS__1: "Devlet red",
     KEY__LED_STATUS__2: "Devlet yeşil",
     KEY__LED_STATUS__3: "Devlet turuncu",
-    KEY__LED_SLEEP_MODE: "** KEY__LED_SLEEP_MODE",
+    KEY__LED_SLEEP_MODE: "-",
     KEY__PRESS_SHORT: "Kısa basın",
     KEY__PRESS_LONG: "Uzun basın",
     KEY__SUBMIT: "** KEY__SUBMIT",

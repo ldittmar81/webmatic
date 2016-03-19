@@ -186,7 +186,7 @@ var textMap = {
     KEY__LED_STATUS__1: "rojo del Estado",
     KEY__LED_STATUS__2: "verde Estado",
     KEY__LED_STATUS__3: "orange Estado",
-    KEY__LED_SLEEP_MODE: "** KEY__LED_SLEEP_MODE",
+    KEY__LED_SLEEP_MODE: "-",
     KEY__PRESS_SHORT: "pulsación corta",
     KEY__PRESS_LONG: "pulsación larga",
     KEY__SUBMIT: "** KEY__SUBMIT",

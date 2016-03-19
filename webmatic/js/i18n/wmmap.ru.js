@@ -186,7 +186,7 @@ var textMap = {
     KEY__LED_STATUS__1: "Государство красный",
     KEY__LED_STATUS__2: "Государство зеленый",
     KEY__LED_STATUS__3: "Государство оранжевый",
-    KEY__LED_SLEEP_MODE: "** KEY__LED_SLEEP_MODE",
+    KEY__LED_SLEEP_MODE: "-",
     KEY__PRESS_SHORT: "короткое нажатие",
     KEY__PRESS_LONG: "долгое нажатие",
     KEY__SUBMIT: "** KEY__SUBMIT",
