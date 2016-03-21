@@ -2316,8 +2316,7 @@ $(function () {
         var id = obj.attr('id');
         var key = id.substr(13, id.length);
         var type = obj.data('type');
-        var isBack = obj.data('background') === "true";
-        var picKey = $("#file" + key).data("pickey");
+        var picKey = $("#file" + key).attr("data-pickey");
         var faktor = obj.data("faktor");
 
         var formData = new FormData();
@@ -2331,10 +2330,6 @@ $(function () {
 
                 var MAX_WIDTH = 160;
                 var MAX_HEIGHT = 160;
-                if (isBack) {
-                    MAX_WIDTH = 1850;
-                    MAX_HEIGHT = 950;
-                }
 
                 var tempW = tempImg.width;
                 var tempH = tempImg.height;

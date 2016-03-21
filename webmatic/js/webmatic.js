@@ -212,14 +212,16 @@ function processVariable(variable, valID, systemDate) {
         html += "</div>";
     } else {
         html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
+        var float = false;
         if ($.inArray(picKey, picturesList) !== -1) {
             html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
             html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
             html += "</div>";
+            float = true;
         }
 
         // In der Variablenliste editieren zulassen:
-        html += addVariableField('', valID, variable, vorDate, !operate, operate);
+        html += addVariableField('', valID, variable, vorDate, !operate, operate, float);
     }
     html += "</li>";
 

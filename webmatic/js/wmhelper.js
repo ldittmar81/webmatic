@@ -153,7 +153,7 @@ function createVerFile() {
 // ----------------------- HTML Creation Helper ------------------------------
 
 // Variablen setzen
-function addVariableField(parentID, valID, map, vorDate, readonly, operate) {
+function addVariableField(parentID, valID, map, vorDate, readonly, operate, float) {
     var strValue = unescape(map['value']);
     var valType = map['valueType'];
     var valUnit = map['valueUnit'];
@@ -163,13 +163,13 @@ function addVariableField(parentID, valID, map, vorDate, readonly, operate) {
         html += addReadonlyVariable(valID, strValue, vorDate, valType, valUnit, map['valueList'], map['valueName0'], map['valueName1'], map["faktor"] ? map["faktor"] : 1);
     } else if (valType === "2") {
         // Bool.
-        html += addSetBoolButtonList(parentID, valID, strValue, map['valueName0'], map['valueName1'], valUnit, vorDate, true, operate);
+        html += addSetBoolButtonList(parentID, valID, strValue, map['valueName0'], map['valueName1'], valUnit, vorDate, true, operate, false, float);
     } else if (valType === "4") {
         // Float, Integer.
         html += addSetNumber(parentID, valID, strValue, valUnit, map['valueMin'], map['valueMax'], map["step"] ? map["step"] : 1, map["faktor"] ? map["faktor"] : 1, vorDate, true, operate);
     } else if (valType === "16") {
         // Liste.
-        html += addSetValueList(parentID, valID, strValue, map['valueList'], valUnit, vorDate, true, operate, map['listType'] ? map['listType'] : 'auto', false);
+        html += addSetValueList(parentID, valID, strValue, map['valueList'], valUnit, vorDate, true, operate, map['listType'] ? map['listType'] : 'auto', false, float);
     } else if (valType === "20" && valUnit.toUpperCase() === "HTML") {
         html += addHTML(parentID, valID, strValue, vorDate, !operate);
     } else if (valType === "20" && valUnit.toUpperCase() === "HISTORIAN") {
@@ -251,8 +251,8 @@ function addSetNumber(parentId, id, value, unit, min, max, step, factor, vorDate
 }
 
 // ValueType 2 (Ja/Nein)
-function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vorDate, refresh, operate, options) {
-    var html = "<div class=ui-field-contain'>";
+function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vorDate, refresh, operate, options, float) {
+    var html = "<div class=ui-field-contain' " + (float ? "style='float: right;'" : "") + ">";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
 
     var active = "";
@@ -282,22 +282,22 @@ function addSetBoolButtonList(parentId, valID, strValue, val0, val1, valUnit, vo
 }
 
 // ValueType 16 (Liste)
-function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh, operate, forceList, options) {
+function addSetValueList(parentId, valID, strValue, valList, valUnit, vorDate, refresh, operate, forceList, options, float) {
 
     var selIndex = parseInt(strValue);
     var optionsArray = valList.split(";");
 
     if (forceList === "small" || (optionsArray.length < 6 && forceList !== "big")) {
-        return addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options);
+        return addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options, float);
     } else {
-        return addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options);
+        return addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options, float);
     }
 
 }
 
 // ValueType 16 (Liste-Buttons)
-function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options) {
-    var html = "<div class='ui-field-contain' id='mainNumber" + valID + "'>";
+function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options, float) {
+    var html = "<div class='ui-field-contain' id='mainNumber" + valID + "' " + (float ? "style='float: right;'" : "") + ">";
     html += "<div data-role='controlgroup' data-type='horizontal'>";
     for (var i = 0; i < optionsArray.length; i++) {
         var active = (selIndex === i ? "ui-btn-active" : "");
@@ -312,8 +312,8 @@ function addSmallList(selIndex, optionsArray, valID, parentId, valUnit, vorDate,
 }
 
 // ValueType 16 (Liste-Select)
-function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options) {
-    var html = "<div data-role='controlgroup' data-type='horizontal' id='mainNumber" + valID + "'>";
+function addBigList(selIndex, optionsArray, valID, parentId, valUnit, vorDate, refresh, operate, options, float) {
+    var html = "<div data-role='controlgroup' data-type='horizontal' id='mainNumber" + valID + "' " + (float ? "style='float: right;'" : "") + ">";
     html += "<select id='selector_" + valID + "' data-theme='" + theme + "'>";
     for (var i = 0; i < optionsArray.length; i++) {
         if (selIndex === i) {
@@ -1160,14 +1160,12 @@ function getPicKey(key, type, map, options) {
 
         } else {
 
-            var valueType = map["valueType"];
             if (valueType === "2") {
                 picKey += "_true";
             } else if (valueType === "4") {
                 picKey += "_" + map["valueMin"];
             } else if (valueType === "16") {
-                var valList = map['valueList'];
-                picKey += "_" + valList[0];
+                picKey += "_0";
             }
         }
     }
