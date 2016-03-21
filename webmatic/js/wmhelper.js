@@ -1732,7 +1732,7 @@ function checkAndChange(key, value) {
     } else if (key === "two_sites" && value !== twoPage) {
         changeTwoPage(value);
     } else if (key === "columns") {
-        changeNumberOfColumns(value, true);
+        changeNumberOfColumns(value);
     } else if (key === "favorites" || key === "rooms" || key === "functions" || key === "variables" || key === "programs" || key === "others") {
         if (value && $("#" + key + "MainMenu").is(":hidden")) {
             $("#" + key + "MainMenu").fadeIn();

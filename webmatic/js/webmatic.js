@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog, client, twoPage */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog, client, twoPage, actColumn */
 
 // WebMatic 2.x
 // by ldittmar
@@ -19,7 +19,7 @@ function refreshPage(item, col) {
             if (!col) {
                 col = resultOptionsMap['columns'];
             }
-            changeNumberOfColumns(col, false);
+            changeNumberOfColumns(col);
             // Markieren von selektiertem Menueintrag:
             if (item !== 0) {
                 if (prevItem !== 0) {
@@ -217,7 +217,7 @@ function processVariable(variable, valID, systemDate) {
             html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
             html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
             html += "</div>";
-            float = true;
+            float = actColumn === 5;
         }
 
         // In der Variablenliste editieren zulassen:

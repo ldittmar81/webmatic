@@ -560,6 +560,13 @@ a.labeled {
     background-repeat: no-repeat;    
 }
 
+.input.ui-slider-input {
+    width: 50px !important;
+}
+.ui-slider-track {
+    margin-left: 78px !important;
+}
+
 @media only screen and (min-width: 768px) {
     .cd-top, .backText {
         right: 20px;
