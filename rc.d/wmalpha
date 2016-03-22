@@ -1,0 +1,38 @@
+#!/bin/sh
+WEBMATICDIR=/usr/local/etc/config/addons/www/wmalpha
+CONFIG_URL=/addons/wmalpha/index.html
+
+case "$1" in
+
+  ""|start|restart|stop)
+    exit 0
+  ;;
+
+  info)
+    VER=$(cat ${WEBMATICDIR}/VERSION)
+    echo "Info: <center>"
+    echo "Info: <b>WebMatic (TEST) ${VER}</b><br>"
+    echo "Info: <img src='/addons/webmatic/img/misc/webmatic.png'><br>"
+    echo "Info: <a href='https://github.com/jens-maus/webmatic'>Weitere Infos</a>"
+    echo "Info: </center>"
+    echo "Name: WebMatic (TEST)"
+    echo "Version: ${VER}"
+    echo "Operations: uninstall"
+    echo "Config-Url: ${CONFIG_URL}"
+    echo "Update: /addons/wmalpha/cgi/update-check-alpha.cgi"
+  ;;
+
+  uninstall)
+    ${WEBMATICDIR}/update_addon wmalpha
+    rm -rf ${WEBMATICDIR}
+    rm -rf ${WEBMATICDIR}_user
+  ;;
+
+  *)
+    echo "Usage: wmalpha {info|uninstall}" >&2
+    exit 1
+  ;;
+
+esac 
+
+exit 0

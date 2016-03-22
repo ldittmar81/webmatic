@@ -28,6 +28,7 @@ cgi_eval {
         var obj = dom.GetObject(strList);
         strListEnum = obj.EnumUsedIDs();
         WriteLine ("  -+#+-name-+#+-: -+#+-" # obj.Name() # "-+#+-,");
+        WriteLine ("  -+#+-id-+#+-: -+#+-" # strList # "-+#+-,");
         WriteLine ("  -+#+-description-+#+-: -+#+-" # obj.EnumInfo() # "-+#+-,");
         WriteLine ("  -+#+-date-+#+-: -+#+-" # system.Date("%d.%m.%Y %H:%M:%S") # "-+#+-,");
 

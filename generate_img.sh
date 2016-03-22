@@ -1,43 +1,51 @@
 #!/bin/sh
 
-mkdir -p tmp/webmatic
-cp webmatic/*.* tmp/webmatic/
-cp -a webmatic/cgi tmp/webmatic/
-cp -a webmatic/img tmp/webmatic/
-cp -a webmatic/libs tmp/webmatic/
-mkdir -p tmp/webmatic/js/i18n
-cp -a webmatic/js/*.min.js tmp/webmatic/js/
-cp -a webmatic/js/i18n/*.min.js tmp/webmatic/js/i18n/
-mkdir -p tmp/webmatic/themes
-cp -a webmatic/themes/*.min.* tmp/webmatic/themes/
-cp -a webmatic/themes/images tmp/webmatic/themes/
-cp -a webmatic/themes/fonts tmp/webmatic/themes/
-cp -a ccu1 tmp/
-cp -a ccu2 tmp/
-cp -a ccurm tmp/
-cp -a rc.d tmp/
-cp -a update_script tmp/
-
 ISALPHA=$(cat ISALPHA)
 VERSION=""
 STABLEVERSION=""
+FOLDER=""
 
 if [ ${ISALPHA} = "0" ]; then
     VERSION=$(cat VERSION)
     STABLEVERSION=${VERSION}
+    FOLDER=webmatic
+    mkdir -p tmp/${FOLDER}
     cp -a VERSION tmp/
+    mkdir -p tmp/rc.d
+    cp -a rc.d/webmatic tmp/rc.d/
+    cp -a update_script tmp/
 elif [ ${ISALPHA} = "1" ]; then
     VERSION=$(cat VERSIONALPHA)
     STABLEVERSION=$(cat VERSION)
+    FOLDER=wmalpha
+    mkdir -p tmp/${FOLDER}
     cp -a VERSIONALPHA tmp/VERSION
+    mkdir -p tmp/rc.d
+    cp -a rc.d/wmalpha tmp/rc.d/
+    cp -a update_script_alpha tmp/update_script
 fi
+
+cp webmatic/*.* tmp/${FOLDER}/
+cp -a webmatic/cgi tmp/${FOLDER}/
+cp -a webmatic/img tmp/${FOLDER}/
+cp -a webmatic/libs tmp/${FOLDER}/
+mkdir -p tmp/${FOLDER}/js/i18n
+cp -a webmatic/js/*.min.js tmp/${FOLDER}/js/
+cp -a webmatic/js/i18n/*.min.js tmp/${FOLDER}/js/i18n/
+mkdir -p tmp/${FOLDER}/themes
+cp -a webmatic/themes/*.min.* tmp/${FOLDER}/themes/
+cp -a webmatic/themes/images tmp/${FOLDER}/themes/
+cp -a webmatic/themes/fonts tmp/${FOLDER}/themes/
+cp -a ccu1 tmp/
+cp -a ccu2 tmp/
+cp -a ccurm tmp/
 
 GERDATE=$(date +"%d.%m.%y")
 HASHDATE=$(date +"%y%m%d")
 
 cd tmp 
 
-cd webmatic
+cd ${FOLDER}
 sed -i "s/BETAVERSION/${VERSION}/g" index.html
 sed -i "s/BETAVERSION/${VERSION}/g" get.html
 sed -i "s/BETAVERSION/${VERSION}/g" dlgAbout.html

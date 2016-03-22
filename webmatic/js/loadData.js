@@ -308,7 +308,7 @@ function refreshJSONObj(type, newJsonObj, create) {
                         changeCCUAttr = true;
                         saveDataToFile = true;
                     }
-
+                    val['picdate'] = savedVal['picdate'];
                 } else {
                     size++;
                     val['position'] = size;
@@ -369,6 +369,7 @@ function refreshJSONObj(type, newJsonObj, create) {
                         val[type + '_divisor'] = "unsorted";
                         saveDataToFile = true;
                     }
+                    val['picdate'] = savedVal['picdate'];
                 } else {
                     size++;
                     val['position'] = size;
@@ -452,6 +453,7 @@ function refreshJSONObj(type, newJsonObj, create) {
                         val[type + '_divisor'] = "unsorted";
                         saveDataToFile = true;
                     }
+                    val['picdate'] = savedVal['picdate'];
                 } else {
                     size++;
                     val['position'] = size;

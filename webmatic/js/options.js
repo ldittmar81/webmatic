@@ -977,7 +977,7 @@ function processGraphicIDGlobal(type) {
         html += "<div style='float: left; text-align: center; padding-right: 5px;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
         html += "<a href='#' " + ($.inArray(picKey, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-pickey='" + picKey + "' data-type='" + type + "' data-faktor='" + val["faktor"] + "'>" + mapText("DELETE") + "</a>";
@@ -1171,7 +1171,7 @@ function processGraphicIDClient(type) {
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
         html += "<h1>(";
@@ -2255,9 +2255,10 @@ $(function () {
         }
 
         $("#img" + dataID).fadeOut(500, function () {
+            var date = new Date();
             var url = "img/menu/" + type + ".png";
             if ($.inArray(picKey, picturesList) !== -1) {
-                url = "../webmatic_user/img/ids/" + type + "/" + picKey + ".png";
+                url = "../webmatic_user/img/ids/" + type + "/" + picKey + ".png?" + date.getTime();
                 $("#deletePic" + dataID).removeClass("ui-state-disabled");
             } else {
                 $("#deletePic" + dataID).addClass("ui-state-disabled");
@@ -2303,7 +2304,7 @@ $(function () {
         if (file.name.length < 1) {
         } else if (file.type !== 'image/png' && file.type !== 'image/jpg' && !file.type !== 'image/gif' && file.type !== 'image/jpeg') {
             //TODO alert ist nicht schön... muss noch ersetzt werden
-            $.mobile.alert(mapText("IMAGE_UPLOAD"));
+            alert(mapText("IMAGE_UPLOAD"));
         } else {
             var id = $(this).attr('id');
             var key = id.substr(4, id.length);
@@ -2396,6 +2397,7 @@ $(function () {
                             $("#" + dataList).enhanceWithin();
                         }
                     }
+                    reloadDatePicCache(type, key);
                 });
 
             };

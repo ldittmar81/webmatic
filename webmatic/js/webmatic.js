@@ -184,7 +184,7 @@ function processVariable(variable, valID, systemDate) {
 
         html += "<img id='img" + valID + "' class='ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png";
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + variable['picdate'];
         }
         html += "' src='img/menu/variables.png'/>";
 
@@ -215,7 +215,7 @@ function processVariable(variable, valID, systemDate) {
         var float = false;
         if ($.inArray(picKey, picturesList) !== -1) {
             html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+            html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + variable['picdate'] + "' src='img/menu/variables.png'/>";
             html += "</div>";
             float = actColumn === 5;
         }
@@ -240,7 +240,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         }
         html += "<img id='img" + prgID + "' class='ui-img-" + theme;
         if ($.inArray(prgID, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png";
+            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png?" + prog['picdate'];
         }
         html += "' src='img/menu/programs.png'/>";
         if (enabled) {
@@ -252,7 +252,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
         if ($.inArray(prgID, picturesList) !== -1) {
             html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            html += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+            html += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png?" + prog['picdate'] + "' src='img/menu/programs.png'/>";
             html += "</div>";
         }
         html += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
@@ -871,7 +871,7 @@ function addChannel(device, systemDate, options, operate) {
                 deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
                 if ($.inArray(picKey, picturesList) !== -1) {
                     deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-                    deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+                    deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + channel['picdate'] + "' src='img/menu/variables.png'/>";
                     deviceHTML += "</div>";
                 }
                 if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -966,7 +966,7 @@ function processDevices(device, systemDate, options, operate) {
         deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
         if ($.inArray(picKey, picturesList) !== -1) {
             deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png' src='img/menu/variables.png'/>";
+            deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + device['picdate'] + "' src='img/menu/variables.png'/>";
             deviceHTML += "</div>";
         }
         if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -999,7 +999,7 @@ function processDevices(device, systemDate, options, operate) {
         deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prgInfo + "</p>";
         if ($.inArray(prgID, picturesList) !== -1) {
             deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png' src='img/menu/programs.png'/>";
+            deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png?" + device['picdate'] + "' src='img/menu/programs.png'/>";
             deviceHTML += "</div>";
         }
         deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, operate);

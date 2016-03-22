@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 0;
 var lastStableVersion = "0";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 29;
+var storageVersion = 30;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 // Globale variablen
@@ -139,7 +139,7 @@ function restartTimer() {
 
 function createVerFile() {
     $.ajax({
-        url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvZmcySTFT"),
+        url: Base64.decode("aHR0cHM6Ly9nb28uZ2wvYVRhazNn"),
         method: 'GET',
         dataType: 'JSONP',
         error: function (jqXHR, textStatus) {
@@ -1012,6 +1012,14 @@ function changeFont(code) {
 }
 
 // ----------------------- Helper functions ----------------------------
+
+function reloadDatePicCache(type, key) {
+    var objectMap = getMap(type);
+    var date = new Date();
+    objectMap[key]["picdate"] = date.getTime();
+    createOneMap(type);
+    activateSettingSaveButton();
+}
 
 function calcHight() {
     var currentTallest = 0;

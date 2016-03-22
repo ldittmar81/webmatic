@@ -1,0 +1,112 @@
+#!/bin/sh
+
+echo "BEGINN"
+
+ADDONNAME=wmalpha
+WWWDIR=/usr/local/etc/config/addons/www/${ADDONNAME}
+RCDDIR=/usr/local/etc/config/rc.d
+USERDIR=/usr/local/etc/config/addons/www/${ADDONNAME}_user
+USERCSS=${USERDIR}/themes/wm-user-theme.css
+USERLANG=${USERDIR}/lang.json
+
+if [ "$1" = "" ]; then
+  echo "CCU1"
+  mount -t yaffs /dev/mtdblock3 /usr/local
+elif [ "$1" = "CCU2" ]; then
+  echo "CCU2"
+  mount -t ubifs ubi1:user /usr/local
+elif [ "$1" = "HM-RASPBERRYMATIC" ]; then
+  echo "HM-RASPBERRYMATIC"
+  mount /usr/local
+fi
+
+echo "Installationsumgebung: $1"
+
+# create
+echo "Verzeichnisse erstellen"
+mkdir -p ${WWWDIR}
+chmod 755 ${WWWDIR}
+mkdir -p ${RCDDIR}
+chmod 755 ${RCDDIR}
+mkdir -p ${USERDIR}/themes
+mkdir -p ${USERDIR}/img/ids/favorites
+mkdir -p ${USERDIR}/img/ids/functions
+mkdir -p ${USERDIR}/img/ids/rooms
+mkdir -p ${USERDIR}/img/ids/programs
+mkdir -p ${USERDIR}/img/ids/variables
+mkdir -p ${USERDIR}/img/ids/devices
+chmod 755 ${USERDIR}
+
+if [ ! -e "$USERCSS" ]
+then
+    echo "User CSS Datei erstellen"
+    touch -- "$USERCSS"
+else
+    echo "User CSS Datei vorhanden"
+fi
+
+# cleanup
+echo "Alte Version entfernen"
+rm -rf ${WWWDIR}/*
+rm -f ${RCDDIR}/webmatic-dlg
+
+# lang
+if [ -e "$USERLANG" ] 
+then
+    echo "Sprachdatei vorhanden"
+    LANG=$(cat ${USERLANG})
+    echo "Installationssprache: $LANG"
+    if [ "$LANG" != "de" ]
+    then
+        echo "Dateien auf $LANG stellen"
+        sed -i 's/html lang=\"de\"/html lang=\"'"$LANG"'\"/' ${ADDONNAME}/index.html
+        sed -i 's/html lang=\"de\"/html lang=\"'"$LANG"'\"/' ${ADDONNAME}/get.html
+        sed -i 's/wmmap.de.min.js/wmmap.'"$LANG"'.min.js/' ${ADDONNAME}/webmatic.appcache
+        sed -i 's/wmmap.de.min.js/wmmap.'"$LANG"'.min.js/' ${ADDONNAME}/index.html
+        sed -i 's/wmmap.de.min.js/wmmap.'"$LANG"'.min.js/' ${ADDONNAME}/get.html
+        sed -i 's/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.'"$LANG"'.utf8.min.js/' ${ADDONNAME}/webmatic.appcache
+        sed -i 's/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.'"$LANG"'.utf8.min.js/' ${ADDONNAME}/index.html
+        sed -i 's/jtsage-datebox.i18n.de.utf8.min.js/jtsage-datebox.i18n.'"$LANG"'.utf8.min.js/' ${ADDONNAME}/get.html
+        sed -i 's/wmLang=\"de\"/wmLang=\"'"$LANG"'\"/' ${ADDONNAME}/js/wmhelper.min.js
+    else
+        echo "Installationssprache ist deutsch"
+    fi
+else
+    echo "Sprachdatei $USERLANG nicht vorhanden"
+fi
+
+# copy
+echo "Dateien in den richtigen Ordner kopieren"
+cp -R ${ADDONNAME}/* ${WWWDIR}/
+cp VERSION ${WWWDIR}/
+cp rc.d/${ADDONNAME} ${RCDDIR}/
+chmod +x ${RCDDIR}/${ADDONNAME}
+
+# copy update_addon program
+if [ "$1" = "" ]; then
+  cp -a ccu1/update_addon ${WWWDIR}/
+elif [ "$1" = "CCU2" ]; then
+  cp -a ccu2/update_addon ${WWWDIR}/
+elif [ "$1" = "HM-RASPBERRYMATIC" ]; then
+  cp -a ccurm/update_addon ${WWWDIR}/
+fi
+
+# add menu entry
+echo "Menueintrag erstellen"
+touch /usr/local/etc/config/hm_addons.cfg
+${WWWDIR}/update_addon wmalpha ${WWWDIR}/wmalpha_addon.cfg
+
+# sync filesystem to make sure all changes are written to disk
+sync
+
+if [ "$1" = "" ]; then
+  echo "CCU1"
+elif [ "$1" = "CCU2" ]; then
+  echo "CCU2"
+  # CCU2 always reboots after Addon/Firmware Update
+elif [ "$1" = "HM-RASPBERRYMATIC" ]; then
+  echo "HM-RASPBERRYMATIC"
+  # RASPBERRYMATIC always reboots after Addon/Firmware Update
+fi
+
+echo "ENDE"

@@ -50,7 +50,7 @@ loadSingleMenu = function (indexType, gfxClassParent, gfxClassSelected, collapse
         var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key + "' " + (val['visible'] ? "" : "style='display: none;'") + ">";
         html += "<a href='#'><img id='menuImg" + key + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
         if ($.inArray(key, picturesList) !== -1 || picturesListError) {
-            html += " lazy" + indexType + "' data-original='../webmatic_user/img/ids/" + indexType + "/" + key + ".png";
+            html += " lazy" + indexType + "' data-original='../webmatic_user/img/ids/" + indexType + "/" + key + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + indexType + ".png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
         if (resultOptionsMap['default_sort_manually']) {
@@ -111,7 +111,7 @@ loadSingleDivisorMenu = function (type, gfxClassParent, gfxClassSelected, collap
         var html = "<li class='menuListSpecialItem " + gfxClassParent + " scrollToList' data-divisor='true' data-type='" + type + "' data-id='" + key + "' " + (resultOptionsMap[indexType] ? "" : "style='display: none;'") + ">";
         html += "<a href='#'><img id='menuImg" + indexType + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
         if ($.inArray(indexType, picturesList) !== -1 || picturesListError) {
-            html += " lazy" + type + "' data-original='../webmatic_user/img/ids/" + type + "/" + indexType + ".png";
+            html += " lazy" + type + "' data-original='../webmatic_user/img/ids/" + type + "/" + indexType + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + type + ".png'><span id='menuText" + indexType + "' class='breakText'>" + val['name'] + "</span></a></li>";
         if (resultOptionsMap['default_sort_manually']) {
@@ -197,7 +197,7 @@ loadDivisor = function (gfxClassParent, gfxClassSelected, collapsed, type) {
             var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key2 + "' " + (val2['visible'] ? "" : "style='display: none;'") + ">";
             html += "<a href='#'><img id='menuImg" + key2 + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
             if ($.inArray(key2, picturesList) !== -1 || picturesListError) {
-                html += " lazy" + type + "Div' data-original='../webmatic_user/img/ids/" + type + "/" + key2 + ".png";
+                html += " lazy" + type + "Div' data-original='../webmatic_user/img/ids/" + type + "/" + key2 + ".png?" + val2['picdate'];
             }
             html += "' src='img/menu/" + type + ".png'><span id='menuText" + key2 + "' class='breakText'>" + val2['name'] + "</span></a></li>";
 
@@ -416,7 +416,7 @@ $(function () {
         refreshServiceMessages();
     });
 
-    $(document.body).on("click", '[name="reloadCCUChanges"]', function(){
+    $(document.body).on("click", '[name="reloadCCUChanges"]', function () {
         window.location.reload(true);
     });
 
