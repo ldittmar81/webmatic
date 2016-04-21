@@ -4,6 +4,7 @@ source /www/config/cgi.tcl
 
 set type ""
 set name ""
+set folder ""
 
 catch {
     set input $env(QUERY_STRING)
@@ -24,6 +25,6 @@ cgi_eval {
     cgi_import "type"
     cgi_import "name"
 
-    set filename "/usr/local/etc/config/addons/www/webmatic_user/img/ids/$type/$name.png"
+    set filename "/usr/local/etc/config/addons/www/$folder/img/ids/$type/$name.png"
     file delete $filename
 }

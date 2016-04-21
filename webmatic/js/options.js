@@ -1,4 +1,4 @@
-/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList, resultRoomsMap, mustReload, specialTextVariables, variablesClientMap, favoritesClientMap, roomsClientMap, functionsClientMap, programsClientMap, specialTextVariablesOnlypic */
+/* global dataList, dataListHeader, optionsMap, theme, wmLang, clientsList, isTempClient, client, optionsClientMap, resultOptionsMap, debugModus, favoritesMap, roomsMap, functionsMap, programsMap, variablesMap, mustBeSaved, newVersion, picturesList, resultRoomsMap, mustReload, specialTextVariables, variablesClientMap, favoritesClientMap, roomsClientMap, functionsClientMap, programsClientMap, specialTextVariablesOnlypic, userFolder, isPreRelease */
 
 // ----------------------- Helper functions ----------------------------
 
@@ -25,8 +25,8 @@ function activateSettingSaveButton(reload, isClient) {
 }
 
 function saveOptionsToServer(key, value, reload) {
-    localStorage.setItem("webmaticoptionsMap", JSON.stringify(optionsMap));
-    $.post('cgi/saveconfig.cgi', {name: "config", text: JSON.stringify(optionsMap)}).done(function () {
+    localStorage.setItem(isPreRelease + "webmaticoptionsMap", JSON.stringify(optionsMap));
+    $.post('cgi/saveconfig.cgi', {name: "config", text: JSON.stringify(optionsMap), folder: userFolder}).done(function () {
         if (reload) {
             location.reload(true);
         }
@@ -35,9 +35,9 @@ function saveOptionsToServer(key, value, reload) {
 }
 
 function saveClientOptionsToServer(key, value) {
-    localStorage.setItem("webmaticoptionsclientMap", JSON.stringify(optionsClientMap));
+    localStorage.setItem(isPreRelease + "webmaticoptionsclientMap", JSON.stringify(optionsClientMap));
     if (client !== "") {
-        $.post('cgi/saveconfig.cgi', {name: "config" + client, text: JSON.stringify(optionsClientMap)});
+        $.post('cgi/saveconfig.cgi', {name: "config" + client, text: JSON.stringify(optionsClientMap), folder: userFolder});
     }
     if (key) {
         checkAndChange(key, value);
@@ -47,36 +47,36 @@ function saveClientOptionsToServer(key, value) {
 function saveAllDatasToServer() {
 
     if (changeGlobal) {
-        localStorage.setItem("webmaticfavoritesMap", JSON.stringify(favoritesMap));
-        localStorage.setItem("webmaticroomsMap", JSON.stringify(roomsMap));
-        localStorage.setItem("webmaticfunctionsMap", JSON.stringify(functionsMap));
-        localStorage.setItem("webmaticprogramsMap", JSON.stringify(programsMap));
-        localStorage.setItem("webmaticvariablesMap", JSON.stringify(variablesMap));
+        localStorage.setItem(isPreRelease + "webmaticfavoritesMap", JSON.stringify(favoritesMap));
+        localStorage.setItem(isPreRelease + "webmaticroomsMap", JSON.stringify(roomsMap));
+        localStorage.setItem(isPreRelease + "webmaticfunctionsMap", JSON.stringify(functionsMap));
+        localStorage.setItem(isPreRelease + "webmaticprogramsMap", JSON.stringify(programsMap));
+        localStorage.setItem(isPreRelease + "webmaticvariablesMap", JSON.stringify(variablesMap));
 
-        $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap)});
-        $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap)});
-        $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap)});
-        $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap)});
-        $.post('cgi/saveconfig.cgi', {name: "variables", text: JSON.stringify(variablesMap)});
+        $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "variables", text: JSON.stringify(variablesMap), folder: userFolder});
     }
 
     if (changeClient) {
-        localStorage.setItem("webmaticfavoritesclientMap", JSON.stringify(favoritesClientMap));
-        localStorage.setItem("webmaticroomsclientMap", JSON.stringify(roomsClientMap));
-        localStorage.setItem("webmaticfunctionsclientMap", JSON.stringify(functionsClientMap));
-        localStorage.setItem("webmaticprogramsclientMap", JSON.stringify(programsClientMap));
-        localStorage.setItem("webmaticvariablesclientMap", JSON.stringify(variablesClientMap));
+        localStorage.setItem(isPreRelease + "webmaticfavoritesclientMap", JSON.stringify(favoritesClientMap));
+        localStorage.setItem(isPreRelease + "webmaticroomsclientMap", JSON.stringify(roomsClientMap));
+        localStorage.setItem(isPreRelease + "webmaticfunctionsclientMap", JSON.stringify(functionsClientMap));
+        localStorage.setItem(isPreRelease + "webmaticprogramsclientMap", JSON.stringify(programsClientMap));
+        localStorage.setItem(isPreRelease + "webmaticvariablesclientMap", JSON.stringify(variablesClientMap));
 
-        $.post('cgi/saveconfig.cgi', {name: "favorites" + client, text: JSON.stringify(favoritesClientMap)});
-        $.post('cgi/saveconfig.cgi', {name: "rooms" + client, text: JSON.stringify(roomsClientMap)});
-        $.post('cgi/saveconfig.cgi', {name: "functions" + client, text: JSON.stringify(functionsClientMap)});
-        $.post('cgi/saveconfig.cgi', {name: "programs" + client, text: JSON.stringify(programsClientMap)});
-        $.post('cgi/saveconfig.cgi', {name: "variables" + client, text: JSON.stringify(variablesClientMap)});
+        $.post('cgi/saveconfig.cgi', {name: "favorites" + client, text: JSON.stringify(favoritesClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "rooms" + client, text: JSON.stringify(roomsClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "functions" + client, text: JSON.stringify(functionsClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "programs" + client, text: JSON.stringify(programsClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "variables" + client, text: JSON.stringify(variablesClientMap), folder: userFolder});
     }
 
     Object.keys(clientsList).forEach(function (key) {
         if (key !== client) {
-            $.post('cgi/saveconfig.cgi', {name: "reload" + key, text: "true"});
+            $.post('cgi/saveconfig.cgi', {name: "reload" + key, text: "true", folder: userFolder});
         }
     });
 
@@ -150,21 +150,21 @@ function loadGraphicIDs(type, global) {
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
 
     //Global
-    if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + type + "Map") === null || localStorage.getItem(isPreRelease + "webmatic" + type + "Map") === "undefined") {
         if (newVersion) {
             saveDataToFile = true;
         }
-        loadConfigData(false, '../webmatic_user/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
+        loadConfigData(false, '../' + userFolder + '/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
     } else {
         loadLocalStorageMap(type);
     }
     //Lokal
-    if (localStorage.getItem("webmatic" + type + "clientMap") === null || localStorage.getItem("webmatic" + type + "clientMap") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap") === null || localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap") === "undefined") {
         if (client !== "") {
-            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
+            loadConfigData(false, '../' + userFolder + '/' + type + client + '.json', type + "Client", 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        setClientMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+        setClientMap(type, JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap")));
     }
     //Kombinieren
     createOneMap(type);
@@ -977,7 +977,7 @@ function processGraphicIDGlobal(type) {
         html += "<div style='float: left; text-align: center; padding-right: 5px;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png?" + val['picdate'];
+            html += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/" + type + "/" + picKey + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
         html += "<a href='#' " + ($.inArray(picKey, picturesList) === -1 ? "class='ui-btn ui-mini ui-icon-delete ui-btn-icon-left ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-mini='true' data-icon='delete'") + " name='deletePic' id='deletePic" + key + "' data-id='" + key + "' data-pickey='" + picKey + "' data-type='" + type + "' data-faktor='" + val["faktor"] + "'>" + mapText("DELETE") + "</a>";
@@ -1171,7 +1171,7 @@ function processGraphicIDClient(type) {
         html += "<div style='float: left; text-align: center;'>";
         html += "<img id='img" + key + "' class='ui-div-thumbnail ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/" + type + "/" + picKey + ".png?" + val['picdate'];
+            html += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/" + type + "/" + picKey + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + type + ".png' data-type='" + type + "'/>";
         html += "<h1>(";
@@ -1687,7 +1687,7 @@ $(function () {
 
     //Language
     $(document.body).on("click", "[name='change_lang']", function () {
-        $.get("cgi/changeLang.cgi", {old: wmLang, new : $('#change_lang').val(), debug: debugModus})
+        $.get("cgi/changeLang.cgi", {old: wmLang, new : $('#change_lang').val(), debug: debugModus, folder: userFolder})
                 .done(function () {
                     location.reload(true);
                 });
@@ -1711,7 +1711,7 @@ $(function () {
     $(document.body).on("click", "[name='choose_tmp_client']", function () {
         var ip = $('#choose_tmp_client').val();
         if (ip) {
-            localStorage.setItem("tempOptionsForClient", ip);
+            localStorage.setItem(isPreRelease + "tempOptionsForClient", ip);
             location.reload(true);
         }
     });
@@ -1720,7 +1720,7 @@ $(function () {
         var ip = $('#delete_client').val();
         if (ip) {
             if (confirm(mapText("DELETE_SETTINGS_WARNING"))) {
-                $.get("cgi/deleteOptions.cgi", {client: ip})
+                $.get("cgi/deleteOptions.cgi", {client: ip, folder: userFolder})
                         .done(function () {
                             delete clientsList[ip];
                             optionsMap["clientsList"] = clientsList;
@@ -2258,7 +2258,7 @@ $(function () {
             var date = new Date();
             var url = "img/menu/" + type + ".png";
             if ($.inArray(picKey, picturesList) !== -1) {
-                url = "../webmatic_user/img/ids/" + type + "/" + picKey + ".png?" + date.getTime();
+                url = "../" + userFolder + "/img/ids/" + type + "/" + picKey + ".png?" + date.getTime();
                 $("#deletePic" + dataID).removeClass("ui-state-disabled");
             } else {
                 $("#deletePic" + dataID).addClass("ui-state-disabled");
@@ -2275,7 +2275,7 @@ $(function () {
         var picKey = obj.attr("data-pickey");
         var faktor = obj.data("faktor");
 
-        $.get('cgi/delete.cgi?type=' + type + '&name=' + picKey, function () {
+        $.get('cgi/delete.cgi?type=' + type + '&name=' + picKey + '&folder=' + userFolder, function () {
             $("#img" + id).fadeOut(500, function () {
                 $("#img" + id).attr("src", "img/menu/" + type + ".png").fadeIn(1000);
             });
@@ -2379,7 +2379,7 @@ $(function () {
 
                 formData.append('file', blob, picKey + '.png');
                 formData.append('filename', picKey + '.png');
-                formData.append('path', '/usr/local/etc/config/addons/www/webmatic_user/img/ids/' + type + '/');
+                formData.append('path', '/usr/local/etc/config/addons/www/' + userFolder + '/img/ids/' + type + '/');
 
                 $.ajax({
                     url: 'cgi/upload.cgi', //server script to process data

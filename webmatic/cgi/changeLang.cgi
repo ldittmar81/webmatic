@@ -5,6 +5,7 @@ source /www/config/cgi.tcl
 set old ""
 set new ""
 set debug ""
+set folder ""
 set wwwdir "/usr/local/etc/config/addons/www/webmatic"
 
 catch {
@@ -34,8 +35,8 @@ if {$debug == "true"} {
     exec sed -i "s/wmLang=\"$old\"/wmLang=\"$new\"/" $wwwdir/js/wmhelper.min.js
 }
 
-file mkdir "/usr/local/etc/config/addons/www/webmatic_user"
-set filename "/usr/local/etc/config/addons/www/webmatic_user/lang.json"
+file mkdir "/usr/local/etc/config/addons/www/$folder"
+set filename "/usr/local/etc/config/addons/www/$folder/lang.json"
 set fileId [open $filename "w"]
 puts $fileId $new
 close $fileId

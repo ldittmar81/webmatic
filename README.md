@@ -5,10 +5,10 @@ WebMatic ist eine browserbasierte Benutzeroberfläche für HomeMatic. Die Elemen
 Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsweise der Software und keinerlei Haftung für Schäden, die aus der Benutzung dieser Software resultieren.
 
 ## Quick Links
-* [Aktuelle Version](https://github.com/jens-maus/webmatic/releases/latest)
+* [Aktuelle Version](https://github.com/ldittmar81/webmatic/releases/latest)
 * [Anleitung](http://webmatic.lmdsoft.de/tiki-index.php?page=Inhalt)
 * [Support](http://homematic-forum.de/forum/viewforum.php?f=39)
-* [Fehler melden](https://github.com/jens-maus/webmatic/issues)
+* [Fehler melden](https://github.com/ldittmar81/webmatic/issues)
 * [Spenden](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K3QUGRC2AMPK6)
 
 ## Changelog

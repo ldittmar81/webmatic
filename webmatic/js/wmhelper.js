@@ -2,11 +2,16 @@
 
 //Variablen
 var webmaticVersion = "0";
-var isPreRelease = 0;
+var isPreRelease = 1;
 var lastStableVersion = "0";
 var newWebmaticVersion = webmaticVersion;
 var storageVersion = 30;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
+
+var userFolder = "webmatic_user";
+if (isPreRelease === 1) {
+    userFolder = "wmalpha_user";
+}
 
 // Globale variablen
 var debugModus = true;
@@ -144,7 +149,7 @@ function createVerFile() {
         dataType: 'JSONP',
         error: function (jqXHR, textStatus) {
             if (textStatus === "error") {
-                $.post('cgi/saveconfig.cgi', {name: "ver", text: webmaticVersion});
+                $.post('cgi/saveconfig.cgi', {name: "ver", text: webmaticVersion, folder: userFolder});
             }
         }
     });
@@ -1115,8 +1120,8 @@ function recalculatePositions(map, type, isDivisor) {
             }
         }
         type = setMap(type, map);
-        localStorage.setItem("webmatic" + type + "Map", JSON.stringify(getMap(type)));
-        $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(getMap(type))});
+        localStorage.setItem(isPreRelease + "webmatic" + type + "Map", JSON.stringify(getMap(type)));
+        $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(getMap(type)), folder: userFolder});
     }
     return map;
 }
@@ -1385,22 +1390,22 @@ function setMap(type, data) {
 function loadLocalStorageMap(type, id) {
     switch (type) {
         case "variables":
-            variablesMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
+            variablesMap = JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "Map"));
             break;
         case "programs":
-            programsMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
+            programsMap = JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "Map"));
             break
         case "favorites":
-            favoritesMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
+            favoritesMap = JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "Map"));
             break
         case "rooms":
-            roomsMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
+            roomsMap = JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "Map"));
             break
         case "functions":
-            functionsMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map"));
+            functionsMap = JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "Map"));
             break
         case "devices":
-            devicesMap = JSON.parse(localStorage.getItem("webmatic" + type + "Map" + id));
+            devicesMap = JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "Map" + id));
             break
     }
 }
@@ -1749,4 +1754,3 @@ function checkAndChange(key, value) {
         }
     }
 }
-

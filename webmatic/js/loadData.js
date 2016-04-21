@@ -1,4 +1,4 @@
-/* global isTempClient, client, storageVersion */
+/* global isTempClient, client, storageVersion, favoritesMap, roomsMap, functionsMap, isPreRelease, userFolder */
 
 function loadConfigData(async, url, type, map, create, actual, callback) {
     $.ajax({
@@ -17,7 +17,7 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
                 } else {
                     processedData = data;
                     optionsMap = data;
-                    localStorage.setItem(map, JSON.stringify(data));
+                    localStorage.setItem(isPreRelease + map, JSON.stringify(data));
                 }
                 break;
             case "variables":
@@ -36,33 +36,36 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
                 processedData = saveConfigFile(type, data, create, map, actual);
                 break
             case "devices":
-                processedData = data;
-                devicesMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
+                processedData = saveConfigFile(type, data, create, map, actual);
+                devicesMap = processedData;
                 break
             case "configClient":
                 optionsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
+                localStorage.setItem(isPreRelease + map, JSON.stringify(data));
                 break;
             case "programsClient":
                 programsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
+                localStorage.setItem(isPreRelease + map, JSON.stringify(data));
                 break
             case "favoritesClient":
                 favoritesClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
+                localStorage.setItem(isPreRelease + map, JSON.stringify(data));
                 break
             case "roomsClient":
                 roomsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
+                localStorage.setItem(isPreRelease + map, JSON.stringify(data));
                 break
             case "functionsClient":
                 functionsClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
+                localStorage.setItem(isPreRelease + map, JSON.stringify(data));
                 break
             case "variablesClient":
                 variablesClientMap = data;
-                localStorage.setItem(map, JSON.stringify(data));
+                localStorage.setItem(isPreRelease + map, JSON.stringify(data));
+                break
+            case "devicesClient":
+                devicesClientMap = data;
+                localStorage.setItem(isPreRelease + map, JSON.stringify(data));
                 break
         }
 
@@ -82,6 +85,7 @@ function loadConfigData(async, url, type, map, create, actual, callback) {
 function saveConfigFile(type, newJsonObj, create, map, actual) {
     if (actual) {
         saveDataToFile = true;
+        var deviceId = "";
         var returnJson = {};
         if (type === "rooms" || type === "favorites" || type === "functions") {
             var i = 0;
@@ -101,6 +105,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                     val = mapText(val);
                 } else if (val.startsWith("${")) {
                     val = mapText(val.substring(2, val.length - 1));
+                } else if (val.startsWith("%24%7B")) {
+                    val = mapText(val.substring(6, val.length - 3));
                 }
                 obj['name'] = val;
                 obj['oldname'] = oldName;
@@ -114,6 +120,7 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
             returnJson['divisors'] = {};
 
         } else if (type === "programs") {
+
             var i = 0;
             $.each(newJsonObj, function (key, val) {
                 if (key === "date") {
@@ -150,7 +157,9 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
             });
             returnJson['size'] = i;
             returnJson['divisors'] = {};
+
         } else if (type === "variables") {
+
             var i = 0;
             $.each(newJsonObj, function (key, val) {
                 if (key === "date") {
@@ -167,6 +176,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 }
                 if (name.startsWith("${")) {
                     name = mapText(name.substring(2, name.length - 1));
+                } else if (name.startsWith("%24%7B")) {
+                    name = mapText(name.substring(6, name.length - 3));
                 }
                 obj['name'] = name;
                 try {
@@ -191,6 +202,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 }
                 if (valInfo.startsWith("${")) {
                     valInfo = mapText(valInfo.substring(2, valInfo.length - 1));
+                } else if (valInfo.startsWith("%24%7B")) {
+                    valInfo = mapText(valInfo.substring(6, valInfo.length - 3));
                 }
                 obj['operate'] = isReadOnlyVariable(valInfo);
                 obj['oldoperate'] = obj['operate'];
@@ -220,6 +233,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                     }
                     if (valueName0.startsWith("${")) {
                         valueName0 = mapText(valueName0.substring(2, valueName0.length - 1));
+                    } else if (valueName0.startsWith("%24%7B")) {
+                        valueName0 = mapText(valueName0.substring(6, valueName0.length - 3));
                     }
                     obj['valueName0'] = valueName0;
                     var valueName1;
@@ -230,6 +245,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                     }
                     if (valueName1.startsWith("${")) {
                         valueName1 = mapText(valueName1.substring(2, valueName1.length - 1));
+                    } else if (valueName1.startsWith("%24%7B")) {
+                        valueName1 = mapText(valueName1.substring(6, valueName1.length - 3));
                     }
                     obj['valueName1'] = valueName1;
                 } else if (valueType === "4") {
@@ -243,16 +260,81 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
             });
             returnJson['size'] = i;
             returnJson['divisors'] = {};
+
+        } else if (type === "devices") {
+
+            $.each(newJsonObj, function (key, val) {
+                if (key === "date") {
+                    returnJson[key] = val;
+                    return;
+                } else if (key === "id") {
+                    returnJson[key] = val;
+                    deviceId = val;
+                    if (val in favoritesMap) {
+                        returnJson["name"] = favoritesMap[val]["name"];
+                    } else if (val in roomsMap) {
+                        returnJson["name"] = roomsMap[val]["name"];
+                    } else if (val in functionsMap) {
+                        returnJson["name"] = functionsMap[val]["name"];
+                    }
+                } else if (key === "entries") {
+                    var newEntries = [];
+                    var entriesCount = 0;
+                    $.each(newJsonObj[key], function (i, device) {
+                        entriesCount++;
+                        var newDevice = {};
+                        $.each(device, function (key2, val2) {
+                            if (key2 === "channels") {
+                                var newChannels = [];
+                                var channelsCount = 0;
+                                $.each(device[key2], function (i2, channel) {
+                                    channelsCount++;
+                                    var newChannelDevice = {};
+                                    $.each(channel, function (key3, val3) {
+                                        try {
+                                            val3 = decodeURI(val3);
+                                        } catch (e) {
+                                        }
+                                        newChannelDevice[key3] = val3;
+                                    });
+                                    newChannels.push(newChannelDevice);
+                                });
+                                newDevice[key2] = newChannels;
+                                newDevice['channelsCount'] = channelsCount;
+                            } else {
+                                try {
+                                    val2 = decodeURI(val2);
+                                } catch (e) {
+                                }
+                                newDevice[key2] = val2;
+                            }
+                        });
+                        newEntries.push(newDevice);
+                    });
+                    returnJson[key] = newEntries;
+                    returnJson['entriesCount'] = entriesCount;
+                } else {
+
+                    try {
+                        val = decodeURI(val);
+                    } catch (e) {
+                    }
+
+                    returnJson[key] = val;
+                }
+            });
+
+
         } else {
             returnJson = newJsonObj;
         }
 
         returnJson = refreshJSONObj(type, returnJson, create);
 
-        localStorage.setItem(map, JSON.stringify(returnJson));
+        localStorage.setItem(isPreRelease + map, JSON.stringify(returnJson));
         if (saveDataToFile) {
             saveDataToFile = false;
-            $.post('cgi/saveconfig.cgi', {name: type, text: JSON.stringify(returnJson)});
+            $.post('cgi/saveconfig.cgi', {name: type + deviceId, text: JSON.stringify(returnJson), folder: userFolder});
         }
         return returnJson;
     } else {
@@ -295,6 +377,8 @@ function refreshJSONObj(type, newJsonObj, create) {
                             savedName = mapText(savedName);
                         } else if (savedName.startsWith("${")) {
                             savedName = mapText(savedName.substring(2, savedName.length - 1));
+                        } else if (savedName.startsWith("%24%7B")) {
+                            savedName = mapText(savedName.substring(6, savedName.length - 3));
                         }
                         val['name'] = savedName;
                     } else {
@@ -405,6 +489,8 @@ function refreshJSONObj(type, newJsonObj, create) {
                         var name = savedVal['name'];
                         if (name.startsWith("${")) {
                             name = mapText(name.substring(2, name.length - 1));
+                        } else if (name.startsWith("%24%7B")) {
+                            name = mapText(name.substring(6, name.length - 3));
                         }
                         val['name'] = name;
                     } else {
@@ -462,6 +548,14 @@ function refreshJSONObj(type, newJsonObj, create) {
                 returnJson[key] = val;
             });
             returnJson["size"] = size;
+            newJsonObj = returnJson;
+        }
+    } else if (type === "devices") {
+        if (!create) {
+            var returnJson = {};
+            $.each(newJsonObj, function (key, val) {                
+                returnJson[key] = val;
+            });
             newJsonObj = returnJson;
         }
     } else if (type === "config" && !create) {
@@ -595,5 +689,3 @@ function createConfigFile(type, map) {
         loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);
     }
 }
-
-

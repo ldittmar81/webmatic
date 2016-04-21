@@ -3,6 +3,7 @@
 source /www/config/cgi.tcl
 
 set client ""
+set folder ""
 
 catch {
     set input $env(QUERY_STRING)
@@ -14,4 +15,4 @@ catch {
     }
 }
 
-file delete {*} [glob -nocomplain "/usr/local/etc/config/addons/www/webmatic_user/*$client.json"]
+file delete {*} [glob -nocomplain "/usr/local/etc/config/addons/www/$folder/*$client.json"]

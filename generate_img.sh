@@ -55,6 +55,9 @@ sed -i "s/RELEASEDATE/${GERDATE}/g" dlgAbout.html
 sed -i "s/<html lang=\"de\">/<html lang=\"de\" manifest=\"webmatic.appcache\">/g" index.html
 sed -i "s/<html lang=\"de\">/<html lang=\"de\" manifest=\"webmatic.appcache\">/g" get.html
 
+sed -i "s/wmalpha_user/${FOLDER}_user/" index.html
+sed -i "s/wmalpha_user/${FOLDER}_user/" get.html
+
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" index.html
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" get.html
 sed -i "s/webmatic.css/webmatic.min.css?${HASHDATE}/" dlgAbout.html
@@ -79,7 +82,7 @@ cd js
 
 sed -i "s/webmaticVersion=\"0\"/webmaticVersion=\"${VERSION}\"/" wmhelper.min.js
 sed -i "s/lastStableVersion=\"0\"/lastStableVersion=\"${STABLEVERSION}\"/" wmhelper.min.js
-sed -i "s/isPreRelease=0/isPreRelease=${ISALPHA}/" wmhelper.min.js
+sed -i "s/isPreRelease=1/isPreRelease=${ISALPHA}/" wmhelper.min.js
 sed -i "s/debugModus=true/debugModus=false/" wmhelper.min.js
 
 cd ..

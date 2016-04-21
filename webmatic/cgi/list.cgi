@@ -13,7 +13,6 @@ cgi_eval {
 
     array set res [rega_script {
 
-        ! PARAMATER
         string strList = "} $list {";
 
         WriteLine('{');
@@ -27,10 +26,9 @@ cgi_eval {
        
         var obj = dom.GetObject(strList);
         strListEnum = obj.EnumUsedIDs();
-        WriteLine ("  -+#+-name-+#+-: -+#+-" # obj.Name() # "-+#+-,");
-        WriteLine ("  -+#+-id-+#+-: -+#+-" # strList # "-+#+-,");
-        WriteLine ("  -+#+-description-+#+-: -+#+-" # obj.EnumInfo() # "-+#+-,");
-        WriteLine ("  -+#+-date-+#+-: -+#+-" # system.Date("%d.%m.%Y %H:%M:%S") # "-+#+-,");
+        WriteLine("  -+#+-id-+#+-: -+#+-" # strList # "-+#+-,");
+        WriteLine("  -+#+-description-+#+-: -+#+-");WriteURL(obj.EnumInfo());Write("-+#+-,");
+        WriteLine("  -+#+-date-+#+-: -+#+-" # system.Date("%d.%m.%Y %H:%M:%S") # "-+#+-,");
 
         WriteLine("  -+#+-entries-+#+-: [");
         integer firstEntry = 0;
@@ -38,13 +36,11 @@ cgi_eval {
             objObject = dom.GetObject(strObjID);
             strType   = objObject.TypeName();
             if (strType == "CHANNEL"){
-                ! Komma anhängen, wenn schon eine Zeile vorhanden:
                 if (firstEntry != 0) { WriteLine(","); }
                 firstEntry = 1;
 
-                ! Im Falle eines Kanals die allgemeinen Werte setzen und Datenpunkte auslesen:
                 Write("    {");
-                Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                Write("-+#+-name-+#+-:-+#+-");WriteURL(objObject.Name());Write("-+#+-");
                 Write(", -+#+-type-+#+-:-+#+-CHANNEL-+#+-");
                 Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");
                 Write(", -+#+-address-+#+-:-+#+-" # objObject.Address() # "-+#+-");
@@ -116,10 +112,10 @@ cgi_eval {
                     
                     string description = objObject.DPInfo();
                         
-                    Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                    Write("-+#+-name-+#+-:-+#+-");WriteURL(objObject.Name());Write("-+#+-");
                     Write(", -+#+-type-+#+-:-+#+-VARDP-+#+-");
                     Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");
-                    Write(", -+#+-info-+#+-:-+#+-" # description # "-+#+-");
+                    Write(", -+#+-info-+#+-:-+#+-");WriteURL(description);Write("-+#+-");
                     Write(", -+#+-value-+#+-:-+#+-" # objObject.Value() # "-+#+-");
                     Write(", -+#+-visible-+#+-:-+#+-" # objObject.Visible() # "-+#+-");
                    
@@ -174,10 +170,10 @@ cgi_eval {
                         firstEntry = 1;
 
                         Write("    {");
-                        Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                        Write("-+#+-name-+#+-:-+#+-");WriteURL(objObject.Name());Write("-+#+-");
                         Write(", -+#+-type-+#+-:-+#+-PROGRAM-+#+-");
                         Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");
-                        Write(", -+#+-info-+#+-:-+#+-" # objObject.PrgInfo() # "-+#+-");
+                        Write(", -+#+-info-+#+-:-+#+-");WriteURL(objObject.PrgInfo());Write("-+#+-");
                         Write(", -+#+-visible-+#+-:-+#+-" # objObject.Visible() # "-+#+-");
                         Write(", -+#+-operate-+#+-:");
                         if( objObject.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
@@ -190,7 +186,7 @@ cgi_eval {
                         Write ("}");
                     }else{
                         Write("    {");
-                        Write("-+#+-name-+#+-:-+#+-" # objObject.Name() # "-+#+-");
+                        Write("-+#+-name-+#+-:-+#+-");WriteURL(objObject.Name());Write("-+#+-");
                         Write(", -+#+-type-+#+-:-+#+-" # strType # "-+#+-");
                         Write(", -+#+-id-+#+-:-+#+-" # objObject.ID() # "-+#+-");                        
                         Write ("}");
@@ -202,6 +198,6 @@ cgi_eval {
         WriteLine("}");
     }]
 
-    set response [string map {\" ' -+#+- \" \n "" \r ""} $res(STDOUT)]
+    set response [string map {\" ' -+#+- \" \n "" \r "" %3B ;} $res(STDOUT)]
     puts -nonewline $response
 }

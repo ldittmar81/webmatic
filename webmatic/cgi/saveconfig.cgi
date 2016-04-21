@@ -4,6 +4,7 @@ source /www/config/cgi.tcl
 
 set text ""
 set name ""
+set folder ""
 
 catch {
     set input $env(QUERY_STRING)
@@ -25,8 +26,8 @@ cgi_eval {
     cgi_import "text"
     cgi_import "name"
 
-    file mkdir "/usr/local/etc/config/addons/www/webmatic_user"
-    set filename "/usr/local/etc/config/addons/www/webmatic_user/$name.json"
+    file mkdir "/usr/local/etc/config/addons/www/$folder"
+    set filename "/usr/local/etc/config/addons/www/$folder/$name.json"
     set fileId [open $filename "w"]
     puts $fileId $text
     close $fileId

@@ -2,7 +2,19 @@
 
 source /www/config/cgi.tcl
 
-set tclfiles [glob -nocomplain "/usr/local/etc/config/addons/www/webmatic_user/img/ids/*/*.png"]
+set folder ""
+
+catch {
+    set input $env(QUERY_STRING)
+    set pairs [split $input &]
+    foreach pair $pairs {
+        if {0 != [regexp "^(\[^=]*)=(.*)$" $pair dummy varname val]} {
+            set $varname $val
+        }
+    }
+}
+
+set tclfiles [glob -nocomplain "/usr/local/etc/config/addons/www/$folder/img/ids/*/*.png"]
 
 puts "Content-type: text/plain; charset=iso-8859-1\n"
 

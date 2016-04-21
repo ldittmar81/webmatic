@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog, client, twoPage, actColumn */
+/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog, client, twoPage, actColumn, resultDevicesMap, userFolder */
 
 // WebMatic 2.x
 // by ldittmar
@@ -121,7 +121,7 @@ function refreshServiceMessages() {
         });
 
         if (webmaticVersion !== newWebmaticVersion) {
-            $("#serviceList").append("<li><p class='ui-li-desc' style='text-align:right;'>" + dateNow + "</p><h1>" + mapText("NEW_VERSION") + "</h1><p><span class='valueInfo valueInfo-" + theme + "'><a href='https://github.com/jens-maus/webmatic/releases' target='_blank' >Webmatic " + newWebmaticVersion + " " + mapText("DOWNLOAD") + "</a></span></p></li>");
+            $("#serviceList").append("<li><p class='ui-li-desc' style='text-align:right;'>" + dateNow + "</p><h1>" + mapText("NEW_VERSION") + "</h1><p><span class='valueInfo valueInfo-" + theme + "'><a href='http://webmatic.lmdsoft.de/tiki-index.php?page=Entwicklungsstand' target='_blank' >Webmatic " + newWebmaticVersion + " " + mapText("DOWNLOAD") + "</a></span></p></li>");
             errNr += 1;
         }
 
@@ -184,7 +184,7 @@ function processVariable(variable, valID, systemDate) {
 
         html += "<img id='img" + valID + "' class='ui-img-" + theme;
         if ($.inArray(picKey, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + variable['picdate'];
+            html += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/variables/" + picKey + ".png?" + variable['picdate'];
         }
         html += "' src='img/menu/variables.png'/>";
 
@@ -215,7 +215,7 @@ function processVariable(variable, valID, systemDate) {
         var float = false;
         if ($.inArray(picKey, picturesList) !== -1) {
             html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + variable['picdate'] + "' src='img/menu/variables.png'/>";
+            html += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../" + userFolder + "/img/ids/variables/" + picKey + ".png?" + variable['picdate'] + "' src='img/menu/variables.png'/>";
             html += "</div>";
             float = actColumn === 5;
         }
@@ -240,7 +240,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         }
         html += "<img id='img" + prgID + "' class='ui-img-" + theme;
         if ($.inArray(prgID, picturesList) !== -1) {
-            html += " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png?" + prog['picdate'];
+            html += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/programs/" + prgID + ".png?" + prog['picdate'];
         }
         html += "' src='img/menu/programs.png'/>";
         if (enabled) {
@@ -252,7 +252,7 @@ function processProgram(prog, prgID, systemDate, active, visible) {
         html += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prog['info'] + (!active ? " (" + mapText("MANUAL") + ")" : "") + "</p>";
         if ($.inArray(prgID, picturesList) !== -1) {
             html += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            html += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png?" + prog['picdate'] + "' src='img/menu/programs.png'/>";
+            html += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../" + userFolder + "/img/ids/programs/" + prgID + ".png?" + prog['picdate'] + "' src='img/menu/programs.png'/>";
             html += "</div>";
         }
         html += addStartProgramButton('', prgID, mapText("RUN"), getTimeDiffString(prog['date'], systemDate), (prog['operate'] || !readModus));
@@ -419,9 +419,13 @@ function addDiagram(options) {
                 diagArr[4] = new Array();
                 var j = 0;
 
+                var autoscaleLow = false;
+                var autoscaleHigh = false;
+
                 var lowVal;
                 if (dLow === "") {
                     lowVal = 15.0;
+                    autoscaleLow = true;
                 } else {
                     lowVal = parseFloat(dLow);
                 }
@@ -429,6 +433,7 @@ function addDiagram(options) {
                 var highVal;
                 if (dHigh === "") {
                     highVal = 23.0;
+                    autoscaleHigh = true;
                 } else {
                     highVal = parseFloat(dHigh);
                 }
@@ -438,8 +443,10 @@ function addDiagram(options) {
                 // i 0..al ist index von scrDiagArr, also ueber alle Tupel
                 // j  0.. ist index von diagArr, also alle Werte innerhalb des Tupels
 
-                for (var i = 1; i <= al; i++)
-                {
+                var minTemp = 100.0;
+                var maxTemp = -100.0;
+
+                for (var i = 1; i <= al; i++) {
                     var t = srcDiagArr[i];
                     var tArr = t.split(",");
                     var v1 = tArr[0];
@@ -450,8 +457,15 @@ function addDiagram(options) {
                         highDate = v1;
                     }
 
-                    for (j = 1; j < tArr.length; j++)
-                    {
+                    var vh = parseFloat(tArr[2]);
+                    if (vh < minTemp) {
+                        minTemp = vh;
+                    }
+                    if (vh > maxTemp) {
+                        maxTemp = vh;
+                    }
+
+                    for (j = 1; j < tArr.length; j++) {
                         var vArr = new Array();
                         vArr[0] = v1;
                         var v2 = tArr[j];
@@ -459,7 +473,17 @@ function addDiagram(options) {
                         diagArr[j - 1][i - 1] = vArr;
                     }
                 }
+
+                if (autoscaleLow) {
+                    lowVal = minTemp - 1.0;
+                    lowVal = Math.floor(lowVal);
+                }
+                if (autoscaleHigh) {
+                    highVal = maxTemp + 1.0;
+                    highVal = Math.ceil(highVal);
+                }
             }
+            
             $.jqplot(options['diagramID'], [diagArr[0], diagArr[1], diagArr[2], diagArr[3], diagArr[4]], {
                 axes: {
                     xaxis: {
@@ -871,7 +895,7 @@ function addChannel(device, systemDate, options, operate) {
                 deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
                 if ($.inArray(picKey, picturesList) !== -1) {
                     deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-                    deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + channel['picdate'] + "' src='img/menu/variables.png'/>";
+                    deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../" + userFolder + "/img/ids/variables/" + picKey + ".png?" + channel['picdate'] + "' src='img/menu/variables.png'/>";
                     deviceHTML += "</div>";
                 }
                 if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -966,7 +990,7 @@ function processDevices(device, systemDate, options, operate) {
         deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
         if ($.inArray(picKey, picturesList) !== -1) {
             deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/variables/" + picKey + ".png?" + device['picdate'] + "' src='img/menu/variables.png'/>";
+            deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../" + userFolder + "/img/ids/variables/" + picKey + ".png?" + device['picdate'] + "' src='img/menu/variables.png'/>";
             deviceHTML += "</div>";
         }
         if (options['varOptionsFirst'] === "d" || options['varOptionsFirst'] === "dk" || options['varOptionsFirst'] === "g" || options['varOptionsFirst'] === "h") {
@@ -999,7 +1023,7 @@ function processDevices(device, systemDate, options, operate) {
         deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + prgInfo + "</p>";
         if ($.inArray(prgID, picturesList) !== -1) {
             deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
-            deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../webmatic_user/img/ids/programs/" + prgID + ".png?" + device['picdate'] + "' src='img/menu/programs.png'/>";
+            deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../" + userFolder + "/img/ids/programs/" + prgID + ".png?" + device['picdate'] + "' src='img/menu/programs.png'/>";
             deviceHTML += "</div>";
         }
         deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, operate);
@@ -1077,6 +1101,8 @@ function reloadList(txt, systemDate, restart, description) {
         txt = mapText(txt);
     } else if (txt.startsWith("${")) {
         txt = mapText(txt.substring(2, txt.length - 1));
+    } else if (txt.startsWith("%24%7B")) {
+        txt = mapText(txt.substring(6, txt.length - 3));
     }
     $("#" + dataListHeader).empty();
     $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>");
@@ -1105,19 +1131,30 @@ function loadData(url, id, restart) {
         // "Lade..." anzeigen:
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
-        if (localStorage.getItem("webmaticdevicesMap" + id) === null || localStorage.getItem("webmaticdevicesMap" + id) === "undefined") {
+        if (localStorage.getItem(isPreRelease + "webmaticdevicesMap" + id) === null || localStorage.getItem(isPreRelease + "webmaticdevicesMap" + id) === "undefined") {
             if (newVersion) {
                 saveDataToFile = true;
             }
-            loadConfigData(false, url + '?list=' + id, 'devices', 'webmaticdevicesMap' + id, false, true);
+            loadConfigData(false, url + '?list=' + id, 'devices', 'webmaticdevicesMap' + id, false, true, null);
             isActual = true;
         } else {
             loadLocalStorageMap("devices", id);
         }
 
-        var systemDate = devicesMap['date'];
+        //Lokal
+        if (localStorage.getItem(isPreRelease + "webmaticdevicesclientMap" + id) === null || localStorage.getItem(isPreRelease + "webmaticdevicesclientMap") === "undefined") {
+            if (client !== "") {
+                loadConfigData(false, '../' + userFolder + '/devices' + id + client + '.json', 'devicesClient', 'webmaticdevicesclientMap' + id, false, true, null);
+            }
+        } else {
+            devicesClientMap = JSON.parse(localStorage.getItem(isPreRelease + "webmaticdevicesclientMap" + id));
+        }
+        //Kombinieren
+        createOneMap("devices");
 
-        $.each(devicesMap.entries, function (i, device) {
+        var systemDate = resultDevicesMap['date'];
+
+        $.each(resultDevicesMap.entries, function (i, device) {
             var options = new Object();
             options['addDiagram'] = false;
             options['diagramData'] = "";
@@ -1135,10 +1172,10 @@ function loadData(url, id, restart) {
         });
 
         if (isGetSite) {
-            document.title = devicesMap['name'];
+            document.title = resultDevicesMap['name'];
         }
 
-        reloadList(devicesMap['name'], systemDate, restart, devicesMap['description']);
+        reloadList(resultDevicesMap['name'], systemDate, restart, resultDevicesMap['description']);
         $("#" + dataList).trigger("fertig");
     }
 
@@ -1219,21 +1256,21 @@ function loadVariables(restart) {
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         //Global
-        if (localStorage.getItem("webmaticvariablesMap") === null || localStorage.getItem("webmaticvariablesMap") === "undefined") {
+        if (localStorage.getItem(isPreRelease + "webmaticvariablesMap") === null || localStorage.getItem(isPreRelease + "webmaticvariablesMap") === "undefined") {
             if (newVersion) {
                 saveDataToFile = true;
             }
-            loadConfigData(false, '../webmatic_user/variables.json', 'variables', 'webmaticvariablesMap', false, false);
+            loadConfigData(false, '../' + userFolder + '/variables.json', 'variables', 'webmaticvariablesMap', false, false);
         } else {
             loadLocalStorageMap("variables");
         }
         //Lokal
-        if (localStorage.getItem("webmaticvariablesclientMap") === null || localStorage.getItem("webmaticvariablesclientMap") === "undefined") {
+        if (localStorage.getItem(isPreRelease + "webmaticvariablesclientMap") === null || localStorage.getItem(isPreRelease + "webmaticvariablesclientMap") === "undefined") {
             if (client !== "") {
-                loadConfigData(false, '../webmatic_user/variables' + client + '.json', 'variablesClient', 'webmaticvariablesclientMap', false, true);
+                loadConfigData(false, '../' + userFolder + '/variables' + client + '.json', 'variablesClient', 'webmaticvariablesclientMap', false, true);
             }
         } else {
-            variablesClientMap = JSON.parse(localStorage.getItem("webmaticvariablesclientMap"));
+            variablesClientMap = JSON.parse(localStorage.getItem(isPreRelease + "webmaticvariablesclientMap"));
         }
         //Kombinieren
         createOneMap("variables");
@@ -1322,21 +1359,21 @@ function loadPrograms(restart) {
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
         //Global
-        if (localStorage.getItem("webmaticprogramsMap") === null || localStorage.getItem("webmaticprogramsMap") === "undefined") {
+        if (localStorage.getItem(isPreRelease + "webmaticprogramsMap") === null || localStorage.getItem(isPreRelease + "webmaticprogramsMap") === "undefined") {
             if (newVersion) {
                 saveDataToFile = true;
             }
-            loadConfigData(false, '../webmatic_user/programs.json', 'programs', 'webmaticprogramsMap', false, false);
+            loadConfigData(false, '../' + userFolder + '/programs.json', 'programs', 'webmaticprogramsMap', false, false);
         } else {
             loadLocalStorageMap("programs");
         }
         //Lokal
-        if (localStorage.getItem("webmaticprogramsclientMap") === null || localStorage.getItem("webmaticprogramsclientMap") === "undefined") {
+        if (localStorage.getItem(isPreRelease + "webmaticprogramsclientMap") === null || localStorage.getItem(isPreRelease + "webmaticprogramsclientMap") === "undefined") {
             if (client !== "") {
-                loadConfigData(false, '../webmatic_user/programs' + client + '.json', 'programsClient', 'webmaticprogramsclientMap', false, true);
+                loadConfigData(false, '../' + userFolder + '/programs' + client + '.json', 'programsClient', 'webmaticprogramsclientMap', false, true);
             }
         } else {
-            programsClientMap = JSON.parse(localStorage.getItem("webmaticprogramsclientMap"));
+            programsClientMap = JSON.parse(localStorage.getItem(isPreRelease + "webmaticprogramsclientMap"));
         }
         //Kombinieren
         createOneMap("programs");

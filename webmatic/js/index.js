@@ -1,4 +1,4 @@
-/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim */
+/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim, userFolder, isPreRelease */
 
 loadMainMenu = function (indexType, gfxClassParent, gfxClassSelected, collapsed) {
     if (resultOptionsMap[indexType + '_divisor'] !== true) {
@@ -19,21 +19,21 @@ loadMainMenu = function (indexType, gfxClassParent, gfxClassSelected, collapsed)
 loadSingleMenu = function (indexType, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[indexType] ? "" : "style='display:none;'") + " id='" + indexType + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === indexType) + "'><h3>" + mapText(indexType) + "</h3><ul id='list" + indexType + "' data-role='listview' data-inset='true'></ul></div>");
     //Global
-    if (localStorage.getItem("webmatic" + indexType + "Map") === null || localStorage.getItem("webmatic" + indexType + "Map") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + indexType + "Map") === null || localStorage.getItem(isPreRelease + "webmatic" + indexType + "Map") === "undefined") {
         if (newVersion) {
             saveDataToFile = true;
         }
-        loadConfigData(false, '../webmatic_user/' + indexType + '.json', indexType, 'webmatic' + indexType + 'Map', false, false);
+        loadConfigData(false, '../' + userFolder + '/' + indexType + '.json', indexType, 'webmatic' + indexType + 'Map', false, false);
     } else {
         loadLocalStorageMap(indexType);
     }
     //Lokal
-    if (localStorage.getItem("webmatic" + indexType + "clientMap") === null || localStorage.getItem("webmatic" + indexType + "clientMap") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + indexType + "clientMap") === null || localStorage.getItem(isPreRelease + "webmatic" + indexType + "clientMap") === "undefined") {
         if (client !== "") {
-            loadConfigData(false, '../webmatic_user/' + indexType + client + '.json', indexType + 'Client', 'webmatic' + indexType + 'clientMap', false, true);
+            loadConfigData(false, '../' + userFolder + '/' + indexType + client + '.json', indexType + 'Client', 'webmatic' + indexType + 'clientMap', false, true);
         }
     } else {
-        setClientMap(indexType, JSON.parse(localStorage.getItem("webmatic" + indexType + "clientMap")));
+        setClientMap(indexType, JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + indexType + "clientMap")));
     }
     //Kombinieren
     createOneMap(indexType);
@@ -50,7 +50,7 @@ loadSingleMenu = function (indexType, gfxClassParent, gfxClassSelected, collapse
         var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key + "' " + (val['visible'] ? "" : "style='display: none;'") + ">";
         html += "<a href='#'><img id='menuImg" + key + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
         if ($.inArray(key, picturesList) !== -1 || picturesListError) {
-            html += " lazy" + indexType + "' data-original='../webmatic_user/img/ids/" + indexType + "/" + key + ".png?" + val['picdate'];
+            html += " lazy" + indexType + "' data-original='../" + userFolder + "/img/ids/" + indexType + "/" + key + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + indexType + ".png'><span id='menuText" + key + "' class='breakText'>" + val['name'] + "</span></a></li>";
         if (resultOptionsMap['default_sort_manually']) {
@@ -81,21 +81,21 @@ loadSingleMenu = function (indexType, gfxClassParent, gfxClassSelected, collapse
 loadSingleDivisorMenu = function (type, gfxClassParent, gfxClassSelected, collapsed) {
     $("#main_menu").append("<div " + (resultOptionsMap[type] ? "" : "style='display:none;'") + " id='" + type + "MainMenu' class='scrollToTop' data-role='collapsible' data-collapsed='" + (collapsed === type) + "'><h3>" + mapText(type) + "</h3><ul id='list" + type + "' data-role='listview' data-inset='true'></ul></div>");
     //Global
-    if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + type + "Map") === null || localStorage.getItem(isPreRelease + "webmatic" + type + "Map") === "undefined") {
         if (newVersion) {
             saveDataToFile = true;
         }
-        loadConfigData(false, '../webmatic_user/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
+        loadConfigData(false, '../' + userFolder + '/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
     } else {
         loadLocalStorageMap(type);
     }
     //Lokal
-    if (localStorage.getItem("webmatic" + type + "clientMap") === null || localStorage.getItem("webmatic" + type + "clientMap") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap") === null || localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap") === "undefined") {
         if (client !== "") {
-            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
+            loadConfigData(false, '../' + userFolder + '/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        setClientMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+        setClientMap(type, JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap")));
     }
     //Kombinieren
     createOneMap(type);
@@ -111,7 +111,7 @@ loadSingleDivisorMenu = function (type, gfxClassParent, gfxClassSelected, collap
         var html = "<li class='menuListSpecialItem " + gfxClassParent + " scrollToList' data-divisor='true' data-type='" + type + "' data-id='" + key + "' " + (resultOptionsMap[indexType] ? "" : "style='display: none;'") + ">";
         html += "<a href='#'><img id='menuImg" + indexType + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
         if ($.inArray(indexType, picturesList) !== -1 || picturesListError) {
-            html += " lazy" + type + "' data-original='../webmatic_user/img/ids/" + type + "/" + indexType + ".png?" + val['picdate'];
+            html += " lazy" + type + "' data-original='../" + userFolder + "/img/ids/" + type + "/" + indexType + ".png?" + val['picdate'];
         }
         html += "' src='img/menu/" + type + ".png'><span id='menuText" + indexType + "' class='breakText'>" + val['name'] + "</span></a></li>";
         if (resultOptionsMap['default_sort_manually']) {
@@ -154,21 +154,21 @@ loadSingleDivisorMenu = function (type, gfxClassParent, gfxClassSelected, collap
 loadDivisor = function (gfxClassParent, gfxClassSelected, collapsed, type) {
 
     //Global
-    if (localStorage.getItem("webmatic" + type + "Map") === null || localStorage.getItem("webmatic" + type + "Map") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + type + "Map") === null || localStorage.getItem(isPreRelease + "webmatic" + type + "Map") === "undefined") {
         if (newVersion) {
             saveDataToFile = true;
         }
-        loadConfigData(false, '../webmatic_user/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
+        loadConfigData(false, '../' + userFolder + '/' + type + '.json', type, 'webmatic' + type + 'Map', false, false);
     } else {
         loadLocalStorageMap(type);
     }
     //Lokal
-    if (localStorage.getItem("webmatic" + type + "clientMap") === null || localStorage.getItem("webmatic" + type + "clientMap") === "undefined") {
+    if (localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap") === null || localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap") === "undefined") {
         if (client !== "") {
-            loadConfigData(false, '../webmatic_user/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
+            loadConfigData(false, '../' + userFolder + '/' + type + client + '.json', type + 'Client', 'webmatic' + type + 'clientMap', false, true);
         }
     } else {
-        setClientMap(type, JSON.parse(localStorage.getItem("webmatic" + type + "clientMap")));
+        setClientMap(type, JSON.parse(localStorage.getItem(isPreRelease + "webmatic" + type + "clientMap")));
     }
     //Kombinieren
     createOneMap(type);
@@ -197,7 +197,7 @@ loadDivisor = function (gfxClassParent, gfxClassSelected, collapsed, type) {
             var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key2 + "' " + (val2['visible'] ? "" : "style='display: none;'") + ">";
             html += "<a href='#'><img id='menuImg" + key2 + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
             if ($.inArray(key2, picturesList) !== -1 || picturesListError) {
-                html += " lazy" + type + "Div' data-original='../webmatic_user/img/ids/" + type + "/" + key2 + ".png?" + val2['picdate'];
+                html += " lazy" + type + "Div' data-original='../" + userFolder + "/img/ids/" + type + "/" + key2 + ".png?" + val2['picdate'];
             }
             html += "' src='img/menu/" + type + ".png'><span id='menuText" + key2 + "' class='breakText'>" + val2['name'] + "</span></a></li>";
 

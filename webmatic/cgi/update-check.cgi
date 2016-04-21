@@ -1,7 +1,7 @@
 #!/bin/tclsh
 
-set checkURL "https://raw.githubusercontent.com/jens-maus/webmatic/master/VERSION"
-set downloadURL "https://github.com/jens-maus/webmatic/releases"
+set checkURL "https://raw.githubusercontent.com/ldittmar81/webmatic/master/VERSION"
+set downloadURL "https://github.com/ldittmar81/webmatic/releases"
 
 
 catch {
