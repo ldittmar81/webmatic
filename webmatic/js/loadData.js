@@ -1,4 +1,4 @@
-/* global isTempClient, client, storageVersion, favoritesMap, roomsMap, functionsMap, isPreRelease, userFolder */
+/* global isPreRelease, favoritesMap, roomsMap, functionsMap, userFolder, storageVersion, isTempClient, client, resultFavoritesMap, resultRoomsMap, resultFunctionsMap, orgBgPic */
 
 function loadConfigData(async, url, type, map, create, actual, callback) {
     $.ajax({
@@ -113,6 +113,8 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                 obj['visible'] = true;
                 obj['position'] = i;
                 obj[type + '_divisor'] = "unsorted";
+                obj['bgPic'] = false;
+                obj['bgPicSize'] = orgBgPic;
 
                 returnJson[key] = obj;
             });
@@ -264,23 +266,13 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
         } else if (type === "devices") {
 
             $.each(newJsonObj, function (key, val) {
-                if (key === "date") {
+                if (key === "date" || key === "id") {
                     returnJson[key] = val;
                     return;
-                } else if (key === "id") {
-                    returnJson[key] = val;
-                    deviceId = val;
-                    if (val in favoritesMap) {
-                        returnJson["name"] = favoritesMap[val]["name"];
-                    } else if (val in roomsMap) {
-                        returnJson["name"] = roomsMap[val]["name"];
-                    } else if (val in functionsMap) {
-                        returnJson["name"] = functionsMap[val]["name"];
-                    }
                 } else if (key === "entries") {
                     var newEntries = [];
                     var entriesCount = 0;
-                    $.each(newJsonObj[key], function (i, device) {
+                    $.each(val, function (i, device) {
                         entriesCount++;
                         var newDevice = {};
                         $.each(device, function (key2, val2) {
@@ -295,8 +287,21 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                                             val3 = decodeURI(val3);
                                         } catch (e) {
                                         }
+                                        if(key3 === 'writeable' || key3 === 'readable'){
+                                            val3 = val3 === "true";
+                                        }
                                         newChannelDevice[key3] = val3;
                                     });
+                                    if(newChannelDevice['writeable']){
+                                        newChannelDevice["operate"] = true;
+                                    }
+                                    newChannelDevice["visible"] = true;
+                                    var deviceData = {};
+                                    deviceData['positions'] = {"top": channelsCount * 3, "left": channelsCount * 3};
+                                    deviceData['size'] = {"width": 40, "height": 40};
+                                    deviceData['css'] = {};
+                                    deviceData['info'] = {};
+                                    newChannelDevice["deviceData"] = deviceData;
                                     newChannels.push(newChannelDevice);
                                 });
                                 newDevice[key2] = newChannels;
@@ -308,7 +313,14 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                                 }
                                 newDevice[key2] = val2;
                             }
-                        });
+                        });                        
+                        newDevice["position"] = entriesCount;
+                        var deviceData = {};
+                        deviceData['positions'] = {"top": entriesCount * 10, "left": entriesCount * 10};
+                        deviceData['size'] = {"width": 40, "height": 40};
+                        deviceData['css'] = {};
+                        deviceData['info'] = {};
+                        newDevice["deviceData"] = deviceData;
                         newEntries.push(newDevice);
                     });
                     returnJson[key] = newEntries;
@@ -323,7 +335,6 @@ function saveConfigFile(type, newJsonObj, create, map, actual) {
                     returnJson[key] = val;
                 }
             });
-
 
         } else {
             returnJson = newJsonObj;
@@ -392,7 +403,21 @@ function refreshJSONObj(type, newJsonObj, create) {
                         changeCCUAttr = true;
                         saveDataToFile = true;
                     }
+
                     val['picdate'] = savedVal['picdate'];
+
+                    if ('bgPic' in savedVal) {
+                        val['bgPic'] = savedVal['bgPic'];
+                    } else {
+                        val['bgPic'] = false;
+                        saveDataToFile = true;
+                    }
+                    if ('bgPicSize' in savedVal) {
+                        val['bgPicSize'] = savedVal['bgPicSize'];
+                    } else {
+                        val['bgPicSize'] = orgBgPic;
+                        saveDataToFile = true;
+                    }
                 } else {
                     size++;
                     val['position'] = size;
@@ -553,7 +578,7 @@ function refreshJSONObj(type, newJsonObj, create) {
     } else if (type === "devices") {
         if (!create) {
             var returnJson = {};
-            $.each(newJsonObj, function (key, val) {                
+            $.each(newJsonObj, function (key, val) {
                 returnJson[key] = val;
             });
             newJsonObj = returnJson;
@@ -577,14 +602,10 @@ function refreshJSONObj(type, newJsonObj, create) {
         }
         if (!("clientsList" in newJsonObj)) {
             newJsonObj['clientsList'] = !isTempClient ? clientsList : new Object();
+            clientsList = newJsonObj['clientsList'];
         }
         if (!("default_sort_manually" in newJsonObj)) {
             newJsonObj['default_sort_manually'] = true;
-        }
-        clientsList = newJsonObj['clientsList'];
-        if (client !== "" && !isTempClient && !(client in clientsList)) {
-            clientsList[client] = client;
-            newJsonObj['clientsList'] = clientsList;
         }
         if (!("two_sites" in newJsonObj)) {
             newJsonObj['two_sites'] = false;
@@ -661,29 +682,7 @@ function createConfigFile(type, map) {
         var text = '{}';
         type = type.slice(0, -6);
         if (client !== "") {
-            switch (type) {
-                case "config":
-                    optionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break;
-                case "variables":
-                    variablesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break;
-                case "programs":
-                    programsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "favorites":
-                    favoritesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "rooms":
-                    roomsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "functions":
-                    functionsClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-                case "devices":
-                    devicesClientMap = saveConfigFile(type + client, JSON.parse(text), true, map, true);
-                    break
-            }
+            setClientMap(type, saveConfigFile(type + client, JSON.parse(text), true, map, true));
         }
     } else {
         loadConfigData(false, 'cgi/' + type + '.cgi', type, map, true, true);

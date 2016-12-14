@@ -5,7 +5,7 @@ var webmaticVersion = "0";
 var isPreRelease = 1;
 var lastStableVersion = "0";
 var newWebmaticVersion = webmaticVersion;
-var storageVersion = 30;
+var storageVersion = 36;
 var wmLang="de";//genau so lassen (ohne Leerzeichen)
 
 var userFolder = "webmatic_user";
@@ -31,9 +31,11 @@ var client = "";
 var isTempClient = false;
 var clientsList = {};
 var reloadClient = false;
+var manClient = false;
 var loadColorPicker = false;
 var picturesList = [];
 var picturesListError = false;
+var orgBgPic = {"width": 778, "height": 575};
 
 var changeGlobal = false;
 var changeClient = false;
@@ -58,6 +60,7 @@ var isDialog = false;
 //Two Pages
 var twoPage;
 var dataListHeader = "dataListHeader";
+var dataBg = "dataBg";
 var dataList = "dataList";
 var prim = "prim2";
 var page2 = false;
@@ -155,10 +158,105 @@ function createVerFile() {
     });
 }
 
+function activateSettingChangedButton(type) {
+    $('.reload-button-text').text(mapText("RELOAD_CCU_CHANGES") + ": " + mapText(type));
+    $('[name="reloadCCUChanges"]').addClass("middle-button-is-visible").removeClass('ui-state-disabled');
+}
+
+function activateSettingSaveButton(reload, isClient) {
+    mustBeSaved = true;
+    if (!mustReload && reload) {
+        mustReload = true;
+        $(".save-button-text").text(mapText("SAVE_AND_RELOAD"));
+        $(".save-button-text").removeClass("ui-icon-check").addClass("ui-icon-refresh");
+    }
+
+    if (isClient) {
+        changeClient = true;
+    } else {
+        changeGlobal = true;
+    }
+
+    $('[name="saveAllChanges"]').addClass("middle-button-is-visible").removeClass('ui-state-disabled');
+}
+
+function saveAllDatasToServer() {
+
+    if (changeGlobal) {
+        localStorage.setItem(isPreRelease + "webmaticfavoritesMap", JSON.stringify(favoritesMap));
+        localStorage.setItem(isPreRelease + "webmaticroomsMap", JSON.stringify(roomsMap));
+        localStorage.setItem(isPreRelease + "webmaticfunctionsMap", JSON.stringify(functionsMap));
+        localStorage.setItem(isPreRelease + "webmaticprogramsMap", JSON.stringify(programsMap));
+        localStorage.setItem(isPreRelease + "webmaticvariablesMap", JSON.stringify(variablesMap));
+
+        $.post('cgi/saveconfig.cgi', {name: "favorites", text: JSON.stringify(favoritesMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "rooms", text: JSON.stringify(roomsMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "functions", text: JSON.stringify(functionsMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "programs", text: JSON.stringify(programsMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "variables", text: JSON.stringify(variablesMap), folder: userFolder});
+    }
+
+    if (changeClient) {
+        localStorage.setItem(isPreRelease + "webmaticfavoritesclientMap", JSON.stringify(favoritesClientMap));
+        localStorage.setItem(isPreRelease + "webmaticroomsclientMap", JSON.stringify(roomsClientMap));
+        localStorage.setItem(isPreRelease + "webmaticfunctionsclientMap", JSON.stringify(functionsClientMap));
+        localStorage.setItem(isPreRelease + "webmaticprogramsclientMap", JSON.stringify(programsClientMap));
+        localStorage.setItem(isPreRelease + "webmaticvariablesclientMap", JSON.stringify(variablesClientMap));
+
+        $.post('cgi/saveconfig.cgi', {name: "favorites" + client, text: JSON.stringify(favoritesClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "rooms" + client, text: JSON.stringify(roomsClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "functions" + client, text: JSON.stringify(functionsClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "programs" + client, text: JSON.stringify(programsClientMap), folder: userFolder});
+        $.post('cgi/saveconfig.cgi', {name: "variables" + client, text: JSON.stringify(variablesClientMap), folder: userFolder});
+    }
+
+    Object.keys(clientsList).forEach(function (key) {
+        if (key !== client) {
+            $.post('cgi/saveconfig.cgi', {name: "reload" + key, text: "true", folder: userFolder});
+        }
+    });
+
+    if (mustReload) {
+        location.reload(true);
+    }
+    mustBeSaved = false;
+    changeClient = false;
+    changeGlobal = false;
+    $('[name="saveAllChanges"]').removeClass('middle-button-is-visible').addClass('ui-state-disabled');
+}
+
 // ----------------------- HTML Creation Helper ------------------------------
 
+function createExecutationField(key, map) {
+    var valueType = map["valueType"];
+    var valueUnit = map["valueUnit"];
+
+    if (valueType === "2") {
+        return addSetBoolButtonList(0, key, "false", map["valueName0"], map["valueName1"], valueUnit, "", false, true, true);
+    } else if (valueType === "4") {
+        return addSetNumber(0, key, parseFloat(map["valueMin"]), valueUnit, parseFloat(map["valueMin"]), parseFloat(map["valueMax"]), map["step"] ? map["step"] : 1, map["faktor"] ? map["faktor"] : 1, "", false, true, true);
+    } else if (valueType === "16") {
+        return addSetValueList(0, key, "0", map['valueList'], valueUnit, "", false, true, map['listType'], true);
+    }
+}
+
+function getHelpPage(helpsite, helpsection) {
+    var html = "<div class='top-right'>";
+    html += "<a href='http://webmatic.lmdsoft.de/tiki-index.php?page=" + helpsite + (helpsection ? "#" + helpsection : "") + "' target='_blank' class='ui-btn ui-btn-inline ui-icon-info ui-btn-icon-notext ui-corner-all' />";
+    html += "</div>";
+    return html;
+}
+
+function clearScreen() {
+    $("#" + dataList).empty();
+    $("#" + dataBg).empty();
+    $("#" + dataBg).height(0);
+    $("#" + dataBg).css('background-image', '');
+    $("#" + dataListHeader).empty();
+}
+
 // Variablen setzen
-function addVariableField(parentID, valID, map, vorDate, readonly, operate, float) {
+function addVariableField(parentID, valID, map, vorDate, readonly, operate, float, isBgPic) {
     var strValue = unescape(map['value']);
     var valType = map['valueType'];
     var valUnit = map['valueUnit'];
@@ -234,7 +332,7 @@ function addSetControlGroup(paretnId, id, txt0, txt1, vorDate, valFloat, operate
 }
 
 // Programme ausführen
-function addStartProgramButton(parentId, id, text, vorDate, operate) {
+function addStartProgramButton(parentId, id, text, vorDate, operate, isBgPic) {
     var html = "<p class='ui-li-desc'><a href='#' " + (!operate ? "class='ui-link ui-btn ui-icon-gear ui-btn-icon-left ui-btn-inline ui-shadow ui-corner-all ui-state-disabled'" : "data-role='button' data-inline='true' data-icon='gear'") + " id='startProgramButton_" + id + "' data-parent-id='" + parentId + "' data-id='" + id + "'>" + text + "</a></div>";
     html += "<i class='last-used-time ui-li-desc' " + (resultOptionsMap['show_lastUsedTime'] ? "" : "style='display: none;'") + ">" + vorDate + "</i> <span id='info_" + id + "' class='valueOK valueOK-" + theme + "'></span></p>";
     return html;
@@ -697,114 +795,6 @@ function addDivisor(size, type) {
     return result;
 }
 
-function createClientMenuOptions(type) {
-    var html = "";
-    if (!optionsMap[type + "_divisor"]) {
-        //Einzel
-        html += "<div class='ui-block-f text-right'>";
-        html += "<span>" + mapText(type) + " " + mapText("SHOW") + "</span>";
-        html += "</div>";
-        html += "<div class='ui-block-g'>";
-        html += "<div data-role='controlgroup' data-type='horizontal'>";
-        var selected1 = "";
-        var selected2 = "";
-        var selected3 = "";
-        if (!(type in optionsClientMap)) {
-            selected1 = "class='ui-btn-active'";
-        } else if (optionsClientMap[type]) {
-            selected2 = "class='ui-btn-active'";
-        } else {
-            selected3 = "class='ui-btn-active'";
-        }
-        html += "<a href='#' name='saveClientOption' data-key='" + type + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-        html += "<a href='#' name='saveClientOption' data-key='" + type + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-        html += "<a href='#' name='saveClientOption' data-key='" + type + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-        html += "</div>";
-        html += "</div>";
-    } else {
-        //Teilung
-        var map = getMap(type);
-        html += "<div class='ui-block-divisor-top'>";
-        html += mapText("DIVIDE") + " " + mapText(type);
-        html += "</div>";
-        $.each(map['divisors'], function (key, val) {
-            html += "<div class='ui-block-f text-right'>";
-            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
-            html += "</div>";
-            html += "<div class='ui-block-g'>";
-            html += "<div data-role='controlgroup' data-type='horizontal'>";
-            var selected1 = "";
-            var selected2 = "";
-            var selected3 = "";
-            if (!((type + key) in optionsClientMap)) {
-                selected1 = "class='ui-btn-active'";
-            } else if (optionsClientMap[type + key]) {
-                selected2 = "class='ui-btn-active'";
-            } else {
-                selected3 = "class='ui-btn-active'";
-            }
-            html += "<a href='#' name='saveClientOption' data-key='" + type + key + "' data-value='none' data-role='button' data-inline='true' " + selected1 + ">" + mapText("NOT_SELECTED") + "</a>";
-            html += "<a href='#' name='saveClientOption' data-key='" + type + key + "' data-value='true' data-role='button' data-inline='true' " + selected2 + ">" + mapText("YES") + "</a>";
-            html += "<a href='#' name='saveClientOption' data-key='" + type + key + "' data-value='false' data-role='button' data-inline='true' " + selected3 + ">" + mapText("NO") + "</a>";
-            html += "</div>";
-            html += "</div>";
-        });
-        html += "<div class='ui-block-divisor-bottom'>";
-        html += "</div>";
-    }
-    return html;
-}
-
-function createGlobalMenuOptions(type) {
-    var html = "";
-    if (!optionsMap[type + "_divisor"]) {
-        //Einzel
-        html += "<div class='ui-block-f text-right'>";
-        html += "<span>" + mapText(type) + " " + mapText("SHOW") + "</span>";
-        html += "</div>";
-        html += "<div class='ui-block-g'>";
-        html += "<div data-role='controlgroup' data-type='horizontal'>";
-        var selected1 = "";
-        var selected2 = "";
-        if (optionsMap[type]) {
-            selected1 = "class='ui-btn-active'";
-        } else {
-            selected2 = "class='ui-btn-active'";
-        }
-        html += "<a href='#' name='saveGlobalOption' data-key='" + type + "' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-        html += "<a href='#' name='saveGlobalOption' data-key='" + type + "' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-        html += "</div>";
-        html += "</div>";
-    } else {
-        //Teilung
-        var map = getMap(type);
-        html += "<div class='ui-block-divisor-top'>";
-        html += mapText("DIVIDE") + " " + mapText(type);
-        html += "</div>";
-        $.each(map['divisors'], function (key, val) {
-            html += "<div class='ui-block-f text-right'>";
-            html += "<span>" + val['name'] + " " + mapText("SHOW") + "</span>";
-            html += "</div>";
-            html += "<div class='ui-block-g'>";
-            html += "<div data-role='controlgroup' data-type='horizontal'>";
-            var selected1 = "";
-            var selected2 = "";
-            if (optionsMap[type + key]) {
-                selected1 = "class='ui-btn-active'";
-            } else {
-                selected2 = "class='ui-btn-active'";
-            }
-            html += "<a href='#' name='saveGlobalOption' data-key='" + type + key + "' data-value='true' data-role='button' data-inline='true' " + selected1 + ">" + mapText("YES") + "</a>";
-            html += "<a href='#' name='saveGlobalOption' data-key='" + type + key + "' data-value='false' data-role='button' data-inline='true' " + selected2 + ">" + mapText("NO") + "</a>";
-            html += "</div>";
-            html += "</div>";
-        });
-        html += "<div class='ui-block-divisor-bottom'>";
-        html += "</div>";
-    }
-    return html;
-}
-
 function getSelectColapsedOptions(type, colapsed) {
     var html = "";
     if (!optionsMap[type + "_divisor"]) {
@@ -921,12 +911,14 @@ function changeTwoPage(value) {
         $('#second').removeClass("content-secondary").addClass("content-secondary-two-pages");
         dataListHeader = "dataListHeader2";
         dataList = "dataList2";
+        dataBg = "dataBg2";
         prim = "prim2";
     } else {
         $('#prim').show();
         $('#second').removeClass("content-secondary-two-pages").addClass("content-secondary");
         dataListHeader = "dataListHeader";
         dataList = "dataList";
+        dataBg = "dataBg";
         prim = "prim";
     }
     twoPage = value;
@@ -1126,21 +1118,58 @@ function recalculatePositions(map, type, isDivisor) {
     return map;
 }
 
-function setDraggable(objID, type) {
+function setDraggable() {
     $('.draggable').draggable({
-        snap: "container" + type + objID,
-        containment: "container" + type + objID,
+        snap: "#" + dataBg,
+        containment: "#" + dataBg,
         scroll: false,
         opacity: 0.5,
         stack: ".draggable",
         stop: function (event, ui) {
-            //hier muss noch weiter programmiert werden
+            var position = ui.position;
+        }
+    }).resizable({
+        containment: "#" + dataBg,
+        stop: function (event, ui) {
+            var size = ui.size;
+            var maxWidth = size['width'];
+            var maxHeight = size['height'];
+            var width = $('#ds').width();
+            var height = $('#ds').height();
+
+            if (maxHeight > maxWidth) {
+                var ratio = maxWidth / width;
+                $('#ds').css("width", maxWidth);
+                $('#ds').css("height", height * ratio);
+            }
+
+            if (maxWidth > maxHeight) {
+                var ratio = maxHeight / height;
+                $('#ds').css("height", maxHeight);
+                $('#ds').css("width", width * ratio);
+            }
         }
     });
 }
 
+function addBgImage(id, type, picdate, bgPicSize) {
+    var imageUrl = "";
+    if ($.inArray("imgBg" + id + client, picturesList) !== -1) {
+        imageUrl = "../" + userFolder + "/img/ids/" + type + "/imgBg" + id + client + ".png?" + picdate;
+    } else if ($.inArray("imgBg" + id, picturesList) !== -1) {
+        imageUrl = "../" + userFolder + "/img/ids/" + type + "/imgBg" + id + ".png?" + picdate;
+    } else {
+        imageUrl = "img/misc/imgBg.png";
+    }
+    $('#' + dataBg).height(bgPicSize['height']);
+    $('#' + dataBg).width("100%");
+    $('#' + dataBg).css('background-image', 'url(' + imageUrl + ')');
+    $('#' + dataBg).css('background-repeat', 'no-repeat');
+}
+
 function getPicKey(key, type, map, options) {
     var picKey = key;
+
     if (type === "variables") {
 
         var value = unescape(map['value']);

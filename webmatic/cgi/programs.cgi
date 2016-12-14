@@ -26,6 +26,7 @@ cgi_eval {
             Write(',"date":"' # program.ProgramLastExecuteTime().Format("%d.%m.%Y %H:%M:%S") # '"');
             Write(',"visible":' # program.Visible() # '');
             Write(',"active":' # program.Active() # '');
+            Write(',"internal":' # program.Internal() # '');
             Write(',"operate":');
             if( program.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
                 Write('true');

@@ -235,7 +235,7 @@ function mapInput(deviceHssType, channel, vorDate, deviceID, operate) {
             case "ButtonNoRefresh":
                 return addSetButton(deviceID, channelId, mapText(deviceHssType + "__" + hssType), true, vorDate, false, false, false, operate);
         }
-    } else if (channel['writeable'] === "true" && (!txt || txt !== "-")) {
+    } else if (channel['writeable'] && (!txt || txt !== "-")) {
 
         var valType = channel['valueType'];
         var valRead = channel['readable'] === "true";

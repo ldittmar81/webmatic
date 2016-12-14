@@ -28,19 +28,18 @@
         <link rel="stylesheet" href="libs/jquery-ui/jquery-ui.structure.min.css" />
         <link rel="stylesheet" href="libs/jquery/jquery.mobile.structure-1.4.5.min.css" />
         <link rel="stylesheet" href="libs/jqplot/jquery.jqplot.min.css" />
-        <link rel="stylesheet" href="libs/DateBox/css/jtsage-datebox.min.css" />
-        <link rel="stylesheet" href="libs/roundSlider/roundslider.min.css" />
-        <link rel="stylesheet" href="../wmalpha_user/themes/wm-user-theme.css" />
+        <link rel="stylesheet" href="libs/DateBox/css/jtsage-datebox.min.css" />        
         <link rel="stylesheet" href="themes/webmatic-theme.min.css" />
+        <link rel="stylesheet" href="../wmalpha_user/themes/wm-user-theme.css" />
         <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
         <link rel="stylesheet" href="themes/webmatic.css" />
 
         <script type="text/javascript" src="libs/jquery/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="libs/jquery-ui/jquery-ui-1.11.4.min.js"></script>
         <script type="text/javascript" src="libs/jquery/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="libs/jquery-ui/jquery.ui.touch-punch.min.js"></script>
         <script type="text/javascript" src="libs/jquery_lazyload/jquery.lazyload.min.js"></script>
         <script type="text/javascript" src="libs/Font.js/Font.min.js"></script>
-        <script type="text/javascript" src="libs/roundSlider/roundslider.min.js"></script>
         <script type="text/javascript" src="libs/DateBox/js/jtsage-datebox.min.js"></script>
         <script type="text/javascript" src="libs/DateBox/js/jtsage-datebox.i18n.de.utf8.min.js"></script>
 
@@ -50,7 +49,10 @@
         <script type="text/javascript" src="js/loadData.js"></script>
         <script type="text/javascript" src="js/webmatic.js"></script>
         <script type="text/javascript" src="js/options.js"></script>
-        
+        <script type="text/javascript" src="js/optionsClient.js"></script>
+        <script type="text/javascript" src="js/optionsOthers.js"></script>
+        <script type="text/javascript" src="js/optionsRFF.js"></script>
+
         <script type="text/javascript" src="js/init.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
@@ -62,10 +64,10 @@
         <script type="text/javascript" src="libs/jqplot/plugins/jqplot.cursor.min.js"></script>
         <script type="text/javascript" src="libs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
         <script type="text/javascript" src="libs/jqplot/plugins/jqplot.meterGaugeRenderer.min.js"></script>
-
+   
     </head> 
     <body>
-
+      
         <div id="page1" data-role="page" data-theme="wma">
 
             <div data-role="popup" id="popupService" data-theme="wma" data-overlay-theme="wma">
@@ -105,13 +107,14 @@
 
                 <div id="prim" class="content-primary">
                     <ul id="dataListHeader" data-role="listview" data-inset="true"></ul>
+                    <div id="dataBg"></div>
                     <ul id="dataList" data-role="listview" class="column-1" data-inset="true" data-filter="true"></ul>
                 </div>
 
             </div>
 
             <div id="testcase"></div>
-            
+
             <a href='#0' class="middle-button valueService-wma save-button-text" data-role='button' data-inline='true' data-icon='check' name='saveAllChanges'>SAVE</a>
             <a href='#0' class="middle-button valueService-wma reload-button-text" data-role='button' data-inline='true' data-icon='refresh' name='reloadCCUChanges'>RELOAD_CCU_CHANGES</a>
             <a href="#0" class="cd-top">Top</a>
@@ -140,11 +143,12 @@
 
                 <div id="prim2" class="content-secondary-two-pages">
                     <ul id="dataListHeader2" data-role="listview" data-inset="true"></ul>
+                    <div id="dataBg2"></div>
                     <ul id="dataList2" data-role="listview" class="column-1" data-inset="true" data-filter="true"></ul>
                 </div>
 
             </div>
-           
+
             <a href="#prim1" class="backText" data-rel="back">Back</a>
             <a href='#0' class="middle-button valueService-wma save-button-text" data-role='button' data-inline='true' data-icon='check' name='saveAllChanges'>SAVE</a>
             <a href='#0' class="middle-button valueService-wma reload-button-text" data-role='button' data-inline='true' data-icon='refresh' name='reloadCCUChanges'>RELOAD_CCU_CHANGES</a>

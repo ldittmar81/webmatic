@@ -1,4 +1,5 @@
-/* global theme, font, isGetSite, resultOptionsMap */
+/* global theme, font, isGetSite, readModus, lastClickType, lastClickID */
+
 isGetSite = true;
 
 var getUrlParameter = function getUrlParameter(sParam) {

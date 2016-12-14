@@ -750,5 +750,17 @@ var textMap = {
     ADD_DIVIDER: "ajouter une partition",
     UNSORTED: "non trié",
     SAVE_AND_RELOAD: "sauvegarder et recharger",
-    RELOAD_CCU_CHANGES: "changement trouvé"
+    RELOAD_CCU_CHANGES: "changement trouvé",
+    CLIENT_CODE: "Client n'a pas été reconnu. Entrez le code client: (Tâches inconnu registre des clients réputés)",
+    CLIENT_CODE_COMFIRM_1: "Le code client est",
+    CLIENT_CODE_COMFIRM_2: "Cliquez sur OK lorsque l'information est correcte.",
+    CLIENT_RECOGNITION: "reconnaissance du client",
+    CLIENT_AUTO: "Automatiquement via IP",
+    CLIENT_MANU: "Manuel par la demande",
+    BG_PIC: "Hintergrundgrafik nutzen",
+    ROOMS_PIC: "Grafik für Raum",
+    FAVORITES_PIC: "Grafik für Favorit",
+    FUNCTIONS_PIC: "Grafik für Gewerk",
+    PROGRAMS_PIC: "Grafik für Programm",
+    VARIABLES_PIC: "Grafik für Variable"
 };

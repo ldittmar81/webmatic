@@ -303,6 +303,12 @@ span.RGBW-Color > div > div.ui-slider > div.ui-slider-track:after {
     right: -15px;
 }
 
+.top-right{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
 .ui-block-a,
 .ui-block-b,
 .ui-block-c,
@@ -535,29 +541,19 @@ li.ui-block-divisor-bottom {
     opacity: 1;
 }
 
-a.special { 
+a.draggable { 
     cursor: move;
-    width: 40px; 
-    height: 40px;  
-    background-size: 39px 39px;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: transparent;
+    height: 40px; 
+    width: 40px;
+    float: left;
+    border-style: dotted;
+    border-width: 2px;
 }
-a.rad { 
-    border-radius: 20px; 
+a.draggable img{ 
+    width: 100%;    
 }
-a.labeled { 
-    width: 180px;
-    line-height: 40px;
-    vertical-align: middle;
-    padding-left: 42px;
-}
-
-.draggRoom {
-    width:100%;
-    height:100%;
-    background-repeat: no-repeat;    
+a.draggable span{ 
+    float: right;
 }
 
 .input.ui-slider-input {

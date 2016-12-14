@@ -25,6 +25,7 @@ cgi_eval {
 
     cgi_import "text"
     cgi_import "name"
+    cgi_import "folder"
 
     file mkdir "/usr/local/etc/config/addons/www/$folder"
     set filename "/usr/local/etc/config/addons/www/$folder/$name.json"

@@ -118,6 +118,12 @@ cgi_eval {
                     Write(", -+#+-info-+#+-:-+#+-");WriteURL(description);Write("-+#+-");
                     Write(", -+#+-value-+#+-:-+#+-" # objObject.Value() # "-+#+-");
                     Write(", -+#+-visible-+#+-:-+#+-" # objObject.Visible() # "-+#+-");
+                    Write(", -+#+-operate-+#+-:");
+                    if( objObject.UserAccessRights(iulOtherThanAdmin) == iarFullAccess ) {
+                        Write("-+#+-true-+#+-");
+                    } else {
+                        Write("-+#+-false-+#+-");
+                    }
                    
                     if (objObject.ValueType() == 16){
                         Write(",-+#+-valueList-+#+-:-+#+-" # objObject.ValueList() # "-+#+-");

@@ -18,7 +18,7 @@ cgi_eval {
 
         obj = dom.GetObject(ID_SYSTEM_VARIABLES);
         isFirst = true;
-        foreach (id, obj.EnumUsedIDs()){
+        foreach (id, obj.EnumIDs()){
             var sysVar = dom.GetObject(id);
             string description = sysVar.DPInfo();
             Write(',-+#+-' # id # '-+#+-:{');
@@ -49,6 +49,8 @@ cgi_eval {
             Write(",-+#+-valueType-+#+-:-+#+-" # sysVar.ValueType() # "-+#+-");
             Write(",-+#+-valueUnit-+#+-:-+#+-" # sysVar.ValueUnit() # "-+#+-");
             Write(",-+#+-date-+#+-:-+#+-" # sysVar.Timestamp().Format("%d.%m.%Y %H:%M:%S") # "-+#+-");
+            Write(",-+#+-channelID-+#+-:-+#+-" # sysVar.Channel() # "-+#+-");
+            Write(",-+#+-internal-+#+-:-+#+-" # sysVar.Internal() # "-+#+-");
             Write(",-+#+-visible-+#+-:" # sysVar.Visible());
             Write("}");
         }

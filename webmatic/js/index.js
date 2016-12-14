@@ -1,4 +1,4 @@
-/* global theme, font, newVersion, saveDataToFile, debugModus, client, resultOptionsMap, resultRoomsMap, resultFunctionsMap, resultFavoritesMap, isTempClient, picturesList, picturesListError, prim, userFolder, isPreRelease */
+/* global resultOptionsMap, isPreRelease, newVersion, userFolder, client, picturesListError, picturesList, theme, isTempClient, debugModus, font, prim */
 
 loadMainMenu = function (indexType, gfxClassParent, gfxClassSelected, collapsed) {
     if (resultOptionsMap[indexType + '_divisor'] !== true) {
@@ -47,7 +47,7 @@ loadSingleMenu = function (indexType, gfxClassParent, gfxClassSelected, collapse
         if (key === "date" || key === "size" || key === "divisors") {
             return;
         }
-        var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key + "' " + (val['visible'] ? "" : "style='display: none;'") + ">";
+        var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' data-type='" + indexType +"' id='" + key + "' " + (val['visible'] ? "" : "style='display: none;'") + ">";
         html += "<a href='#'><img id='menuImg" + key + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
         if ($.inArray(key, picturesList) !== -1 || picturesListError) {
             html += " lazy" + indexType + "' data-original='../" + userFolder + "/img/ids/" + indexType + "/" + key + ".png?" + val['picdate'];
@@ -194,7 +194,7 @@ loadDivisor = function (gfxClassParent, gfxClassSelected, collapsed, type) {
             if (key2 === "date" || key2 === "size" || key2 === "divisors" || val2[type + '_divisor'] !== key) {
                 return;
             }
-            var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' id='" + key2 + "' " + (val2['visible'] ? "" : "style='display: none;'") + ">";
+            var html = "<li class='menuListItem " + gfxClassParent + " scrollToList' data-type='" + indexType +"' id='" + key2 + "' " + (val2['visible'] ? "" : "style='display: none;'") + ">";
             html += "<a href='#'><img id='menuImg" + key2 + "' class='menu " + gfxClassSelected + " ui-img-" + theme;
             if ($.inArray(key2, picturesList) !== -1 || picturesListError) {
                 html += " lazy" + type + "Div' data-original='../" + userFolder + "/img/ids/" + type + "/" + key2 + ".png?" + val2['picdate'];

@@ -1,4 +1,4 @@
-/* global storageVersion, resultOptionsMap, prevItem, lastClickType, lastClickID, webmaticVersion, loadedFont, debugModus, programsMap, functionsMap, roomsMap, favoritesMap, readModus, excludeFromRefresh, Base64, dateNow, resultProgramsMap, isPreRelease, lastStableVersion, errorsDebugger, clientsList, wmLang, isGetSite, page2, tmpColumns, resultVariablesMap, dataList, theme, dataListHeader, newVersion, devicesMap, picturesList, mustBeSaved, divisorClick, isDialog, client, twoPage, actColumn, resultDevicesMap, userFolder */
+/* global lastClickType, lastClickID, isDialog, resultOptionsMap, prevItem, excludeFromRefresh, dataList, theme, webmaticVersion, dateNow, page2, picturesList, userFolder, actColumn, readModus, dataListHeader, isPreRelease, newVersion, client, resultDevicesMap, isGetSite, resultVariablesMap, divisorClick, resultProgramsMap, debugModus, errorsDebugger, mustBeSaved, twoPage, dataBg */
 
 // WebMatic 2.x
 // by ldittmar
@@ -483,7 +483,7 @@ function addDiagram(options) {
                     highVal = Math.ceil(highVal);
                 }
             }
-            
+
             $.jqplot(options['diagramID'], [diagArr[0], diagArr[1], diagArr[2], diagArr[3], diagArr[4]], {
                 axes: {
                     xaxis: {
@@ -988,6 +988,7 @@ function processDevices(device, systemDate, options, operate) {
         }
 
         deviceHTML += "<p class='description' " + (resultOptionsMap['show_description'] ? "" : "style='display: none;'") + ">" + valInfo + "</p>";
+        var float = false;
         if ($.inArray(picKey, picturesList) !== -1) {
             deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
             deviceHTML += "<img id='img" + picKey + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../" + userFolder + "/img/ids/variables/" + picKey + ".png?" + device['picdate'] + "' src='img/menu/variables.png'/>";
@@ -1011,7 +1012,7 @@ function processDevices(device, systemDate, options, operate) {
         } else if (options['varOptionsFirst'] === "nv") {
             deviceHTML = "";  // Leeren.
         } else {
-            deviceHTML += addVariableField('', valID, device, vorDate, isReadOnly(valInfo), operate);
+            deviceHTML += addVariableField('', valID, device, vorDate, isReadOnly(valInfo), operate, float);
         }
     } else if (device['type'] === "PROGRAM") {
         var prgID = device['id'];
@@ -1025,6 +1026,7 @@ function processDevices(device, systemDate, options, operate) {
             deviceHTML += "<div style='float: left; text-align: center; padding-right: 10px;'>";
             deviceHTML += "<img id='img" + prgID + "' class='ui-div-thumbnail ui-img-" + theme + " lazyLoadImage' data-original='../" + userFolder + "/img/ids/programs/" + prgID + ".png?" + device['picdate'] + "' src='img/menu/programs.png'/>";
             deviceHTML += "</div>";
+            float = actColumn === 5;
         }
         deviceHTML += addStartProgramButton('', prgID, mapText("RUN"), vorDate, operate);
     }
@@ -1032,6 +1034,72 @@ function processDevices(device, systemDate, options, operate) {
     // Ist leer, wenn (nv) oder ein leerer Channel.
     if (deviceHTML !== "") {
         deviceHTML += "</li>";
+    }
+
+    return deviceHTML;
+}
+
+function processBgDevices(device, systemDate, options, operate) {
+
+    var deviceID = device['id'];
+    var deviceHTML = "";
+
+    if (device['type'] === "CHANNEL") {
+        $.each(device.channels, function (j, channel) {
+            var type = channel['type'];
+            var channelID = channel['id'];
+            var picKey = getPicKey(channel['id'], "devices", channel, true);
+
+            if (type === "HSSDP") {
+                deviceHTML += "<a class='draggable' id='" + channelID + "'>";
+                deviceHTML += "<img id='img" + channelID + "' class='ui-img-" + theme;
+                if ($.inArray(picKey, picturesList) !== -1) {
+                    deviceHTML += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/devices/" + picKey + ".png?" + channel['picdate'];
+                }
+                deviceHTML += "' src='img/menu/devices.png'/>";
+                deviceHTML += "<span>" + unescape(channel['name']) + "</span>";
+                deviceHTML += "</a>";
+            } else if (type === "VARDP") {
+                deviceHTML += "<a class='draggable' id='" + channelID + "'>";
+                deviceHTML += "<img id='img" + channelID + "' class='ui-img-" + theme;
+                if ($.inArray(picKey, picturesList) !== -1) {
+                    deviceHTML += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/devices/" + picKey + ".png?" + channel['picdate'];
+                }
+                deviceHTML += "' src='img/menu/devices.png'/>";
+                deviceHTML += "<span>" + unescape(channel['name']) + "</span>";
+                deviceHTML += "</a>";
+            }
+        });
+    } else if (device['type'] === "VARDP") {
+        var picKey = getPicKey(device['id'], "devices", device, true);
+        deviceHTML += "<a class='draggable' id='" + deviceID + "'>";
+        deviceHTML += "<img id='img" + deviceID + "' class='ui-img-" + theme;
+        if ($.inArray(picKey, picturesList) !== -1) {
+            deviceHTML += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/devices/" + picKey + ".png?" + device['picdate'];
+        }
+        deviceHTML += "' src='img/menu/devices.png'/>";
+        deviceHTML += "<span>" + unescape(device['name']) + "</span>";
+        deviceHTML += "</a>";
+    } else if (device['type'] === "PROGRAM") {
+        var picKey = getPicKey(device['id'], "devices", device, true);
+        deviceHTML += "<a class='draggable' id='" + deviceID + "'>";
+        deviceHTML += "<img id='img" + deviceID + "' class='ui-img-" + theme;
+        if ($.inArray(picKey, picturesList) !== -1) {
+            deviceHTML += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/devices/" + picKey + ".png?" + device['picdate'];
+        }
+        deviceHTML += "' src='img/menu/devices.png'/>";
+        deviceHTML += "<span>" + unescape(device['name']) + "</span>";
+        deviceHTML += "</a>";
+    } else {
+        var picKey = getPicKey(device['id'], "devices", device, true);
+        deviceHTML += "<a class='draggable' id='" + deviceID + "'>";
+        deviceHTML += "<img id='img" + deviceID + "' class='ui-img-" + theme;
+        if ($.inArray(picKey, picturesList) !== -1) {
+            deviceHTML += " lazyLoadImage' data-original='../" + userFolder + "/img/ids/devices/" + picKey + ".png?" + device['picdate'];
+        }
+        deviceHTML += "' src='img/menu/devices.png'/>";
+        deviceHTML += "<span>" + unescape(device['name']) + "</span>";
+        deviceHTML += "</a>";
     }
 
     return deviceHTML;
@@ -1105,7 +1173,7 @@ function reloadList(txt, systemDate, restart, description) {
         txt = mapText(txt.substring(6, txt.length - 3));
     }
     $("#" + dataListHeader).empty();
-    $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'>" + txt + "<p style='float:right;'>" + systemDate + "</p></li>");
+    $("#" + dataListHeader).append("<li data-role='list-divider' role='heading'><span style='float:left;'>" + txt + "</span><span style='float:right;'>" + systemDate + "</span></li>");
     if (description !== "") {
         $("#" + dataListHeader).append("<li class='description'>" + description + "</li>");
     }
@@ -1124,10 +1192,12 @@ function loadData(url, id, restart) {
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
     var isActual = false;
 
+    var type = $("#" + id).data("type");
+    var rffMap = getResultMap(type);
+    var isBgPic = rffMap[id]['bgPic'];
+
     if (restart) {
-        // Listen leeren:
-        $("#" + dataList).empty();
-        $("#" + dataListHeader).empty();
+        clearScreen();
         // "Lade..." anzeigen:
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
@@ -1163,20 +1233,26 @@ function loadData(url, id, restart) {
             options['varOptions'] = {};
             options['varOptionsFirst'] = "";
             if (device['visible'] !== "false") {
-                var html = processDevices(device, systemDate, options, device['operate'] !== "false");
-                if (html !== "") {
-                    $("#" + dataList).append(html);
+                if (!isBgPic) {
+                    $("#" + dataList).append(processDevices(device, systemDate, options, device['operate'] !== "false"));
+                } else {
+                    addBgImage(id, type, rffMap[id]["picdate"], rffMap[id]['bgPicSize']);
+                    $('#' + dataBg).append(processBgDevices(device, systemDate, options, device['operate'] !== "false"));
                 }
             }
             addDiagram(options);
         });
 
         if (isGetSite) {
-            document.title = resultDevicesMap['name'];
+            document.title = rffMap[id]['name'];
         }
 
-        reloadList(resultDevicesMap['name'], systemDate, restart, resultDevicesMap['description']);
-        $("#" + dataList).trigger("fertig");
+        reloadList(rffMap[id]['name'], systemDate, restart, resultDevicesMap['description']);
+        if (!isBgPic) {
+            $("#" + dataList).trigger("fertig");
+        } else {
+            setDraggable();
+        }
     }
 
     if (!isActual) {
@@ -1196,13 +1272,15 @@ function loadData(url, id, restart) {
                 var html = "";
 
                 if (device['visible'] !== "false") {
-                    html = processDevices(device, systemDate, options, device['operate'] !== "false");
-
+                    if (!isBgPic) {
+                        html = processDevices(device, systemDate, options, device['operate'] !== "false");
+                    } else {
+                        html = processBgDevices(device, systemDate, options, device['operate'] !== "false");
+                    }
                     if (html !== "") {
                         var devID = device['id'];
-
                         if ($('#' + devID).length === 0 && devVisible) {
-                            $("#" + dataList).append(html);
+                            $("#" + (isBgPic ? dataBg : dataList)).append(html);
                         } else if (devVisible) {
                             if ($.inArray(devID.toString(), excludeFromRefresh) === -1) {
                                 $('#' + devID).replaceWith(html);
@@ -1216,7 +1294,7 @@ function loadData(url, id, restart) {
                 }
             });
 
-            reloadList(dta['name'], systemDate, restart, dta['description']);
+            reloadList(rffMap[id]['name'], systemDate, restart, resultDevicesMap['description']);
             $("img.lazyLoadImage").lazyload({event: "lazyLoadInstantly"});
             $("img").trigger("lazyLoadInstantly");
 
@@ -1250,8 +1328,7 @@ function loadVariables(restart) {
     // Icon Animation in Refresh Button:
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
     if (restart) {
-        $("#" + dataList).empty();
-        $("#" + dataListHeader).empty();
+        clearScreen();
         // "Lade..." anzeigen:
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 
@@ -1353,8 +1430,7 @@ function loadPrograms(restart) {
     // Icon Animation in Refresh Button:
     $('.buttonRefresh .ui-btn-text').html("<img class='ui-img-" + theme + "' src='img/misc/wait16.gif' width=12px height=12px>");
     if (restart) {
-        $("#" + dataList).empty();
-        $("#" + dataListHeader).empty();
+        clearScreen();
         // "Lade..." anzeigen:
         $("#" + dataListHeader).append("<li><img src='img/misc/wait16.gif' width=12px height=12px class='ui-li-icon ui-img-" + theme + "'>" + mapText("LOADING") + "...</li>").listview("refresh");
 

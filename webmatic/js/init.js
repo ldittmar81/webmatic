@@ -1,11 +1,27 @@
-/* global storageVersion, debugModus, resultOptionsMap, lastStableVersion, webmaticVersion, isPreRelease, Base64, userFolder */
 
-//Wiedererkennung von Clients (feste IP zwingend notwendig)
+/* global userFolder, isPreRelease, storageVersion, debugModus, resultOptionsMap, lastStableVersion, webmaticVersion */
+
+//Wiedererkennung von Clients
+$.ajax({
+    type: 'GET',
+    url: '../' + userFolder + '/manClient.json',
+    async: false,
+    cache: false
+}).done(function (data) {
+    manClient = (String(data).trim() === "true");
+}).fail(function () {
+    $.post('cgi/saveconfig.cgi', {name: "manClient", text: "false", folder: userFolder});
+});
 if (localStorage.getItem(isPreRelease + "webmaticrecognizeMap") === null || localStorage.getItem(isPreRelease + "webmaticrecognizeMap") === "undefined") {
     loadRecognization();
 } else {
     recognizeMap = JSON.parse(localStorage.getItem(isPreRelease + "webmaticrecognizeMap"));
-    client = ("REMOTE_ADDR" in recognizeMap ? recognizeMap["REMOTE_ADDR"] : "");
+    if (!("REMOTE_ADDR" in recognizeMap) || (manClient && "HTTP_USER_AGENT" in recognizeMap) || (!manClient && !("HTTP_USER_AGENT" in recognizeMap))) {
+        localStorage.removeItem(isPreRelease + "webmaticrecognizeMap");
+        loadRecognization();
+    } else {
+        client = recognizeMap["REMOTE_ADDR"];
+    }
 }
 
 //Special Reload für Client-Einstellungen
@@ -65,6 +81,11 @@ if (localStorage.getItem(isPreRelease + "webmaticoptionsclientMap") === null || 
 //Kombinieren
 createOneMap("config");
 clientsList = optionsMap["clientsList"];
+if (client !== "" && !isTempClient && !(client in clientsList)) {
+    clientsList[client] = client;
+    optionsMap["clientsList"] = clientsList;
+    saveOptionsToServer("clientsList", clientsList);
+}
 
 //Check Icons
 if (localStorage.getItem(isPreRelease + "picturesList") === null || localStorage.getItem(isPreRelease + "picturesList") === "undefined") {
@@ -140,23 +161,54 @@ var refreshTimer = setInterval(function () {
 }, 1000);
 
 function loadRecognization() {
-    $.ajax({
-        type: 'GET',
-        url: 'cgi/recognizer.cgi',
-        dataType: 'json',
-        async: false,
-        cache: false
-    }).done(function (data) {
-        if (data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")) {
-            recognizeMap = data;
-            client = data['REMOTE_ADDR'];
+    if (!manClient) {
+        $.ajax({
+            type: 'GET',
+            url: 'cgi/recognizer.cgi',
+            dataType: 'json',
+            async: false,
+            cache: false
+        }).done(function (data) {
+            if (data['REMOTE_ADDR'].match("^192\.168\.") || data['REMOTE_ADDR'].match("^10\.") || data['REMOTE_ADDR'].match("^172\.(1[6-9]|2[0-9]|3[0-1])\.")) {
+                recognizeMap = data;
+                client = data['REMOTE_ADDR'];
+                localStorage.setItem(isPreRelease + "webmaticrecognizeMap", JSON.stringify(recognizeMap));
+            } else {
+                recognizeMap = {};
+                client = "";
+            }
+        }).fail(function () {
+            recognizeMap = {};
+            client = "";
+        });
+    } else {
+        client = prompt(mapText("CLIENT_CODE"));
+        var conf = false;
+        if (!client) {
+            conf = true;
+        } else {
+            client = client.replace(/['" \\/]/g, "_");
+        }
+        while (!conf) {
+
+            conf = confirm(mapText("CLIENT_CODE_COMFIRM_1") + " \"" + client + "\". " + mapText("CLIENT_CODE_COMFIRM_2"));
+            if (!conf) {
+                client = prompt(mapText("CLIENT_CODE"));
+                if (!client) {
+                    conf = true;
+                } else {
+                    client = client.replace(/['" \\/]/g, "_");
+                }
+            }
+        }
+
+        if (client) {
+            recognizeMap = {};
+            recognizeMap['REMOTE_ADDR'] = client;
             localStorage.setItem(isPreRelease + "webmaticrecognizeMap", JSON.stringify(recognizeMap));
         } else {
             recognizeMap = {};
             client = "";
         }
-    }).fail(function () {
-        recognizeMap = {};
-        client = "";
-    });
+    }
 }

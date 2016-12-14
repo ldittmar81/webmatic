@@ -621,14 +621,14 @@ var textMap = {
     FUNCBUTTON: "Botão",
     FUNCCENTRAL: "Controle central",
     FUNCENERGY: "Gestão de energia",
-    SYSVARPRESENCE : "Presença",
-    SYSVARPRESENCEMSG : "Presença",
-    SYSVARPRESENCEPRESENT : "presente",
-    SYSVARPRESENCENOTPRESENT : "não presente",
-    SYSVARALARMZONE1 : "Alarme Zona 1",
-    SYSVARALARMZONE1MSG : "Mensagem de Alarme Zona 1",
-    SYSVARALARMZONE1TRIGGERED : "disparado",
-    SYSVARALARMZONE1NOTTRIGGERED : "não disparado",
+    SYSVARPRESENCE: "Presença",
+    SYSVARPRESENCEMSG: "Presença",
+    SYSVARPRESENCEPRESENT: "presente",
+    SYSVARPRESENCENOTPRESENT: "não presente",
+    SYSVARALARMZONE1: "Alarme Zona 1",
+    SYSVARALARMZONE1MSG: "Mensagem de Alarme Zona 1",
+    SYSVARALARMZONE1TRIGGERED: "disparado",
+    SYSVARALARMZONE1NOTTRIGGERED: "não disparado",
     // Andere Bezeichnungen
     OPEN: "aberto",
     OPEN_SHORT: "aberto",
@@ -750,7 +750,19 @@ var textMap = {
     ADD_DIVIDER: "adicionar partição",
     UNSORTED: "não classificadas",
     SAVE_AND_RELOAD: "salvar e recarregar",
-    RELOAD_CCU_CHANGES: "mudança encontrados"
+    RELOAD_CCU_CHANGES: "mudança encontrados",
+    CLIENT_CODE: "Cliente não foi reconhecido. Digite o código do cliente: (Tarefas desconhecidas registo de cliente considerado)",
+    CLIENT_CODE_COMFIRM_1: "Código do cliente é",
+    CLIENT_CODE_COMFIRM_2: "Clique em OK quando a informação está correta.",
+    CLIENT_RECOGNITION: "reconhecimento dos clientes",
+    CLIENT_AUTO: "Automaticamente via IP",
+    CLIENT_MANU: "Manual pela demanda",
+    BG_PIC: "Hintergrundgrafik nutzen",
+    ROOMS_PIC: "Grafik für Raum",
+    FAVORITES_PIC: "Grafik für Favorit",
+    FUNCTIONS_PIC: "Grafik für Gewerk",
+    PROGRAMS_PIC: "Grafik für Programm",
+    VARIABLES_PIC: "Grafik für Variable"
 };
 
 
