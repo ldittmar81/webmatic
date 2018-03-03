@@ -53,7 +53,7 @@ cgi_eval {
 
                 if ((objDP.TypeName() == "HSSDP") && (objDP.Value() != 0)){
                     object objInner;
-                    objInner = dom.GetObject(objDP.Device());
+                    objInner = dom.GetObject(objDP.Channel());
 
                     string strDpType = objDP.HssType();
                     if ((strDpType == "ERROR") || (strDpType == "ERROR_OVERHEAT") || (strDpType == "ERROR_OVERLOAD") || 
