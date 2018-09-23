@@ -1,6 +1,11 @@
 # WebMatic
 WebMatic ist eine browserbasierte Benutzeroberfläche für HomeMatic. Die Elemente sind für eine Bedienung mit mobilen Endgeräten optimiert. WebMatic läuft komplett auf der CCU.
 
+## Supported CCU models
+* [HomeMatic CCU3](https://www.eq-3.de/produkte/homematic/zentralen-und-gateways/smart-home-zentrale-ccu3.html) / [RaspberryMatic](http://raspberrymatic.de/)
+* [HomeMatic CCU2](https://www.eq-3.de/produkt-detail-zentralen-und-gateways/items/homematic-zentrale-ccu-2.html)
+* HomeMatic CCU1
+
 ## Haftungsausschluss
 Der Autor dieser Software übernimmt keinerlei Verantwortung für die Funktionsweise der Software und keinerlei Haftung für Schäden, die aus der Benutzung dieser Software resultieren.
 
