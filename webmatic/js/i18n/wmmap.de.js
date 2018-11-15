@@ -368,6 +368,8 @@ var textMap = {
     SENSOR_FOR_CARBON_DIOXIDE__STATE__2: "CO<sub>2</sub> Konzentration stark erh&ouml;ht",
     SHUTTER_CONTACT__STATE__TRUE: "offen",
     SHUTTER_CONTACT__STATE__FALSE: "geschlossen",
+    SHUTTER_CONTACT__STATE__1: "offen",
+    SHUTTER_CONTACT__STATE__0: "geschlossen",
     SHUTTER_CONTACT__ERROR__0: "-",
     SHUTTER_CONTACT__ERROR__1: "Sabotage ausgel&ouml;st",
     SHUTTER_CONTACT__LOWBAT__TRUE: "Batteriestand niedrig",
