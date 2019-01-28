@@ -179,6 +179,41 @@ var textMap = {
     DISPLAY__SUBMIT: "** DISPLAY__SUBMIT",
     DISPLAY__ALARM_COUNT: "** DISPLAY__ALARM_COUNT",
     DISPLAY__SERVICE_COUNT: "** DISPLAY__SERVICE_COUNT",
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     INPUT_OUTPUT__PRESS_SHORT: "short press",
     INPUT_OUTPUT__PRESS_LONG: "long press",
     KEY__ALL_LEDS: "-",
@@ -333,6 +368,8 @@ var textMap = {
     SENSOR_FOR_CARBON_DIOXIDE__STATE__2: "CO<sub>2</sub> concentration greatly increased",
     SHUTTER_CONTACT__STATE__TRUE: "open",
     SHUTTER_CONTACT__STATE__FALSE: "closed",
+    SHUTTER_CONTACT__STATE__1: "open",
+    SHUTTER_CONTACT__STATE__0: "closed",
     SHUTTER_CONTACT__ERROR__0: "-",
     SHUTTER_CONTACT__ERROR__1: "sabotage triggered",
     SHUTTER_CONTACT__LOWBAT__TRUE: "battery low",
