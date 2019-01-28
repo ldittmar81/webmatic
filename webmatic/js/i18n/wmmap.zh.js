@@ -179,6 +179,41 @@ var textMap = {
     DISPLAY__SUBMIT: "** DISPLAY__SUBMIT",
     DISPLAY__ALARM_COUNT: "** DISPLAY__ALARM_COUNT",
     DISPLAY__SERVICE_COUNT: "** DISPLAY__SERVICE_COUNT",
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     INPUT_OUTPUT__PRESS_SHORT: "短按",
     INPUT_OUTPUT__PRESS_LONG: "长按",
     KEY__ALL_LEDS: "-",
@@ -333,6 +368,8 @@ var textMap = {
     SENSOR_FOR_CARBON_DIOXIDE__STATE__2: "CO<SUB>2</SUB>浓度大大增加",
     SHUTTER_CONTACT__STATE__TRUE: "打开",
     SHUTTER_CONTACT__STATE__FALSE: "封闭",
+    SHUTTER_CONTACT__STATE__1: "打开",
+    SHUTTER_CONTACT__STATE__0: "封闭",
     SHUTTER_CONTACT__ERROR__0: "-",
     SHUTTER_CONTACT__ERROR__1: "破坏引发的",
     SHUTTER_CONTACT__LOWBAT__TRUE: "电池电量低",
