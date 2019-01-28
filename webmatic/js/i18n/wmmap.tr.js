@@ -179,6 +179,41 @@ var textMap = {
     DISPLAY__SUBMIT: "** DISPLAY__SUBMIT",
     DISPLAY__ALARM_COUNT: "** DISPLAY__ALARM_COUNT",
     DISPLAY__SERVICE_COUNT: "** DISPLAY__SERVICE_COUNT",
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     INPUT_OUTPUT__PRESS_SHORT: "Kısa basın",
     INPUT_OUTPUT__PRESS_LONG: "Uzun basın",
     KEY__ALL_LEDS: "-",
@@ -333,6 +368,8 @@ var textMap = {
     SENSOR_FOR_CARBON_DIOXIDE__STATE__2: "CO<sub>2</sub> konsantrasyon büyük ölçüde arttı",
     SHUTTER_CONTACT__STATE__TRUE: "açmak",
     SHUTTER_CONTACT__STATE__FALSE: "kapalı",
+    SHUTTER_CONTACT__STATE__1: "açmak",
+    SHUTTER_CONTACT__STATE__0: "kapalı",
     SHUTTER_CONTACT__ERROR__0: "-",
     SHUTTER_CONTACT__ERROR__1: "sabotaj tetikledi",
     SHUTTER_CONTACT__LOWBAT__TRUE: "pil düşük",
