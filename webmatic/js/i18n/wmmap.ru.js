@@ -179,6 +179,41 @@ var textMap = {
     DISPLAY__SUBMIT: "** DISPLAY__SUBMIT",
     DISPLAY__ALARM_COUNT: "** DISPLAY__ALARM_COUNT",
     DISPLAY__SERVICE_COUNT: "** DISPLAY__SERVICE_COUNT",
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     INPUT_OUTPUT__PRESS_SHORT: "короткое нажатие",
     INPUT_OUTPUT__PRESS_LONG: "долгое нажатие",
     KEY__ALL_LEDS: "-",
@@ -333,6 +368,8 @@ var textMap = {
     SENSOR_FOR_CARBON_DIOXIDE__STATE__2: "СО<sub>2</sub> концентрация значительно увеличилось",
     SHUTTER_CONTACT__STATE__TRUE: "открыть",
     SHUTTER_CONTACT__STATE__FALSE: "закрытая",
+    SHUTTER_CONTACT__STATE__1: "открыть",
+    SHUTTER_CONTACT__STATE__0: "закрытая",
     SHUTTER_CONTACT__ERROR__0: "-",
     SHUTTER_CONTACT__ERROR__1: "саботаж срабатывает",
     SHUTTER_CONTACT__LOWBAT__TRUE: "батарея разряжена",
