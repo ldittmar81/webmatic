@@ -703,7 +703,7 @@ var textMap = {
     FUNCTIONS: "funções",
     EDIT: "editar",
     OPTIONS: "opções",
-    OPTIONS_CLIENT: "Opções para este dispositivo",
+    OPTIONS_CLIENT: "opções para este dispositivo",
     TEST_DEVICE: "página de teste HM",
     TEST_CUXD: "página CUXD teste",
     UNKNOWN_ERROR: "erro desconhecido",
