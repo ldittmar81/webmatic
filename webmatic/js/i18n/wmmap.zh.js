@@ -1,6 +1,6 @@
-// DEVICETYP__CHANNELTYP__EVENTUELLERSTATUS
+//DEVICETYP__CHANNELTYP__EVENTUELLERSTATUS
 var textMap = {
-    //GERÄTE
+    //Ger&auml;te
     AKKU__LEVEL: "充电状态",
     AKKU__STATUS__0: "涓流充电",
     AKKU__STATUS__1: "电池装载",
