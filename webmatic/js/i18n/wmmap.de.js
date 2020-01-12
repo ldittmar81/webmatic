@@ -801,9 +801,9 @@ var textMap = {
     CLIENT_AUTO: "Automatisch &uuml;ber IP",
     CLIENT_MANU: "Manuell per Nachfrage",
     BG_PIC: "Hintergrundgrafik nutzen",
-    ROOMS_PIC: "Grafik f&uuml;r Raum",
-    FAVORITES_PIC: "Grafik f&uuml;r Favorit",
-    FUNCTIONS_PIC: "Grafik f&uuml;r Gewerk",
-    PROGRAMS_PIC: "Grafik f&uuml;r Programm",
-    VARIABLES_PIC: "Grafik f&uuml;r Variable"
+    ROOMS_PIC: "Grafik f&uuml;r R&auml;ume",
+    FAVORITES_PIC: "Grafik f&uuml;r Favoriten",
+    FUNCTIONS_PIC: "Grafik f&uuml;r Gewerke",
+    PROGRAMS_PIC: "Grafik f&uuml;r Programme",
+    VARIABLES_PIC: "Grafik f&uuml;r Variablen"
 };
