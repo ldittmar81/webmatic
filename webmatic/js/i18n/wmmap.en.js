@@ -1,6 +1,6 @@
 //DEVICETYP__CHANNELTYP__EVENTUELLERSTATUS
 var textMap = {
-    //Geräte
+    //Ger&auml;te
     AKKU__LEVEL: "charging status",
     AKKU__STATUS__0: "trickle charging",
     AKKU__STATUS__1: "battery loading",
