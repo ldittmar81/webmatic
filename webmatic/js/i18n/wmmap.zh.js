@@ -457,6 +457,11 @@ var textMap = {
     SWITCH_VIRTUAL_RECEIVER__SECTION:"-",
     SWITCH_VIRTUAL_RECEIVER__SECTION_STATUS:"-",
     SWITCH_VIRTUAL_RECEIVER__ON_TIME: "责任",
+    SWITCH_TRANSMITTER__STATE__TRUE:"上",
+    SWITCH_TRANSMITTER__STATE__FALSE:"关",
+    SWITCH_TRANSMITTER__PROCESS:"-",
+    SWITCH_TRANSMITTER__SECTION:"-",
+    SWITCH_TRANSMITTER__SECTION_STATUS:"-",
     SWITCH__STATE__TRUE: "上",
     SWITCH__STATE__FALSE: "关",
     SWITCH__ON_TIME: "责任",
@@ -800,10 +805,10 @@ var textMap = {
     CLIENT_RECOGNITION: "客户认可",
     CLIENT_AUTO: "自动通过IP",
     CLIENT_MANU: "手册由需求",
-    BG_PIC: "Hintergrundgrafik nutzen",
-    ROOMS_PIC: "Grafik für Raum",
-    FAVORITES_PIC: "Grafik für Favorit",
-    FUNCTIONS_PIC: "Grafik für Gewerk",
-    PROGRAMS_PIC: "Grafik für Programm",
-    VARIABLES_PIC: "Grafik für Variable"
+    BG_PIC: "HUse Background-graphic",
+    ROOMS_PIC: "Graphic for rooms",
+    FAVORITES_PIC: "Graphic for favorites",
+    FUNCTIONS_PIC: "Graphic for functions",
+    PROGRAMS_PIC: "Graphic for programs",
+    VARIABLES_PIC: "Graphic for system variables"
 };
