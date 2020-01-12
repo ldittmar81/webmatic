@@ -457,6 +457,11 @@ var textMap = {
     SWITCH_VIRTUAL_RECEIVER__SECTION:"-",
     SWITCH_VIRTUAL_RECEIVER__SECTION_STATUS:"-",
     SWITCH_VIRTUAL_RECEIVER__ON_TIME:"devoir",
+    SWITCH_TRANSMITTER__STATE__TRUE:"on",
+    SWITCH_TRANSMITTER__STATE__FALSE:"off",
+    SWITCH_TRANSMITTER__PROCESS:"-",
+    SWITCH_TRANSMITTER__SECTION:"-",
+    SWITCH_TRANSMITTER__SECTION_STATUS:"-",
     SWITCH__STATE__TRUE: "on",
     SWITCH__STATE__FALSE: "off",
     SWITCH__ON_TIME: "devoir",
@@ -800,10 +805,10 @@ var textMap = {
     CLIENT_RECOGNITION: "reconnaissance du client",
     CLIENT_AUTO: "Automatiquement via IP",
     CLIENT_MANU: "Manuel par la demande",
-    BG_PIC: "Hintergrundgrafik nutzen",
-    ROOMS_PIC: "Grafik für Raum",
-    FAVORITES_PIC: "Grafik für Favorit",
-    FUNCTIONS_PIC: "Grafik für Gewerk",
-    PROGRAMS_PIC: "Grafik für Programm",
-    VARIABLES_PIC: "Grafik für Variable"
+    BG_PIC: "Utiliser graphique fond",
+    ROOMS_PIC: "Graphique pour chambres",
+    FAVORITES_PIC: "Graphique pour favoris",
+    FUNCTIONS_PIC: "Graphique pour fonctions",
+    PROGRAMS_PIC: "Graphique pour programmes",
+    VARIABLES_PIC: "Graphique pour variables système"
 };

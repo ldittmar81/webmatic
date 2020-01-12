@@ -457,6 +457,11 @@ var textMap = {
     SWITCH_VIRTUAL_RECEIVER__SECTION:"-",
     SWITCH_VIRTUAL_RECEIVER__SECTION_STATUS:"-",
     SWITCH_VIRTUAL_RECEIVER__ON_TIME: "долг",
+    SWITCH_TRANSMITTER__STATE__TRUE:"на",
+    SWITCH_TRANSMITTER__STATE__FALSE:"от",
+    SWITCH_TRANSMITTER__PROCESS:"-",
+    SWITCH_TRANSMITTER__SECTION:"-",
+    SWITCH_TRANSMITTER__SECTION_STATUS:"-",
     SWITCH__STATE__TRUE: "на",
     SWITCH__STATE__FALSE: "от",
     SWITCH__ON_TIME: "долг",
@@ -800,10 +805,10 @@ var textMap = {
     CLIENT_RECOGNITION: "признание клиента",
     CLIENT_AUTO: "Автоматически через IP",
     CLIENT_MANU: "Руководство по требованию",
-    BG_PIC: "Hintergrundgrafik nutzen",
-    ROOMS_PIC: "Grafik für Raum",
-    FAVORITES_PIC: "Grafik für Favorit",
-    FUNCTIONS_PIC: "Grafik für Gewerk",
-    PROGRAMS_PIC: "Grafik für Programm",
-    VARIABLES_PIC: "Grafik für Variable"
+    BG_PIC: "графика на подного́тная",
+    ROOMS_PIC: "графика на комнаты",
+    FAVORITES_PIC: "графика на и́збранное",
+    FUNCTIONS_PIC: "графика на функции",
+    PROGRAMS_PIC: "графика на программы",
+    VARIABLES_PIC: "рафика на cистемные переменные"
 };

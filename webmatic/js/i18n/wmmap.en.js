@@ -1,6 +1,6 @@
 //DEVICETYP__CHANNELTYP__EVENTUELLERSTATUS
 var textMap = {
-    //Geräte
+    //Ger&auml;te
     AKKU__LEVEL: "charging status",
     AKKU__STATUS__0: "trickle charging",
     AKKU__STATUS__1: "battery loading",
@@ -457,6 +457,11 @@ var textMap = {
     SWITCH_VIRTUAL_RECEIVER__SECTION:"-",
     SWITCH_VIRTUAL_RECEIVER__SECTION_STATUS:"-",
     SWITCH_VIRTUAL_RECEIVER__ON_TIME:"duty",
+    SWITCH_TRANSMITTER__STATE__TRUE:"on",
+    SWITCH_TRANSMITTER__STATE__FALSE:"off",
+    SWITCH_TRANSMITTER__PROCESS:"-",
+    SWITCH_TRANSMITTER__SECTION:"-",
+    SWITCH_TRANSMITTER__SECTION_STATUS:"-",
     SWITCH__STATE__TRUE: "on",
     SWITCH__STATE__FALSE: "off",
     SWITCH__ON_TIME: "duty",
@@ -800,10 +805,10 @@ var textMap = {
     CLIENT_RECOGNITION: "client recognition",
     CLIENT_AUTO: "Automatically via IP",
     CLIENT_MANU: "Manual by demand",
-    BG_PIC: "Hintergrundgrafik nutzen",
-    ROOMS_PIC: "Grafik für Raum",
-    FAVORITES_PIC: "Grafik für Favorit",
-    FUNCTIONS_PIC: "Grafik für Gewerk",
-    PROGRAMS_PIC: "Grafik für Programm",
-    VARIABLES_PIC: "Grafik für Variable"
+    BG_PIC: "Use Background-graphic",
+    ROOMS_PIC: "Graphic for rooms",
+    FAVORITES_PIC: "Graphic for favorites",
+    FUNCTIONS_PIC: "Graphic for functions",
+    PROGRAMS_PIC: "Graphic for programs",
+    VARIABLES_PIC: "Graphic for system variables"
 };
