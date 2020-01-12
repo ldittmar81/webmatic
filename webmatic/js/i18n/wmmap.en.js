@@ -800,10 +800,10 @@ var textMap = {
     CLIENT_RECOGNITION: "client recognition",
     CLIENT_AUTO: "Automatically via IP",
     CLIENT_MANU: "Manual by demand",
-    BG_PIC: "Hintergrundgrafik nutzen",
-    ROOMS_PIC: "Grafik für Raum",
-    FAVORITES_PIC: "Grafik für Favorit",
-    FUNCTIONS_PIC: "Grafik für Gewerk",
-    PROGRAMS_PIC: "Grafik für Programm",
-    VARIABLES_PIC: "Grafik für Variable"
+    BG_PIC: "Use Background-Graphics",
+    ROOMS_PIC: "Graphics for Rooms",
+    FAVORITES_PIC: "Graphics for Favorites",
+    FUNCTIONS_PIC: "Graphics for Functions",
+    PROGRAMS_PIC: "Graphics for Programs",
+    VARIABLES_PIC: "Graphics for Variables"
 };
