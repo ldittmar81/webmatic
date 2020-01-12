@@ -805,5 +805,5 @@ var textMap = {
     FAVORITES_PIC: "Grafik f&uuml;r Favoriten",
     FUNCTIONS_PIC: "Grafik f&uuml;r Gewerke",
     PROGRAMS_PIC: "Grafik f&uuml;r Programme",
-    VARIABLES_PIC: "Grafik f&uuml;r Variablen"
+    VARIABLES_PIC: "Grafik f&uuml;r Systemvariablen"
 };
