@@ -805,7 +805,7 @@ var textMap = {
     CLIENT_RECOGNITION: "客户认可",
     CLIENT_AUTO: "自动通过IP",
     CLIENT_MANU: "手册由需求",
-    BG_PIC: "HUse Background-graphic",
+    BG_PIC: "Use Background-graphic",
     ROOMS_PIC: "Graphic for rooms",
     FAVORITES_PIC: "Graphic for favorites",
     FUNCTIONS_PIC: "Graphic for functions",
